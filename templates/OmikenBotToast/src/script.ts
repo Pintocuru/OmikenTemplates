@@ -44,8 +44,8 @@ const App = {
      if (now > new Date(newComments[0]?.data.timestamp).getTime() + 5000) return;
 
      newComments.forEach((comment: CommentTemp) => {
-      // userIdとジェネレーター名が同じなら表示
-      if (comment.data.userId === botUserId && comment.data.liveId === TEMPLATE_NAME) {
+      // userIdとジェネレーター名が同じなら表示  && comment.data.liveId === TEMPLATE_NAME
+      if (comment.data.userId === botUserId) {
        ProcessBotComment(comment);
       }
      });

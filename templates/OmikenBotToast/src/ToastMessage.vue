@@ -64,7 +64,7 @@ export default defineComponent({
     botKey: chara.name,
     textColor: comment.css['--lcv-text-color'] || 'white',
     backgroundColor: comment.css['--lcv-background-color'] || 'rgba(0, 0, 0, 0.7)',
-    imageUrl: chara.image.Default ? `${this.getImagePath()}${chara.image.Default}` : null,
+    imageUrl: comment.data.profileImage ? comment.data.profileImage : null,
     brightness: comment.css['--lcv-background-brightness'] || '100%',
     opacity: comment.css['--lcv-background-opacity'] || '100%'
    };
@@ -77,10 +77,6 @@ export default defineComponent({
      this.messages.splice(this.messages.indexOf(messageObj), 1);
     }, duration);
    }, 10);
-  },
-  getImagePath() {
-   // 画像のベースパスを返す（プロジェクトに合わせて調整）
-   return '/path/to/images/';
   },
   calculateLifeTime(comment: CommentTemp): number {
    const LIFE_TIME = 10000; // 基本表示時間
