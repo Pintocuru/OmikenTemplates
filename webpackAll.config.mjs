@@ -18,6 +18,10 @@ export default {
     options: {
      transpileOnly: true // 型チェックを除外
     }
+   },
+   {
+    test: /\.css$/,
+    use: ['style-loader', 'css-loader']
    }
   ]
  },

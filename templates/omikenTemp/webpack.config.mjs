@@ -4,11 +4,10 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import sharedConfig from '../../webpackAll.config.mjs';
 import { ENV } from '../../webpackENV.js';
 import { fileURLToPath } from 'url';
-import tsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 
 // 現在のファイルのURLを基に、ディレクトリパスを取得
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const dirname = path.dirname(__filename);
 
 // 個別用
 export default (env, argv) => {
@@ -18,22 +17,15 @@ export default (env, argv) => {
  return {
   ...sharedConfig,
   mode: mode, // モード
-  entry: './script.ts', // エントリーポイント
-  context: path.resolve(__dirname, 'src'), // 対象フォルダ
+  entry: './main.ts', // エントリーポイント
+  context: path.resolve(dirname, 'src'), // 対象フォルダ
   output: {
    filename: 'script.js', // 出力ファイル名
-   path: path.resolve(__dirname, 'dist'), // 出力ディレクトリ
+   path: path.resolve(dirname, 'dist'), // 出力ディレクトリ
    clean: true // 出力ディレクトリをクリーンアップ
   },
-  resolve: {
-   alias: {
-    '@public': path.resolve(__dirname, '../../public')
-   }
-  },
+
   plugins: [
-   new tsConfigPathsPlugin({
-    configFile: path.resolve(__dirname, './tsconfig.json')
-   }),
    // Vue用のWebpackプラグイン
    new VueLoaderPlugin(),
    // HTML

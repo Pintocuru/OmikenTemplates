@@ -1,6 +1,6 @@
 // src/script.ts
 import { ref, onMounted, createApp } from 'vue';
-import { CharaType } from '../../../public/types';
+import { CharaType } from '@/../../public/types';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
@@ -20,7 +20,7 @@ const app = createApp({
   const queue: CommentTemp[] = [];
 
   // コメントシステムのセットアップ
-  const setupCommentSystem = () => {
+  const commentListener = () => {
    OneSDK.subscribe({
     action: 'comments',
     callback: (newComments: CommentTemp[]) => {
@@ -101,7 +101,7 @@ const app = createApp({
     mode: 'diff' // 差分モード
    });
    OneSDK.connect();
-   setupCommentSystem();
+   commentListener();
    commentDisplay();
   });
 

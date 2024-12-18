@@ -4,13 +4,15 @@
   "baseUrl": ".", // モジュールのベースURL
   "outDir": "./dist", // 出力先ディレクトリ
  },
- "typeRoots": [
-  "../../node_modules/@types" // 親プロジェクトの型定義も参照
- ],
+ "paths": {
+  "@type/*": [
+   "public/types/*"
+  ],
+ },
  // コンパイル対象ファイル
  "include": [
   "src/**/*.ts",
   "src/**/*.d.ts",
-  "src/**/*.vue",
+  "src/**/*.vue"
  ],
 }

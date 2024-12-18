@@ -9,13 +9,25 @@
     "skipLibCheck": true, // ライブラリファイルの型チェックをスキップ
     "jsx": "preserve", // JSXをそのまま残す
     "forceConsistentCasingInFileNames": true, // 大文字小文字を守る
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "*"
+      ],
+      "@public/*": [
+        "public/*"
+      ]
+    }
   },
   // モノレポ全体でコンパイルしたいファイルパス
   "include": [
     "templates/**/*",
+    "public/**/*",
+    "public/types/*.ts"
   ],
   // 除外するディレクトリ
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "public"
   ]
 }
