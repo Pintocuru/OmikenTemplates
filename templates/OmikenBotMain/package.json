@@ -1,0 +1,12 @@
+{
+ "name": "omikenbotmain",
+ "version": "1.0.0",
+ "description": "main",
+ "main": "index.js",
+ "scripts": {
+  "dev": "webpack --mode development",
+  "build": "webpack --mode production"
+ },
+ "author": "",
+ "license": "ISC"
+}
