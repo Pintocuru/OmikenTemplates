@@ -8,7 +8,9 @@
     class="message"
     :style="{
      color: message.textColor,
-     backgroundColor: message.backgroundColor
+     backgroundColor: message.backgroundColor,
+     '--lcv-background-brightness': message.brightness,
+     '--lcv-background-opacity': message.opacity
     }"
    >
     <div class="message-content">{{ message.content }}</div>
@@ -20,11 +22,17 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { CharaType } from '../../../public/types'; // 型定義のインポートパス
-import OneSDK from '@onecomme.com/onesdk';
+import { CharaType } from '../../../public/types/';
+import { CommentTemp } from './commentTypes';
 
 export default defineComponent({
  name: 'ToastMessage',
+ props: {
+  Charas: {
+   type: Object as () => Record<string, CharaType>,
+   required: true
+  }
+ },
  data() {
   return {
    messages: [] as Array<{
@@ -33,59 +41,56 @@ export default defineComponent({
     textColor: string;
     backgroundColor: string;
     imageUrl: string | null;
+    brightness: string;
+    opacity: string;
    }>,
-   maxWidth: 600,
-   Charas: {} as Record<string, CharaType>
+   maxWidth: 600
   };
  },
  methods: {
-  show(botKey: string, iconKey: string = 'Default', message: string) {
-   // Charasからキャラクター情報を取得
-   const characterData = this.Charas[botKey];
+  showComment(comment: CommentTemp) {
+   if (!comment) return;
 
-   if (!characterData) {
-    console.warn(`Character ${botKey} not found`);
+   // キャラクターを探す
+   const chara = Object.values(this.Charas).find((c) => c.name === comment.data.name);
+
+   if (!chara) {
+    console.warn(`Character not found for name: ${comment.data.name}`);
     return;
    }
 
-   // アイコンキーの検証（指定されたキーが存在しない場合はDefaultに戻す）
-   const validIconKey = characterData.image[iconKey] ? iconKey : 'Default';
-
    const messageObj = {
-    content: message,
-    botKey: botKey,
-    textColor: characterData.color['--lcv-text-color'] || 'white',
-    backgroundColor: characterData.color['--lcv-background-color'] || 'rgba(0, 0, 0, 0.7)',
-    imageUrl: characterData.image[validIconKey] ? `${characterData.image[validIconKey]}` : null
+    content: comment.data.speechText || '',
+    botKey: chara.name,
+    textColor: comment.css['--lcv-text-color'] || 'white',
+    backgroundColor: comment.css['--lcv-background-color'] || 'rgba(0, 0, 0, 0.7)',
+    imageUrl: chara.image.Default ? `${this.getImagePath()}${chara.image.Default}` : null,
+    brightness: comment.css['--lcv-background-brightness'] || '100%',
+    opacity: comment.css['--lcv-background-opacity'] || '100%'
    };
 
    this.messages.unshift(messageObj);
 
    setTimeout(() => {
-    const duration = 15000; // 15秒
+    const duration = this.calculateLifeTime(comment);
     setTimeout(() => {
      this.messages.splice(this.messages.indexOf(messageObj), 1);
     }, duration);
    }, 10);
   },
-  async initCharas() {
-   const PLUGIN_UID = 'OmikenPlugin01';
-   const url = `http://localhost:11180/api/plugins/${PLUGIN_UID}?mode=data&type=Charas`;
-
-   try {
-    const res = await OneSDK.get(url, {});
-    this.Charas = res.data.response || {};
-   } catch (error) {
-    console.error('Failed to fetch Charas:', error);
-    this.Charas = {};
-   }
+  getImagePath() {
+   // 画像のベースパスを返す（プロジェクトに合わせて調整）
+   return '/path/to/images/';
+  },
+  calculateLifeTime(comment: CommentTemp): number {
+   const LIFE_TIME = 10000; // 基本表示時間
+   const THRESHOLD = 30; // この文字数以上であれば表示時間を延長
+   const extraTime = Math.max((comment.data.speechText?.length ?? 0) - THRESHOLD, 0) * 100;
+   return LIFE_TIME + extraTime;
   }
  },
  mounted() {
-  // キャラクターデータの初期化
-  this.initCharas();
-
-  // スタイルの追加
+  // スタイルの追加（前回と同様）
   const style = document.createElement('style');
   style.textContent = `
       #message-container {
@@ -107,6 +112,9 @@ export default defineComponent({
         max-width: ${this.maxWidth}px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         user-select: none;
+        background-color: var(--lcv-background-color);
+        opacity: calc(var(--lcv-background-opacity, 100%) / 100);
+        filter: brightness(var(--lcv-background-brightness, 100%));
       }
       .message-content {
         flex-grow: 1;

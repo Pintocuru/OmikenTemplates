@@ -5,11 +5,11 @@
  "type": "module",
  "scripts": {
   "tsc": "tsc",
-  "dev": "webpack --mode development",
+  "dev:toast": "webpack --mode development",
   "build": "webpack --mode production"
  },
  "workspaces": [
-  "templates/OmikenBotMain"
+  "templates/*"
  ],
  "dependencies": {
   "@onecomme.com/onesdk": "^7.0.0",

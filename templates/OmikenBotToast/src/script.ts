@@ -1,23 +1,38 @@
 // src/script.ts
-import { ref, onMounted, createApp } from 'vue';
+import { ref, onMounted, createApp, h } from 'vue';
 import { CharaType } from '../../../public/types';
 import OneSDK from '@onecomme.com/onesdk';
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { CommentTemp } from './commentTypes';
+import ToastMessage from './ToastMessage.vue';
 
 // 仕様書
 // https://onecomme.com/docs/developer/onesdk-js
 
-// このジェネレーター用にCommentを拡張する
-type CommentTemp = Comment & {
- css: CharaType['color']; // コメントの色
- index: number; // 並び順
-};
+// プラグイン定数
+const PLUGIN_UID = 'OmikenPlugin01';
+const botUserId = 'FirstCounter';
+const TEMPLATE_NAME = 'toast';
 
-const app = createApp({
+// アプリケーションの主要コンポーネント
+const App = {
  setup() {
   // ref
   const botComments = ref<CommentTemp[]>([]);
   const queue: CommentTemp[] = [];
+  const Charas = ref<Record<string, CharaType>>({});
+  const toastMessageRef = ref(null);
+
+  // キャラクターデータの取得
+  const fetchCharas = async () => {
+   try {
+    const url = `http://localhost:11180/api/plugins/${PLUGIN_UID}?mode=data&type=Charas`;
+    const res = await OneSDK.get(url, {});
+    Charas.value = res.data.response || {};
+   } catch (error) {
+    console.error('Failed to fetch Charas:', error);
+    Charas.value = {};
+   }
+  };
 
   // コメントシステムのセットアップ
   const setupCommentSystem = () => {
@@ -29,8 +44,8 @@ const app = createApp({
      if (now > new Date(newComments[0]?.data.timestamp).getTime() + 5000) return;
 
      newComments.forEach((comment: CommentTemp) => {
-      // userIdとジェネレーター名が同じなら表示 && comment.data.liveId === TEMPLATE_NAME
-      if (comment.data.userId === botUserId) {
+      // userIdとジェネレーター名が同じなら表示
+      if (comment.data.userId === botUserId && comment.data.liveId === TEMPLATE_NAME) {
        ProcessBotComment(comment);
       }
      });
@@ -41,7 +56,7 @@ const app = createApp({
   // キャラの色データを付与してバッファに入れる
   const ProcessBotComment = (comment: CommentTemp) => {
    // CHARACTERからnameが一致するObjectを探し出し、表示させる
-   const chara = Object.values(Charas).find((c) => c.name === comment.data.name) as CharaType;
+   const chara = Object.values(Charas.value).find((c) => c.name === comment.data.name);
    if (chara) {
     comment.css = chara.color;
     queue.push(comment);
@@ -64,6 +79,12 @@ const app = createApp({
      if (comment) {
       const extraTime = Math.max((comment.data.speechText?.length ?? 0) - THRESHOLD, 0) * 100;
       const totalLifeTime = LIFE_TIME + extraTime;
+
+      // ToastMessageにコメントを表示
+      if (toastMessageRef.value) {
+       (toastMessageRef.value as any).showComment(comment);
+      }
+
       botComments.value.unshift(comment);
       commentTimers.set(comment.data.id, now + totalLifeTime);
      }
@@ -89,13 +110,17 @@ const app = createApp({
       '--lcv-background-opacity': `${opacity}%`
      };
     });
+
     requestAnimationFrame(update);
    })();
   };
 
   // コンポーネントのマウント時の処理
-  onMounted(() => {
-   document.body.removeAttribute('hidden'); // HTMLのhidden属性を削除
+  onMounted(async () => {
+   // キャラクターデータの取得
+   await fetchCharas();
+
+   document.body.removeAttribute('hidden');
    OneSDK.setup({
     permissions: OneSDK.usePermission([OneSDK.PERM.COMMENT]),
     mode: 'diff' // 差分モード
@@ -105,29 +130,28 @@ const app = createApp({
    commentDisplay();
   });
 
-  // コンポーネントが使用できる値を返す
+  // レンダリング用のトーストメッセージコンポーネント
+  const renderToastMessage = () =>
+   h(ToastMessage, {
+    ref: toastMessageRef,
+    Charas: Charas.value
+   });
+
   return {
-   botComments
+   botComments,
+   renderToastMessage
   };
+ },
+ render() {
+  return [
+   this.renderToastMessage()
+   // 必要に応じて他のコンポーネントを追加
+  ];
  }
-});
+};
 
 // OneSDKの準備ができたらアプリをマウント
-OneSDK.ready().then(() => app.mount('#container'));
-
-// キャラデータをAPIから取得
-const PLUGIN_UID = 'OmikenPlugin01'; // プラグイン名
-const botUserId = 'FirstCounter';
-const TEMPLATE_NAME = 'templateMain';
-
-const baseUrl = `http://localhost:11180/api/plugins/${PLUGIN_UID}`;
-const url = `${baseUrl}?mode=data&type=Charas`;
-let Charas: Record<string, CharaType>;
-OneSDK.get(url, {})
- .then((res) => {
-  Charas = res.data.response || {};
- })
- .catch((error) => {
-  console.error(error);
-  Charas = {} as Record<string, CharaType>;
- });
+OneSDK.ready().then(() => {
+ const app = createApp(App);
+ app.mount('#container');
+});

@@ -1,11 +1,11 @@
 {
- "name": "omikenbotmain",
+ "name": "omikenbottoast",
  "version": "1.0.0",
  "description": "main",
  "main": "index.js",
  "scripts": {
-  "dev": "webpack --mode development",
-  "build": "webpack --mode production"
+  "dev:toast": "webpack --mode development --config webpack.config.mjs",
+  "build:toast": "webpack --mode production --config webpack.config.mjs"
  },
  "author": "",
  "license": "ISC"
