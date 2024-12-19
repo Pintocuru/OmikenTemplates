@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap');
+
+/* 
 @import url('./ProcessComment.css');
 
 
@@ -10,9 +12,8 @@
  --bot-comments-width: 550px;
  --bot-comments-offset: 0px;
 }
-
-/* 文字のサイズとフォント */
 body {
- font-size: 36px;
+ font-size: 24px;
  font-family: 'Zen Maru Gothic', serif;
 }
+*/
