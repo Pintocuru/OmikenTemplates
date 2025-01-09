@@ -125,7 +125,7 @@ const url = `${baseUrl}?mode=data&type=Charas`;
 let Charas: Record<string, CharaType>;
 OneSDK.get(url, {})
  .then((res) => {
-  Charas = res.data.response || {};
+  Charas = JSON.parse(res.data.response) || {};
  })
  .catch((error) => {
   console.error(error);

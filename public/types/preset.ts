@@ -1,23 +1,29 @@
 // src/types/preset.ts
-import { BaseType, GameType, OneCommePostType, visitDataType } from './index';
-import { RGBColor } from '@onecomme.com/onesdk/types/Color';
+import { BaseType, OmikenType, OneCommePostType } from './Omiken';
+import { GameType } from './plugin';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 // presetデータ
 export interface PresetType extends BaseType {
- type: 'Omiken' | 'Chara' | 'Script';
+ version: string; // バージョン番号
+ author?: string; // 開発者名
+ url?: string; // サポートページのURL
+ banner?: string; // 紹介用画像
  path?: string; // データのパス(Presetsをルートとする)
- banner?: string;
- mode?: 'overwrite' | 'append'; // 追加方法(上書き/追加)
 }
 
 // ---
 
+// おみくじデータ付きpresetデータ
+export interface PresetOmikenType extends PresetType {
+ item: OmikenType;
+ isOverwrite?: boolean; // 追加方法(true:上書き/false:追加)
+}
+
 // Chara:キャラクターJSONの型定義
-export interface CharaType extends BaseType {
+export interface CharaType extends PresetType {
  nickname?: string; // 読み上げ時の名前の読ませ方
  frameId: string | null; // わんコメの枠
- serviceColor: RGBColor; // 枠情報の色{b:number,g:number,r:number,}
  color: {
   '--lcv-name-color': string; // 名前の色
   '--lcv-text-color': string; // コメントの色
@@ -34,30 +40,28 @@ export interface CharaType extends BaseType {
 
 // ---
 
+export interface ScriptsType extends PresetType {
+ func: ScriptsParamType;
+ scriptParams: ScriptParam[];
+ placeholders: ScriptParam[];
+}
+
 // Script全体の型定義
 export type ScriptsParamType = (
- comment: Comment,
  game: GameType,
- visit: visitDataType,
- param?: string
+ comment?: Comment,
+ params?: { [id: string]: string | number | boolean }
 ) => ScriptsReturnType;
 
 // Scriptの返り値
-export type ScriptsReturnType = {
- gameParam?: ScriptParam[]; // ゲームパラメータ
+export interface ScriptsReturnType {
  postArray?: OneCommePostType[];
- placeholder: Placeholder; // プレースホルダー
- comment: Comment;
+ placeholder: { [id: string]: string | number };
  game: GameType;
- visitData: visitDataType;
-};
+}
 
 // gameのパラメータ設定用
 export interface ScriptParam extends BaseType {
- value: string; // 入る値
+ type?: 'string' | 'number' | 'boolean'; // valueのタイプ(デフォルトはstring)
+ value: string | number | boolean; // 入る値
 }
-
-type Placeholder = {
- message: string; // 全体のメッセージ
- [key: string]: string; // 任意のプレースホルダー（動的キー）
-};

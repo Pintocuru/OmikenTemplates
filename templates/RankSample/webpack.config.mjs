@@ -17,7 +17,7 @@ export default (env, argv) => {
  return {
   ...sharedConfig,
   mode: mode, // モード
-  entry: './script.ts', // エントリーポイント
+  entry: './main.ts', // エントリーポイント
   context: path.resolve(dirname, 'src'), // 対象フォルダ
   output: {
    filename: 'script.js', // 出力ファイル名
@@ -28,7 +28,7 @@ export default (env, argv) => {
   plugins: [
    // Vue用のWebpackプラグイン
    new VueLoaderPlugin(),
-   // HTMLプラグイン
+   // HTML
    new HtmlWebpackPlugin({
     template: './index.ejs',
     filename: 'index.html',

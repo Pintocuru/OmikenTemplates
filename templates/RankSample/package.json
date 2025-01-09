@@ -1,6 +1,6 @@
 {
- "name": "omikenbottemp",
- "version": "1.0.0",
+ "name": "rank-sample",
+ "version": "0.0.1",
  "description": "main",
  "main": "index.js",
  "scripts": {

@@ -1,7 +1,7 @@
 <!-- App.vue -->
 <template>
  <div class="app-container">
-  <ToastMessage :botComments="botComments" />
+  <ToastMessage v-if="gameData" :rankings="gameData.rankings" :current-user-id="gameData.currentUserId" />
  </div>
 </template>
 
@@ -9,24 +9,64 @@
 import { onMounted, ref, watch } from 'vue';
 import { FunkCommentGetting } from './FunkCommentGetting';
 import ToastMessage from './ToastMessage.vue';
-import { CharaType, DataType } from '@/../../public/types';
+import { DataType } from '@/../../public/types';
 import { CommentTemp } from './commentTypes';
+
+type Ranking = {
+ userId: string;
+ wins: number;
+ draws: number;
+ rate: number;
+ lastPlayed: string;
+};
+
+type RankingHistoryEntry = {
+ date: string;
+ rankings: Ranking[];
+};
+
+type GameStats = {
+ wins?: number;
+ totalWins?: number;
+ draws: number;
+ totalDraws: number;
+ userStats: {
+  [userId: string]: {
+   wins?: number;
+   totalWins?: number;
+   draws: number;
+   totalDraws: number;
+   lastPlayed?: string;
+  };
+ };
+};
+
+type GameRankingHistory = {
+ rankingHistory?: RankingHistoryEntry[];
+};
+
+type GameDataType = GameStats &
+ GameRankingHistory & {
+  rankings: Ranking[];
+  currentUserId?: string;
+ };
 
 // 定数
 const PLUGIN_UID = 'OmikenPlugin01'; // 使用しているプラグイン名
 const BOT_USER_ID = 'FirstCounter'; // プラグインのcomment.data.userId
-const POST_PARAM = 'toast' // postが特定のparamのときに表示
+const POST_PARAM = 'honda'; // postが特定のparamのときに表示
+const RULE_ID = 'HondaJanken'; // 取得する Games[rule.id]
 
 // ref
 const botComments = ref<CommentTemp[]>([]);
-const Charas = ref<Record<string, CharaType>>({});
+const gameData = ref<GameDataType | null>(null);
 
 // コンポーザブル
 const { newComments, initOneSDK, fetchDatas } = FunkCommentGetting(PLUGIN_UID, 'diff');
 
 onMounted(async () => {
  document.body.removeAttribute('hidden'); // hiddenの削除
- Charas.value = JSON.parse(await fetchDatas(DataType.Charas)); // Charasの取得
+ getData();
  await initOneSDK(); // 初期化
 });
 
@@ -43,35 +83,23 @@ function commentListener(comments: CommentTemp[]) {
    return isRecent && isBotComment && isParam;
   })
   .forEach((comment) => {
-   const commentPlus = commentCssPlus(comment);
-   if (commentPlus) botComments.value.unshift(commentPlus);
+   getData();
   });
-}
-
-// コメント処理(CSSの付与等)
-function commentCssPlus(comment: CommentTemp): CommentTemp | null {
- const chara = Object.values(Charas.value).find((c) => c.name === comment.data.name);
- // 万が一キャラクターデータがなければnull
- if (!chara) {
-  console.warn(`キャラクターが見つかりません: ${comment.data.name}`);
-  console.warn('comment.data:', Charas);
-  
-  return null;
- }
- comment.css = chara.color; // コメントの色を付与
- return comment;
 }
 
 // newComments の変更を監視
 watch(
  newComments,
  (newVal) => {
-  if (newVal && Array.isArray(newVal)) {
-   commentListener(newVal);
-  }
+  if (newVal && Array.isArray(newVal)) commentListener(newVal);
  },
  { deep: true }
 );
+
+// APIを叩いてデータを取得
+const getData = async () => {
+ gameData.value = JSON.parse(await fetchDatas(DataType.Games))[RULE_ID];
+};
 </script>
 
 <style scoped>

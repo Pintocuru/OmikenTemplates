@@ -3,7 +3,12 @@
   <TransitionGroup class="comments" name="comment" tag="div">
    <div v-for="comment in commentDisplays" :key="comment.data.id" class="comment" :style="comment.css">
     <div class="comment-text">{{ comment.data.comment }}</div>
-    <img v-if="comment.data.profileImage" :src="comment.data.profileImage" class="avatar" :alt="comment.name" />
+    <img
+     v-show="comment.data.profileImage"
+     :src="comment.data.profileImage"
+     class="avatar"
+     :alt="comment.data.name"
+    />
    </div>
   </TransitionGroup>
  </div>
@@ -42,7 +47,7 @@ watch(
  (newComments) => {
   newComments.forEach(addComment);
  },
- {deep: true }
+ { deep: true }
 );
 
 // タイマーをクリーンアップ
