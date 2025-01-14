@@ -1,55 +1,36 @@
 <template>
- <v-card class="mx-auto" max-width="800">
-  <v-card-title class="text-h5 font-weight-bold"> ランキング </v-card-title>
-
-  <v-card-text>
-   <v-table density="comfortable">
-    <thead>
-     <tr>
-      <th class="text-left">順位</th>
-      <th class="text-left">ユーザー</th>
-      <th class="text-right">勝利数</th>
-      <th class="text-right">対戦数</th>
-      <th class="text-right">勝率</th>
-      <th class="text-right">最終対戦</th>
-     </tr>
-    </thead>
-    <tbody>
-     <tr
-      v-for="(ranking, index) in rankings"
-      :key="ranking.userId"
-      :class="getRowColor(ranking.userId)"
-      @click="handleUserClick(ranking.userId)"
-      style="cursor: pointer"
-     >
-      <td>{{ index + 1 }}</td>
-      <td>{{ ranking.userId }}</td>
-      <td class="text-right">{{ ranking.wins }}</td>
-      <td class="text-right">{{ ranking.draws }}</td>
-      <td class="text-right">{{ formatRate(ranking.rate) }}%</td>
-      <td class="text-right">{{ ranking.lastPlayed }}</td>
-     </tr>
-    </tbody>
-   </v-table>
-  </v-card-text>
- </v-card>
+ <div class="p-2 bg-blue-900 rounded-lg shadow-lg max-w-md">
+  <h2 class="text-2xl font-semibold text-center text-yellow-400">👊 じゃんけん 🖐️</h2>
+  <table class="min-w-full mt-4 table-auto text-white">
+   <thead>
+    <tr class="border-b border-gray-600">
+     <th class="py-1">順位</th>
+     <th class="">ユーザー名</th>
+     <th class="">勝利数</th>
+     <th class="">挑戦数</th>
+     <th class="">勝率</th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr
+     v-for="(ranking, index) in rankings"
+     :key="ranking.userId"
+     :class="{ 'bg-yellow-200': ranking.userId === currentUserId }"
+     class="hover:bg-gray-600"
+    >
+     <td class="px-2 py-2 text-center">{{ index + 1 }}</td>
+     <td class="py-2 text-center">{{ ranking.name }}</td>
+     <td class="py-2 text-center">{{ ranking.wins }}</td>
+     <td class="py-2 text-center">{{ ranking.draws }}</td>
+     <td class="px-2 py-2 text-center">{{ formatRate(ranking.rate) }}%</td>
+    </tr>
+   </tbody>
+  </table>
+ </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-
-type Ranking = {
- userId: string;
- wins: number;
- draws: number;
- rate: number;
- lastPlayed: string;
-};
-
-interface Props {
- rankings: Ranking[];
- currentUserId?: string;
-}
+import { Props } from './types';
 
 const props = withDefaults(defineProps<Props>(), {
  rankings: () => [],
@@ -58,29 +39,19 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(['userClick']);
 
-// ランキングの各行の背景色を計算
-const getRowColor = computed(() => (userId: string) => {
- if (userId === props.currentUserId) return 'bg-primary-lighten-4';
- return '';
-});
-
-// 勝率の表示形式を整える
 const formatRate = (rate: number): string => {
  return rate.toFixed(1);
 };
 
-// ユーザークリック時の処理
 const handleUserClick = (userId: string) => {
  emit('userClick', userId);
 };
 </script>
 
-<style scoped>
-.v-table {
- cursor: pointer;
-}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-.v-table tr:hover {
- background-color: rgba(var(--v-theme-primary), 0.1);
+body {
+ font-family: 'Roboto', sans-serif;
 }
 </style>

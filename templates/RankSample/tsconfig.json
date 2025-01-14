@@ -3,11 +3,11 @@
  "compilerOptions": {
   "baseUrl": ".", // モジュールのベースURL
   "outDir": "./dist", // 出力先ディレクトリ
- },
- "paths": {
-  "@type/*": [
-   "public/types/*"
-  ],
+  "paths": {
+   "@type/*": [
+    "../../public/types/*"
+   ]
+  }
  },
  // コンパイル対象ファイル
  "include": [

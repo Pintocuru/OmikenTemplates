@@ -1,19 +1,9 @@
 // src/composables/FunkCommentGetting.ts
 import { ref } from 'vue';
+import { DataType } from '@type/index';
+import { AxiosResponse, CommentTemp } from './types';
 import OneSDK from '@onecomme.com/onesdk';
-import { DataType } from '@/../../public/types';
-import { CommentTemp } from './commentTypes';
 import { PluginResponse } from '@onecomme.com/onesdk/types/Plugin';
-
-// AxiosResponseの代わりに使用する型
-interface AxiosResponse<T = any> {
- data: T;
- status: number;
- statusText: string;
- headers: Record<string, string>;
- config: object;
- request?: any;
-}
 
 export function FunkCommentGetting(pluginUid: string, mode?: 'diff' | 'all') {
  // 購読したコメント

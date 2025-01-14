@@ -10,6 +10,7 @@ export interface PresetType extends BaseType {
  url?: string; // サポートページのURL
  banner?: string; // 紹介用画像
  path?: string; // データのパス(Presetsをルートとする)
+ order?: number; // 任意の順序を指定(小さいほど上位)
 }
 
 // ---
@@ -62,6 +63,8 @@ export interface ScriptsReturnType {
 
 // gameのパラメータ設定用
 export interface ScriptParam extends BaseType {
+ // TODO isEverは、ちゃんとrulesでScriptを設定できるまでの暫定機能
+ isEver?: boolean; // 一度設定すると、JSONをいじらない限り同じ値になる
  type?: 'string' | 'number' | 'boolean'; // valueのタイプ(デフォルトはstring)
  value: string | number | boolean; // 入る値
 }

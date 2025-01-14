@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8" />
+  <meta name="referrer" content="no-referrer" />
+  <link rel="stylesheet" href="<%= cssDir %>/OmikenBotMain.css" />
+ </head>
+
+ <body hidden>
+  <div id="container" class="container">
+   <!-- BOTコメント -->
+   <transition-group class="comments" name="comment" tag="div">
+    <div v-for="comment in botComments" :key="comment.data.id" class="comment" :style="comment.css">
+     <div class="comment-block">
+      <div class="name">{{ comment.data.name }}</div>
+      <div class="comment-text">{{ comment.data.comment }}</div>
+     </div>
+     <div class="avatar">
+      <img alt="" v-if="comment.data.profileImage" :src="comment.data.profileImage" />
+     </div>
+    </div>
+   </transition-group>
+  </div>
+
+  <script src="<%= vuePath %>"></script>
+  <script src="<%= onesdkPath %>"></script>
+ </body>
+</html>

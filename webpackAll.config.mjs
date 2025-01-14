@@ -1,7 +1,17 @@
-// 共通
+// webpackAll.config.mjs
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(__filename);
+
 export default {
  resolve: {
-  extensions: ['.ts', '.js', '.vue'] // 省略可能な拡張子
+  alias: {
+   '@type': path.resolve(dirname, 'public/types'), // tsconfig.json の paths に対応
+   '@composables': path.resolve(dirname, 'templates/common/composables')
+  },
+  extensions: ['.js', '.ts', '.vue'] // 省略可能な拡張子
  },
  module: {
   rules: [

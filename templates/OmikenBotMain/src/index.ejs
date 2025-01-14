@@ -3,25 +3,23 @@
  <head>
   <meta charset="UTF-8" />
   <meta name="referrer" content="no-referrer" />
-  <link rel="stylesheet" href="<%= cssDir %>/OmikenBotMain.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="<%= cssPath %>" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+  <!-- Tailwind CSS の設定で Zen Maru Gothic を追加 -->
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap');
+
+   .font-zen-maru {
+    font-family: 'Zen Maru Gothic', sans-serif;
+   }
+  </style>
  </head>
-
  <body hidden>
-  <div id="container" class="container">
-   <!-- BOTコメント -->
-   <transition-group class="comments" name="comment" tag="div">
-    <div v-for="comment in botComments" :key="comment.data.id" class="comment" :style="comment.css">
-     <div class="comment-block">
-      <div class="name">{{ comment.data.name }}</div>
-      <div class="comment-text">{{ comment.data.comment }}</div>
-     </div>
-     <div class="avatar">
-      <img alt="" v-if="comment.data.profileImage" :src="comment.data.profileImage" />
-     </div>
-    </div>
-   </transition-group>
-  </div>
-
+  <div id="container" class="container"></div>
   <script src="<%= vuePath %>"></script>
   <script src="<%= onesdkPath %>"></script>
  </body>

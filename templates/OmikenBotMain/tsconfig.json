@@ -3,14 +3,19 @@
  "compilerOptions": {
   "baseUrl": ".", // モジュールのベースURL
   "outDir": "./dist", // 出力先ディレクトリ
+  "paths": {
+   "@type/*": [
+    "../../public/types/*"
+   ],
+   "@composables/*": [
+    "../../templates/common/composables/*"
+   ],
+  }
  },
- "typeRoots": [
-  "../../node_modules/@types" // 親プロジェクトの型定義も参照
- ],
  // コンパイル対象ファイル
  "include": [
   "src/**/*.ts",
   "src/**/*.d.ts",
-  "src/**/*.vue",
+  "src/**/*.vue"
  ],
 }

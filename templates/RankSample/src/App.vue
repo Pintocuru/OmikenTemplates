@@ -7,49 +7,10 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import { DataType } from '@type/index';
+import { CommentTemp, GameDataType } from './types';
 import { FunkCommentGetting } from './FunkCommentGetting';
 import ToastMessage from './ToastMessage.vue';
-import { DataType } from '@/../../public/types';
-import { CommentTemp } from './commentTypes';
-
-type Ranking = {
- userId: string;
- wins: number;
- draws: number;
- rate: number;
- lastPlayed: string;
-};
-
-type RankingHistoryEntry = {
- date: string;
- rankings: Ranking[];
-};
-
-type GameStats = {
- wins?: number;
- totalWins?: number;
- draws: number;
- totalDraws: number;
- userStats: {
-  [userId: string]: {
-   wins?: number;
-   totalWins?: number;
-   draws: number;
-   totalDraws: number;
-   lastPlayed?: string;
-  };
- };
-};
-
-type GameRankingHistory = {
- rankingHistory?: RankingHistoryEntry[];
-};
-
-type GameDataType = GameStats &
- GameRankingHistory & {
-  rankings: Ranking[];
-  currentUserId?: string;
- };
 
 // 定数
 const PLUGIN_UID = 'OmikenPlugin01'; // 使用しているプラグイン名
@@ -58,7 +19,6 @@ const POST_PARAM = 'honda'; // postが特定のparamのときに表示
 const RULE_ID = 'HondaJanken'; // 取得する Games[rule.id]
 
 // ref
-const botComments = ref<CommentTemp[]>([]);
 const gameData = ref<GameDataType | null>(null);
 
 // コンポーザブル
@@ -99,6 +59,7 @@ watch(
 // APIを叩いてデータを取得
 const getData = async () => {
  gameData.value = JSON.parse(await fetchDatas(DataType.Games))[RULE_ID];
+ console.log(gameData.value?.rankings);
 };
 </script>
 
