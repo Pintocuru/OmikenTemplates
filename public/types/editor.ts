@@ -1,6 +1,6 @@
 // src/types/editor.ts
 import { OmikenTypeMap, OmikenType, TypesType } from './Omiken';
-import { CharaType, PresetOmikenType,  ScriptsType } from './preset';
+import { CharaType, PresetOmikenType, ScriptsType } from './preset';
 
 // エディター用型定義
 
@@ -19,7 +19,7 @@ export type CategorySub = {
  rules: never;
  omikujis: never;
  places: never;
- presets: 'Omiken' | 'Chara' | 'Script';
+ presets: 'Presets' | 'Charas' | 'Scripts';
 };
 export type CategoryActive<T extends CategoryMain = CategoryMain> = {
  main: T; // 現在選択されているメインカテゴリー
@@ -49,12 +49,12 @@ export type OmikenEntry<T extends ListCategory> = {
  reTypes?: T extends 'types' ? Record<TypesType, string[]> : never;
 };
 
-type AddKeysCategory = {
+export type AddKeysCategory = {
  types: never;
- rules: PartialListItem<'rules'> & { types?: TypesType };
+ rules: PartialListItem<'rules'> & { optionId?: TypesType };
  omikujis:
-  | (PartialListItem<'omikujis'> & { rulesId?: string })
-  | (PartialListItem<'omikujis'> & { rulesId?: string })[];
+  | (PartialListItem<'omikujis'> & { optionId?: string })
+  | (PartialListItem<'omikujis'> & { optionId?: string })[];
  places: PartialListItem<'places'> | PartialListItem<'places'>[];
 };
 

@@ -6,8 +6,7 @@ import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 // コメントの追加型定義
 export type CommentTemp = Comment & {
- css?: CharaType['color']; // コメントの色
- index?: number; // 並び順
+ chara?: CharaType; // キャラクターデータ
 };
 
 // プラグインからデータ取得
@@ -93,12 +92,13 @@ export function CommentGet(config: configType) {
 
  // コメントにCharasのデータを付与する
  const charaComment = (comment: CommentTemp): CommentTemp => {
+  // Charasのnameとcomment.data.nameが同一なら適用
   const chara = Object.values(Charas.value).find((c) => c.name === comment.data.name);
   if (!chara) {
    console.warn(`キャラクターが見つかりません: ${comment.data.name}`);
    return comment;
   }
-  return { ...comment, css: chara.color };
+  return { ...comment, chara };
  };
 
  // プラグインからデータを読み込み
