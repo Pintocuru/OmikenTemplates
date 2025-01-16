@@ -23,7 +23,7 @@
      class="text-4xl font-zen-maru font-bold"
      :style="{ color: getStyleValue(comment.chara?.color, '--lcv-name-color') }"
     >
-     {{ comment.data.name }}
+     {{ comment.chara?.displayName }}
     </div>
     <!-- message -->
     <div

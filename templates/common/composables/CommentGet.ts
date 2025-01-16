@@ -1,6 +1,14 @@
 // common/composables/CommentGet.ts
 import { ref, watch } from 'vue';
-import { CharaType, DataType, GameType, OmikenType, ScriptsType, VisitType } from '../../../public/types/index';
+import {
+ CharaType,
+ DataType,
+ GameType,
+ OmikenType,
+ ScriptsType,
+ SendCommentParamsType,
+ VisitType
+} from '../../../public/types/index';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
@@ -67,8 +75,12 @@ export function CommentGet(config: configType) {
     if (!Array.isArray(comments)) return;
 
     const validComments = comments
-     .filter(isValidComment)
-     .map(charaComment)
+     .map((comment) => ({
+      comment,
+      params: getIdParams(comment.data.id)
+     }))
+     .filter(({ comment, params }) => params && isValidComment(comment, params))
+     .map(({ comment, params }) => charaComment(comment, params as SendCommentParamsType))
      .filter((comment): comment is CommentTemp => comment !== null);
 
     botComments.value = [...validComments, ...botComments.value];
@@ -77,23 +89,41 @@ export function CommentGet(config: configType) {
   );
  };
 
+ // comment.data.id にあるパラメータをObjectにする
+ const getIdParams = (str: string): SendCommentParamsType | false => {
+  if (/^[0-9]+[a-zA-Z0-9]*$/.test(str)) return false;
+
+  const params = new URLSearchParams(str.replace(/,/g, '&'));
+  const result: SendCommentParamsType = {
+   id: params.get('id') || '',
+   charaId: params.get('charaId') || ''
+  };
+
+  // パラメータを動的に処理
+  params.forEach((value, key) => {
+   result[key] = decodeURIComponent(value);
+  });
+
+  return result.id ? result : false;
+ };
+
  // botのコメントかどうかを判定
- const isValidComment = (comment: CommentTemp): boolean => {
+ const isValidComment = (comment: CommentTemp, params: SendCommentParamsType): boolean => {
   // 5秒以上経過したコメントは無視
   const isRecent = Date.now() < new Date(comment.data.timestamp).getTime() + COMMENT_EXPIRY_MS;
   // プラグインのコメントのみ適用
   const isBotComment = comment.data.userId === config.BOT_USER_ID;
   // 引数が設定と当てはまるか
-  const param = comment.data.liveId; // liveIdをparamとして使用
+  const param = params ? params?.param || '' : '';
   const isValidParam =
    config.POST_PARAM.length > 0 ? config.POST_PARAM.includes(param) : !config.NON_POST_PARAM.includes(param);
   return isRecent && isBotComment && isValidParam;
  };
 
  // コメントにCharasのデータを付与する
- const charaComment = (comment: CommentTemp): CommentTemp => {
-  // Charasのnameとcomment.data.nameが同一なら適用
-  const chara = Object.values(Charas.value).find((c) => c.name === comment.data.name);
+ const charaComment = (comment: CommentTemp, params: SendCommentParamsType): CommentTemp => {
+  // Charasのidとparams.charaIdが同一なら適用
+  const chara = Object.values(Charas.value).find((c) => c.id === params.charaId);
   if (!chara) {
    console.warn(`キャラクターが見つかりません: ${comment.data.name}`);
    return comment;
