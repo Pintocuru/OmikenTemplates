@@ -1,4 +1,4 @@
-// common/composables/CommentGet.ts
+// common/CommentGet.ts
 import { ref, watch } from 'vue';
 import {
  CharaType,
@@ -8,7 +8,7 @@ import {
  ScriptsType,
  SendCommentParamsType,
  VisitType
-} from '../../../public/types/index';
+} from '../../public/types/index';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
@@ -27,27 +27,30 @@ type DataTypeMap = {
  [DataType.Games]: Record<string, GameType>;
 };
 
-export type configType = {
- PLUGIN_UID: 'OmikenPlugin01'; // 文字列リテラル型
- BOT_USER_ID: 'FirstCounter'; // 文字列リテラル型
- POST_PARAM: string[]; // 文字列の配列
- NON_POST_PARAM: string[]; // 文字列の配列
- IS_DIFF_MODE: boolean; // 真偽値
+export type ConfigType = {
+ PLUGIN_UID: string; // 使用しているプラグイン名
+ IS_DIFF_MODE: boolean; // 差分モードにするか(true:'diff',false:'all')
+ ALLOWED_USER_IDS: string[]; // 通すユーザーIDリスト
+ DISALLOWED_USER_IDS: string[]; // 通さないユーザーIDリスト
+ FILTERS: FilterType[];
+};
+
+type FilterType = {
+ id: string;
+ POST_PARAM: string[];
+ NON_POST_PARAM: string[];
 };
 
 // グローバル変数の型定義
 declare global {
  interface Window {
-  CONFIG?: configType;
+  CONFIG?: ConfigType;
  }
 }
 
-export function CommentGet(config: configType) {
- const COMMENT_EXPIRY_MS = 5000;
- // 購読したコメント
+export function CommentGet(config: ConfigType) {
  const newComments = ref<CommentTemp[]>([]);
- const botComments = ref<CommentTemp[]>([]);
- const Charas = ref<Record<string, CharaType>>({});
+ const botCommentsMap = ref<Record<string, CommentTemp[]>>({});
 
  // 初期化・コメントの購読
  const initOneSDK = async () => {
@@ -74,23 +77,28 @@ export function CommentGet(config: configType) {
   const charasData = await fetchData(DataType.Charas);
   if (!charasData) throw new Error('Charasデータの取得に失敗しました');
 
-  Charas.value = charasData;
+  const Charas = ref<Record<string, CharaType>>(charasData);
 
   watch(
    newComments,
    (comments) => {
     if (!Array.isArray(comments)) return;
 
-    const validComments = comments
-     .map((comment) => ({
-      comment,
-      params: getIdParams(comment.data.id)
-     }))
-     .filter(({ comment, params }) => params && isValidComment(comment, params))
-     .map(({ comment, params }) => charaComment(comment, params as SendCommentParamsType))
-     .filter((comment): comment is CommentTemp => comment !== null);
+    config.FILTERS.forEach((filter) => {
+     const validComments = comments
+      .map((comment) => ({
+       comment,
+       params: getIdParams(comment.data.id)
+      }))
+      .filter(({ comment, params }) => params && isValidComment(comment, params, filter))
+      .map(({ comment, params }) => {
+       if (params && 'charaId' in params) return charaComment(comment, params.charaId, Charas.value);
+       return null;
+      })
+      .filter((comment): comment is CommentTemp => comment !== null);
 
-    botComments.value = [...validComments, ...botComments.value];
+     botCommentsMap.value[filter.id] = [...(botCommentsMap.value[filter.id] || []), ...validComments];
+    });
    },
    { deep: true }
   );
@@ -106,7 +114,6 @@ export function CommentGet(config: configType) {
    charaId: params.get('charaId') || ''
   };
 
-  // パラメータを動的に処理
   params.forEach((value, key) => {
    result[key] = decodeURIComponent(value);
   });
@@ -114,41 +121,34 @@ export function CommentGet(config: configType) {
   return result.id ? result : false;
  };
 
- // botのコメントかどうかを判定
- const isValidComment = (comment: CommentTemp, params: SendCommentParamsType): boolean => {
-  // 5秒以上経過したコメントは無視
-  const isRecent = Date.now() < new Date(comment.data.timestamp).getTime() + COMMENT_EXPIRY_MS;
-  // プラグインのコメントのみ適用
-  const isBotComment = comment.data.userId === config.BOT_USER_ID;
-  // 引数が設定と当てはまるか
-  const param = params ? params?.param || '' : '';
+ // 有効コメント判定
+ const isValidComment = (comment: CommentTemp, params: SendCommentParamsType, filter: FilterType): boolean => {
+  // コメントのユーザーIDが許可リストか拒否リストにあるかをチェック
+  const userId = comment.data.userId;
+  const isValidUser =
+   (config.ALLOWED_USER_IDS.length === 0 || config.ALLOWED_USER_IDS.includes(userId)) &&
+   !config.DISALLOWED_USER_IDS.includes(userId);
+
+  // paramがPOST_PARAMに含まれているか、NON_POST_PARAMに含まれていないかをチェック
+  const param = params ? params.param || '' : '';
   const isValidParam =
-   config.POST_PARAM.length > 0 ? config.POST_PARAM.includes(param) : !config.NON_POST_PARAM.includes(param);
-  return isRecent && isBotComment && isValidParam;
+   filter.POST_PARAM.length > 0 ? filter.POST_PARAM.includes(param) : !filter.NON_POST_PARAM.includes(param);
+
+  return isValidUser && isValidParam;
  };
 
  // コメントにCharasのデータを付与する
- const charaComment = (comment: CommentTemp, params: SendCommentParamsType): CommentTemp => {
-  // Charasのidとparams.charaIdが同一なら適用
-  const chara = Object.values(Charas.value).find((c) => c.id === params.charaId);
-  if (!chara) {
-   console.warn(`キャラクターが見つかりません: ${comment.data.name}`);
-   return comment;
-  }
-  return { ...comment, chara };
+ const charaComment = (comment: CommentTemp, charaId: string, charas: Record<string, CharaType>): CommentTemp => {
+  const chara = Object.values(charas).find((c) => c.id === charaId);
+  return chara ? { ...comment, chara } : comment;
  };
 
  // プラグインからデータを読み込み
- const fetchData = async <T extends DataType>(type: T): Promise<DataTypeMap[T] | null> => {
+ const fetchData = async <T extends DataType>(type: T) => {
   try {
    const url = `http://localhost:11180/api/plugins/${config.PLUGIN_UID}?mode=data&type=${type}`;
    const response = await OneSDK.get(url, {});
-
-   if (response.status !== 200) {
-    throw new Error(`Unexpected status code: ${response.status}`);
-   }
-
-   return JSON.parse(response.data.response);
+   return response.status === 200 ? JSON.parse(response.data.response) : null;
   } catch (error) {
    console.error(`${type}データの取得に失敗:`, error);
    return null;
@@ -159,7 +159,7 @@ export function CommentGet(config: configType) {
   initOneSDK,
   newComments,
   getBotComments,
-  botComments,
+  botCommentsMap,
   fetchData
  };
 }

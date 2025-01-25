@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from 'vue';
-import { CommentTemp } from '@composables/CommentGet';
+import { CommentTemp } from '@common/CommentGet';
 
 // props
 const props = defineProps<{ botComments: CommentTemp[] }>();

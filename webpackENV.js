@@ -6,7 +6,8 @@ export const ENV = {
   cssPath: '../src/css/app.css',
   vuePath: 'https://unpkg.com/vue@3/dist/vue.global.js',
   onesdkPath: '../../../public/onesdk.js',
-  scriptPath: './script.js'
+  scriptPath: './script.js',
+  configPath: '../src/config.js'
  },
  // production:本番環境設定
  production: {
@@ -14,6 +15,7 @@ export const ENV = {
   cssPath: './css/app.css',
   vuePath: '../__origin/js/vue3.min.js',
   onesdkPath: '../__origin/js/onesdk.js',
-  scriptPath: './script.js'
+  scriptPath: './script.js',
+  configPath: './config.js'
  }
 };

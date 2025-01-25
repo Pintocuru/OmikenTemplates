@@ -57,7 +57,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from 'vue';
-import { CommentTemp } from '@composables/CommentGet';
+import { CommentTemp } from '@common/CommentGet';
 import { CharaType } from '@type/index';
 
 const props = defineProps<{ botComments: CommentTemp[] }>();
@@ -138,3 +138,11 @@ const clearAllTimers = () => {
 
 onUnmounted(clearAllTimers);
 </script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap');
+
+* {
+ font-family: 'Zen Maru Gothic', sans-serif;
+}
+</style>

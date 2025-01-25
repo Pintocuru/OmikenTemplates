@@ -9,7 +9,7 @@ export default {
  resolve: {
   alias: {
    '@type': path.resolve(dirname, 'public/types'), // tsconfig.json の paths に対応
-   '@composables': path.resolve(dirname, 'templates/common/composables')
+   '@common': path.resolve(dirname, 'templates/common')
   },
   extensions: ['.js', '.ts', '.vue'] // 省略可能な拡張子
  },

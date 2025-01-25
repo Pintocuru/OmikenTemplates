@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { CommentGet, configType } from '@composables/CommentGet';
+import { CommentGet, configType } from '@common/CommentGet';
 import ToastMessage from './ToastMessage.vue';
 
 // 定数

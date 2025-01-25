@@ -1,12 +1,13 @@
 {
  "name": "omiken-bot-main",
  "version": "0.0.2",
- "description": "main",
- "main": "index.js",
+ "description": "おみくじBOTプラグインのメインジェネレーター",
  "scripts": {
   "dev": "webpack --mode development --config webpack.config.mjs",
   "build": "webpack --mode production --config webpack.config.mjs"
  },
- "author": "",
- "license": "ISC"
+ "author": "Pintocuru",
+ "license": "Apache-2.0",
+ "main": "src/main.js",
+ "type": "module"
 }

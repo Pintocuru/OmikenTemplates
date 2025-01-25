@@ -7,8 +7,8 @@
    "@type/*": [
     "../../public/types/*"
    ],
-   "@composables/*": [
-    "../../templates/common/composables/*"
+   "@common/*": [
+    "../../templates/common/*"
    ],
   }
  },

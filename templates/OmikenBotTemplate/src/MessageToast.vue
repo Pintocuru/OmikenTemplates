@@ -1,7 +1,7 @@
 <template>
  <div id="container">
   <TransitionGroup class="comments" name="comment" tag="div">
-   <div v-for="comment in commentDisplays" :key="comment.data.id" class="comment" :style="comment.css">
+   <div v-for="comment in commentDisplays" :key="comment.data.id" class="comment" :style="comment.chara?.color">
     <div class="comment-text">{{ comment.data.comment }}</div>
     <img v-if="comment.data.profileImage" :src="comment.data.profileImage" class="avatar" :alt="comment.name" />
    </div>
@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from 'vue';
-import { CommentTemp } from './commentTypes';
+import { CommentTemp } from '@common/CommentGet';
 
 // props
 const props = defineProps<{ botComments: CommentTemp[] }>();
@@ -24,7 +24,6 @@ const commentCompIds = new Set<string>();
 // コメントを追加し、15秒後に自動削除
 const addComment = (comment: CommentTemp) => {
  if (commentCompIds.has(comment.data.id)) return;
-
  commentDisplays.value.push(comment);
  commentCompIds.add(comment.data.id);
 
@@ -42,7 +41,7 @@ watch(
  (newComments) => {
   newComments.forEach(addComment);
  },
- {deep: true }
+ { deep: true }
 );
 
 // タイマーをクリーンアップ
@@ -56,6 +55,12 @@ onUnmounted(clearAllTimers);
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap');
+
+:root {
+ --lcv-name-color: #000000; /* 名前の色 */
+ --lcv-text-color: #333333; /* テキストの色 */
+ --lcv-background-color: #ffffff; /* 背景色 */
+}
 
 #container {
  position: fixed;
