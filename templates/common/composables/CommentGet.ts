@@ -35,6 +35,13 @@ export type configType = {
  IS_DIFF_MODE: boolean; // 真偽値
 };
 
+// グローバル変数の型定義
+declare global {
+ interface Window {
+  CONFIG?: configType;
+ }
+}
+
 export function CommentGet(config: configType) {
  const COMMENT_EXPIRY_MS = 5000;
  // 購読したコメント
