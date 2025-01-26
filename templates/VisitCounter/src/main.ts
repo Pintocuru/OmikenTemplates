@@ -14,7 +14,7 @@ async function initApp() {
    console.error('エラー情報:', info);
   };
   // OneSDKの準備ができたらアプリをマウント
-  OneSDK.ready().then(() => app.mount('#container'));
+  OneSDK.ready().then(() => app.mount('#App'));
  } catch (error) {
   console.error('アプリケーションの初期化に失敗:', error);
  }

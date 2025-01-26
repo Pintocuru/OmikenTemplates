@@ -1,0 +1,7 @@
+/* light-green Color */
+:root {
+ --primary-color: #689F38; /* darken-2 */
+ --secondary-color: #689F38;/* accent-3 */
+ --background-light: #F1F8E9;/* lighten-5 */
+ --background-medium: #F1F8E9;/* lighten-4 */
+}

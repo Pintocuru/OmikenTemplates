@@ -1,0 +1,7 @@
+/* Blue Color */
+:root {
+  --primary-color: #F57F17; /* Blue 900 - 濃い青 */
+  --secondary-color: #F57F17; /* Yellow 900 - 濃い黄色 */
+  --background-light: #FFFDE7; /* Yellow 50 - 淡い黄色 */
+  --background-medium: #FFFDE7; /* Blue 50 - 淡い青 */
+}

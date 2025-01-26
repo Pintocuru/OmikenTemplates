@@ -1,3 +1,4 @@
+// webpack.config.mjs
 import path from 'path';
 import { VueLoaderPlugin } from 'vue-loader';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
