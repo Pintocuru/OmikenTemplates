@@ -120,7 +120,7 @@ export interface SendCommentType {
 // わんコメSend Commentでidを利用したパラメータ受け渡しに使う型定義
 export interface SendCommentParamsType {
  id: string; // 一意のID
- charaId: string; // キャラID
+ charaId?: string; // キャラID
  param?: string; // ジェネレーターに渡す引数(omikuji.generatorParam)
  isSilent?: string; // BOTの読み上げを行わない(omikuji.isSilent)
  [key: string]: string | undefined;

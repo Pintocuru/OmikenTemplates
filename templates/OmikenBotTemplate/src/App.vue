@@ -6,7 +6,8 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { CommentGet, ConfigType } from '@common/CommentGet';
+import { CommentGet } from '@common/CommentGet';
+import { ConfigType } from '@common/commonTypes';
 import MessageMain from './MessageMain.vue';
 import MessageToast from './MessageToast.vue';
 
@@ -14,6 +15,7 @@ import MessageToast from './MessageToast.vue';
 const config: ConfigType = {
  PLUGIN_UID: window.CONFIG?.PLUGIN_UID || 'OmikenPlugin01', // 使用しているプラグイン名
  IS_DIFF_MODE: true, // 差分モードにするか(true:'diff',false:'all')
+ BOT_USER_ID: window.CONFIG?.BOT_USER_ID || null, // プラグインのuserId
  ALLOWED_USER_IDS: window.CONFIG?.ALLOWED_USER_IDS || [], // 通すuserIDリスト
  DISALLOWED_USER_IDS: window.CONFIG?.DISALLOWED_USER_IDS || [], // 通さないuserIDリスト
  FILTERS: [
@@ -39,6 +41,6 @@ const { initOneSDK, newComments, getBotComments, botCommentsMap } = CommentGet(c
 onMounted(async () => {
  document.body.removeAttribute('hidden'); // hiddenの削除
  await initOneSDK(); // コメント初期化
- await getBotComments(); // Botコメントを抽出
+ getBotComments(config.FILTERS); // Botコメントを抽出
 });
 </script>
