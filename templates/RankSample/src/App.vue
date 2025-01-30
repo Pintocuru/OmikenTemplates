@@ -8,9 +8,17 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import { DataType } from '@type/index';
+import { ConfigType } from '@common/commonTypes';
 import { CommentTemp, GameDataType } from './types';
 import { FunkCommentGetting } from './FunkCommentGetting';
 import ToastMessage from './ToastMessage.vue';
+
+// グローバル変数の型定義
+declare global {
+ interface Window {
+  CONFIG?: ConfigType;
+ }
+}
 
 // 定数
 const PLUGIN_UID = 'OmikenPlugin01'; // 使用しているプラグイン名

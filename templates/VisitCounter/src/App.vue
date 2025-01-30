@@ -1,13 +1,12 @@
 <!-- src/App.vue -->
 <template>
- <BasicNew :newComments="newComments || []" />
+ <VisitCounter :newComments="newComments || []" />
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ConfigType } from '@common/commonTypes';
-import BasicNew from './BasicNew.vue';
+import VisitCounter from './VisitCounter.vue';
 
 // 定数
 const config: ConfigType = {

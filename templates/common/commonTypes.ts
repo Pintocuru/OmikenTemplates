@@ -1,5 +1,5 @@
 // common/commonTypes.ts
-import { CharaType } from '@/public/types';
+import { CharaType } from '../../public/types';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 // コメントの追加型定義
@@ -21,10 +21,3 @@ export type FilterType = {
  POST_PARAM: string[];
  NON_POST_PARAM: string[];
 };
-
-// グローバル変数の型定義
-declare global {
- interface Window {
-  CONFIG?: ConfigType;
- }
-}

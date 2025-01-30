@@ -123,8 +123,6 @@ body {
   text-align: center;
 }
 
-
-
 /* 情報コンテナのスタイル */
 .info-container {
   position: relative;
@@ -179,9 +177,6 @@ body {
   text-overflow: ellipsis;
 }
 
-
-
-
 /* ユーザーコンテナのスタイル */
 .user-container {
   flex: 1;
@@ -214,15 +209,15 @@ body {
 /* ユーザーリストアイテムのスタイル */
 .user-list-item {
   padding: 2px 0;
-    font-size: 0.8rem;
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    overflow: hidden;
-    flex: 1 1 calc(100% - 10px);
-    max-width: calc(100% - 5px);
-    min-width: calc(100% - 5px);
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  flex: 1 1 calc(100% - 10px);
+  max-width: calc(100% - 5px);
+  min-width: calc(100% - 5px);
 }
 
 .user-list-item span:first-child {
@@ -256,7 +251,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 
 /* 横幅が360px以上なら、リストを2列にする */
 @media screen and (min-width: 360px) {
@@ -339,13 +333,11 @@ body {
   }
 }
 
-
 /* Animate.css */
 .animate__animated.animate__pulse {
   animation-duration: 10s !important;
   animation-iteration-count: infinite !important;
 }
-
 
 /* 星、円:回転アニメーション */
 @keyframes rotate {

@@ -9,6 +9,13 @@ import { CommentGet } from '@common/CommentGet';
 import { ConfigType } from '@common/commonTypes';
 import BasicNew from './BasicNew.vue';
 
+// グローバル変数の型定義
+declare global {
+ interface Window {
+  CONFIG?: ConfigType;
+ }
+}
+
 // 定数
 const config: ConfigType = {
  PLUGIN_UID: null, // 使用しているプラグイン名

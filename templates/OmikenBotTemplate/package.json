@@ -1,5 +1,5 @@
 {
- "name": "omiken-bot-main",
+ "name": "omiken-bot-template",
  "version": "0.0.2",
  "description": "おみくじBOTプラグインのメインジェネレーター",
  "scripts": {

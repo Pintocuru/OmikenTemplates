@@ -18,11 +18,15 @@
  ],
  "dependencies": {
   "@onecomme.com/onesdk": "^7.0.0",
+  "animejs": "^3.2.2",
   "vue": "^3.5.13"
  },
  "devDependencies": {
+  "@types/animejs": "^3.1.13",
+  "@types/webpack-env": "^1.18.8",
   "@typescript-eslint/eslint-plugin": "^8.18.0",
   "@typescript-eslint/parser": "^8.18.0",
+  "@vue/compiler-sfc": "^3.5.13",
   "@vue/eslint-config-typescript": "^14.1.4",
   "autoprefixer": "^10.4.20",
   "css-loader": "^7.1.2",
@@ -32,14 +36,19 @@
   "html-webpack-plugin": "^5.6.3",
   "postcss": "^8.5.1",
   "prettier": "^3.4.2",
+  "pug": "^2.0.4",
+  "pug-loader": "^2.4.0",
+  "sass": "^1.83.4",
+  "sass-loader": "^16.0.4",
   "style-loader": "^4.0.0",
   "tailwindcss": "^3.4.17",
   "terser-webpack-plugin": "^5.3.11",
   "ts-loader": "^9.5.1",
   "typescript": "^5.7.2",
   "unplugin-auto-import": "^19.0.0",
-  "vue-loader": "^17.4.2",
+  "vue-loader": "^17.3.1",
   "webpack": "^5.97.1",
-  "webpack-cli": "^5.1.4"
+  "webpack-cli": "^5.1.4",
+  "webpack-merge": "^6.0.1"
  }
 }

@@ -6,7 +6,10 @@
   "paths": {
    "@type/*": [
     "../../public/types/*"
-   ]
+   ],
+   "@common/*": [
+    "../../templates/common/*"
+   ],
   }
  },
  // コンパイル対象ファイル

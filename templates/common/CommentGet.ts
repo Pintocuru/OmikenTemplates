@@ -10,6 +10,7 @@ export function CommentGet(config: ConfigType) {
  const newComments = ref<Comment[]>([]);
  const botCommentsMap = ref<Record<string, CommentChara[]>>({});
  const Charas = ref<Record<string, CharaType>>({});
+ const isInitFlag = ref<boolean>(true); // 初期化フラグ
 
  // 初期化・コメントの購読
  const initOneSDK = async () => {
@@ -34,6 +35,8 @@ export function CommentGet(config: ConfigType) {
    });
   } catch (error) {
    console.error('OneSDK初期化エラー:', error);
+   // 初期化NGフラグ
+   isInitFlag.value = false;
    throw new Error('OneSDK initialization failed');
   }
  };
@@ -130,6 +133,7 @@ export function CommentGet(config: ConfigType) {
  };
 
  return {
+  isInitFlag, // 初期化フラグ
   initOneSDK, // わんコメの購読に必須
   newComments, // すべてのコメント
   filterComments, // ALLOWED_USER_IDS DISALLOWED_USER_IDS でフィルタリングされたコメント

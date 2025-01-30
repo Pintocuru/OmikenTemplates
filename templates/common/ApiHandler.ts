@@ -1,5 +1,5 @@
 // common/ApiHandler.ts
-import { DataType } from '@/public/types';
+import { DataType } from '../../public/types';
 import OneSDK from '@onecomme.com/onesdk';
 
 // プラグインからデータを読み込み

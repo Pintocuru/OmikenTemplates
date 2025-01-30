@@ -1,9 +1,9 @@
 {
- "name": "basic-new",
+ "name": "visit-counter",
  "version": "0.0.1",
  "description": "わんコメのテンプレートbasicをVue+TypeScriptで対応させたバージョン",
  "scripts": {
-  "dev": "webpack --mode development --config webpack.config.mjs",
+  "dev:counter": "webpack --mode development --config webpack.config.mjs",
   "build": "webpack --mode production --config webpack.config.mjs"
  },
  "author": "Pintocuru",
