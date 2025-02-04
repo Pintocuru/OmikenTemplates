@@ -18,12 +18,9 @@ declare global {
 
 // 定数
 const config: ConfigType = {
- PLUGIN_UID: null, // 使用しているプラグイン名
  IS_DIFF_MODE: false, // 差分モードにするか(true:'diff',false:'all')
- BOT_USER_ID: null, // プラグインのuserId
- ALLOWED_USER_IDS: window.CONFIG?.ALLOWED_USER_IDS || [], // 通すuserIDリスト
- DISALLOWED_USER_IDS: window.CONFIG?.DISALLOWED_USER_IDS || [], // 通さないuserIDリスト
- FILTERS: []
+ USER_ALLOWED_IDS: window.CONFIG?.USER_ALLOWED_IDS || [], // 通すuserIDリスト
+ USER_DISALLOWED_IDS: window.CONFIG?.USER_DISALLOWED_IDS || [] // 通さないuserIDリスト
 };
 
 // コンポーザブル

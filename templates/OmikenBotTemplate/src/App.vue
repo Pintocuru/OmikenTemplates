@@ -30,9 +30,9 @@ const config: ConfigType = {
  PLUGIN_UID: window.CONFIG?.PLUGIN_UID || 'OmikenPlugin01', // 使用しているプラグイン名
  IS_DIFF_MODE: true, // 差分モードにするか(true:'diff',false:'all')
  BOT_USER_ID: 'FirstCounter', // プラグインのuserId
- ALLOWED_USER_IDS: window.CONFIG?.ALLOWED_USER_IDS || [], // 通すuserIDリスト
- DISALLOWED_USER_IDS: window.CONFIG?.DISALLOWED_USER_IDS || [], // 通さないuserIDリスト
- FILTERS: [
+ USER_ALLOWED_IDS: window.CONFIG?.USER_ALLOWED_IDS || [], // 通すuserIDリスト
+ USER_DISALLOWED_IDS: window.CONFIG?.USER_DISALLOWED_IDS || [], // 通さないuserIDリスト
+ BOT_PARAM_FILTERS: [
   {
    // main
    id: 'main',
@@ -55,6 +55,6 @@ const { isInitFlag, initOneSDK, getBotComments, botCommentsMap } = CommentGet(co
 onMounted(async () => {
  document.body.removeAttribute('hidden'); // hiddenの削除
  await initOneSDK(); // コメント初期化
- getBotComments(config.FILTERS); // Botコメントを抽出
+ getBotComments(); // Botコメントを抽出
 });
 </script>

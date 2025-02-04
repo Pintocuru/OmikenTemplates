@@ -1,0 +1,7 @@
+/* yellow Color */
+:root {
+ --primary-color: #F9A825; /* darken-2 */
+ --secondary-color: #F9A825;/* accent-3 */
+ --background-light: #FFFDE7;/* lighten-5 */
+ --background-medium: #FFFDE7;/* lighten-4 */
+}

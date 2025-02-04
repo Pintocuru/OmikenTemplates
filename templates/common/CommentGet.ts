@@ -1,7 +1,6 @@
 // common/CommentGet.ts
-import { computed, ref, watch } from 'vue';
 import { CharaType, DataType, SendCommentParamsType } from '../../public/types';
-import { CommentChara, ConfigType, FilterType } from './commonTypes';
+import { CommentChara, ConfigType, BotParamFilterType } from './commonTypes';
 import { fetchData } from './ApiHandler';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
@@ -43,27 +42,27 @@ export function CommentGet(config: ConfigType) {
 
  // コメントからbotのコメントのみ抽出する
  const filterComments = computed(() => {
-  const { ALLOWED_USER_IDS, DISALLOWED_USER_IDS } = config;
+  const { USER_ALLOWED_IDS, USER_DISALLOWED_IDS } = config;
 
   // 両方のリストが空なら空配列を返す
-  if (ALLOWED_USER_IDS.length === 0 && DISALLOWED_USER_IDS.length === 0) return [];
+  if (USER_ALLOWED_IDS.length === 0 && USER_DISALLOWED_IDS.length === 0) return [];
 
   return newComments.value.filter(({ data: { userId } }) => {
-   // ALLOWED_USER_IDS が優先
-   if (ALLOWED_USER_IDS.length > 0) return ALLOWED_USER_IDS.includes(userId);
-   return !DISALLOWED_USER_IDS.includes(userId);
+   // USER_ALLOWED_IDS が優先
+   if (USER_ALLOWED_IDS.length > 0) return USER_ALLOWED_IDS.includes(userId);
+   return !USER_DISALLOWED_IDS.includes(userId);
   });
  });
 
  // コメントから bot のコメントのみ抽出する
- const getBotComments = (filters: FilterType[]) => {
+ const getBotComments = () => {
   watch(
    newComments,
    (comments) => {
     // PLUGIN_UIDがない場合はCharasはnullなのでreturn
-    if (!config.PLUGIN_UID) return;
+    if (!config.PLUGIN_UID || !config.PARAM_FILTERS) return;
 
-    filters.forEach((filter) => {
+    config.PARAM_FILTERS.forEach((filter) => {
      const validComments = filterBotComments(comments, filter);
 
      // 重複排除してマップを更新
@@ -83,7 +82,7 @@ export function CommentGet(config: ConfigType) {
  };
 
  // コメントから bot のコメントを抽出してフィルタリングする関数
- const filterBotComments = (comments: Comment[], filter: FilterType): CommentChara[] => {
+ const filterBotComments = (comments: Comment[], filter: BotParamFilterType): CommentChara[] => {
   return comments
    .map((comment) => ({
     comment,
@@ -114,7 +113,7 @@ export function CommentGet(config: ConfigType) {
  };
 
  // 有効コメント判定
- const isValidComment = (comment: CommentChara, params: SendCommentParamsType, filter: FilterType): boolean => {
+ const isValidComment = (comment: CommentChara, params: SendCommentParamsType, filter: BotParamFilterType): boolean => {
   // userIdがBOT_USER_IDと同じか
   const isValidUser = config.BOT_USER_ID === comment.data.userId;
 
@@ -136,7 +135,7 @@ export function CommentGet(config: ConfigType) {
   isInitFlag, // 初期化フラグ
   initOneSDK, // わんコメの購読に必須
   newComments, // すべてのコメント
-  filterComments, // ALLOWED_USER_IDS DISALLOWED_USER_IDS でフィルタリングされたコメント
+  filterComments, // USER_ALLOWED_IDS USER_DISALLOWED_IDS でフィルタリングされたコメント
   getBotComments, // Botのコメントを取得する際の初期化関数
   botCommentsMap // プラグインの、FILTERSでフィルタリングされたコメント
  };
