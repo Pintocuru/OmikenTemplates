@@ -1,13 +1,13 @@
 <!-- src/App.vue -->
 <template>
- <BasicNew :newComments="newComments || []" />
+ <SuikaRanking :filterComments="filterComments || []" />
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ConfigType } from '@common/commonTypes';
-import BasicNew from './BasicNew.vue';
+import SuikaRanking from './SuikaRanking.vue';
 
 // グローバル変数の型定義
 declare global {
@@ -18,14 +18,20 @@ declare global {
 
 // 定数
 const config: ConfigType = {
- IS_DIFF_MODE: false, // 差分モードにするか(true:'diff',false:'all')
+ IS_DIFF_MODE: true, // 差分モードにするか(true:'diff',false:'all')
  USER_ALLOWED_IDS: window.CONFIG?.USER_ALLOWED_IDS || [], // 通すuserIDリスト
- USER_DISALLOWED_IDS: window.CONFIG?.USER_DISALLOWED_IDS || [], // 通さないuserIDリスト
- USER_WORD_MATCH: []
+ USER_DISALLOWED_IDS: window.CONFIG?.USER_DISALLOWED_IDS || ['FirstCounter'], // 通さないuserIDリスト
+ USER_WORD_MATCH: [
+  {
+   id: 'suika', // スイカジェネレーター
+   isGift: false, // ギフトで有効にするか
+   startsWith: ['西瓜', 'すいか', 'スイカ', 'suika', 'suica', 'watermelon', '合成大西瓜']
+  }
+ ]
 };
 
 // コンポーザブル
-const { initOneSDK, newComments } = CommentGet(config);
+const { initOneSDK, filterComments } = CommentGet(config);
 
 // 初期化
 onMounted(async () => {

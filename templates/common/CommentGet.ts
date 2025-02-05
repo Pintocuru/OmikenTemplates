@@ -1,5 +1,5 @@
 // common/CommentGet.ts
-import { CharaType, DataType, SendCommentParamsType } from '../../public/types';
+import { CharaType, DataType, SendCommentParamsType } from './types';
 import { CommentChara, ConfigType, BotParamFilterType } from './commonTypes';
 import { fetchData } from './ApiHandler';
 import OneSDK from '@onecomme.com/onesdk';
@@ -40,17 +40,41 @@ export function CommentGet(config: ConfigType) {
   }
  };
 
- // コメントからbotのコメントのみ抽出する
- const filterComments = computed(() => {
+ // USER_WORD_MATCH によるフィルタリング & id の付与
+ const filterComments = computed<CommentChara[]>(() => {
+  const { USER_WORD_MATCH } = config;
+
+  return filterCommentsUserIds.value
+   .map((commentData) => {
+    const {
+     data: { comment, hasGift }
+    } = commentData;
+
+    // USER_WORD_MATCH がないならそのまま返す
+    if (!USER_WORD_MATCH || USER_WORD_MATCH.length === 0) return commentData;
+
+    // 適用された UserWordMatchType の ID を取得
+    const matchedWord = USER_WORD_MATCH.find(({ isGift, startsWith, regex }) => {
+     if (isGift && hasGift) return true;
+     if (startsWith.some((prefix) => comment.startsWith(prefix))) return true;
+     if (regex?.some((pattern) => new RegExp(pattern).test(comment))) return true;
+     return false;
+    });
+
+    // matchedWord が見つからなければ除外
+    return matchedWord ? { ...commentData, userWordMatchId: matchedWord.id } : null;
+   })
+   .filter((commentData): commentData is CommentChara => commentData !== null); // null を削除
+ });
+
+ // USER_ALLOWED_IDS / USER_DISALLOWED_IDS のフィルタリング
+ const filterCommentsUserIds = computed(() => {
   const { USER_ALLOWED_IDS, USER_DISALLOWED_IDS } = config;
 
-  // 両方のリストが空なら空配列を返す
-  if (USER_ALLOWED_IDS.length === 0 && USER_DISALLOWED_IDS.length === 0) return [];
-
   return newComments.value.filter(({ data: { userId } }) => {
-   // USER_ALLOWED_IDS が優先
-   if (USER_ALLOWED_IDS.length > 0) return USER_ALLOWED_IDS.includes(userId);
-   return !USER_DISALLOWED_IDS.includes(userId);
+   if (USER_ALLOWED_IDS.length > 0 && !USER_ALLOWED_IDS.includes(userId)) return false;
+   if (USER_DISALLOWED_IDS.includes(userId)) return false;
+   return true;
   });
  });
 
@@ -60,9 +84,9 @@ export function CommentGet(config: ConfigType) {
    newComments,
    (comments) => {
     // PLUGIN_UIDがない場合はCharasはnullなのでreturn
-    if (!config.PLUGIN_UID || !config.PARAM_FILTERS) return;
+    if (!config.PLUGIN_UID || !config.BOT_PARAM_FILTERS) return;
 
-    config.PARAM_FILTERS.forEach((filter) => {
+    config.BOT_PARAM_FILTERS.forEach((filter) => {
      const validComments = filterBotComments(comments, filter);
 
      // 重複排除してマップを更新
@@ -113,14 +137,20 @@ export function CommentGet(config: ConfigType) {
  };
 
  // 有効コメント判定
- const isValidComment = (comment: CommentChara, params: SendCommentParamsType, filter: BotParamFilterType): boolean => {
+ const isValidComment = (
+  comment: CommentChara,
+  params: SendCommentParamsType,
+  filter: BotParamFilterType
+ ): boolean => {
   // userIdがBOT_USER_IDと同じか
   const isValidUser = config.BOT_USER_ID === comment.data.userId;
 
   // paramがPOST_PARAMに含まれているか、NON_POST_PARAMに含まれていないかをチェック
   const param = params ? params.param || '' : '';
   const isValidParam =
-   filter.POST_PARAM.length > 0 ? filter.POST_PARAM.includes(param) : !filter.NON_POST_PARAM.includes(param);
+   filter.POST_PARAM.length > 0
+    ? filter.POST_PARAM.includes(param)
+    : !filter.NON_POST_PARAM.includes(param);
 
   return isValidUser && isValidParam;
  };

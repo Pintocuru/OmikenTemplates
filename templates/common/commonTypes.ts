@@ -5,6 +5,7 @@ import { Comment } from '@onecomme.com/onesdk/types/Comment';
 // コメントの追加型定義
 export type CommentChara = Comment & {
  chara?: CharaType; // キャラクターデータ
+ userWordMatchId?: string; // USER_WORD_MATCH が適用した際のID
 };
 
 export type ConfigType = {

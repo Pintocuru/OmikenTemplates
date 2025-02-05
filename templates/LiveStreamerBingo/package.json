@@ -1,5 +1,5 @@
 {
- "name": "visit-counter",
+ "name": "live-streamer-bingo",
  "version": "0.0.1",
  "description": "わんコメのテンプレートbasicをVue+TypeScriptで対応させたバージョン",
  "scripts": {

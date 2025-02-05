@@ -9,13 +9,12 @@
     "skipLibCheck": true, // ライブラリファイルの型チェックをスキップ
     "jsx": "preserve", // JSXをそのまま残す
     "forceConsistentCasingInFileNames": true, // 大文字小文字を守る
-    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "*"
+        "./*"
       ],
       "@public/*": [
-        "public/*"
+        "./public/*"
       ]
     }
   },

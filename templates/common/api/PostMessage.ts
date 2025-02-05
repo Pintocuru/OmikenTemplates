@@ -4,7 +4,6 @@ import { postSpeech, postSystemMessage, postWordParty, sendComment } from './Pos
 import { ServiceAPI } from './serviceAPI';
 import { SETTINGS } from '../settings';
 import { Service } from '@onecomme.com/onesdk/types/Service';
-import path from 'path';
 
 export class PostMessage {
  private readonly serviceAPI: ServiceAPI;
@@ -119,11 +118,9 @@ export class PostMessage {
    .join(',');
  }
 
- // キャラクター画像を読み込む
+ // キャラクター画像を読み込む(TODO 応急処置)
  private getCharaImagePath(chara: CharaType, iconKey?: string): string {
-  const charaImage = chara.image?.[iconKey ?? 'Default'];
-  if (!charaImage) return DEFAULT_BASE64_IMAGE;
-  return path.join(SETTINGS.imgRoot, charaImage);
+  return DEFAULT_BASE64_IMAGE;
  }
 }
 
