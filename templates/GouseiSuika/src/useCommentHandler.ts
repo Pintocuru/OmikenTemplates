@@ -3,8 +3,10 @@ import type { CommentChara } from '@common/commonTypes';
 import type { SuikaVisitType, SuikaGameType } from './type';
 import { SETTINGS } from '@common/settings';
 import GouseiSuika from './Scripts/GouseiSuika';
+import NewGamesIncrements from './Scripts/NewGamesIncrements';
 import { PostMessage } from '@common/api/PostMessage';
 import { postSystemMessage } from '@common/api/PostOneComme';
+import { GameType } from '@common/types';
 
 export function useCommentHandler(gameState: SuikaGameType) {
  const userVisits = reactive<Record<string, SuikaVisitType>>({});
@@ -21,15 +23,23 @@ export function useCommentHandler(gameState: SuikaGameType) {
    isRanking: true
   };
 
-  visit.draws++;
-  if (visit.draws >= 6 && !comment.data.hasGift) visit.isRanking = false;
-  userVisits[userId] = visit;
+  try {
+   // gameState とユーザーの各drawsをインクリメント
+   const newGame = NewGamesIncrements.func(gameState as GameType, comment).game;
+   Object.assign(gameState, newGame);
+  } catch (e) {
+   console.error('Comment handling error:', e);
+   return null;
+  }
 
   try {
+   // gameState とユーザーの各drawsをインクリメント
+   const newGame = NewGamesIncrements.func(gameState as GameType, comment).game;
+
    // スイカゲームを行う
-   const result = GouseiSuika.func(gameState, comment, {
+   const result = GouseiSuika.func(newGame, comment, {
     mode: comment.userWordMatchId === 'kabo' ? 1 : comment.userWordMatchId === 'kujira' ? 2 : 0,
-    isRank: visit.isRanking,
+    isRank: visit.draws <= 5 || comment.data.hasGift, // 5回以下、またはギフトがあるならランキングイン
     isFruit: true
    });
 
