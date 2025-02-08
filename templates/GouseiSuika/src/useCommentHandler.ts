@@ -1,52 +1,46 @@
 // src/components/suika/composables/useCommentHandler.ts
+import { GameType } from '@common/types';
+import type { SuikaGameType } from './type';
 import type { CommentChara } from '@common/commonTypes';
-import type { SuikaVisitType, SuikaGameType } from './type';
 import { SETTINGS } from '@common/settings';
-import GouseiSuika from './Scripts/GouseiSuika';
-import NewGamesIncrements from './Scripts/NewGamesIncrements';
 import { PostMessage } from '@common/api/PostMessage';
 import { postSystemMessage } from '@common/api/PostOneComme';
-import { GameType } from '@common/types';
+import GouseiSuika from './Scripts/GouseiSuika';
+import NewGamesIncrements from './Scripts/NewGamesIncrements';
 
 export function useCommentHandler(gameState: SuikaGameType) {
- const userVisits = reactive<Record<string, SuikaVisitType>>({});
-
- // スイカゲームを行う
- function handleComment(comment: CommentChara) {
-  if (comment.data.userId === SETTINGS.BOT_USER_ID) return null;
-
-  const { userId } = comment.data;
-  const visit = userVisits[userId] || {
-   userId,
-   name: comment.data.displayName,
-   draws: 0,
-   isRanking: true
-  };
+ // スイカゲームのコメント処理
+ function playSuikaGame(comment: CommentChara) {
+  const { userWordMatchId } = comment;
+  const { userId, hasGift, name } = comment.data;
+  if (userId === SETTINGS.BOT_USER_ID) return null;
 
   try {
-   // gameState とユーザーの各drawsをインクリメント
+   // gameState を更新し、ユーザーの draws を取得
    const newGame = NewGamesIncrements.func(gameState as GameType, comment).game;
-   Object.assign(gameState, newGame);
-  } catch (e) {
-   console.error('Comment handling error:', e);
-   return null;
-  }
+   const userDraws = newGame.userStats[userId].draws;
 
-  try {
-   // gameState とユーザーの各drawsをインクリメント
-   const newGame = NewGamesIncrements.func(gameState as GameType, comment).game;
+   // `mode` の設定をオブジェクトマップで整理
+   const modeMap: Record<string, number> = { kabo: 1, kujira: 2 };
+   const mode = modeMap[userWordMatchId ?? ''] ?? 0;
 
-   // スイカゲームを行う
+   // ランキングインの判定
+   const isEligibleForRank = userDraws <= 5 || hasGift;
+
+   // スイカゲームを実行
    const result = GouseiSuika.func(newGame, comment, {
-    mode: comment.userWordMatchId === 'kabo' ? 1 : comment.userWordMatchId === 'kujira' ? 2 : 0,
-    isRank: visit.draws <= 5 || comment.data.hasGift, // 5回以下、またはギフトがあるならランキングイン
+    mode,
+    isRank: isEligibleForRank,
     isFruit: true
    });
 
-   // WordParty
-   if (result.postArray) new PostMessage(result.postArray).post;
-   // 結果をコメントテスターで投稿
-   postResults(comment, result.placeholder);
+   // WordParty メッセージを投稿
+   if (result.postArray && result.postArray.length > 0) {
+    new PostMessage(result.postArray).post;
+   }
+
+   // 結果を投稿
+   postResults(name, result.placeholder);
 
    return result.game;
   } catch (e) {
@@ -55,19 +49,16 @@ export function useCommentHandler(gameState: SuikaGameType) {
   }
  }
 
- function postResults(comment: CommentChara, placeholder: { [id: string]: string | number }) {
-  if (!placeholder) return;
+ function postResults(userName: string, placeholder: { [id: string]: string | number }) {
+  if (!placeholder || Object.keys(placeholder).length === 0) return;
 
   postSystemMessage(placeholder.message as string, ' ', 3.5);
   postSystemMessage(
-   `${comment.data.name}の${placeholder.points}は、${placeholder.winsRank}位だよ。`,
+   `${userName} の ${placeholder.points} は、${placeholder.winsRank} 位だよ。`,
    ' ',
    8
   );
  }
 
- return {
-  handleComment,
-  userVisits
- };
+ return { playSuikaGame };
 }

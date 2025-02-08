@@ -25,7 +25,7 @@ const config: ConfigType = {
   {
    id: 'suika', // スイカジェネレーター
    isGift: false, // ギフトで有効にするか
-   startsWith: ['西瓜', 'すいか', 'スイカ', 'suika', 'suica', 'watermelon', '合成大西瓜']
+   keywords: ['西瓜', 'すいか', 'スイカ', 'suika', 'suica', 'watermelon', '合成大西瓜']
   }
  ]
 };

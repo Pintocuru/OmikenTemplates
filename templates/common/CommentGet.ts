@@ -1,9 +1,11 @@
 // common/CommentGet.ts
+import { ref, computed } from 'vue';
 import { CharaType, DataType, SendCommentParamsType } from './types';
 import { CommentChara, ConfigType, BotParamFilterType } from './commonTypes';
 import { fetchData } from './ApiHandler';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import emojiRegex from 'emoji-regex';
 
 export function CommentGet(config: ConfigType) {
  const newComments = ref<Comment[]>([]);
@@ -30,7 +32,12 @@ export function CommentGet(config: ConfigType) {
 
    OneSDK.subscribe({
     action: 'comments',
-    callback: (comments: Comment[]) => (newComments.value = comments)
+    callback: (comments: Comment[]) => {
+     newComments.value = comments;
+     if (config.PLUGIN_UID && config.BOT_PARAM_FILTERS) {
+      processPluginComments(comments);
+     }
+    }
    });
   } catch (error) {
    console.error('OneSDK初期化エラー:', error);
@@ -40,85 +47,105 @@ export function CommentGet(config: ConfigType) {
   }
  };
 
- // USER_WORD_MATCH によるフィルタリング & id の付与
- const filterComments = computed<CommentChara[]>(() => {
-  const { USER_WORD_MATCH } = config;
+ const processPluginComments = (comments: Comment[]) => {
+  config.BOT_PARAM_FILTERS?.forEach((filter) => {
+   const validComments = filterCommentsLogic(comments);
 
-  return filterCommentsUserIds.value
-   .map((commentData) => {
-    const {
-     data: { comment, hasGift }
-    } = commentData;
-
-    // USER_WORD_MATCH がないならそのまま返す
-    if (!USER_WORD_MATCH || USER_WORD_MATCH.length === 0) return commentData;
-
-    // 適用された UserWordMatchType の ID を取得
-    const matchedWord = USER_WORD_MATCH.find(({ isGift, startsWith, regex }) => {
-     if (isGift && hasGift) return true;
-     if (startsWith.some((prefix) => comment.startsWith(prefix))) return true;
-     if (regex?.some((pattern) => new RegExp(pattern).test(comment))) return true;
-     return false;
-    });
-
-    // matchedWord が見つからなければ除外
-    return matchedWord ? { ...commentData, userWordMatchId: matchedWord.id } : null;
-   })
-   .filter((commentData): commentData is CommentChara => commentData !== null); // null を削除
- });
-
- // USER_ALLOWED_IDS / USER_DISALLOWED_IDS のフィルタリング
- const filterCommentsUserIds = computed(() => {
-  const { USER_ALLOWED_IDS, USER_DISALLOWED_IDS } = config;
-
-  return newComments.value.filter(({ data: { userId } }) => {
-   if (USER_ALLOWED_IDS.length > 0 && !USER_ALLOWED_IDS.includes(userId)) return false;
-   if (USER_DISALLOWED_IDS.includes(userId)) return false;
-   return true;
-  });
- });
-
- // コメントから bot のコメントのみ抽出する
- const getBotComments = () => {
-  watch(
-   newComments,
-   (comments) => {
-    // PLUGIN_UIDがない場合はCharasはnullなのでreturn
-    if (!config.PLUGIN_UID || !config.BOT_PARAM_FILTERS) return;
-
-    config.BOT_PARAM_FILTERS.forEach((filter) => {
-     const validComments = filterBotComments(comments, filter);
-
-     // 重複排除してマップを更新
-     botCommentsMap.value[filter.id] = [
-      ...(botCommentsMap.value[filter.id] || []),
-      ...validComments.filter(
-       (newComment) =>
-        !(botCommentsMap.value[filter.id] || []).some(
-         (existingComment) => existingComment.data.id === newComment.data.id
-        )
+   // 重複排除してマップを更新
+   botCommentsMap.value[filter.id] = [
+    ...(botCommentsMap.value[filter.id] || []),
+    ...validComments.filter(
+     (newComment) =>
+      !(botCommentsMap.value[filter.id] || []).some(
+       (existingComment) => existingComment.data.id === newComment.data.id
       )
-     ];
-    });
-   },
-   { deep: true }
+    )
+   ];
+  });
+ };
+
+ const filterComments = computed<CommentChara[]>(() => {
+  return filterCommentsLogic(newComments.value);
+ });
+
+ const filterCommentsLogic = (comments: Comment[]): CommentChara[] => {
+  const { PLUGIN_UID } = config;
+
+  // PLUGIN_UID がある場合はBOTのコメントを抽出してフィルタリング
+  if (PLUGIN_UID) {
+   return comments
+    .map((comment) => ({
+     comment,
+     params: getIdParams(comment.data.id)
+    }))
+    .filter(({ comment, params }) => {
+     return config.BOT_PARAM_FILTERS?.some(
+      (filter) => params && isValidComment(comment, params, filter)
+     );
+    })
+    .map(({ comment, params }) => {
+     if (params && 'charaId' in params) {
+      return charaComment(comment, params.charaId);
+     }
+     return null;
+    })
+    .filter((comment): comment is CommentChara => comment !== null);
+  }
+
+  // PLUGIN_UID なしの場合のフィルタリング
+  return (
+   comments
+    // USER_ALLOWED_IDS / USER_DISALLOWED_IDS のフィルタリング
+    .filter(({ data: { userId } }) => {
+     if (config.USER_ALLOWED_IDS?.length && !config.USER_ALLOWED_IDS.includes(userId)) {
+      return false;
+     }
+     if (config.USER_DISALLOWED_IDS?.includes(userId)) {
+      return false;
+     }
+     return true;
+    })
+    .map((comment) => {
+     // USER_WORD_MATCH がないならそのまま返す
+     if (!config.USER_WORD_MATCH?.length) return comment;
+
+     // 適用された UserWordMatchType の ID を取得
+     const matchedWord = config.USER_WORD_MATCH.find((word) => {
+      if (typeof word === 'string') return matchPattern(comment.data.comment, word);
+
+      const { isGift, keywords, regex } = word;
+      if (isGift && comment.data.hasGift) return true;
+      if (keywords.some((prefix) => matchPattern(comment.data.comment, prefix))) return true;
+      if (regex?.some((pattern) => new RegExp(pattern).test(comment.data.comment))) return true;
+
+      return false;
+     });
+
+     return matchedWord
+      ? {
+         ...comment,
+         userWordMatchId: typeof matchedWord === 'string' ? undefined : matchedWord.id
+        }
+      : null;
+    })
+    .filter((comment): comment is CommentChara => comment !== null)
   );
  };
 
- // コメントから bot のコメントを抽出してフィルタリングする関数
- const filterBotComments = (comments: Comment[], filter: BotParamFilterType): CommentChara[] => {
-  return comments
-   .map((comment) => ({
-    comment,
-    params: getIdParams(comment.data.id)
-   }))
-   .filter(({ comment, params }) => params && isValidComment(comment, params, filter))
-   .map(({ comment, params }) => {
-    if (params && 'charaId' in params) return charaComment(comment, params.charaId);
-    return null;
-   })
-   .filter((comment): comment is CommentChara => comment !== null);
- };
+ //
+ function matchPattern(text: string, pattern: string): boolean {
+  const emojiPattern = emojiRegex();
+  if (pattern === ':emoji:') {
+   return emojiPattern.test(text); // 絵文字が含まれているかチェック
+  }
+  if (pattern.startsWith('^')) {
+   return text.startsWith(pattern.slice(1)); // `^` を削除して前方一致
+  }
+  if (pattern.endsWith('$')) {
+   return text.endsWith(pattern.slice(0, -1)); // `$` を削除して後方一致
+  }
+  return text.includes(pattern); // 部分一致
+ }
 
  // comment.data.id にあるパラメータをObjectにする
  const getIdParams = (str: string): SendCommentParamsType | false => {
@@ -166,7 +193,6 @@ export function CommentGet(config: ConfigType) {
   initOneSDK, // わんコメの購読に必須
   newComments, // すべてのコメント
   filterComments, // USER_ALLOWED_IDS USER_DISALLOWED_IDS でフィルタリングされたコメント
-  getBotComments, // Botのコメントを取得する際の初期化関数
   botCommentsMap // プラグインの、FILTERSでフィルタリングされたコメント
  };
 }

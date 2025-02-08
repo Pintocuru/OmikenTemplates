@@ -28,26 +28,28 @@ export function useGameState() {
   if (resultTimeout.value) clearTimeout(resultTimeout.value);
   if (rankingDisplayTimeout.value) clearTimeout(rankingDisplayTimeout.value);
 
-  gameState.Resultflag = false;
-  console.log(newState);
+  // 古いランキングを保持したままアニメーションを実行
+  const oldRankPlayers = gameState.rankPlayers; // 現在のランキングを保持
+  // 新しいランキングデータを即時反映
+  updateGameState(newState);
 
-  resultTimeout.value = setTimeout(
-   () => {
-    updateGameState(newState);
-    gameState.Resultflag = true;
-    setTimeout(() => {
-     gameState.Resultflag = false;
-    }, 5000);
-   },
-   displayDelay + SETTINGS.basicDelaySeconds * 1000
-  ) as unknown as number;
+  // 結果フラグはアニメーション終了後に設定
+  resultTimeout.value = setTimeout(() => {
+   gameState.Resultflag = true;
+  }, displayDelay) as unknown as number; // displayDelay 時間後にフラグを立てる
 
-  rankingDisplayTimeout.value = setTimeout(
-   () => {
-    gameState.rankPlayers = gameState.rankings;
-   },
-   displayDelay + SETTINGS.basicDelaySeconds * 1000
-  ) as unknown as number;
+  // さらに 5 秒後にフラグを元に戻す
+  setTimeout(() => {
+   gameState.Resultflag = false;
+  }, displayDelay + 5000);
+
+  // アニメーション終了後に新しいランキングを反映
+  rankingDisplayTimeout.value = setTimeout(() => {
+   // アニメーション中は古いランキングを表示
+   gameState.rankPlayers = oldRankPlayers;
+   // アニメーション後に新しいランキングを反映
+   gameState.rankPlayers = gameState.rankings;
+  }, displayDelay) as unknown as number;
  }
 
  return {

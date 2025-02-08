@@ -30,14 +30,14 @@ const props = defineProps<{
 
 const { gameState, displayGameResult } = useGameState();
 
-const { handleComment } = useCommentHandler(gameState);
+const { playSuikaGame } = useCommentHandler(gameState);
 
 // ウォッチャーでコメント処理とゲーム状態の更新を行う
 watch(
  () => props.filterComments, // 監視対象
  (newValue) => {
   newValue.forEach((comment: CommentChara) => {
-   const result = handleComment(comment);
+   const result = playSuikaGame(comment);
    if (result) displayGameResult(result);
   });
  },
