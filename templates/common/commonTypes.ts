@@ -17,6 +17,7 @@ export type ConfigNoPlugin = {
  USER_ALLOWED_IDS: string[]; // 通すユーザーIDリスト
  USER_DISALLOWED_IDS: string[]; // 通さないユーザーIDリスト
  USER_WORD_MATCH: string[] | UserWordMatchType[]; // ワードによるフィルタリング
+ PLUGIN_RULE_ID?: never;
  BOT_USER_ID?: never;
  BOT_PARAM_FILTERS?: never;
  USER_STATUS_FILTERS?: never;
@@ -25,6 +26,7 @@ export type ConfigNoPlugin = {
 // プラグインがある場合の型
 export type ConfigPlugin = {
  PLUGIN_UID: string; // プラグインあり
+ PLUGIN_RULE_ID?: string; // Gamesで使う、rulesのid
  IS_DIFF_MODE: true; // 差分モードのみ
  BOT_USER_ID?: string; // プラグインのcomment.data.userId
  BOT_PARAM_FILTERS: BotParamFilterType[]; // パラメータによるフィルタリング

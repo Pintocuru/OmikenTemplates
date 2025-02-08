@@ -3,7 +3,7 @@ import type { SuikaGameType } from './type';
 import { SETTINGS } from '@common/settings';
 
 export function useGameState() {
- const gameState = reactive<SuikaGameType>({
+ const defaultState: SuikaGameType = {
   rankings: [],
   userStats: {},
   draws: 0,
@@ -14,46 +14,69 @@ export function useGameState() {
   settings: [],
   Resultflag: false,
   Result: { score: 0, name: '' }
- });
+ };
+
+ // 管理用/表示用の状態管理
+ const gameState = reactive<SuikaGameType>(defaultState);
+ const displayState = ref<SuikaGameType>(defaultState);
 
  const resultTimeout = ref<number>();
  const rankingDisplayTimeout = ref<number>();
 
+ // ゲームの実際の状態を更新
  function updateGameState(newState: Partial<SuikaGameType>) {
   Object.assign(gameState, newState);
  }
 
  function displayGameResult(newState: Partial<SuikaGameType>, displayDelay: number = 3500) {
+  // ゲーム状態を更新
+  Object.assign(gameState, newState);
+
   // 既存のタイマーをクリア
   if (resultTimeout.value) clearTimeout(resultTimeout.value);
   if (rankingDisplayTimeout.value) clearTimeout(rankingDisplayTimeout.value);
 
-  // 古いランキングを保持したままアニメーションを実行
-  const oldRankPlayers = gameState.rankPlayers; // 現在のランキングを保持
-  // 新しいランキングデータを即時反映
-  updateGameState(newState);
+  // 表示用の状態をリセット
+  displayState.value = {
+   ...displayState.value,
+   Resultflag: false
+  };
 
-  // 結果フラグはアニメーション終了後に設定
-  resultTimeout.value = setTimeout(() => {
-   gameState.Resultflag = true;
-  }, displayDelay) as unknown as number; // displayDelay 時間後にフラグを立てる
+  // 指定した遅延後に表示用の状態を更新
+  resultTimeout.value = setTimeout(
+   () => {
+    displayState.value = {
+     ...displayState.value,
+     ...newState,
+     Resultflag: true
+    };
 
-  // さらに 5 秒後にフラグを元に戻す
-  setTimeout(() => {
-   gameState.Resultflag = false;
-  }, displayDelay + 5000);
+    // ResultFlagを一定時間後に非表示
+    setTimeout(() => {
+     displayState.value = {
+      ...displayState.value,
+      Resultflag: false
+     };
+    }, 5000);
+   },
+   Math.max(displayDelay + SETTINGS.basicDelaySeconds * 1000, 0)
+  ) as unknown as number;
 
-  // アニメーション終了後に新しいランキングを反映
-  rankingDisplayTimeout.value = setTimeout(() => {
-   // アニメーション中は古いランキングを表示
-   gameState.rankPlayers = oldRankPlayers;
-   // アニメーション後に新しいランキングを反映
-   gameState.rankPlayers = gameState.rankings;
-  }, displayDelay) as unknown as number;
+  // ランキング表示の更新も同じ遅延で実施
+  rankingDisplayTimeout.value = setTimeout(
+   () => {
+    displayState.value = {
+     ...displayState.value,
+     rankPlayers: gameState.rankings
+    };
+   },
+   Math.max(displayDelay + SETTINGS.basicDelaySeconds * 1000, 0)
+  ) as unknown as number;
  }
 
  return {
   gameState,
+  displayState,
   updateGameState,
   displayGameResult
  };

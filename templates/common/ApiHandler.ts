@@ -13,3 +13,21 @@ export const fetchData = async <T extends DataType>(PLUGIN_UID: string, type: T)
   return null;
  }
 };
+
+// プラグインからデータを読み込み
+export const getListenerList = async () => {
+ try {
+  const url = `http://localhost:11180/api/listeners`;
+  const response = await OneSDK.get(url, {});
+  return response.status === 200 ? response.data : null;
+ } catch (error) {
+  console.error(`データの取得に失敗:`, error);
+  return null;
+ }
+};
+
+// Gamesにある、rule.idと同じデータを取得する
+export const getGameData = async (PLUGIN_UID: string, PLUGIN_RULE_ID: string) => {
+ const gamesData = await fetchData<DataType.Games>(PLUGIN_UID, DataType.Games);
+ return gamesData[PLUGIN_RULE_ID];
+};

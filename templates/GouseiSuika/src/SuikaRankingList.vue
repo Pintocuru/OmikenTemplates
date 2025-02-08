@@ -13,7 +13,14 @@
    >
     <template v-if="index < 3">
      <img
-      :src="`img/image_${index + 1}.png`"
+      v-if="iconUrls[player.userId]"
+      :src="iconUrls[player.userId]"
+      :alt="`${index + 1}位の画像`"
+      class="inline-block w-20 h-20 mr-5"
+     />
+     <img
+      v-else
+      src="/default-icon2.png"
       :alt="`${index + 1}位の画像`"
       class="inline-block w-20 h-20 mr-5"
      />
@@ -36,7 +43,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue';
+import { getListenerList } from '@common/ApiHandler';
 import type { UserRankingType } from './type';
+import { UserStoreData } from '@onecomme.com/onesdk/types/UserData';
 
 interface Props {
  rankings: UserRankingType[];
@@ -45,7 +55,7 @@ interface Props {
  totalPoint: number;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const rankingClasses = {
  0: 'ranking-gold',
@@ -53,9 +63,30 @@ const rankingClasses = {
  2: 'ranking-bronze',
  default: 'ranking-normal'
 } as const;
+
 const getRankingClass = (index: number): string => {
  return rankingClasses[index as keyof typeof rankingClasses] || rankingClasses.default;
 };
+
+const iconUrls = ref<Record<string, string>>({});
+
+const getUserIconUrl = async (userId: string) => {
+ const ListenerList = (await getListenerList()) as UserStoreData;
+ if (ListenerList[userId]?.icon) {
+  iconUrls.value[userId] = ListenerList[userId].icon;
+ }
+};
+
+// rankingsが変更されたときに上位3位のアイコンを取得
+watch(
+ () => props.rankings,
+ async (newRankings) => {
+  for (let i = 0; i < Math.min(3, newRankings.length); i++) {
+   await getUserIconUrl(newRankings[i].userId);
+  }
+ },
+ { immediate: true }
+); // コンポーネント初期化時にも実行
 </script>
 
 <style>
