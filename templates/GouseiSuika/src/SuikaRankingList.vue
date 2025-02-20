@@ -71,7 +71,7 @@ const getRankingClass = (index: number): string => {
 const iconUrls = ref<Record<string, string>>({});
 
 const getUserIconUrl = async (userId: string) => {
- const ListenerList = (await getListenerList()) as UserStoreData;
+ const ListenerList = await getListenerList();
  if (ListenerList[userId]?.icon) {
   iconUrls.value[userId] = ListenerList[userId].icon;
  }

@@ -1,4 +1,5 @@
 // common/ApiHandler.ts
+import { UserStoreData } from '@onecomme.com/onesdk/types/UserData';
 import { DataType } from '../../public/types';
 import OneSDK from '@onecomme.com/onesdk';
 
@@ -15,14 +16,14 @@ export const fetchData = async <T extends DataType>(PLUGIN_UID: string, type: T)
 };
 
 // プラグインからデータを読み込み
-export const getListenerList = async () => {
+export const getListenerList = async (): Promise<UserStoreData> => {
  try {
   const url = `http://localhost:11180/api/listeners`;
   const response = await OneSDK.get(url, {});
   return response.status === 200 ? response.data : null;
  } catch (error) {
   console.error(`データの取得に失敗:`, error);
-  return null;
+  throw new Error('OneSDK initialization failed');
  }
 };
 

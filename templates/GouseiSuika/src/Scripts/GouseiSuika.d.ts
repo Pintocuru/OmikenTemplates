@@ -1,5 +1,5 @@
 // GouseiSuika.d.ts
-import type { ScriptsType } from '@common/types';
+import type { ScriptType } from '@type';
 
-declare const GouseiSuika: ScriptsType;
+declare const GouseiSuika: ScriptType;
 export default GouseiSuika;

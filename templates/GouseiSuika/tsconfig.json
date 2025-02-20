@@ -1,14 +1,17 @@
 {
- "extends": "../../tsconfig.json", // ルートの設定を拡張
+ "extends": "../../tsconfig.json", // 親の設定をマージ
  "compilerOptions": {
   "baseUrl": ".", // モジュールのベースURL
   "outDir": "./dist", // 出力先ディレクトリ
   "paths": {
-   "@type/*": [
-    "../../public/types/*"
+   "@type": [
+    "../../public/type.ts"
    ],
    "@common/*": [
-    "../../templates/common/*"
+    "../../public/common/*"
+   ],
+   "@/*": [
+    "./src/*"
    ],
   }
  },

@@ -1,8 +1,8 @@
-// src/types/plugin.ts
-
-import { OmikenType, OmikujiType, RulesType, TypesType } from './Omiken';
-import { CharaType, ScriptParam, ScriptsType } from './preset';
-import { Service } from '@onecomme.com/onesdk/types/Service';
+// src/types/pluginType.ts
+import { OmikenType, RuleCategory } from './OmikenTypes';
+import { CharaType, ScriptType } from './preset';
+import { EditorSettingsType } from './editor';
+import { Service, ServiceMeta } from '@onecomme.com/onesdk/types/Service';
 import { BaseResponse } from '@onecomme.com/onesdk/types/BaseResponse';
 import { Colors, Comment } from '@onecomme.com/onesdk/types/Comment';
 import { UserNameData } from '@onecomme.com/onesdk/types/UserData';
@@ -10,33 +10,34 @@ import { UserNameData } from '@onecomme.com/onesdk/types/UserData';
 // ---------------------------------------------------
 
 // ElectronStore用の型
-export interface StoreType {
- store: any; // ElectronStore不具合のためany ElectronStore<StoreType>
+export interface PluginStoreType {
  Omiken: OmikenType;
  Visits: Record<string, VisitType>;
  Games: Record<string, GameType>;
+ EditorSettings: EditorSettingsType;
 }
 
 // おみくじBOT用の型
-export interface StoreMainType extends StoreType {
- OmikenTypesArray?: Record<TypesType, RulesType[]>;
+export interface PluginMainType extends PluginStoreType {
+ store: any; // ElectronStore不具合のためany ElectronStore<StoreType>
  Charas: Record<string, CharaType>;
- Scripts: Record<string, ScriptsType>;
+ Scripts: Record<string, ScriptType>;
  TimeConfig: TimeConfigType;
 }
 
 // API用の型
-export interface StoreApiType extends StoreType {
- Presets: Readonly<Record<string, OmikenType>>;
+export interface PluginApiType extends PluginStoreType {
+ store: any; // ElectronStore不具合のためany ElectronStore<StoreType>
+ Presets: Record<string, OmikenType>;
  Charas: Record<string, CharaType>;
- Scripts: Record<string, ScriptsType>;
+ Scripts: Record<string, ScriptType>;
 }
 
 // 全体設定用の型
-export interface StoreAllType extends StoreMainType {
+export interface PluginAllType extends PluginMainType {
  Presets: Record<string, OmikenType>;
- filterCommentProcess(comment: Comment, userData: UserNameData): void;
- timerSelector: any; // プラグイン専用の型なのでany
+ filterCommentProcess(comment: Comment, userData: UserNameData): Promise<void>;
+ TimerSelector: any; // プラグイン専用の型なのでany
 }
 
 // プラグインのデータを更新するreturn用の型
@@ -66,7 +67,6 @@ interface DrawsType {
 // おみくじデータ
 export interface GameType extends DrawsType {
  ruleId: string; // rulesのID(key)
- settings: ScriptParam[]; // scriptParamsで設定したisEverのデータが入る
  userStats: Record<string, UserStatsType>;
  currentUserIds: string[]; // ユーザー履歴
  [key: string]: any; // scriptで自由に使えるObject
@@ -87,9 +87,37 @@ export interface UserStatsType extends DrawsType {
 
 // ---
 
+// おみくじ抽選で使用するデータ群
+export type SelectOmikujiOptions<T extends RuleCategory> = SelectOmikujiOptionsMap[T];
+
+export interface SelectOmikujiOptionsMap {
+ comments: {
+  type: 'comment';
+  comment: Comment;
+  visit: VisitType;
+  meta?: never;
+  timeConfig: never;
+ };
+ timers: {
+  type: 'timer';
+  comment?: never;
+  visit?: never;
+  meta?: never;
+  timeConfig: TimeConfigType;
+ };
+ metas: {
+  type: 'meta';
+  comment?: never;
+  visit?: never;
+  meta: ServiceMeta;
+  timeConfig: never;
+ };
+}
+
 // 選択したおみくじ
-export interface OmikujiSelectType extends OmikujiType {
- selectRuleId: string; // 選択されたルールのid
+export interface SelectOmikujiIds {
+ omikujiId: string;
+ ruleId: string; // 選択されたルールのid
 }
 
 // TimeConfig
@@ -97,7 +125,11 @@ export interface TimeConfigType {
  pluginTime: number; // プラグインを起動した時刻
  lc: number; // プラグインを起動してからカウントしたコメント数
  lastTime: number; // 最後におみくじ機能が実行された時刻
- lastUserId: string; // TODO 廃止(Gamesが担う) 最後におみくじを行ったuserId
+ meta: {
+  initFollowers: number; // 配信開始時のフォロワー数
+  maxLikes: number; // 配信時の高評価数の最大値
+  maxViewers: number; // 配信時の視聴数の最大値
+ };
 }
 
 // ---
@@ -120,7 +152,7 @@ export interface SendCommentType {
 // わんコメSend Commentでidを利用したパラメータ受け渡しに使う型定義
 export interface SendCommentParamsType {
  id: string; // 一意のID
- charaId?: string; // キャラID
+ charaId: string; // キャラID
  param?: string; // ジェネレーターに渡す引数(omikuji.generatorParam)
  isSilent?: string; // BOTの読み上げを行わない(omikuji.isSilent)
  [key: string]: string | undefined;
@@ -139,57 +171,4 @@ export interface SendTestCommentType {
  speech: boolean;
  username: string;
  comment: string;
-}
-
-// ---
-
-// API用
-
-// パラメータの型定義
-export type ParamsType = PingModeParams | DataModeParams | AllDataModeParams | BackupModeParams;
-
-// Ping用型定義
-interface PingModeParams {
- method: 'GET';
- mode: Mode.Ping;
- type?: never;
-}
-
-// データ取得用型定義
-interface DataModeParams {
- method: 'GET';
- mode: Mode.Data;
- type: DataType.Omiken | DataType.Presets | DataType.Charas | DataType.Scripts | DataType.Visits | DataType.Games;
-}
-
-// 一括でのデータ取得用型定義
-interface AllDataModeParams {
- method: 'GET';
- mode: Mode.AllData;
- type?: never;
-}
-
-// バックアップ用型定義
-interface BackupModeParams {
- method: 'POST';
- mode: Mode.Backup;
- type: DataType.Omiken | DataType.Presets;
-}
-
-// モードを定義
-export enum Mode {
- Ping = 'ping', // データ取得
- Data = 'data', // データ取得
- Backup = 'backup', // バックアップ(エディター用)
- AllData = 'allData' // すべてのデータ取得
-}
-
-// データの種類を定義
-export enum DataType {
- Omiken = 'Omiken', // おみくじデータ
- Presets = 'Presets', // preset(おみくじデータ)
- Charas = 'Charas', // キャラデータ
- Scripts = 'Scripts', // スクリプト
- Visits = 'Visits', // 個人データ
- Games = 'Games' // スクリプトデータ
 }
