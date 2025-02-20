@@ -1,6 +1,6 @@
 // types.d.ts
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { CharaType, DrawsBase, GameType } from '../../../public/types';
+import { CharaType, DrawsBase, GameType } from '@type';
 
 export interface GameDataType extends GameType {
  rankings: Ranking[];

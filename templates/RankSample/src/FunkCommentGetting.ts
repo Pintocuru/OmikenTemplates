@@ -1,6 +1,6 @@
 // src/composables/FunkCommentGetting.ts
 import { ref } from 'vue';
-import { DataType } from '@type/index';
+import { DataType } from '@type';
 import { AxiosResponse, CommentTemp } from './types';
 import OneSDK from '@onecomme.com/onesdk';
 import { PluginResponse } from '@onecomme.com/onesdk/types/Plugin';

@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import { ref, watch, onUnmounted } from 'vue';
 import { CommentChara } from '@common/commonTypes';
-import { CharaType } from '@type/index';
+import { CharaType } from '@type';
 
 const props = defineProps<{ botComments: CommentChara[] }>();
 
@@ -72,7 +72,8 @@ const MIN_BRIGHTNESS = 0.2; // 最小明度
 const BRIGHTNESS_STEP = 0.2; // 明度の減少ステップ
 
 // スタイル計算用のユーティリティ関数
-const getStyleValue = (css: CharaType['color'] | undefined, property: keyof CharaType['color']) => css?.[property];
+const getStyleValue = (css: CharaType['color'] | undefined, property: keyof CharaType['color']) =>
+ css?.[property];
 
 const getCommentStyles = (comment: CommentChara, index: number) => {
  const brightness = Math.max(1 - index * BRIGHTNESS_STEP, MIN_BRIGHTNESS);
