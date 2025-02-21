@@ -1,6 +1,6 @@
 // common/CommentGet.ts
 import { ref, computed } from 'vue';
-import { CharaType, DataType, SendCommentParamsType } from './types';
+import { CharaType, DataType, SendCommentParamsType } from '../type';
 import { CommentChara, ConfigType, BotParamFilterType } from './commonTypes';
 import { fetchData } from './ApiHandler';
 import OneSDK from '@onecomme.com/onesdk';
@@ -97,13 +97,19 @@ export function CommentGet(config: ConfigType) {
    comments
     // USER_ALLOWED_IDS / USER_DISALLOWED_IDS のフィルタリング
     .filter(({ data: { userId } }) => {
-     if (config.USER_ALLOWED_IDS?.length && !config.USER_ALLOWED_IDS.includes(userId)) {
-      return false;
-     }
-     if (config.USER_DISALLOWED_IDS?.includes(userId)) {
-      return false;
-     }
+     if (config.USER_ALLOWED_IDS?.length && !config.USER_ALLOWED_IDS.includes(userId)) return false;
+     if (config.USER_DISALLOWED_IDS?.includes(userId)) return false;
      return true;
+    })
+    // USER_ACCESS_LEVEL のフィルタリング
+    .filter(({ data }) => {
+     if (!config.USER_ACCESS_LEVEL) return true;
+     if (config.USER_ACCESS_LEVEL === 4 && data.isOwner) return true;
+     if (config.USER_ACCESS_LEVEL >= 3 && 'isModerator' in data && data.isModerator === true)
+      return true;
+     if (config.USER_ACCESS_LEVEL >= 2 && 'isMember' in data && data.isMember === true) return true;
+     if (config.USER_ACCESS_LEVEL >= 1) return true;
+     return false;
     })
     .map((comment) => {
      // USER_WORD_MATCH がないならそのまま返す
@@ -153,7 +159,8 @@ export function CommentGet(config: ConfigType) {
 
   const params = new URLSearchParams(str.replace(/,/g, '&'));
   const result: SendCommentParamsType = {
-   id: params.get('id') || ''
+   id: params.get('id') || '',
+   charaId: ''
   };
 
   params.forEach((value, key) => {

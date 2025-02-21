@@ -18,10 +18,19 @@ declare global {
 
 // 定数
 const config: ConfigType = {
- IS_DIFF_MODE: false, // 差分モードにするか(true:'diff',false:'all')
+ PLUGIN_UID: null, // プラグインなし
+ IS_DIFF_MODE: true, // 差分モードにするか(true:'diff',false:'all')
  USER_ALLOWED_IDS: window.CONFIG?.USER_ALLOWED_IDS || [], // 通すuserIDリスト
  USER_DISALLOWED_IDS: window.CONFIG?.USER_DISALLOWED_IDS || [], // 通さないuserIDリスト
- USER_WORD_MATCH: [] // ワードによるフィルタリング
+ USER_ACCESS_LEVEL: window.CONFIG?.USER_ACCESS_LEVEL || 1, // アクセスレベル
+ USER_WORD_MATCH: [
+  {
+   id: 'nextTimer',
+   isGift: false,
+   keywords: [],
+   regex: []
+  }
+ ] // ワードによるフィルタリング
 };
 
 // コンポーザブル

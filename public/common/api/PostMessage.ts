@@ -1,5 +1,5 @@
 // src/Modules/api/PostMessage.ts
-import { CharaType, OneCommePostType, SendCommentParamsType, SendCommentType } from '../types';
+import { CharaType, OneCommePostType, SendCommentParamsType, SendCommentType } from '../../type';
 import { postSpeech, postSystemMessage, postWordParty, sendComment } from './PostOneComme';
 import { ServiceAPI } from './serviceAPI';
 import { SETTINGS } from '../settings';
@@ -24,7 +24,10 @@ export class PostMessage {
    // 順次処理を保証
    await Promise.all(
     this.posts.map(async (post) => {
-     const chara = post.type === 'onecomme' && post.botKey !== undefined ? this.Charas?.[post.botKey] : undefined;
+     const chara =
+      post.type === 'onecomme' && post.botKey !== undefined
+       ? this.Charas?.[post.botKey]
+       : undefined;
      await this.postFork(post, chara);
     })
    );
@@ -79,7 +82,11 @@ export class PostMessage {
   if (action) await action();
  }
 
- private createCommentRequest(post: OneCommePostType, chara: CharaType, defaultFrameId: string): SendCommentType {
+ private createCommentRequest(
+  post: OneCommePostType,
+  chara: CharaType,
+  defaultFrameId: string
+ ): SendCommentType {
   const id: SendCommentParamsType = {
    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
    charaId: chara.id,

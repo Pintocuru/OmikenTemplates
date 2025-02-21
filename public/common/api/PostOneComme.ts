@@ -1,10 +1,18 @@
 // src/Modules/api/PostOneComme.ts
-import { SendCommentType, SendTestCommentType } from '../types';
+import { SendCommentType, SendTestCommentType } from '../../type';
 import { SETTINGS } from '../settings';
 
 // わんコメへの投稿
-export async function sendComment(request: SendCommentType, delaySeconds: number = 0): Promise<void> {
- return delayFetchPost(`${SETTINGS.BASE_URL}/comments`, request, delaySeconds, 'Failed to post comment');
+export async function sendComment(
+ request: SendCommentType,
+ delaySeconds: number = 0
+): Promise<void> {
+ return delayFetchPost(
+  `${SETTINGS.BASE_URL}/comments`,
+  request,
+  delaySeconds,
+  'Failed to post comment'
+ );
 }
 
 // テストコメントを使ったシステムメッセージ
@@ -27,7 +35,12 @@ export async function postSystemMessage(
   comment: content
  };
 
- return delayFetchPost(`${SETTINGS.BASE_URL}/comments/test`, request, delaySeconds, 'Failed to post test comment');
+ return delayFetchPost(
+  `${SETTINGS.BASE_URL}/comments/test`,
+  request,
+  delaySeconds,
+  'Failed to post test comment'
+ );
 }
 
 // WordPartyへの投稿
@@ -42,11 +55,21 @@ export async function postWordParty(content: string, delaySeconds: number = 0): 
 
 // スピーチへの投稿
 export async function postSpeech(content: string, delaySeconds: number = 0): Promise<void> {
- return delayFetchPost(`${SETTINGS.BASE_URL}/speech`, { text: content }, delaySeconds, 'Failed to post speech');
+ return delayFetchPost(
+  `${SETTINGS.BASE_URL}/speech`,
+  { text: content },
+  delaySeconds,
+  'Failed to post speech'
+ );
 }
 
 // 遅延付きfetch.post
-function delayFetchPost(url: string, data: any, delaySeconds: number, errorMessage: string): Promise<void> {
+function delayFetchPost(
+ url: string,
+ data: any,
+ delaySeconds: number,
+ errorMessage: string
+): Promise<void> {
  return new Promise((resolve, reject) => {
   setTimeout(
    async () => {

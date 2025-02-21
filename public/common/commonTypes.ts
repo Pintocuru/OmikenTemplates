@@ -1,5 +1,5 @@
 // common/commonTypes.ts
-import { CharaType } from '../../public/types';
+import { CharaType } from '../type';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 // コメントの追加型定義
@@ -16,6 +16,7 @@ export type ConfigNoPlugin = {
  IS_DIFF_MODE: boolean; // 差分モードにするか(true:'diff',false:'all')
  USER_ALLOWED_IDS: string[]; // 通すユーザーIDリスト
  USER_DISALLOWED_IDS: string[]; // 通さないユーザーIDリスト
+ USER_ACCESS_LEVEL?: 1 | 2 | 3 | 4; // 1:だれでも/2:メンバー/3:モデレーター/4:管理者
  USER_WORD_MATCH: string[] | UserWordMatchType[]; // ワードによるフィルタリング
  PLUGIN_RULE_ID?: never;
  BOT_USER_ID?: never;
@@ -32,6 +33,7 @@ export type ConfigPlugin = {
  BOT_PARAM_FILTERS: BotParamFilterType[]; // パラメータによるフィルタリング
  USER_STATUS_FILTERS: BotParamFilterType[]; // ユーザーのステータスによるフィルタリング
  USER_ALLOWED_IDS?: never;
+ USER_ACCESS_LEVEL?: never;
  USER_DISALLOWED_IDS?: never;
  USER_WORD_MATCH?: never;
 };

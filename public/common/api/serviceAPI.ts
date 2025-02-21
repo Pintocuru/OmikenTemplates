@@ -1,8 +1,8 @@
 // src/Modules/api/serviceAPI.ts
-import { Service } from '@onecomme.com/onesdk/types/Service';
-import { RGBColor } from '@onecomme.com/onesdk/types/Color';
 import { SETTINGS } from '../settings';
 import { systemMessage } from './ErrorHandler';
+import { Service } from '@onecomme.com/onesdk/types/Service';
+import { RGBColor } from '@onecomme.com/onesdk/types/Color';
 
 export class ServiceAPI {
  // 枠情報を取得
