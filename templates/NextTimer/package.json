@@ -1,5 +1,5 @@
 {
- "name": "basic-new",
+ "name": "next-timer",
  "version": "0.0.1",
  "description": "わんコメのテンプレートbasicをVue+TypeScriptで対応させたバージョン",
  "scripts": {

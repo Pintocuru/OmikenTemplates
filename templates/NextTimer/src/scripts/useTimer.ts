@@ -183,9 +183,6 @@ export function useTimer() {
  // メイン基幹
  const processComment = (comment: string): void => {
   try {
-   if (!comment?.trim()) {
-    throw new Error('Empty comment');
-   }
    const absoluteResult = processAbsoluteTime(comment);
    const relativeResult = processRelativeTime(comment);
 

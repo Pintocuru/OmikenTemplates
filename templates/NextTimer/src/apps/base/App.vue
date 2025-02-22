@@ -1,13 +1,13 @@
 <!-- src/App.vue -->
 <template>
- <BasicNew :newComments="newComments || []" />
+ <NextTimer :nextTimer="userCommentsMap.nextTimer || []" />
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ConfigNoPlugin, ConfigType } from '@common/commonTypes';
-import BasicNew from './BasicNew.vue';
+import NextTimer from './NextTimer.vue';
 import { TIME_PATTERNS } from '@/scripts/constants';
 
 // グローバル変数の型定義
@@ -31,11 +31,11 @@ const config: ConfigType = {
    keywords: [],
    regex: [TIME_PATTERNS.absolute, TIME_PATTERNS.relative]
   }
- ] // ワードによるフィルタリング
+ ]
 };
 
 // コンポーザブル
-const { initOneSDK, newComments } = CommentGet();
+const { initOneSDK, userCommentsMap } = CommentGet();
 
 // 初期化
 onMounted(async () => {
