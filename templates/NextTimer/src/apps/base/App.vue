@@ -6,13 +6,14 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
-import { ConfigType } from '@common/commonTypes';
+import { ConfigNoPlugin, ConfigType } from '@common/commonTypes';
 import BasicNew from './BasicNew.vue';
+import { TIME_PATTERNS } from '@/scripts/constants';
 
 // グローバル変数の型定義
 declare global {
  interface Window {
-  CONFIG?: ConfigType;
+  CONFIG?: ConfigNoPlugin;
  }
 }
 
@@ -28,18 +29,18 @@ const config: ConfigType = {
    id: 'nextTimer',
    isGift: false,
    keywords: [],
-   regex: []
+   regex: [TIME_PATTERNS.absolute, TIME_PATTERNS.relative]
   }
  ] // ワードによるフィルタリング
 };
 
 // コンポーザブル
-const { initOneSDK, newComments } = CommentGet(config);
+const { initOneSDK, newComments } = CommentGet();
 
 // 初期化
 onMounted(async () => {
  document.body.removeAttribute('hidden'); // hiddenの削除
- await initOneSDK(); // コメント初期化
+ await initOneSDK(config); // コメント初期化
 });
 </script>
 

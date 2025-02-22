@@ -10,36 +10,36 @@ export type CommentChara = Comment & {
 
 export type ConfigType = ConfigNoPlugin | ConfigPlugin;
 
-// プラグインがない場合の型
-export type ConfigNoPlugin = {
- PLUGIN_UID?: null; // プラグインなし
+// プラグインなしの設定
+export type ConfigNoPlugin = UserSpecificConfig & {
  IS_DIFF_MODE: boolean; // 差分モードにするか(true:'diff',false:'all')
- USER_ALLOWED_IDS: string[]; // 通すユーザーIDリスト
- USER_DISALLOWED_IDS: string[]; // 通さないユーザーIDリスト
- USER_ACCESS_LEVEL?: 1 | 2 | 3 | 4; // 1:だれでも/2:メンバー/3:モデレーター/4:管理者
- USER_WORD_MATCH: string[] | UserWordMatchType[]; // ワードによるフィルタリング
- PLUGIN_RULE_ID?: never;
- BOT_USER_ID?: never;
- BOT_PARAM_FILTERS?: never;
- USER_STATUS_FILTERS?: never;
+ PLUGIN_UID: null; // プラグインなし
 };
 
-// プラグインがある場合の型
-export type ConfigPlugin = {
- PLUGIN_UID: string; // プラグインあり
- PLUGIN_RULE_ID?: string; // Gamesで使う、rulesのid
+// プラグインありの設定
+export type ConfigPlugin = PluginSpecificConfig & {
  IS_DIFF_MODE: true; // 差分モードのみ
+};
+
+// プラグイン関連の設定
+type PluginSpecificConfig = {
+ PLUGIN_UID: string;
+ PLUGIN_RULE_ID: string | null; // Gamesで使う、rulesのid
  BOT_USER_ID?: string; // プラグインのcomment.data.userId
  BOT_PARAM_FILTERS: BotParamFilterType[]; // パラメータによるフィルタリング
  USER_STATUS_FILTERS: BotParamFilterType[]; // ユーザーのステータスによるフィルタリング
- USER_ALLOWED_IDS?: never;
- USER_ACCESS_LEVEL?: never;
- USER_DISALLOWED_IDS?: never;
- USER_WORD_MATCH?: never;
+};
+
+// ユーザー関連の設定
+type UserSpecificConfig = {
+ USER_ALLOWED_IDS: string[]; // 通すユーザーIDリスト
+ USER_DISALLOWED_IDS: string[]; // 通さないユーザーIDリスト
+ USER_ACCESS_LEVEL?: 1 | 2 | 3 | 4; // 1:だれでも/2:メンバー/3:モデレーター/4:管理者
+ USER_WORD_MATCH: UserWordMatchType[]; // ワードによるフィルタリング
 };
 
 export type BotParamFilterType = {
- id: string;
+ id: string; // 適用したときのID
  POST_PARAM: string[];
  NON_POST_PARAM: string[];
 };
@@ -48,5 +48,5 @@ export type UserWordMatchType = {
  id: string; // 適用したときのID
  isGift: boolean; // ギフトで有効にするか
  keywords: string[]; // isGiftがfalseであるとき、この文字列で始まるコメントを有効にする
- regex?: string[]; // 正規表現でマッチするコメントを有効にする
+ regex?: RegExp[]; // 正規表現でマッチするコメントを有効にする
 };

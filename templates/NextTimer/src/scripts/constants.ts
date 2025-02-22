@@ -1,14 +1,16 @@
 // constants.ts
 
 export const TIME_CONSTANTS = {
- SECOND_ADJUST: 10,
- AFTER_SHOW: 5,
+ ALWAYS_VISIBLE: false, // 常時表示させるか
+ AFTER_SHOW: 5, // 時間経過後に表示する時間(秒)
+ SECOND_ADJUST: 10, // 秒数を丸める(default=10秒単位)
+ // WordPartyの発火タイミング
  COUNT_PARTY: {
   30: 'halfway',
   60: 'start'
  },
- COUNT_PARTY_START: 'start',
- COUNT_PARTY_FINISH: 'finish'
+ COUNT_PARTY_START: 'start', // タイマー起動時に発火するWordParty
+ COUNT_PARTY_FINISH: 'finish' // タイマー0で発火するWordParty
 } as const;
 
 export const TIME_PATTERNS = {
