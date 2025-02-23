@@ -20,7 +20,7 @@ export type TimeUnit = 'minutes' | 'seconds';
 export type ProcessResult = {
  success: boolean;
  error?: string;
- time?: Date;
+ times?: Date[];
 };
 
 // 追加configの型定義

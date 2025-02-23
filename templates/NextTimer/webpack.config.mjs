@@ -18,7 +18,8 @@ export default (env, argv) => {
  // モノレポ構造用設定
  const childConfig = {
   entry: {
-   base: path.resolve(dirname, './src/apps/base/main.ts')
+   base: path.resolve(dirname, './src/apps/base/main.ts'),
+   controller: path.resolve(dirname, './src/apps/controller/main.ts')
   },
   output: {
    filename: '[name]/script.js',
@@ -36,11 +37,19 @@ export default (env, argv) => {
   },
   plugins: [
    ...createCommonPlugins(dirname, mode),
-   // HTMLプラグインを各エントリーポイントに対して作成
+   // base
    new HtmlWebpackPlugin({
     template: path.resolve(dirname, './src/apps/base/index.ejs'),
     filename: 'base/index.html',
     chunks: ['base'], // このHTMLファイルで使用するチャンク
+    inject: 'body', // スクリプトを body 内に挿入
+    templateParameters: ENV[mode]
+   }),
+   // controller
+   new HtmlWebpackPlugin({
+    template: path.resolve(dirname, './src/apps/controller/index.ejs'),
+    filename: 'controller/index.html',
+    chunks: ['controller'], // このHTMLファイルで使用するチャンク
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]
    })
