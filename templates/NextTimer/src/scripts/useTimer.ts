@@ -1,8 +1,7 @@
 // useTimer.ts
 import { reactive, computed, onUnmounted, toRefs } from 'vue';
-import { NextTimerConfigType, ProcessResult, TimeParts } from './types';
+import { NextTimerConfigType, ProcessResult, TimeParts, TIME_PATTERNS } from './types';
 import { TimeUtils } from './utils';
-import { TIME_PATTERNS } from './constants';
 import { postWordParty } from '@common/api/PostOneComme';
 
 export function useTimer(timeConfig: NextTimerConfigType) {
@@ -45,7 +44,7 @@ export function useTimer(timeConfig: NextTimerConfigType) {
   const minutes = parseInt(minutesStr);
   const seconds = parseInt(secondsStr);
 
-  return TimeUtils.adjustTimeValues(hours, minutes, seconds);
+  return TimeUtils.adjustTimeValues(timeConfig, hours, minutes, seconds);
  };
 
  // 絶対時間を処理する

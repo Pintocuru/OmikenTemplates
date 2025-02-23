@@ -8,8 +8,7 @@ import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ConfigNoPlugin, ConfigType } from '@common/commonTypes';
 import NextTimer from './NextTimer.vue';
-import { TIME_PATTERNS } from '@/scripts/constants';
-import { NextTimerConfigType } from '@/scripts/types';
+import { TIME_PATTERNS, NextTimerConfigType } from '@/scripts/types';
 
 // グローバル変数の型定義
 declare global {

@@ -1,12 +1,13 @@
 // utils.ts
-import { TimeParts } from '@scripts/types';
-import { TIME_CONSTANTS } from '@scripts/constants';
+import { NextTimerConfigType, TimeParts } from '@scripts/types';
 
 export class TimeUtils {
+ // 全角の数字を半角に変換する
  static convertToHalfWidth(str: string): string {
   return str.replace(/[０-９]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xfee0));
  }
 
+ // 現在の日時を基に目標時間を計算する
  static createTargetTime(hours: number, minutes: number, seconds: number): Date {
   const now = new Date();
   const target = new Date(
@@ -20,7 +21,13 @@ export class TimeUtils {
   return target <= now ? new Date(target.getTime() + 24 * 60 * 60 * 1000) : target;
  }
 
- static adjustTimeValues(hours: number, minutes: number, seconds: number): TimeParts {
+ // 指定された時間値を SECOND_ADJUST を基準に丸める
+ static adjustTimeValues(
+  TIME_CONSTANTS: NextTimerConfigType,
+  hours: number,
+  minutes: number,
+  seconds: number
+ ): TimeParts {
   let adjustedHours = hours;
   let adjustedMinutes = minutes;
   let adjustedSeconds =
