@@ -55,9 +55,16 @@ export function createConfig(childDir, mode = 'development') {
     {
      test: /\.css$/,
      use: [
-      'style-loader', // CSSをHTMLにインジェクト
-      'css-loader', // CSSをモジュール化
-      'postcss-loader' // TailwindCSSとPostCSSを処理
+      'style-loader',
+      'css-loader',
+      {
+       loader: 'postcss-loader',
+       options: {
+        postcssOptions: {
+         plugins: ['tailwindcss', 'autoprefixer']
+        }
+       }
+      }
      ]
     }
    ]

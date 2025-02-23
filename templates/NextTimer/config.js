@@ -3,8 +3,11 @@
 const CONFIG = {
  USER_ALLOWED_IDS: [], // 通すuserIDリスト
  USER_DISALLOWED_IDS: [], // 通さないuserIDリスト
- USER_ACCESS_LEVEL: 1, // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
+ USER_ACCESS_LEVEL: 1 // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
+};
 
+// スナイプタイマー用設定
+const TIME_CONFIG = {
  //
  ALWAYS_VISIBLE: false, // 常時表示させるか
  AFTER_SHOW: 5, // 時間経過後に表示する時間(秒)
@@ -20,3 +23,4 @@ const CONFIG = {
 };
 
 if (typeof window !== 'undefined') window.CONFIG = CONFIG;
+if (typeof window !== 'undefined') window.TIME_CONFIG = TIME_CONFIG;

@@ -1,15 +1,15 @@
 // useTimer.ts
 import { reactive, computed, onUnmounted, toRefs } from 'vue';
-import { ProcessResult, TimeParts } from './types';
+import { NextTimerConfigType, ProcessResult, TimeParts } from './types';
 import { TimeUtils } from './utils';
-import { TIME_CONSTANTS, TIME_PATTERNS } from './constants';
+import { TIME_PATTERNS } from './constants';
 import { postWordParty } from '@common/api/PostOneComme';
 
-export function useTimer() {
+export function useTimer(timeConfig: NextTimerConfigType) {
  const state = reactive({
   displayTime: null as string | null,
   countdown: null as number | null,
-  isVisible: false,
+  isVisible: timeConfig.ALWAYS_VISIBLE ? true : false,
   isHuwahuwa: false
  });
 
@@ -88,7 +88,6 @@ export function useTimer() {
      const matchResult = match.toLowerCase().match(/([0-9]+)\s+(min(?:ute)?s?|sec(?:ond)?s?)/);
      if (matchResult) {
       const [, value, unitStr] = matchResult;
-      console.log(value, unitStr);
       timeValue = parseInt(value);
       unit = unitStr.startsWith('min') ? 'minutes' : 'seconds';
      }
@@ -98,12 +97,12 @@ export function useTimer() {
     const targetTime = new Date(now.getTime() + timeValue * (unit === 'minutes' ? 60000 : 1000));
 
     if (targetTime.getTime() - now.getTime() < 10000) {
-     state.isVisible = false;
+     if (!timeConfig.ALWAYS_VISIBLE) state.isVisible = false;
      return { success: true };
     }
 
     // 秒数を丸める（TIME_CONSTANTS.SECOND_ADJUST を適用）
-    const secondAdjust = TIME_CONSTANTS.SECOND_ADJUST;
+    const secondAdjust = timeConfig.SECOND_ADJUST;
     targetTime.setSeconds(Math.ceil(targetTime.getSeconds() / secondAdjust) * secondAdjust);
 
     setDisplayTime(targetTime);
@@ -130,7 +129,7 @@ export function useTimer() {
   cleanup();
 
   const calledAt: Record<number, boolean> = {};
-  const secondsToCall = Object.keys(TIME_CONSTANTS.COUNT_PARTY)
+  const secondsToCall = Object.keys(timeConfig.COUNT_PARTY)
    .map(Number)
    .sort((a, b) => b - a);
 
@@ -140,7 +139,7 @@ export function useTimer() {
 
   // `start` の代わりに `-1` をキーとして使用
   if (!calledAt[-1]) {
-   postWordParty(TIME_CONSTANTS.COUNT_PARTY_START, -2);
+   postWordParty(timeConfig.COUNT_PARTY_START, -2);
    calledAt[-1] = true;
   }
 
@@ -155,10 +154,7 @@ export function useTimer() {
 
     for (const second of secondsToCall) {
      if (seconds <= second && !calledAt[second]) {
-      postWordParty(
-       TIME_CONSTANTS.COUNT_PARTY[second as keyof typeof TIME_CONSTANTS.COUNT_PARTY],
-       -2
-      );
+      postWordParty(timeConfig.COUNT_PARTY[second as keyof typeof timeConfig.COUNT_PARTY], -2);
       calledAt[second] = true;
       break;
      }
@@ -168,12 +164,12 @@ export function useTimer() {
     state.countdown = 0;
     state.isHuwahuwa = false;
     if (!calledAt[0]) {
-     postWordParty(TIME_CONSTANTS.COUNT_PARTY_FINISH, -2);
+     postWordParty(timeConfig.COUNT_PARTY_FINISH, -2);
      calledAt[0] = true;
     }
     timers.hide = setTimeout(() => {
-     state.isVisible = false;
-    }, TIME_CONSTANTS.AFTER_SHOW * 1000);
+     if (!timeConfig.ALWAYS_VISIBLE) state.isVisible = false;
+    }, timeConfig.AFTER_SHOW * 1000);
    }
   };
 

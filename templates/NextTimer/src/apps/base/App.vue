@@ -1,6 +1,6 @@
 <!-- src/App.vue -->
 <template>
- <NextTimer :nextTimer="userCommentsMap.nextTimer || []" />
+ <NextTimer :nextTimer="userCommentsMap.nextTimer || []" :timeConfig="timeConfig" />
 </template>
 
 <script setup lang="ts">
@@ -9,11 +9,13 @@ import { CommentGet } from '@common/CommentGet';
 import { ConfigNoPlugin, ConfigType } from '@common/commonTypes';
 import NextTimer from './NextTimer.vue';
 import { TIME_PATTERNS } from '@/scripts/constants';
+import { NextTimerConfigType } from '@/scripts/types';
 
 // グローバル変数の型定義
 declare global {
  interface Window {
   CONFIG?: ConfigNoPlugin;
+  TIME_CONFIG?: NextTimerConfigType;
  }
 }
 
@@ -32,6 +34,16 @@ const config: ConfigType = {
    regex: [TIME_PATTERNS.absolute, TIME_PATTERNS.relative]
   }
  ]
+};
+
+// スナイプタイマー用設定
+const timeConfig: NextTimerConfigType = {
+ ALWAYS_VISIBLE: window.TIME_CONFIG?.ALWAYS_VISIBLE || false, // 常時表示させるか
+ AFTER_SHOW: window.TIME_CONFIG?.AFTER_SHOW || 5, // 時間経過後に表示する時間(秒)
+ SECOND_ADJUST: window.TIME_CONFIG?.SECOND_ADJUST || 10, // 秒数を丸める(default=10秒単位)
+ COUNT_PARTY: window.TIME_CONFIG?.COUNT_PARTY || {}, // WordPartyの発火タイミング
+ COUNT_PARTY_START: window.TIME_CONFIG?.COUNT_PARTY_START || '', // タイマー起動時に発火するWordParty
+ COUNT_PARTY_FINISH: window.TIME_CONFIG?.COUNT_PARTY_FINISH || '' // タイマー0で発火するWordParty
 };
 
 // コンポーザブル
