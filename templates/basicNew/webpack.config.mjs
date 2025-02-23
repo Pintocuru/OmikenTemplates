@@ -23,12 +23,11 @@ export default (env, argv) => {
    clean: true
   },
   resolve: {
-   ...createCommonResolve(dirname),
+   ...createCommonResolve(),
    alias: {
-    '@type': path.resolve(dirname, 'public/types'),
-    '@common': path.resolve(dirname, 'public/common'),
-    '@': path.resolve(childDir, 'src')
-    // 子プロジェクト固有のエイリアス
+    ...createCommonResolve().alias,
+    // 子プロジェクトのエイリアス
+    '@': path.resolve(dirname, 'src')
    }
   },
   plugins: [

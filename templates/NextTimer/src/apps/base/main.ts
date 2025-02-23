@@ -1,6 +1,6 @@
 // src/main.ts
 import { createApp } from 'vue';
-import App from './App.vue';
+import App from '@/apps/base/App.vue';
 import OneSDK from '@onecomme.com/onesdk';
 
 // OneSDKの初期化を待ってからアプリをマウント

@@ -51,9 +51,9 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useTimer } from '@scripts/useTimer';
-import { beforeEnter, enter, leave } from '@scripts/GsapAnimation';
+import { beforeEnter, enter, leave } from '@/scripts/AnimeJsAnimation';
 import { CommentChara } from '@common/commonTypes';
 
 const props = defineProps<{ nextTimer: CommentChara[] }>();
@@ -63,11 +63,18 @@ const { displayTime, isVisible, isHuwahuwa, countdownDigits, processComment } = 
 // コメント監視とクリーンアップ
 watch(
  props.nextTimer,
- (comments) => {
-  comments.forEach((comment) => processComment(comment.data.comment));
+ (comments: CommentChara[]) => {
+  console.log('watch triggered', comments);
+  comments.forEach((comment) => {
+   processComment(comment.data.comment);
+  });
  },
  { deep: true }
 );
+
+onMounted(() => {
+ console.log('Initial nextTimer:', props.nextTimer);
+});
 </script>
 
 <style>

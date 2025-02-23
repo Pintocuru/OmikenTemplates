@@ -10,14 +10,12 @@ export const ENV = {
  // development:開発環境設定
  development: {
   vuePath: 'https://unpkg.com/vue@3/dist/vue.global.js', // Vueのパス
-  onesdkPath: '../../../public/onesdk.js', // OneSDKのパス(distから見て)
-  configPath: './config.js' // 設定ファイルのパス(生成物はdistに入ってるので意味ある)
+  onesdkPath: '../../../public/onesdk.js' // OneSDKのパス(distから見て)
  },
  // production:本番環境設定
  production: {
   vuePath: '../__origin/js/vue3.min.js',
-  onesdkPath: '../__origin/js/onesdk.js',
-  configPath: './config.js'
+  onesdkPath: '../__origin/js/onesdk.js'
  }
 };
 
@@ -47,7 +45,7 @@ export function createConfig(childDir, mode = 'development') {
     {
      test: /\.ts$/,
      loader: 'ts-loader',
-     exclude: /node_modules/,
+     exclude: [/node_modules/],
      options: {
       transpileOnly: false,
       appendTsSuffixTo: [/\.vue$/]
@@ -56,27 +54,19 @@ export function createConfig(childDir, mode = 'development') {
     // CSSファイルを処理
     {
      test: /\.css$/,
-     use: ['style-loader', 'css-loader']
-    },
-    // SCSSファイルを処理
-    {
-     test: /\.scss$/,
-     use: ['style-loader', 'css-loader', 'sass-loader']
-    },
-    // pugファイルを処理
-    {
-     test: /\.pug$/,
-     loader: 'pug-loader',
-     options: {
-      pretty: true
-     }
+     use: [
+      'style-loader', // CSSをHTMLにインジェクト
+      'css-loader', // CSSをモジュール化
+      'postcss-loader' // TailwindCSSとPostCSSを処理
+     ]
     }
    ]
   },
   // 外部で使用するもの
   externals: {
    vue: 'Vue',
-   '@onecomme.com/onesdk': 'OneSDK'
+   '@onecomme.com/onesdk': 'OneSDK',
+   animejs: 'anime'
   },
   optimization: {
    minimize: false, // コードの最小化
@@ -93,13 +83,12 @@ export function createCommonPlugins(childDir, mode = 'development') {
 }
 
 // 共通のエイリアスを作成
-export function createCommonResolve(childDir) {
+export function createCommonResolve() {
  return {
   // tsconfig.json の paths に対応
   alias: {
    '@type': path.resolve(dirname, 'public/types'),
-   '@common': path.resolve(dirname, 'public/common'),
-   '@': path.resolve(childDir, 'src')
+   '@common': path.resolve(dirname, 'public/common')
   },
   extensions: ['.js', '.ts', '.vue'] // 省略可能な拡張子
  };

@@ -7,53 +7,43 @@ import {
 } from '../../webpackAll.config.mjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { VueLoaderPlugin } from 'vue-loader';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default (env, argv) => {
- const baseConfig = createConfig(dirname, argv.mode);
+ const { mode } = argv;
+ const baseConfig = createConfig(dirname, mode);
 
- // エントリーポイントとoutputのカスタマイズ例
+ // モノレポ構造用設定
  const childConfig = {
   entry: {
-   app1: path.resolve(dirname, './src/app1/main.ts'),
-   app2: path.resolve(dirname, './src/app2/main.ts')
+   base: path.resolve(dirname, './src/apps/base/main.ts')
   },
   output: {
-   filename: 'js/[name]/[name].js',
+   filename: '[name]/script.js',
    path: path.resolve(dirname, 'dist'),
    clean: true
   },
   resolve: {
-   ...createCommonResolve(dirname),
+   ...createCommonResolve(),
    alias: {
-    '@type': path.resolve(dirname, 'public/types'),
-    '@common': path.resolve(dirname, 'public/common'),
-    '@': path.resolve(childDir, 'src'),
-    // 子プロジェクト固有のエイリアス
-    '@components': path.resolve(dirname, 'src/components')
+    ...createCommonResolve().alias,
+    // 子プロジェクトのエイリアス
+    '@': path.resolve(dirname, 'src'),
+    '@scripts': path.resolve(dirname, 'src/scripts')
    }
   },
   plugins: [
-   ...createCommonPlugins(dirname, argv.mode),
+   ...createCommonPlugins(dirname, mode),
    // HTMLプラグインを各エントリーポイントに対して作成
    new HtmlWebpackPlugin({
-    template: path.resolve(dirname, './src/app1/index.ejs'),
-    filename: 'app1/index.html',
-    chunks: ['app1'], // このHTMLファイルで使用するチャンク
-    inject: 'body',
-    templateParameters: ENV[argv.mode]
-   }),
-   new HtmlWebpackPlugin({
-    template: path.resolve(dirname, './src/app2/index.ejs'),
-    filename: 'app2/index.html',
-    chunks: ['app2'],
-    inject: 'body',
-    templateParameters: ENV[argv.mode]
-   }),
-   new VueLoaderPlugin()
+    template: path.resolve(dirname, './src/apps/base/index.ejs'),
+    filename: 'base/index.html',
+    chunks: ['base'], // このHTMLファイルで使用するチャンク
+    inject: 'body', // スクリプトを body 内に挿入
+    templateParameters: ENV[mode]
+   })
   ]
  };
 

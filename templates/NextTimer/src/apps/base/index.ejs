@@ -3,13 +3,21 @@
  <head>
   <meta charset="UTF-8" />
   <meta name="referrer" content="no-referrer" />
-  <link rel="stylesheet" href="./style.css" />
+  <!-- tailwindcss -->
+  <link
+   href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+   rel="stylesheet"
+  />
   <!-- 設定ファイル -->
-  <script src="<%= configPath %>"></script>
+  <script src="../../config.js"></script>
  </head>
  <body hidden>
   <div id="App"></div>
+  <!-- Vue3 -->
   <script src="<%= vuePath %>"></script>
-  <script src="<%= onesdkPath %>"></script>
+  <!-- OneSDK -->
+  <script src="../<%= onesdkPath %>"></script>
+  <!-- Anime.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
  </body>
 </html>

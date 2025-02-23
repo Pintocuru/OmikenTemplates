@@ -77,9 +77,11 @@ export const filterUserId = (
 };
 
 export const filterAccess = (comments: Comment[], config: ConfigNoPlugin): Comment[] => {
- return comments.filter(({ data }) => {
+ return comments.filter((comment) => {
+  const { id, data } = comment;
   const level = config.USER_ACCESS_LEVEL;
   if (!level) return true;
+  if (id === 'COMMENT_TESTER') return true; // コメントテスターは配信者と同じ扱い
   if (level === 4 && data.isOwner) return true;
   if (level >= 3 && 'isModerator' in data && data.isModerator === true) return true;
   if (level >= 2 && 'isMember' in data && data.isMember === true) return true;
