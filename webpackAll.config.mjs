@@ -2,33 +2,26 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { VueLoaderPlugin } from 'vue-loader';
-import AutoImport from 'unplugin-auto-import/webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 // 親ディレクトリ
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const ENV = {
+export const ENV = {
  // development:開発環境設定
  development: {
-  cssDir: '../src/css',
-  cssPath: '../src/css/app.css',
-  vuePath: 'https://unpkg.com/vue@3/dist/vue.global.js',
-  onesdkPath: '../../../public/onesdk.js',
-  scriptPath: './script.js',
-  configPath: '../src/config.js'
+  vuePath: 'https://unpkg.com/vue@3/dist/vue.global.js', // Vueのパス
+  onesdkPath: '../../../public/onesdk.js', // OneSDKのパス(distから見て)
+  configPath: './config.js' // 設定ファイルのパス(生成物はdistに入ってるので意味ある)
  },
  // production:本番環境設定
  production: {
-  cssDir: './css',
-  cssPath: './css/app.css',
   vuePath: '../__origin/js/vue3.min.js',
   onesdkPath: '../__origin/js/onesdk.js',
-  scriptPath: './script.js',
   configPath: './config.js'
  }
 };
 
+// 基本設定を作成する関数
 export function createConfig(childDir, mode = 'development') {
  return {
   mode, // モード
@@ -39,14 +32,7 @@ export function createConfig(childDir, mode = 'development') {
    path: path.resolve(childDir, 'dist'), // 出力ディレクトリ
    clean: true // 出力ディレクトリをクリーンアップ
   },
-  resolve: {
-   // tsconfig.json の paths に対応
-   alias: {
-    '@type': path.resolve(dirname, 'public/types'),
-    '@common': path.resolve(dirname, 'templates/common')
-   },
-   extensions: ['.js', '.ts', '.vue'] // 省略可能な拡張子
-  },
+  resolve: { ...createCommonResolve(childDir) },
   module: {
    rules: [
     // Vueファイルを処理
@@ -63,7 +49,7 @@ export function createConfig(childDir, mode = 'development') {
      loader: 'ts-loader',
      exclude: /node_modules/,
      options: {
-      transpileOnly: false, // チェックをゆるくするか
+      transpileOnly: false,
       appendTsSuffixTo: [/\.vue$/]
      }
     },
@@ -97,22 +83,24 @@ export function createConfig(childDir, mode = 'development') {
    usedExports: true, // 使用されていないエクスポートを削除
    sideEffects: true // サイドエフェクトがない場合、不要なコードを削除
   },
-  plugins: [
-   // Vue用のWebpackプラグイン
-   new VueLoaderPlugin(),
-   // ejsからHTML出力
-   new HtmlWebpackPlugin({
-    template: path.resolve(childDir, './src/index.ejs'),
-    filename: 'index.html',
-    inject: 'body',
-    templateParameters: ENV[mode],
-    minify: false
-   }),
-   // AutoImport
-   AutoImport({
-    imports: ['vue'],
-    dts: path.resolve(childDir, './src/auto-imports.d.ts')
-   })
-  ]
+  plugins: createCommonPlugins(dirname, mode)
+ };
+}
+
+// 共通のプラグインを作成する関数
+export function createCommonPlugins(childDir, mode = 'development') {
+ return [new VueLoaderPlugin()];
+}
+
+// 共通のエイリアスを作成
+export function createCommonResolve(childDir) {
+ return {
+  // tsconfig.json の paths に対応
+  alias: {
+   '@type': path.resolve(dirname, 'public/types'),
+   '@common': path.resolve(dirname, 'public/common'),
+   '@': path.resolve(childDir, 'src')
+  },
+  extensions: ['.js', '.ts', '.vue'] // 省略可能な拡張子
  };
 }
