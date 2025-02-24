@@ -1,6 +1,6 @@
 // useTimer.ts
 import { reactive, computed, onUnmounted, toRefs, onMounted } from 'vue';
-import { NextTimerConfigType, TimerAction } from './types';
+import { NextTimerConfigType, TimerAction, TimerActionData } from './types';
 import { TimerAbsolute } from './TimerAbsolute';
 import { postWordParty } from '@common/api/PostOneComme';
 import { TimerStorageController } from './TimerStorage';
@@ -32,11 +32,11 @@ export function useTimer(timeConfig: NextTimerConfigType) {
  );
 
  // LocalStorage を使って外部ブラウザから操作する
- const handleTimerAction = (action: TimerAction, timestamp?: Date) => {
+ const handleTimerAction = (action: TimerAction, data: TimerActionData) => {
   switch (action) {
    case 'start':
-    if (timestamp) {
-     startCountdown(timestamp);
+    if (data.timestamp) {
+     startCountdown(data.timestamp);
     }
     break;
    case 'pause':
@@ -53,6 +53,12 @@ export function useTimer(timeConfig: NextTimerConfigType) {
     break;
    case 'toggle_visibility':
     state.isVisible = !state.isVisible;
+    break;
+   // タイマーの設定値を調整する
+   case 'initial_time':
+    if (data.value !== undefined) {
+     state.initialTime = data.value;
+    }
     break;
   }
  };

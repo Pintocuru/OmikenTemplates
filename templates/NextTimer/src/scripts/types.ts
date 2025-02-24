@@ -4,14 +4,19 @@
 export const TIME_PATTERN =
  /(?:^|[^０-９0-9])([０-９0-9]{1,2})[:：じ時]([０-９0-9]{1,2})(?:[:：分ふん])?(?::?([０-９0-9]{1,2})(?:[秒びょう])?)?/g;
 
-// コントローラーのアクション定義
-export type TimerAction = 'start' | 'pause' | 'reset' | 'toggle_visibility';
-
 // コントローラーの型定義
 export interface TimerStorageData {
  action: TimerAction;
- timestamp?: string;
+ data: TimerActionData;
 }
+// コントローラーのアクション定義
+export type TimerAction = 'start' | 'pause' | 'reset' | 'toggle_visibility' | 'initial_time';
+
+// アクションのデータ定義
+export type TimerActionData = {
+ timestamp?: Date;
+ value?: number;
+};
 
 // 時間を時間・分・秒で分解する
 export interface TimeParts {
