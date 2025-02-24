@@ -9,7 +9,7 @@ const CONFIG = {
 // スナイプタイマー用設定
 const TIME_CONFIG = {
  //
- ALWAYS_VISIBLE: true, // 常時表示させるか
+ ALWAYS_VISIBLE: false, // 常時表示させるか
  AFTER_SHOW: 5, // 時間経過後に表示する時間(秒)
  SECOND_ADJUST: 10, // 秒数を丸める(default=10秒単位)
 

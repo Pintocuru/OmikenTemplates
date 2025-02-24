@@ -1,10 +1,10 @@
-<!-- src/BasicNew.vue -->
+<!-- src/NextTimer.vue -->
 <template>
- <div v-if="isVisible" class="flex justify-center items-center">
-  <transition @before-enter="beforeEnter" @enter="enter" @leave="leave">
-   <div class="font-archivo flex justify-center items-center">
+ <div class="flex justify-center items-center">
+  <transition name="fade">
+   <div v-show="isVisible" class="font-archivo flex justify-center items-center">
     <div
-     class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-2xl p-8 rotate-3 transition-transform duration-300"
+     class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-2xl p-8 transform transition-all duration-500 hover:rotate-1 hover:scale-105"
     >
      <!-- ヘッダー -->
      <div class="flex justify-between items-center mb-6">
@@ -24,7 +24,7 @@
         class="w-14 h-24 mx-1 bg-black/20 rounded-lg overflow-hidden relative transform hover:scale-105 transition-transform duration-200"
        >
         <div
-         class="absolute top-0 left-0 transition-transform duration-300"
+         class="absolute top-0 left-3 transition-transform duration-300"
          :style="{ transform: `translateY(-${digit * 10}%)` }"
         >
          <span
@@ -41,10 +41,7 @@
      </div>
 
      <!-- 次のカウントダウン時間 -->
-     <div
-      class="text-center text-2xl font-semibold text-yellow-400"
-      :class="{ 'animate-float': isTimerRunning }"
-     >
+     <div class="text-center text-2xl font-semibold text-yellow-400 animate-pulse">
       <span>Next {{ displayTime }}</span>
      </div>
     </div>
@@ -84,6 +81,15 @@ watch(
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+/* フェードイン・アウト */
+.fade-enter-active,
+.fade-leave-active {
+ transition: opacity 0.5s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+ opacity: 0;
+}
 
 .font-archivo {
  font-family: 'Archivo Black', sans-serif;
@@ -92,20 +98,10 @@ watch(
 @keyframes float {
  0%,
  100% {
-  transform: translateY(0) rotate(3deg);
+  transform: translateY(0);
  }
  50% {
-  transform: translateY(-10px) rotate(3deg);
+  transform: translateY(5px);
  }
-}
-
-.animate-float {
- animation: float 4s ease-in-out infinite;
-}
-
-/* 数字のホバーエフェクト */
-.hover\:scale-105:hover {
- transform: scale(1.05);
- transition: transform 0.2s ease-in-out;
 }
 </style>
