@@ -1,18 +1,23 @@
 // src/scripts/TimerAbsolute.ts
-import { TimeParts, NextTimerConfigType, TIME_PATTERN } from './types';
+import { TimeParts, NextTimerConfigType, TIME_PATTERN, SecondAdjustType } from './types';
 
 export class TimerAbsolute {
+ secondAdjust: number = 10;
  constructor(private config: NextTimerConfigType) {}
 
  // 絶対時間を処理
- processTime(comment: string): Date[] | null {
-  const matches = comment.match(TIME_PATTERN);
-  if (!matches) return null;
+ processTime(input: string | Date, secondAdjust: SecondAdjustType = 10): Date | null {
+  this.secondAdjust = secondAdjust;
+  // Data型
+  if (input instanceof Date) return this.normalizeTime(input);
 
-  return matches.map((timeMatch) => {
-   const parts = this.extractTimeParts(timeMatch.trim());
-   return this.createTargetTime(parts);
-  });
+  // コメント
+  const match = input.match(TIME_PATTERN);
+  if (!match) return null;
+
+  const timeMatch = match[0].trim();
+  const parts = this.extractTimeParts(timeMatch);
+  return this.createTargetTime(parts);
  }
 
  //  時間文字列から時、分、秒を抽出
@@ -31,9 +36,15 @@ export class TimerAbsolute {
   return this.adjustTime(parseInt(h), parseInt(m), parseInt(s));
  }
 
+ // 時間を指定のルールに従って調整する
+ normalizeTime(date: Date): Date {
+  const parts: TimeParts = this.adjustTime(date.getHours(), date.getMinutes(), date.getSeconds());
+  return this.createTargetTime(parts);
+ }
+
  // 指定された時間値を SECOND_ADJUST を基準に丸める
  private adjustTime(h: number, m: number, s: number): TimeParts {
-  const adjustedSeconds = Math.ceil(s / this.config.SECOND_ADJUST) * this.config.SECOND_ADJUST;
+  const adjustedSeconds = Math.ceil(s / this.secondAdjust) * this.secondAdjust;
   let minutes = m + Math.floor(adjustedSeconds / 60);
   let hours = (h + Math.floor(minutes / 60)) % 24;
 

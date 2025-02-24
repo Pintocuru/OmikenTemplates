@@ -57,6 +57,23 @@
     表示切替
    </button>
   </div>
+  <!-- secondAdjust 選択用のコントロールを追加 -->
+  <div class="mt-4">
+   <label class="block text-sm font-medium text-gray-700 mb-2"> 時間調整単位 </label>
+   <div class="grid grid-cols-4 gap-2">
+    <button
+     v-for="seconds in [10, 15, 20, 30]"
+     :key="seconds"
+     @click="() => setSecondAdjust(seconds)"
+     :class="[
+      'px-2 py-1 rounded',
+      secondAdjust === seconds ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
+     ]"
+    >
+     {{ seconds }}秒
+    </button>
+   </div>
+  </div>
  </div>
 </template>
 
@@ -71,6 +88,7 @@ import {
  Plus as PlusIcon,
  Minus as MinusIcon
 } from 'lucide-vue-next';
+import { SecondAdjustType } from '@/scripts/types';
 
 // 定数
 const MIN_SECONDS = 10;
@@ -79,6 +97,7 @@ const MAX_SECONDS = 300;
 // タイマーコントローラーの初期化と状態管理
 const timerController = new TimerStorageController();
 const initialTime = ref(30);
+const secondAdjust = ref<SecondAdjustType>(30);
 
 // タイマーの調整
 const adjustTimer = (amount: number) => {
@@ -93,6 +112,10 @@ const adjustTimer = (amount: number) => {
 // タイマー開始
 const startTimer = () => {
  timerController.startTimer(initialTime.value);
+};
+const setSecondAdjust = (value: number) => {
+ secondAdjust.value = value as SecondAdjustType;
+ timerController.setSecondAdjust(secondAdjust.value);
 };
 
 // コンポーネントのライフサイクル管理

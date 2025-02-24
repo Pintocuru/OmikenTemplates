@@ -1,8 +1,8 @@
 <!-- src/BasicNew.vue -->
 <template>
- <div v-if="props.nextTimer.length > 0" class="flex justify-center items-center">
+ <div v-if="isVisible" class="flex justify-center items-center">
   <transition @before-enter="beforeEnter" @enter="enter" @leave="leave">
-   <div v-if="isVisible" class="font-archivo flex justify-center items-center">
+   <div class="font-archivo flex justify-center items-center">
     <div
      class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl shadow-2xl p-8 rotate-3 transition-transform duration-300"
     >
@@ -61,12 +61,14 @@ import { CommentChara } from '@common/commonTypes';
 import { NextTimerConfigType } from '@/scripts/types';
 
 const props = defineProps<{
+ isInitFlag: boolean;
  nextTimer: CommentChara[];
  timeConfig: NextTimerConfigType;
 }>();
 
 const { displayTime, isVisible, isTimerRunning, countdownDigits, processComment } = useTimer(
- props.timeConfig
+ props.timeConfig,
+ props.isInitFlag
 );
 
 watch(

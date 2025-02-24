@@ -1,15 +1,19 @@
 <!-- src/App.vue -->
 <template>
- <NextTimer :nextTimer="userCommentsMap.nextTimer || []" :timeConfig="timeConfig" />
+ <NextTimer
+  :isInitFlag="isInitFlag"
+  :nextTimer="userCommentsMap.nextTimer || []"
+  :timeConfig="timeConfig"
+ />
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ServiceAPI } from '@common/api/ServiceAPI';
 import { ConfigNoPlugin, ConfigType } from '@common/commonTypes';
 import NextTimer from './NextTimer.vue';
-import { TIME_PATTERNS, NextTimerConfigType } from '@/scripts/types';
+import { TIME_PATTERN, NextTimerConfigType } from '@/scripts/types';
 
 // グローバル変数の型定義
 declare global {
@@ -31,7 +35,7 @@ const config: ConfigType = {
    id: 'nextTimer',
    isGift: false,
    keywords: [],
-   regex: [TIME_PATTERNS.absolute, TIME_PATTERNS.relative]
+   regex: [TIME_PATTERN]
   }
  ]
 };
@@ -47,14 +51,15 @@ const timeConfig: NextTimerConfigType = {
 };
 
 // コンポーザブル
-const { initOneSDK, userCommentsMap } = CommentGet();
+const { isInitFlag, initOneSDK, userCommentsMap } = CommentGet();
 
 // 初期化
 onMounted(async () => {
  document.body.removeAttribute('hidden'); // hiddenの削除
  // わんコメから枠情報を取得し、1枠以上あるならわんコメ対応
  const response = await new ServiceAPI().getServices();
- if (response.length > 0) await initOneSDK(config);
+ if (response) await initOneSDK(config);
+ else isInitFlag.value = false; // わんコメ対応なし
 });
 </script>
 

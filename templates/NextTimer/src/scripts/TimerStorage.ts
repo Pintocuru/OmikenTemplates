@@ -1,10 +1,11 @@
 // src/scripts/TimerStorage.ts
-import { TimerAction, TimerActionData, TimerStorageData } from './types';
+import { SecondAdjustType, TimerAction, TimerActionData, TimerStorageData } from './types';
 
 export class TimerStorageController {
  private readonly STORAGE_KEY = 'timer_control';
  private readonly MIN_SECONDS = 10;
  private readonly MAX_SECONDS = 300;
+ private readonly VALID_ADJUSTS: SecondAdjustType[] = [10, 15, 20, 30];
  private listeners: Set<(action: TimerAction, data: TimerActionData) => void>;
 
  constructor() {
@@ -64,6 +65,18 @@ export class TimerStorageController {
   });
  }
 
+ // secondAdjustを設定
+ setSecondAdjust(seconds: SecondAdjustType): void {
+  if (this.VALID_ADJUSTS.includes(seconds)) {
+   this.saveAction({
+    action: 'second_adjust',
+    data: {
+     secondAdjust: seconds
+    }
+   });
+  }
+ }
+
  // 初期開始時間を変更
  setInitialTime(seconds: number): void {
   const adjustedSeconds = Math.max(this.MIN_SECONDS, Math.min(this.MAX_SECONDS, seconds));
@@ -80,19 +93,28 @@ export class TimerStorageController {
   if (event.key !== this.STORAGE_KEY) return;
 
   try {
-   const storageData: TimerStorageData = JSON.parse(event.newValue || '');
+   const storageData = JSON.parse(event.newValue || '');
+   const { timestamp, ...actualData } = storageData; // タイムスタンプを除外
+
    const result: TimerActionData = {
-    timestamp: storageData.data.timestamp ? new Date(storageData.data.timestamp) : undefined,
-    value: storageData.data.value
+    timestamp: actualData.data.timestamp ? new Date(actualData.data.timestamp) : undefined,
+    value: actualData.data.value
    };
 
-   this.listeners.forEach((listener) => listener(storageData.action, result));
+   this.listeners.forEach((listener) => listener(actualData.action, result));
   } catch (error) {
    console.error('Failed to process storage event:', error);
   }
  };
 
  private saveAction(data: TimerStorageData): void {
-  localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+  const actionWithTimestamp = { ...data, timestamp: Date.now() };
+  localStorage.setItem(this.STORAGE_KEY, JSON.stringify(actionWithTimestamp));
+  this.handleStorageEvent(
+   new StorageEvent('storage', {
+    key: this.STORAGE_KEY,
+    newValue: JSON.stringify(data)
+   })
+  );
  }
 }

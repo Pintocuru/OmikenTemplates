@@ -6,28 +6,22 @@ import { RGBColor } from '@onecomme.com/onesdk/types/Color';
 
 export class ServiceAPI {
  // 枠情報を取得
- async getServices(): Promise<Service[]> {
+ async getServices(): Promise<Service[] | null> {
   try {
-   // GETリクエストを送信
    const response = await fetch(`${SETTINGS.BASE_URL}/services`, {
     method: 'GET',
-    headers: {
-     'Content-Type': 'application/json' // 必要に応じてヘッダーを追加
-    }
+    headers: { 'Content-Type': 'application/json' }
    });
 
-   // レスポンスの確認
    if (!response.ok) {
     throw new Error(`HTTPエラー: ${response.status} ${response.statusText}`);
    }
 
-   // レスポンスデータを取得
    const data = await response.json();
    return data as Service[];
   } catch (error) {
-   // セットアップ中に枠情報を取得することもあるので、エラーメッセージは出さない
    console.info('枠情報取得に失敗。再度枠情報を取得中…', error);
-   return [];
+   return null;
   }
  }
 
