@@ -13,7 +13,7 @@
       :class="initialTime <= MIN_SECONDS ? 'text-gray-300' : 'text-gray-600'"
      />
     </button>
-    <span class="text-2xl font-bold w-16 text-center">{{ initialTime }}秒</span>
+    <span class="text-2xl font-bold w-16 text-center"> {{ initialTime }}秒 </span>
     <button
      @click="() => adjustTimer(5)"
      class="h-8 w-8 border rounded flex items-center justify-center hover:bg-gray-100 transition-colors"
@@ -25,6 +25,7 @@
      />
     </button>
    </div>
+   <span class="text-xl text-gray-600">NextTime : {{ endTime }}</span>
   </div>
 
   <div class="grid grid-cols-2 gap-2">
@@ -78,8 +79,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { TimerStorageController } from '@/scripts/TimerStorage';
+import { SecondAdjustType } from '@/scripts/types';
+import { TimerAbsolute } from '@/scripts/TimerAbsolute';
 import {
  Play as PlayIcon,
  Pause as PauseIcon,
@@ -88,7 +91,6 @@ import {
  Plus as PlusIcon,
  Minus as MinusIcon
 } from 'lucide-vue-next';
-import { SecondAdjustType } from '@/scripts/types';
 
 // 定数
 const MIN_SECONDS = 10;
@@ -96,8 +98,17 @@ const MAX_SECONDS = 300;
 
 // タイマーコントローラーの初期化と状態管理
 const timerController = new TimerStorageController();
+const timerAbsolute = new TimerAbsolute();
 const initialTime = ref(30);
-const secondAdjust = ref<SecondAdjustType>(30);
+const secondAdjust = ref<SecondAdjustType>(10);
+const now = ref(Date.now()); // 現在時刻
+
+// タイマー終了時刻を計算（常に更新）
+const endTime = computed(() => {
+ const rawTime = new Date(now.value + initialTime.value * 1000);
+ const timestamp = timerAbsolute.processTime(rawTime, secondAdjust.value);
+ return timestamp ? timestamp.toLocaleTimeString() : '';
+});
 
 // タイマーの調整
 const adjustTimer = (amount: number) => {
@@ -111,8 +122,12 @@ const adjustTimer = (amount: number) => {
 
 // タイマー開始
 const startTimer = () => {
- timerController.startTimer(initialTime.value);
+ timerController.startTimer(initialTime.value, secondAdjust.value);
 };
+
+// 時刻を1秒ごとに更新
+let intervalId: NodeJS.Timeout | null = null;
+
 const setSecondAdjust = (value: number) => {
  secondAdjust.value = value as SecondAdjustType;
  timerController.setSecondAdjust(secondAdjust.value);
@@ -121,9 +136,14 @@ const setSecondAdjust = (value: number) => {
 // コンポーネントのライフサイクル管理
 onMounted(() => {
  timerController.initialize();
+
+ intervalId = setInterval(() => {
+  now.value = Date.now();
+ }, 1000);
 });
 
 onUnmounted(() => {
  timerController.cleanup();
+ if (intervalId) clearInterval(intervalId);
 });
 </script>

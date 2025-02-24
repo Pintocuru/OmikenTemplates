@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
+import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ServiceAPI } from '@common/api/ServiceAPI';
 import { ConfigNoPlugin, ConfigType } from '@common/commonTypes';

@@ -1,12 +1,12 @@
 // src/scripts/TimerAbsolute.ts
-import { TimeParts, NextTimerConfigType, TIME_PATTERN, SecondAdjustType } from './types';
+import { TimeParts, TIME_PATTERN, SecondAdjustType } from './types';
 
 export class TimerAbsolute {
  secondAdjust: number = 10;
- constructor(private config: NextTimerConfigType) {}
+ constructor() {}
 
  // 絶対時間を処理
- processTime(input: string | Date, secondAdjust: SecondAdjustType = 10): Date | null {
+ processTime(input: string | Date, secondAdjust: SecondAdjustType): Date | null {
   this.secondAdjust = secondAdjust;
   // Data型
   if (input instanceof Date) return this.normalizeTime(input);

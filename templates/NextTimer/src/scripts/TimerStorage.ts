@@ -1,4 +1,5 @@
 // src/scripts/TimerStorage.ts
+import { TimerAbsolute } from './TimerAbsolute';
 import { SecondAdjustType, TimerAction, TimerActionData, TimerStorageData } from './types';
 
 export class TimerStorageController {
@@ -7,6 +8,7 @@ export class TimerStorageController {
  private readonly MAX_SECONDS = 300;
  private readonly VALID_ADJUSTS: SecondAdjustType[] = [10, 15, 20, 30];
  private listeners: Set<(action: TimerAction, data: TimerActionData) => void>;
+ private timerAbsolute = new TimerAbsolute();
 
  constructor() {
   this.listeners = new Set();
@@ -34,59 +36,38 @@ export class TimerStorageController {
  }
 
  // タイマーを開始
- startTimer(seconds: number): void {
-  this.saveAction({
-   action: 'start',
-   data: { timestamp: new Date(Date.now() + seconds * 1000) }
-  });
+ startTimer(seconds: number, secondAdjust: SecondAdjustType): void {
+  const rawTime = new Date(Date.now() + seconds * 1000);
+  const timestamp = this.timerAbsolute.processTime(rawTime, secondAdjust);
+  if (timestamp) this.saveAction({ action: 'start', data: { timestamp } });
  }
 
  // タイマーを一時停止
  pauseTimer(): void {
-  this.saveAction({
-   action: 'pause',
-   data: {}
-  });
+  this.saveAction({ action: 'pause', data: {} });
  }
 
  // タイマーをリセット
  resetTimer(): void {
-  this.saveAction({
-   action: 'reset',
-   data: {}
-  });
+  this.saveAction({ action: 'reset', data: {} });
  }
 
  // タイマーの表示/非表示を切り替え
  toggleVisibility(): void {
-  this.saveAction({
-   action: 'toggle_visibility',
-   data: {}
-  });
+  this.saveAction({ action: 'toggle_visibility', data: {} });
  }
 
  // secondAdjustを設定
  setSecondAdjust(seconds: SecondAdjustType): void {
   if (this.VALID_ADJUSTS.includes(seconds)) {
-   this.saveAction({
-    action: 'second_adjust',
-    data: {
-     secondAdjust: seconds
-    }
-   });
+   this.saveAction({ action: 'second_adjust', data: { secondAdjust: seconds } });
   }
  }
 
  // 初期開始時間を変更
  setInitialTime(seconds: number): void {
   const adjustedSeconds = Math.max(this.MIN_SECONDS, Math.min(this.MAX_SECONDS, seconds));
-
-  this.saveAction({
-   action: 'initial_time',
-   data: {
-    value: adjustedSeconds
-   }
-  });
+  this.saveAction({ action: 'initial_time', data: { value: adjustedSeconds } });
  }
 
  private handleStorageEvent = (event: StorageEvent): void => {

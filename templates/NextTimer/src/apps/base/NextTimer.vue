@@ -45,7 +45,8 @@
       class="text-center text-2xl font-semibold text-yellow-400"
       :class="{ 'animate-float': isTimerRunning }"
      >
-      <span>Next {{ displayTime }}</span>
+      <span v-if="isTimerRunning">Next {{ displayTime }}</span>
+      <span v-else>---</span>
      </div>
     </div>
    </div>
@@ -54,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue';
+import { toRef, watch } from 'vue';
 import { useTimer } from '@scripts/useTimer';
 import { beforeEnter, enter, leave } from '@/scripts/AnimeJsAnimation';
 import { CommentChara } from '@common/commonTypes';
@@ -68,7 +69,7 @@ const props = defineProps<{
 
 const { displayTime, isVisible, isTimerRunning, countdownDigits, processComment } = useTimer(
  props.timeConfig,
- props.isInitFlag
+ toRef(props, 'isInitFlag')
 );
 
 watch(
