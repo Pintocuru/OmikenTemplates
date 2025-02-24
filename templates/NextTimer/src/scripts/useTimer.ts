@@ -15,9 +15,9 @@ export function useTimer(config: NextTimerConfigType, isInitFlagRef: Ref<boolean
  const state = reactive<TimerState>({
   isVisible: config.ALWAYS_VISIBLE,
   initialTime: 30,
-  displayTime: null,
+  displayTime: '---',
   secondAdjust: config.SECOND_ADJUST as SecondAdjustType,
-  countdown: null,
+  countdown: 0,
   isTimerRunning: false
  });
 

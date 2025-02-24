@@ -9,8 +9,8 @@ export interface TimerState {
  isVisible: boolean; // 表示/非表示
  initialTime: number; // タイマーの初期値
  secondAdjust: SecondAdjustType; // 秒数を丸める単位
- displayTime: string | null; // カウントが0になる時刻
- countdown: number | null; // 残り時間(秒)
+ displayTime: string; // カウントが0になる時刻
+ countdown: number; // 残り時間(秒)
  isTimerRunning: boolean; // カウントダウンが稼働しているか
 }
 

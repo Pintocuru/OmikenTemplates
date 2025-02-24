@@ -45,8 +45,7 @@
       class="text-center text-2xl font-semibold text-yellow-400"
       :class="{ 'animate-float': isTimerRunning }"
      >
-      <span v-if="isTimerRunning">Next {{ displayTime }}</span>
-      <span v-else>---</span>
+      <span>Next {{ displayTime }}</span>
      </div>
     </div>
    </div>

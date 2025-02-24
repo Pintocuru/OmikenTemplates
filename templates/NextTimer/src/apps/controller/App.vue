@@ -1,66 +1,65 @@
 <!-- src/apps/controller/App.vue -->
 <template>
- <div class="p-4 max-w-sm mx-auto bg-white rounded-lg shadow-md">
+ <div class="p-4 max-w-sm mx-auto bg-gray-800 rounded-lg shadow-md">
   <div class="flex items-center justify-between mb-4">
    <div class="flex items-center space-x-2">
     <button
      @click="() => adjustTimer(-5)"
-     class="h-8 w-8 border rounded flex items-center justify-center hover:bg-gray-100 transition-colors"
+     class="h-8 w-8 border border-gray-600 rounded flex items-center justify-center hover:bg-gray-700 transition-colors"
      :disabled="initialTime <= MIN_SECONDS"
     >
      <MinusIcon
       class="h-4 w-4"
-      :class="initialTime <= MIN_SECONDS ? 'text-gray-300' : 'text-gray-600'"
+      :class="initialTime <= MIN_SECONDS ? 'text-gray-500' : 'text-gray-300'"
      />
     </button>
-    <span class="text-2xl font-bold w-16 text-center"> {{ initialTime }}秒 </span>
+    <span class="text-2xl font-bold w-16 text-center text-gray-200"> {{ initialTime }}秒 </span>
     <button
      @click="() => adjustTimer(5)"
-     class="h-8 w-8 border rounded flex items-center justify-center hover:bg-gray-100 transition-colors"
+     class="h-8 w-8 border border-gray-600 rounded flex items-center justify-center hover:bg-gray-700 transition-colors"
      :disabled="initialTime >= MAX_SECONDS"
     >
      <PlusIcon
       class="h-4 w-4"
-      :class="initialTime >= MAX_SECONDS ? 'text-gray-300' : 'text-gray-600'"
+      :class="initialTime >= MAX_SECONDS ? 'text-gray-500' : 'text-gray-300'"
      />
     </button>
    </div>
-   <span class="text-xl text-gray-600">NextTime : {{ endTime }}</span>
+   <div class="flex items-center space-x-2">
+    <span class="text-xl text-gray-400">Next.. {{ endTime }}</span>
+    <button @click="copyToClipboard" class="text-gray-400 hover:text-white transition">
+     <ClipboardCopyIcon class="h-5 w-5" />
+    </button>
+   </div>
   </div>
 
-  <div class="grid grid-cols-2 gap-2">
+  <div class="grid grid-cols-3 gap-2">
    <button
     @click="startTimer"
-    class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
+    class="col-span-2 bg-teal-600 hover:bg-teal-700 text-white py-3 px-4 rounded transition-colors flex items-center justify-center gap-2"
    >
     <PlayIcon class="h-4 w-4" />
     開始
    </button>
    <button
-    @click="timerController.pauseTimer()"
-    class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
-   >
-    <PauseIcon class="h-4 w-4" />
-    一時停止
-   </button>
-   <button
     @click="timerController.resetTimer()"
-    class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
+    class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
    >
     <RefreshCwIcon class="h-4 w-4" />
-    リセット
+    停止
    </button>
    <button
     @click="timerController.toggleVisibility()"
-    class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
+    class="col-span-3 bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
    >
     <EyeIcon class="h-4 w-4" />
     表示切替
    </button>
   </div>
+
   <!-- secondAdjust 選択用のコントロールを追加 -->
   <div class="mt-4">
-   <label class="block text-sm font-medium text-gray-700 mb-2"> 時間調整単位 </label>
+   <label class="block text-sm font-medium text-gray-300 mb-2"> 時間調整単位 </label>
    <div class="grid grid-cols-4 gap-2">
     <button
      v-for="seconds in [10, 15, 20, 30]"
@@ -68,7 +67,9 @@
      @click="() => setSecondAdjust(seconds)"
      :class="[
       'px-2 py-1 rounded',
-      secondAdjust === seconds ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
+      secondAdjust === seconds
+       ? 'bg-teal-600 text-white'
+       : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
      ]"
     >
      {{ seconds }}秒
@@ -83,13 +84,14 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { TimerStorageController } from '@/scripts/TimerStorage';
 import { SecondAdjustType } from '@/scripts/types';
 import { TimerAbsolute } from '@/scripts/TimerAbsolute';
+import { toast } from 'vue-sonner';
 import {
  Play as PlayIcon,
- Pause as PauseIcon,
  RefreshCw as RefreshCwIcon,
  Eye as EyeIcon,
  Plus as PlusIcon,
- Minus as MinusIcon
+ Minus as MinusIcon,
+ Clipboard as ClipboardCopyIcon
 } from 'lucide-vue-next';
 
 // 定数
@@ -109,6 +111,14 @@ const endTime = computed(() => {
  const timestamp = timerAbsolute.processTime(rawTime, secondAdjust.value);
  return timestamp ? timestamp.toLocaleTimeString() : '';
 });
+
+// 終了時刻をクリップボードにコピー
+const copyToClipboard = async () => {
+ if (endTime.value) {
+  await navigator.clipboard.writeText(endTime.value);
+  toast.success('コピーしました: ' + endTime.value);
+ }
+};
 
 // タイマーの調整
 const adjustTimer = (amount: number) => {
