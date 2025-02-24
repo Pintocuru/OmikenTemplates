@@ -43,7 +43,7 @@
      <!-- 次のカウントダウン時間 -->
      <div
       class="text-center text-2xl font-semibold text-yellow-400"
-      :class="{ 'animate-float': isHuwahuwa }"
+      :class="{ 'animate-float': isTimerRunning }"
      >
       <span>Next {{ displayTime }}</span>
      </div>
@@ -65,7 +65,7 @@ const props = defineProps<{
  timeConfig: NextTimerConfigType;
 }>();
 
-const { displayTime, isVisible, isHuwahuwa, countdownDigits, processComment } = useTimer(
+const { displayTime, isVisible, isTimerRunning, countdownDigits, processComment } = useTimer(
  props.timeConfig
 );
 

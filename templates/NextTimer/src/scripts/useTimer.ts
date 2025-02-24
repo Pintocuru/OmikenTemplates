@@ -1,17 +1,19 @@
 // useTimer.ts
 import { reactive, computed, onUnmounted, toRefs, onMounted } from 'vue';
-import { NextTimerConfigType } from './types';
-import { TimeProcessor } from './utils';
+import { NextTimerConfigType, TimerAction } from './types';
+import { TimerAbsolute } from './TimerAbsolute';
 import { postWordParty } from '@common/api/PostOneComme';
+import { TimerStorageController } from './TimerStorage';
 
 export function useTimer(timeConfig: NextTimerConfigType) {
  // state
  const state = reactive({
-  displayTime: null as string | null,
-  countdown: null as number | null,
-  isVisible: timeConfig.ALWAYS_VISIBLE,
-  isHuwahuwa: false,
-  isPaused: false
+  isVisible: timeConfig.ALWAYS_VISIBLE, // 表示/非表示
+  initialTime: 30 as number, // タイマーの初期値
+  secondAdjust: timeConfig.SECOND_ADJUST, // 秒数を丸める単位
+  displayTime: null as string | null, // カウントが0になる時刻
+  countdown: null as number | null, // 残り時間(秒)
+  isTimerRunning: false // カウントダウンが稼働しているか
  });
 
  // timer
@@ -21,44 +23,37 @@ export function useTimer(timeConfig: NextTimerConfigType) {
  };
 
  // class群
- const timeProcessor = new TimeProcessor(timeConfig);
+ const timeProcessor = new TimerAbsolute(timeConfig);
+ const storageController = new TimerStorageController();
+
  // 桁ごとの数字を返す
  const countdownDigits = computed(
   () => state.countdown?.toString().padStart(2, '0').split('').map(Number) || []
  );
 
  // LocalStorage を使って外部ブラウザから操作する
- const handleStorageChange = (event: StorageEvent) => {
-  if (event.key === 'timer_control') {
-   const data = JSON.parse(event.newValue || '');
-
-   switch (data.action) {
-    case 'start':
-     if (data.timestamp) {
-      const targetTime = new Date(data.timestamp);
-      startCountdown(targetTime);
-     }
-     break;
-
-    case 'pause':
-     if (timers.countdown) {
-      cancelAnimationFrame(timers.countdown);
-      state.isPaused = true;
-     }
-     break;
-
-    case 'reset':
-     cleanup();
-     state.displayTime = null;
-     state.countdown = null;
-     state.isVisible = timeConfig.ALWAYS_VISIBLE;
-     state.isPaused = false;
-     break;
-
-    case 'toggle_visibility':
-     state.isVisible = !state.isVisible;
-     break;
-   }
+ const handleTimerAction = (action: TimerAction, timestamp?: Date) => {
+  switch (action) {
+   case 'start':
+    if (timestamp) {
+     startCountdown(timestamp);
+    }
+    break;
+   case 'pause':
+    if (timers.countdown) {
+     cancelAnimationFrame(timers.countdown);
+     state.isTimerRunning = false;
+    }
+    break;
+   case 'reset':
+    cleanup();
+    state.displayTime = null;
+    state.countdown = null;
+    state.isTimerRunning = false;
+    break;
+   case 'toggle_visibility':
+    state.isVisible = !state.isVisible;
+    break;
   }
  };
 
@@ -81,7 +76,7 @@ export function useTimer(timeConfig: NextTimerConfigType) {
  const startCountdown = (targetTime: Date) => {
   cleanup();
   const calledAt: Record<number, boolean> = {};
-  state.isPaused = false;
+  state.isTimerRunning = true;
   state.isVisible = true;
   state.displayTime = targetTime.toTimeString().slice(0, 8);
 
@@ -93,7 +88,7 @@ export function useTimer(timeConfig: NextTimerConfigType) {
   const updateCountdown = () => {
    const diff = targetTime.getTime() - Date.now();
    if (diff > 0) {
-    state.isHuwahuwa = true;
+    state.isTimerRunning = true;
     state.countdown = Math.ceil(diff / 1000);
     handleCountdownParty(state.countdown, calledAt);
     timers.countdown = requestAnimationFrame(updateCountdown);
@@ -108,7 +103,7 @@ export function useTimer(timeConfig: NextTimerConfigType) {
  // 終了時にWordPartyを投稿
  const finishCountdown = (calledAt: Record<number, boolean>) => {
   state.countdown = 0;
-  state.isHuwahuwa = false;
+  state.isTimerRunning = false;
   if (!calledAt[0]) {
    postWordParty(timeConfig.COUNT_PARTY_FINISH, -2);
    calledAt[0] = true;
@@ -118,33 +113,22 @@ export function useTimer(timeConfig: NextTimerConfigType) {
   }
  };
 
- // メイン基幹
+ // コメントによるタイマー発動(絶対時間のみ)
  const processComment = (comment: string) => {
-  const absoluteResult = timeProcessor.processAbsoluteTime(comment);
-  const relativeResult = timeProcessor.processRelativeTime(comment);
-
-  if (absoluteResult.success && absoluteResult.times) {
-   absoluteResult.times.forEach((targetTime) => {
+  const times = timeProcessor.processTime(comment);
+  if (times) {
+   times.forEach((targetTime) => {
     state.displayTime = targetTime.toTimeString().slice(0, 8);
     state.isVisible = true;
     startCountdown(targetTime);
-   });
-  }
-
-  if (relativeResult.success && relativeResult.times) {
-   relativeResult.times.forEach((targetTime) => {
-    if (targetTime.getTime() - Date.now() >= 10000) {
-     state.displayTime = targetTime.toTimeString().slice(0, 8);
-     state.isVisible = true;
-     startCountdown(targetTime);
-    }
    });
   }
  };
 
  // 初期化時に LocalStorage を稼働
  onMounted(() => {
-  window.addEventListener('storage', handleStorageChange);
+  storageController.initialize();
+  storageController.addListener(handleTimerAction);
  });
 
  // クリーンアップ
@@ -155,7 +139,7 @@ export function useTimer(timeConfig: NextTimerConfigType) {
 
  // コンポーネントのアンマウント時にクリーンアップ
  onUnmounted(() => {
-  window.removeEventListener('storage', handleStorageChange);
+  storageController.cleanup();
   cleanup();
  });
 

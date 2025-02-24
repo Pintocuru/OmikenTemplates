@@ -6,6 +6,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
+import { ServiceAPI } from '@common/api/ServiceAPI';
 import { ConfigNoPlugin, ConfigType } from '@common/commonTypes';
 import NextTimer from './NextTimer.vue';
 import { TIME_PATTERNS, NextTimerConfigType } from '@/scripts/types';
@@ -51,7 +52,9 @@ const { initOneSDK, userCommentsMap } = CommentGet();
 // 初期化
 onMounted(async () => {
  document.body.removeAttribute('hidden'); // hiddenの削除
- await initOneSDK(config); // コメント初期化
+ // わんコメから枠情報を取得し、1枠以上あるならわんコメ対応
+ const response = await new ServiceAPI().getServices();
+ if (response.length > 0) await initOneSDK(config);
 });
 </script>
 
