@@ -3,7 +3,6 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import OneSDK from '@onecomme.com/onesdk';
 import '@public/tailwind.css';
-import 'animate.css';
 
 // OneSDKの初期化を待ってからアプリをマウント
 async function initApp() {

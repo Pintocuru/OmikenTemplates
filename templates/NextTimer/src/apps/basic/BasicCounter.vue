@@ -1,11 +1,7 @@
 <!-- src/BasicCounter.vue -->
 <template>
  <div class="flex justify-center items-center">
-  <transition
-   name="zoom"
-   enter-active-class="animate__animated animate__fadeIn"
-   leave-active-class="animate__animated animate__fadeOut"
-  >
+  <transition name="custom-transition" mode="out-in">
    <div v-show="isVisible" class="font-mono">
     <div class="card w-80 bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
      <!-- カードヘッダー -->
@@ -105,3 +101,16 @@ watch(
  { deep: true, immediate: true }
 );
 </script>
+
+<style scoped>
+.custom-transition-enter-active,
+.custom-transition-leave-active {
+ transition: all 0.5s ease;
+}
+
+.custom-transition-enter-from,
+.custom-transition-leave-to {
+ opacity: 0;
+ transform: translateY(20px);
+}
+</style>
