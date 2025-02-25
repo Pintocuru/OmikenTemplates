@@ -20,6 +20,7 @@ export default (env, argv) => {
   entry: {
    basic: path.resolve(dirname, './src/apps/basic/main.ts'),
    NightRider: path.resolve(dirname, './src/apps/NightRider/main.ts'),
+   fancy: path.resolve(dirname, './src/apps/fancy/main.ts'),
    controller: path.resolve(dirname, './src/apps/controller/main.ts')
   },
   output: {
@@ -51,6 +52,14 @@ export default (env, argv) => {
     template: path.resolve(dirname, './src/apps/NightRider/index.ejs'),
     filename: 'NightRider/index.html',
     chunks: ['NightRider'], // このHTMLファイルで使用するチャンク
+    inject: 'body', // スクリプトを body 内に挿入
+    templateParameters: ENV[mode]
+   }),
+   // fancy
+   new HtmlWebpackPlugin({
+    template: path.resolve(dirname, './src/apps/fancy/index.ejs'),
+    filename: 'fancy/index.html',
+    chunks: ['fancy'], // このHTMLファイルで使用するチャンク
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]
    }),

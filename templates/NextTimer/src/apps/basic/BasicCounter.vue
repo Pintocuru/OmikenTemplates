@@ -1,4 +1,4 @@
-<!-- src/NextTimer.vue -->
+<!-- src/BasicCounter.vue -->
 <template>
  <div class="flex justify-center items-center">
   <transition
