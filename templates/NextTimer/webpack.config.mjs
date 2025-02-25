@@ -18,9 +18,9 @@ export default (env, argv) => {
  // モノレポ構造用設定
  const childConfig = {
   entry: {
-   base: path.resolve(dirname, './src/apps/base/main.ts'),
-   controller: path.resolve(dirname, './src/apps/controller/main.ts'),
-   'controller-mini': path.resolve(dirname, './src/apps/controller-mini/main.ts')
+   basic: path.resolve(dirname, './src/apps/basic/main.ts'),
+   NightRider: path.resolve(dirname, './src/apps/NightRider/main.ts'),
+   controller: path.resolve(dirname, './src/apps/controller/main.ts')
   },
   output: {
    filename: '[name]/script.js',
@@ -38,11 +38,19 @@ export default (env, argv) => {
   },
   plugins: [
    ...createCommonPlugins(dirname, mode),
-   // base
+   // basic
    new HtmlWebpackPlugin({
-    template: path.resolve(dirname, './src/apps/base/index.ejs'),
-    filename: 'base/index.html',
-    chunks: ['base'], // このHTMLファイルで使用するチャンク
+    template: path.resolve(dirname, './src/apps/basic/index.ejs'),
+    filename: 'basic/index.html',
+    chunks: ['basic'], // このHTMLファイルで使用するチャンク
+    inject: 'body', // スクリプトを body 内に挿入
+    templateParameters: ENV[mode]
+   }),
+   // NightRider
+   new HtmlWebpackPlugin({
+    template: path.resolve(dirname, './src/apps/NightRider/index.ejs'),
+    filename: 'NightRider/index.html',
+    chunks: ['NightRider'], // このHTMLファイルで使用するチャンク
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]
    }),
@@ -51,14 +59,6 @@ export default (env, argv) => {
     template: path.resolve(dirname, './src/apps/controller/index.ejs'),
     filename: 'controller/index.html',
     chunks: ['controller'], // このHTMLファイルで使用するチャンク
-    inject: 'body', // スクリプトを body 内に挿入
-    templateParameters: ENV[mode]
-   }),
-   // controller-mini
-   new HtmlWebpackPlugin({
-    template: path.resolve(dirname, './src/apps/controller-mini/index.ejs'),
-    filename: 'controller-mini/index.html',
-    chunks: ['controller-mini'], // このHTMLファイルで使用するチャンク
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]
    })

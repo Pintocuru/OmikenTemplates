@@ -4,7 +4,7 @@ const TIME_CONFIG = {
  // -------------------------------------------------
  // 一般設定
  // -------------------------------------------------
- ALWAYS_VISIBLE: false, // 常時表示させるか(true/false)
+ ALWAYS_VISIBLE: true, // 常時表示させるか(true/false)
  MIN_SECONDS: 10, // タイマーの最低値(秒)
  MAX_SECONDS: 300, // タイマーの最大値(秒)
  AFTER_SHOW: 5, // 時間経過後に表示する時間(秒)
