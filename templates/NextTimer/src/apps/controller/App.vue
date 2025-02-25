@@ -95,11 +95,11 @@ import {
 } from 'lucide-vue-next';
 
 // 定数
-const MIN_SECONDS = 10;
-const MAX_SECONDS = 300;
+const MIN_SECONDS = window.TIME_CONFIG?.MIN_SECONDS || 10; // タイマーの最低値(秒)
+const MAX_SECONDS = window.TIME_CONFIG?.MAX_SECONDS || 300; // タイマーの最大値(秒)
 
 // タイマーコントローラーの初期化と状態管理
-const timerController = new TimerStorageController();
+const timerController = new TimerStorageController(window.TIME_CONFIG);
 const timerAbsolute = new TimerAbsolute();
 const initialTime = ref(30);
 const secondAdjust = ref<SecondAdjustType>(10);

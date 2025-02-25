@@ -13,12 +13,13 @@ import { TimerStorageController } from './TimerStorage';
 export function useTimer(config: NextTimerConfigType, isInitFlagRef: Ref<boolean>) {
  // 状態管理
  const state = reactive<TimerState>({
-  isVisible: config.ALWAYS_VISIBLE,
-  initialTime: 30,
-  displayTime: '---',
-  secondAdjust: config.SECOND_ADJUST as SecondAdjustType,
-  countdown: 0,
-  isTimerRunning: false
+  isVisible: config.ALWAYS_VISIBLE, // 表示/非表示
+  isTimerRunning: false, // カウント中か
+  countdown: 0, // 残り時間(秒)
+  displayTime: '---', // 時刻表示
+  initialTime: 30, // タイマーの初期値
+  secondAdjust: config.SECOND_ADJUST as SecondAdjustType, // 秒数を丸める単位
+  afterShow: config.AFTER_SHOW // 時間経過後に表示する時間(秒)
  });
 
  // タイマーリソース管理
@@ -30,7 +31,7 @@ export function useTimer(config: NextTimerConfigType, isInitFlagRef: Ref<boolean
  // プロセッサー初期化
  const isInitFlag = computed(() => isInitFlagRef.value);
  const timeProcessor = new TimerAbsolute();
- const storageController = new TimerStorageController();
+ const storageController = new TimerStorageController(config);
 
  // 桁ごとの数字を返す
  const countdownDigits = computed(

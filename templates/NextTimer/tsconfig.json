@@ -7,6 +7,9 @@
    "@type": [
     "../../public/type.ts"
    ],
+   "@public/*": [
+    "../../public/*"
+   ],
    "@common/*": [
     "../../public/common/*"
    ],

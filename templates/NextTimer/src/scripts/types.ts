@@ -7,14 +7,16 @@ export const TIME_PATTERN =
 // reactiveの型定義
 export interface TimerState {
  isVisible: boolean; // 表示/非表示
+ isTimerRunning: boolean; // カウント中か
+ countdown: number; // 残り時間(秒)
+ displayTime: string; // 時刻表示
  initialTime: number; // タイマーの初期値
  secondAdjust: SecondAdjustType; // 秒数を丸める単位
- displayTime: string; // カウントが0になる時刻
- countdown: number; // 残り時間(秒)
- isTimerRunning: boolean; // カウントダウンが稼働しているか
+ afterShow: number; // 時間経過後に表示する時間(秒)
 }
 
-export type SecondAdjustType = 10 | 15 | 20 | 30;
+export const VALID_ADJUSTS = [10, 15, 20, 30] as const;
+export type SecondAdjustType = (typeof VALID_ADJUSTS)[number];
 
 // コントローラーの型定義
 export interface TimerStorageData {
@@ -46,10 +48,12 @@ export interface TimeParts {
 
 // 追加configの型定義
 export interface NextTimerConfigType {
- ALWAYS_VISIBLE: boolean;
- AFTER_SHOW: number;
- SECOND_ADJUST: number;
- COUNT_PARTY: Record<number, string>;
- COUNT_PARTY_START: string;
- COUNT_PARTY_FINISH: string;
+ ALWAYS_VISIBLE: boolean; // 常時表示させるか
+ MIN_SECONDS: number; // タイマーの最低値(秒)
+ MAX_SECONDS: number; // タイマーの最大値(秒)
+ AFTER_SHOW: number; // 時間経過後に表示する時間(秒)
+ SECOND_ADJUST: SecondAdjustType; // 秒数を丸める(default=10秒)
+ COUNT_PARTY: Record<number, string>; // WordPartyの発火タイミング
+ COUNT_PARTY_START: string; // タイマー起動時に発火するWordParty
+ COUNT_PARTY_FINISH: string; // タイマー0で発火するWordParty
 }

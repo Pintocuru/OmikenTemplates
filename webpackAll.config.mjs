@@ -72,8 +72,7 @@ export function createConfig(childDir, mode = 'development') {
   // 外部で使用するもの
   externals: {
    vue: 'Vue',
-   '@onecomme.com/onesdk': 'OneSDK',
-   animejs: 'anime'
+   '@onecomme.com/onesdk': 'OneSDK'
   },
   optimization: {
    minimize: false, // コードの最小化
@@ -95,6 +94,7 @@ export function createCommonResolve() {
   // tsconfig.json の paths に対応
   alias: {
    '@type': path.resolve(dirname, 'public/types'),
+   '@public': path.resolve(dirname, 'public'),
    '@common': path.resolve(dirname, 'public/common')
   },
   extensions: ['.js', '.ts', '.vue'] // 省略可能な拡張子

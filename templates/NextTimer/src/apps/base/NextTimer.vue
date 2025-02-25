@@ -53,7 +53,6 @@
 <script setup lang="ts">
 import { toRef, watch } from 'vue';
 import { useTimer } from '@scripts/useTimer';
-import { beforeEnter, enter, leave } from '@/scripts/AnimeJsAnimation';
 import { CommentChara } from '@common/commonTypes';
 import { NextTimerConfigType } from '@/scripts/types';
 
@@ -63,10 +62,8 @@ const props = defineProps<{
  timeConfig: NextTimerConfigType;
 }>();
 
-const { displayTime, isVisible, isTimerRunning, countdownDigits, processComment } = useTimer(
- props.timeConfig,
- toRef(props, 'isInitFlag')
-);
+const { displayTime, isVisible, isTimerRunning, afterShow, countdownDigits, processComment } =
+ useTimer(props.timeConfig, toRef(props, 'isInitFlag'));
 
 watch(
  () => props.nextTimer,

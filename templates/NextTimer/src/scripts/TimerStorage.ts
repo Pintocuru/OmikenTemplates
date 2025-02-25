@@ -1,16 +1,24 @@
 // src/scripts/TimerStorage.ts
 import { TimerAbsolute } from './TimerAbsolute';
-import { SecondAdjustType, TimerAction, TimerActionData, TimerStorageData } from './types';
+import {
+ NextTimerConfigType,
+ SecondAdjustType,
+ TimerAction,
+ TimerActionData,
+ TimerStorageData,
+ VALID_ADJUSTS
+} from './types';
 
 export class TimerStorageController {
  private readonly STORAGE_KEY = 'timer_control';
- private readonly MIN_SECONDS = 10;
- private readonly MAX_SECONDS = 300;
- private readonly VALID_ADJUSTS: SecondAdjustType[] = [10, 15, 20, 30];
+ private MIN_SECONDS;
+ private MAX_SECONDS;
  private listeners: Set<(action: TimerAction, data: TimerActionData) => void>;
  private timerAbsolute = new TimerAbsolute();
 
- constructor() {
+ constructor(config?: NextTimerConfigType) {
+  this.MIN_SECONDS = config?.MIN_SECONDS || 10;
+  this.MAX_SECONDS = config?.MAX_SECONDS || 300;
   this.listeners = new Set();
  }
 
@@ -59,7 +67,7 @@ export class TimerStorageController {
 
  // secondAdjustを設定
  setSecondAdjust(seconds: SecondAdjustType): void {
-  if (this.VALID_ADJUSTS.includes(seconds)) {
+  if (VALID_ADJUSTS.includes(seconds)) {
    this.saveAction({ action: 'second_adjust', data: { secondAdjust: seconds } });
   }
  }

@@ -1,26 +1,36 @@
-// src/config.js
+// config.js
+
+const TIME_CONFIG = {
+ // -------------------------------------------------
+ // 一般設定
+ // -------------------------------------------------
+ ALWAYS_VISIBLE: false, // 常時表示させるか
+ MIN_SECONDS: 10, // タイマーの最低値(秒)
+ MAX_SECONDS: 300, // タイマーの最大値(秒)
+ AFTER_SHOW: 5, // 時間経過後に表示する時間(秒)
+ SECOND_ADJUST: 10, // 秒数を丸める(default=10秒単位)
+
+ // -------------------------------------------------
+ // わんコメ設定(わんコメを稼働している時のみ機能します)
+ // -------------------------------------------------
+ // WordPartyの発火タイミング
+ COUNT_PARTY: {
+  10: '!count_10',
+  20: '!count_20'
+ },
+ COUNT_PARTY_START: '!count_start', // タイマー起動時に発火するWordParty
+ COUNT_PARTY_FINISH: '!count_finish' // タイマー0で発火するWordParty
+};
 
 const CONFIG = {
  USER_ALLOWED_IDS: [], // 通すuserIDリスト
  USER_DISALLOWED_IDS: [], // 通さないuserIDリスト
- USER_ACCESS_LEVEL: 1 // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
+ USER_ACCESS_LEVEL: 3 // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
 };
 
-// スナイプタイマー用設定
-const TIME_CONFIG = {
- //
- ALWAYS_VISIBLE: false, // 常時表示させるか
- AFTER_SHOW: 5, // 時間経過後に表示する時間(秒)
- SECOND_ADJUST: 10, // 秒数を丸める(default=10秒単位)
-
- // WordPartyの発火タイミング
- COUNT_PARTY: {
-  30: 'halfway',
-  60: 'start'
- },
- COUNT_PARTY_START: 'start', // タイマー起動時に発火するWordParty
- COUNT_PARTY_FINISH: 'finish' // タイマー0で発火するWordParty
-};
+// -------------------------------------------------
+// これ以下は変更しないでください
+// -------------------------------------------------
 
 if (typeof window !== 'undefined') window.CONFIG = CONFIG;
 if (typeof window !== 'undefined') window.TIME_CONFIG = TIME_CONFIG;
