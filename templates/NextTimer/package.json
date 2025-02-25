@@ -9,5 +9,8 @@
  "author": "Pintocuru",
  "license": "Apache-2.0",
  "main": "src/main.js",
- "type": "module"
+ "type": "module",
+ "dependencies": {
+  "daisyui": "^4.12.23"
+ }
 }

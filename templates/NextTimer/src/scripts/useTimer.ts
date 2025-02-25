@@ -18,8 +18,7 @@ export function useTimer(config: NextTimerConfigType, isInitFlagRef: Ref<boolean
   countdown: 0, // 残り時間(秒)
   displayTime: '---', // 時刻表示
   initialTime: 30, // タイマーの初期値
-  secondAdjust: config.SECOND_ADJUST as SecondAdjustType, // 秒数を丸める単位
-  afterShow: config.AFTER_SHOW // 時間経過後に表示する時間(秒)
+  secondAdjust: config.SECOND_ADJUST as SecondAdjustType // 秒数を丸める単位
  });
 
  // タイマーリソース管理

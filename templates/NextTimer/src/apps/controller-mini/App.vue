@@ -1,38 +1,76 @@
 <!-- src/apps/controller/App.vue -->
 <template>
- <div class="p-4 w-full bg-gray-800 rounded-lg shadow-md">
-  <div class="grid grid-cols-2 pb-8 gap-2">
-   <button @click="adjustTimer(-5)" class="btn btn-lg h-16 border btn-white col-span-1">
-    <MinusIcon class="w-6 h-6" />
-   </button>
-   <button @click="adjustTimer(5)" class="btn btn-lg h-16 border btn-white">
-    <PlusIcon class="w-6 h-6" />
-   </button>
+ <div class="p-4 max-w-sm mx-auto bg-gray-800 rounded-lg shadow-md">
+  <div class="flex items-center justify-between mb-4">
+   <div class="flex items-center space-x-2">
+    <button
+     @click="() => adjustTimer(-5)"
+     class="h-8 w-8 border border-gray-600 rounded flex items-center justify-center hover:bg-gray-700 transition-colors"
+     :disabled="initialTime <= MIN_SECONDS"
+    >
+     <MinusIcon
+      class="h-4 w-4"
+      :class="initialTime <= MIN_SECONDS ? 'text-gray-500' : 'text-gray-300'"
+     />
+    </button>
+    <span class="text-2xl font-bold w-16 text-center text-gray-200"> {{ initialTime }}秒 </span>
+    <button
+     @click="() => adjustTimer(5)"
+     class="h-8 w-8 border border-gray-600 rounded flex items-center justify-center hover:bg-gray-700 transition-colors"
+     :disabled="initialTime >= MAX_SECONDS"
+    >
+     <PlusIcon
+      class="h-4 w-4"
+      :class="initialTime >= MAX_SECONDS ? 'text-gray-500' : 'text-gray-300'"
+     />
+    </button>
+   </div>
+   <div class="flex items-center space-x-2">
+    <span class="text-xl text-gray-400">Next.. {{ endTime }}</span>
+    <button @click="copyToClipboard" class="text-gray-400 hover:text-white transition">
+     <ClipboardCopyIcon class="h-5 w-5" />
+    </button>
+   </div>
   </div>
 
   <div class="grid grid-cols-3 gap-2">
-   <button @click="startTimer" class="btn btn-lg btn-primary h-36 col-span-2">
-    <PlayIcon class="w-6 h-6" /> 開始
+   <button
+    @click="startTimer"
+    class="col-span-2 bg-teal-600 hover:bg-teal-700 text-white py-3 px-4 rounded transition-colors flex items-center justify-center gap-2"
+   >
+    <PlayIcon class="h-4 w-4" />
+    開始
    </button>
-   <button @click="timerController.resetTimer()" class="btn btn-lg btn-secondary h-36">
-    <RefreshCwIcon class="w-6 h-6" /> 停止
+   <button
+    @click="timerController.resetTimer()"
+    class="bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
+   >
+    <RefreshCwIcon class="h-4 w-4" />
+    停止
    </button>
    <button
     @click="timerController.toggleVisibility()"
-    class="btn btn-lg btn-accent h-24 col-span-3"
+    class="col-span-3 bg-teal-600 hover:bg-teal-700 text-white py-2 px-4 rounded transition-colors flex items-center justify-center gap-2"
    >
-    <EyeIcon class="w-6 h-6" /> 表示切替
+    <EyeIcon class="h-4 w-4" />
+    表示切替
    </button>
   </div>
 
+  <!-- secondAdjust 選択用のコントロールを追加 -->
   <div class="mt-4">
-   <label class="block text-sm font-medium text-gray-300 mb-2">時間調整単位</label>
+   <label class="block text-sm font-medium text-gray-300 mb-2"> 時間調整単位 </label>
    <div class="grid grid-cols-4 gap-2">
     <button
      v-for="seconds in [10, 15, 20, 30]"
      :key="seconds"
-     @click="setSecondAdjust(seconds)"
-     class="btn btn-lg h-16 border btn-white"
+     @click="() => setSecondAdjust(seconds)"
+     :class="[
+      'px-2 py-1 rounded',
+      secondAdjust === seconds
+       ? 'bg-teal-600 text-white'
+       : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+     ]"
     >
      {{ seconds }}秒
     </button>

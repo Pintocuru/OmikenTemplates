@@ -1,11 +1,7 @@
-// tailwind.config.js
-module.exports = {
- content: ['./src/**/*.html', './src/**/*.vue', './src/**/*.jsx', './src/**/*.tsx'],
- theme: {
-  extend: {
-   fontFamily: {
-    archivo: ['"Archivo Black"', 'system-ui']
-   }
-  }
- }
+// [packages] tailwind.config.js
+import parentConfig from '../../tailwind.config.js';
+
+export default {
+ ...parentConfig, // 親の設定を展開
+ content: ['./src/**/*.{html,js,vue}']
 };

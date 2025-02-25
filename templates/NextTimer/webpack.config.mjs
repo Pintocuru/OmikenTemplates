@@ -19,7 +19,8 @@ export default (env, argv) => {
  const childConfig = {
   entry: {
    base: path.resolve(dirname, './src/apps/base/main.ts'),
-   controller: path.resolve(dirname, './src/apps/controller/main.ts')
+   controller: path.resolve(dirname, './src/apps/controller/main.ts'),
+   'controller-mini': path.resolve(dirname, './src/apps/controller-mini/main.ts')
   },
   output: {
    filename: '[name]/script.js',
@@ -50,6 +51,14 @@ export default (env, argv) => {
     template: path.resolve(dirname, './src/apps/controller/index.ejs'),
     filename: 'controller/index.html',
     chunks: ['controller'], // このHTMLファイルで使用するチャンク
+    inject: 'body', // スクリプトを body 内に挿入
+    templateParameters: ENV[mode]
+   }),
+   // controller-mini
+   new HtmlWebpackPlugin({
+    template: path.resolve(dirname, './src/apps/controller-mini/index.ejs'),
+    filename: 'controller-mini/index.html',
+    chunks: ['controller-mini'], // このHTMLファイルで使用するチャンク
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]
    })

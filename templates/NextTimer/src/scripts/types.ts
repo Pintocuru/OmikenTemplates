@@ -12,7 +12,6 @@ export interface TimerState {
  displayTime: string; // 時刻表示
  initialTime: number; // タイマーの初期値
  secondAdjust: SecondAdjustType; // 秒数を丸める単位
- afterShow: number; // 時間経過後に表示する時間(秒)
 }
 
 export const VALID_ADJUSTS = [10, 15, 20, 30] as const;
