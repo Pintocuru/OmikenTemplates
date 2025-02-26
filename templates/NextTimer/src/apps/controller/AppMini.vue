@@ -1,4 +1,4 @@
-<!-- src/apps/controller/App.vue -->
+<!-- src/apps/controller/AppMini.vue -->
 <template>
  <div class="p-4 max-w-sm mx-auto bg-gray-800 rounded-lg shadow-md">
   <div class="flex items-center justify-between mb-4">

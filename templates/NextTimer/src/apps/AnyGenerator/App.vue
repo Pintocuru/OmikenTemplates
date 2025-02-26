@@ -1,6 +1,6 @@
 <!-- src/App.vue -->
 <template>
- <NextTimer
+ <AnyGenerator
   :isInitFlag="isInitFlag"
   :nextTimer="userCommentsMap.nextTimer || []"
   :timeConfig="timeConfig"
@@ -8,11 +8,13 @@
 </template>
 
 <script setup lang="ts">
+// 読み込ませるコンポーネント
+import AnyGenerator from '@components/BasicCounter.vue';
+// その他
 import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ServiceAPI } from '@common/api/ServiceAPI';
 import { ConfigNoPlugin, ConfigType } from '@common/commonTypes';
-import NextTimer from './NextTimer.vue';
 import { TIME_PATTERN, NextTimerConfigType } from '@/scripts/types';
 
 // グローバル変数の型定義

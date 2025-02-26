@@ -10,7 +10,7 @@ export const ENV = {
  // development:開発環境設定
  development: {
   vuePath: 'https://unpkg.com/vue@3/dist/vue.global.js', // Vueのパス
-  onesdkPath: '../../../public/onesdk.js' // OneSDKのパス(distから見て)
+  onesdkPath: '../../public/onesdk.js' // OneSDKのパス(distから見て)
  },
  // production:本番環境設定
  production: {

@@ -9,22 +9,30 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 
+// コンポーネント名を挿入 (AnyGenerator/App.vueの変更も行うこと)
+const app = 'BasicCounter';
+
+// BasicCounter
+// SimpleCounter
+// NightRider
+// FlipCoin
+// FireComic
+
+// ---
+
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default (env, argv) => {
  const { mode } = argv;
  const baseConfig = createConfig(dirname, mode);
 
- // モノレポ構造用設定
  const childConfig = {
   entry: {
-   basic: path.resolve(dirname, './src/apps/basic/main.ts'),
-   NightRider: path.resolve(dirname, './src/apps/NightRider/main.ts'),
-   fancy: path.resolve(dirname, './src/apps/fancy/main.ts'),
+   [app]: path.resolve(dirname, './src/apps/AnyGenerator/main.ts'),
    controller: path.resolve(dirname, './src/apps/controller/main.ts')
   },
   output: {
-   filename: '[name]/script.js',
+   filename: 'script/[name].js',
    path: path.resolve(dirname, 'dist'),
    clean: true
   },
@@ -32,41 +40,25 @@ export default (env, argv) => {
    ...createCommonResolve(),
    alias: {
     ...createCommonResolve().alias,
-    // 子プロジェクトのエイリアス
     '@': path.resolve(dirname, 'src'),
-    '@scripts': path.resolve(dirname, 'src/scripts')
+    '@scripts': path.resolve(dirname, 'src/scripts'),
+    '@components': path.resolve(dirname, 'src/apps/components')
    }
   },
   plugins: [
    ...createCommonPlugins(dirname, mode),
-   // basic
+   // AnyGenerator
    new HtmlWebpackPlugin({
-    template: path.resolve(dirname, './src/apps/basic/index.ejs'),
-    filename: 'basic/index.html',
-    chunks: ['basic'], // このHTMLファイルで使用するチャンク
-    inject: 'body', // スクリプトを body 内に挿入
-    templateParameters: ENV[mode]
-   }),
-   // NightRider
-   new HtmlWebpackPlugin({
-    template: path.resolve(dirname, './src/apps/NightRider/index.ejs'),
-    filename: 'NightRider/index.html',
-    chunks: ['NightRider'], // このHTMLファイルで使用するチャンク
-    inject: 'body', // スクリプトを body 内に挿入
-    templateParameters: ENV[mode]
-   }),
-   // fancy
-   new HtmlWebpackPlugin({
-    template: path.resolve(dirname, './src/apps/fancy/index.ejs'),
-    filename: 'fancy/index.html',
-    chunks: ['fancy'], // このHTMLファイルで使用するチャンク
+    template: path.resolve(dirname, `./src/apps/AnyGenerator/index.ejs`),
+    filename: `${app}.html`,
+    chunks: [app], // このHTMLファイルで使用するチャンク
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]
    }),
    // controller
    new HtmlWebpackPlugin({
-    template: path.resolve(dirname, './src/apps/controller/index.ejs'),
-    filename: 'controller/index.html',
+    template: path.resolve(dirname, `./src/apps/controller/index.ejs`),
+    filename: `controller.html`,
     chunks: ['controller'], // このHTMLファイルで使用するチャンク
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]

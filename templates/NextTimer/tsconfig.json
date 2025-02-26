@@ -19,6 +19,9 @@
    "@scripts/*": [
     "./src/scripts/*"
    ],
+   "@components/*": [
+    "./src/apps/components/*"
+   ],
   }
  },
  // コンパイル対象ファイル

@@ -1,4 +1,4 @@
-<!-- src/SimpleCounter.vue -->
+<!-- src/NextTemplateSimple.vue -->
 <template>
  <div class="flex justify-center items-center min-h-screen bg-base-200">
   <div v-show="isVisible" class="font-mono animate-fade-up">
