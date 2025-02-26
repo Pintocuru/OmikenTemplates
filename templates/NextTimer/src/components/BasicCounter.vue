@@ -102,7 +102,7 @@ watch(
 );
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .custom-transition-enter-active,
 .custom-transition-leave-active {
  transition: all 0.5s ease;

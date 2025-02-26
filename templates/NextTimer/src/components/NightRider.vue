@@ -131,7 +131,7 @@ watch(
 );
 </script>
 
-<style>
+<style lang="scss" scoped>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap');
 /* フォント設定 */
 .font-racing {

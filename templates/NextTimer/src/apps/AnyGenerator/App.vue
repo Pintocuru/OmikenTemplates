@@ -9,21 +9,13 @@
 
 <script setup lang="ts">
 // 読み込ませるコンポーネント
-import AnyGenerator from '@components/BasicCounter.vue';
+import AnyGenerator from '@components/NightRider.vue';
 // その他
 import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ServiceAPI } from '@common/api/ServiceAPI';
 import { ConfigNoPlugin, ConfigType } from '@common/commonTypes';
 import { TIME_PATTERN, NextTimerConfigType } from '@/scripts/types';
-
-// グローバル変数の型定義
-declare global {
- interface Window {
-  CONFIG?: ConfigNoPlugin;
-  TIME_CONFIG?: NextTimerConfigType;
- }
-}
 
 // 定数
 const config: ConfigType = {

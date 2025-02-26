@@ -66,6 +66,11 @@ export function createConfig(childDir, mode = 'development') {
        }
       }
      ]
+    },
+    // SCSSファイルを処理
+    {
+     test: /\.scss$/,
+     use: ['style-loader', 'css-loader', 'sass-loader']
     }
    ]
   },

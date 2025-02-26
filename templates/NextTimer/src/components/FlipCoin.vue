@@ -91,7 +91,7 @@ watch(
 );
 </script>
 
-<style>
+<style lang="scss" scoped>
 /* コインのアニメーション */
 @keyframes coin {
  0%,

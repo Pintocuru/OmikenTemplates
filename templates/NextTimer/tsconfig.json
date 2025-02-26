@@ -16,11 +16,14 @@
    "@/*": [
     "./src/*"
    ],
+   "@components/*": [
+    "./src/components/*"
+   ],
    "@scripts/*": [
     "./src/scripts/*"
    ],
-   "@components/*": [
-    "./src/apps/components/*"
+   "@styles/*": [
+    "./src/styles/*"
    ],
   }
  },

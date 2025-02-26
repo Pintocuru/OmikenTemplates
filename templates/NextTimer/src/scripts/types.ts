@@ -1,4 +1,5 @@
 // src/types.ts
+import { ConfigNoPlugin } from '@public/common/commonTypes';
 
 // 時間に関する正規表現パターン
 export const TIME_PATTERN =
@@ -55,4 +56,14 @@ export interface NextTimerConfigType {
  COUNT_PARTY: Record<number, string>; // WordPartyの発火タイミング
  COUNT_PARTY_START: string; // タイマー起動時に発火するWordParty
  COUNT_PARTY_FINISH: string; // タイマー0で発火するWordParty
+}
+
+// ---
+
+// グローバル変数の型定義
+declare global {
+ interface Window {
+  CONFIG?: ConfigNoPlugin;
+  TIME_CONFIG?: NextTimerConfigType;
+ }
 }

@@ -8,9 +8,10 @@ import {
 import path from 'path';
 import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 // コンポーネント名を挿入 (AnyGenerator/App.vueの変更も行うこと)
-const app = 'BasicCounter';
+const app = 'NightRider';
 
 // BasicCounter
 // SimpleCounter
@@ -41,8 +42,9 @@ export default (env, argv) => {
    alias: {
     ...createCommonResolve().alias,
     '@': path.resolve(dirname, 'src'),
+    '@components': path.resolve(dirname, 'src/components'),
     '@scripts': path.resolve(dirname, 'src/scripts'),
-    '@components': path.resolve(dirname, 'src/apps/components')
+    '@styles': path.resolve(dirname, 'src/styles')
    }
   },
   plugins: [
@@ -62,6 +64,15 @@ export default (env, argv) => {
     chunks: ['controller'], // このHTMLファイルで使用するチャンク
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]
+   }),
+   // Copy config.js to dist
+   new CopyWebpackPlugin({
+    patterns: [
+     {
+      from: path.resolve(dirname, './src/assets/config.js'),
+      to: path.resolve(dirname, 'dist/config.js')
+     }
+    ]
    })
   ]
  };
