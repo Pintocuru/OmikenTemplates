@@ -14,7 +14,7 @@ import AnyGenerator from '@components/NightRider.vue';
 import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ServiceAPI } from '@common/api/ServiceAPI';
-import { ConfigNoPlugin, ConfigType } from '@common/commonTypes';
+import { ConfigType } from '@common/commonTypes';
 import { TIME_PATTERN, NextTimerConfigType } from '@/scripts/types';
 
 // 定数

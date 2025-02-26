@@ -2,39 +2,51 @@
 <template>
  <div class="p-4 w-full bg-gray-800 rounded-lg shadow-md">
   <div class="grid grid-cols-2 pb-8 gap-2">
-   <button @click="adjustTimer(-5)" class="btn btn-lg h-16 border btn-white col-span-1">
-    <MinusIcon class="w-6 h-6" />
+   <button
+    @click="adjustTimer(-5)"
+    class="px-4 py-2 rounded-lg shadow-md transition-all text-3xl font-semibold bg-white text-gray-900 border col-span-1 hover:bg-gray-400 flex items-center justify-center gap-2"
+   >
+    -5
    </button>
-   <button @click="adjustTimer(5)" class="btn btn-lg h-16 border btn-white">
-    <PlusIcon class="w-6 h-6" />
+   <button
+    @click="adjustTimer(5)"
+    class="px-4 py-2 rounded-lg shadow-md transition-all text-3xl font-semibold bg-white text-gray-900 border hover:bg-gray-400 flex items-center justify-center gap-2"
+   >
+    +5
    </button>
   </div>
 
   <div class="grid grid-cols-3 gap-2">
-   <button @click="startTimer" class="btn btn-lg btn-primary h-36 col-span-2">
-    <PlayIcon class="w-6 h-6" /> 開始
+   <button
+    @click="startTimer"
+    class="px-4 py-2 rounded-lg shadow-md transition-all text-3xl font-semibold bg-blue-500 text-white hover:bg-blue-600 flex items-center justify-center gap-2 col-span-2 h-36"
+   >
+    <PlayIcon class="w-16 h-16" />
    </button>
-   <button @click="timerController.resetTimer()" class="btn btn-lg btn-secondary h-36">
-    <RefreshCwIcon class="w-6 h-6" /> 停止
+   <button
+    @click="timerController.resetTimer()"
+    class="px-4 py-2 rounded-lg shadow-md transition-all text-3xl font-semibold bg-red-500 text-white hover:bg-red-600 flex items-center justify-center gap-2 h-36"
+   >
+    <SquareIcon class="w-16 h-16" />
    </button>
    <button
     @click="timerController.toggleVisibility()"
-    class="btn btn-lg btn-accent h-24 col-span-3"
+    class="px-4 py-2 rounded-lg shadow-md transition-all text-3xl font-semibold bg-yellow-500 text-white hover:bg-yellow-600 flex items-center justify-center gap-2 col-span-3 h-24"
    >
-    <EyeIcon class="w-6 h-6" /> 表示切替
+    <EyeIcon class="w-12 h-12" />
    </button>
   </div>
 
   <div class="mt-4">
-   <label class="block text-sm font-medium text-gray-300 mb-2">時間調整単位</label>
+   <label class="block text-sm font-medium text-gray-300 mb-2">Time Steps (x/60sec)</label>
    <div class="grid grid-cols-4 gap-2">
     <button
      v-for="seconds in [10, 15, 20, 30]"
      :key="seconds"
      @click="setSecondAdjust(seconds)"
-     class="btn btn-lg h-16 border btn-white"
+     class="px-4 py-2 rounded-lg shadow-md transition-all text-3xl font-semibold bg-white text-gray-900 border hover:bg-gray-400 flex items-center justify-center gap-2"
     >
-     {{ seconds }}秒
+     {{ seconds }}
     </button>
    </div>
   </div>
@@ -42,19 +54,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { TimerStorageController } from '@/scripts/TimerStorage';
 import { SecondAdjustType } from '@/scripts/types';
-import { TimerAbsolute } from '@/scripts/TimerAbsolute';
-import { toast } from 'vue-sonner';
-import {
- Play as PlayIcon,
- RefreshCw as RefreshCwIcon,
- Eye as EyeIcon,
- Plus as PlusIcon,
- Minus as MinusIcon,
- Clipboard as ClipboardCopyIcon
-} from 'lucide-vue-next';
+import { Play as PlayIcon, Square as SquareIcon, Eye as EyeIcon } from 'lucide-vue-next';
 
 // 定数
 const MIN_SECONDS = window.TIME_CONFIG?.MIN_SECONDS || 10; // タイマーの最低値(秒)
@@ -62,25 +65,9 @@ const MAX_SECONDS = window.TIME_CONFIG?.MAX_SECONDS || 300; // タイマーの�
 
 // タイマーコントローラーの初期化と状態管理
 const timerController = new TimerStorageController(window.TIME_CONFIG);
-const timerAbsolute = new TimerAbsolute();
 const initialTime = ref(30);
 const secondAdjust = ref<SecondAdjustType>(10);
 const now = ref(Date.now()); // 現在時刻
-
-// タイマー終了時刻を計算（常に更新）
-const endTime = computed(() => {
- const rawTime = new Date(now.value + initialTime.value * 1000);
- const timestamp = timerAbsolute.processTime(rawTime, secondAdjust.value);
- return timestamp ? timestamp.toLocaleTimeString() : '';
-});
-
-// 終了時刻をクリップボードにコピー
-const copyToClipboard = async () => {
- if (endTime.value) {
-  await navigator.clipboard.writeText(endTime.value);
-  toast.success('コピーしました: ' + endTime.value);
- }
-};
 
 // タイマーの調整
 const adjustTimer = (amount: number) => {

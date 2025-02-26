@@ -1,7 +1,9 @@
-// webpackAll.config.mjs
+// [root] webpackAll.config.mjs
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { VueLoaderPlugin } from 'vue-loader';
+import TerserPlugin from 'terser-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
 // 親ディレクトリ
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -55,7 +57,7 @@ export function createConfig(childDir, mode = 'development') {
     {
      test: /\.css$/,
      use: [
-      'style-loader',
+      MiniCssExtractPlugin.loader,
       'css-loader',
       {
        loader: 'postcss-loader',
@@ -81,8 +83,29 @@ export function createConfig(childDir, mode = 'development') {
   },
   optimization: {
    minimize: false, // コードの最小化
+   minimizer: [
+    new TerserPlugin({
+     terserOptions: {
+      compress: {
+       drop_console: true // console.log を削除
+      }
+     }
+    })
+   ],
    usedExports: true, // 使用されていないエクスポートを削除
-   sideEffects: true // サイドエフェクトがない場合、不要なコードを削除
+   sideEffects: true, // サイドエフェクトがない場合、不要なコードを削除
+   // コード分割
+   splitChunks: {
+    chunks: 'all',
+    minSize: 30 * 1024, // 50KB 以上のファイルを分割
+    cacheGroups: {
+     vendor: {
+      test: /[\\/]node_modules[\\/]/,
+      name: 'vendor',
+      chunks: 'all'
+     }
+    }
+   }
   },
   plugins: createCommonPlugins(dirname, mode)
  };
@@ -90,7 +113,14 @@ export function createConfig(childDir, mode = 'development') {
 
 // 共通のプラグインを作成する関数
 export function createCommonPlugins(childDir, mode = 'development') {
- return [new VueLoaderPlugin()];
+ return [
+  // Vueの処理
+  new VueLoaderPlugin(),
+  // CSSをjsから分離
+  new MiniCssExtractPlugin({
+   filename: 'script/[name].css'
+  })
+ ];
 }
 
 // 共通のエイリアスを作成

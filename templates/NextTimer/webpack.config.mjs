@@ -1,4 +1,4 @@
-// webpack.config.mjs
+// [packages] webpack.config.mjs
 import {
  ENV,
  createConfig,
