@@ -9,13 +9,18 @@
 
 <script setup lang="ts">
 // 読み込ませるコンポーネント
-import AnyGenerator from '@components/OldPattern05.vue';
+import AnyGenerator from '@components/NightRider.vue';
 // その他
 import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ServiceAPI } from '@common/api/ServiceAPI';
 import { ConfigType } from '@common/commonTypes';
-import { TIME_PATTERN, NextTimerConfigType } from '@/scripts/types';
+import {
+ TIME_PATTERN,
+ NextTimerConfigType,
+ MINUTES_ONLY_PATTERN,
+ RELATIVE_TIME_PATTERN
+} from '@/scripts/types';
 
 // 定数
 const config: ConfigType = {
@@ -29,7 +34,7 @@ const config: ConfigType = {
    id: 'nextTimer',
    isGift: false,
    keywords: [],
-   regex: [TIME_PATTERN]
+   regex: [TIME_PATTERN, MINUTES_ONLY_PATTERN, RELATIVE_TIME_PATTERN]
   }
  ]
 };
@@ -52,11 +57,11 @@ const { isInitFlag, initOneSDK, userCommentsMap } = CommentGet();
 // わんコメから枠情報を取得し、1枠以上あるならわんコメ対応
 (async () => {
  const response = await new ServiceAPI().getServices();
- if (!response) isInitFlag.value = false; // わんコメ対応なし
+ if (response) await initOneSDK(config);
+ else isInitFlag.value = false; // わんコメ対応なし
 })();
 
-onMounted(async () => {
- if (isInitFlag.value) await initOneSDK(config);
+onMounted(() => {
  document.body.removeAttribute('hidden'); // hiddenの削除
 });
 </script>

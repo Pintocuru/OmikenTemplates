@@ -2,9 +2,18 @@
 import { ConfigNoPlugin } from '@public/common/commonTypes';
 
 // 時間に関する正規表現パターン
-export const TIME_PATTERN =
- /(?:^|[^０-９0-9])([０-９0-9]{1,2})[:：じ時]([０-９0-9]{1,2})(?:[:：分ふん])?(?::?([０-９0-9]{1,2})(?:[秒びょう])?)?/g;
-
+// フルタイム表記
+const HOUR_PATTERN = /(?:^|[^０-９0-9])([０-９0-9]{1,2})[:：じ時hH]/;
+const MINUTE_PATTERN = /([０-９0-9]{1,2})(?:[:：分ふんmM])?/;
+const SECOND_PATTERN = /:?([０-９0-9]{1,2})(?:[秒びょうsS])?/;
+export const TIME_PATTERN = new RegExp(
+ `${HOUR_PATTERN.source}${MINUTE_PATTERN.source}${SECOND_PATTERN.source}`,
+ 'g'
+);
+// 分単位表記
+export const MINUTES_ONLY_PATTERN = /(?:^|[^０-９0-9])([０-９0-9]{1,2})[分ふんmM]/g;
+// 相対時間表記
+export const RELATIVE_TIME_PATTERN = /([０-９0-9]{1,2})([秒びょうsS]|[分ふんmM])後/g;
 // reactiveの型定義
 export interface TimerState {
  isVisible: boolean; // 表示/非表示

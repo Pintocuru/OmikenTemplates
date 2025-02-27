@@ -1,7 +1,7 @@
 // common/CommentGetHelper.ts
 import { CharaType, SendCommentParamsType } from '../type';
 import emojiRegex from 'emoji-regex';
-import { BotParamFilterType, CommentChara, ConfigNoPlugin, ConfigType } from './commonTypes';
+import { BotParamFilterType, CommentChara, ConfigNoPlugin } from './commonTypes';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 // comment.data.id にあるパラメータをObjectにする

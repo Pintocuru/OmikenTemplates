@@ -18,7 +18,7 @@ export function useTimer(config: NextTimerConfigType, isInitFlagRef: Ref<boolean
   countdown: 0, // 残り時間(秒)
   displayTime: '---', // 時刻表示
   initialTime: 30, // タイマーの初期値
-  secondAdjust: config.SECOND_ADJUST as SecondAdjustType // 秒数を丸める単位
+  secondAdjust: config.SECOND_ADJUST // 秒数を丸める単位
  });
 
  // タイマーリソース管理
@@ -29,7 +29,7 @@ export function useTimer(config: NextTimerConfigType, isInitFlagRef: Ref<boolean
 
  // プロセッサー初期化
  const isInitFlag = computed(() => isInitFlagRef.value);
- const timeProcessor = new TimerAbsolute();
+ const timeProcessor = new TimerAbsolute(config);
  const storageController = new TimerStorageController(config);
 
  // 桁ごとの数字を返す
@@ -53,11 +53,7 @@ export function useTimer(config: NextTimerConfigType, isInitFlagRef: Ref<boolean
  const finishCountdown = (calledAt: Record<number, boolean>) => {
   state.countdown = 0;
   state.isTimerRunning = false;
-
-  if (!calledAt[0]) {
-   calledAt[0] = handleWordParty(config.COUNT_PARTY_FINISH);
-  }
-
+  if (!calledAt[0]) calledAt[0] = handleWordParty(config.COUNT_PARTY_FINISH);
   if (!config.ALWAYS_VISIBLE) {
    timers.hide = setTimeout(() => (state.isVisible = false), config.AFTER_SHOW * 1000);
   }
@@ -109,7 +105,7 @@ export function useTimer(config: NextTimerConfigType, isInitFlagRef: Ref<boolean
   const actions: Record<TimerAction, () => void> = {
    start: () => {
     if (data.timestamp) {
-     startCountdown(timeProcessor.processTime(data.timestamp, state.secondAdjust) as Date);
+     startCountdown(timeProcessor.processTimeDate(data.timestamp, state.secondAdjust));
     }
    },
    pause: () => {

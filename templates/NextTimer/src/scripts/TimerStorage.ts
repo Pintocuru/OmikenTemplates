@@ -14,12 +14,13 @@ export class TimerStorageController {
  private MIN_SECONDS;
  private MAX_SECONDS;
  private listeners: Set<(action: TimerAction, data: TimerActionData) => void>;
- private timerAbsolute = new TimerAbsolute();
+ timerAbsolute: TimerAbsolute;
 
- constructor(config?: NextTimerConfigType) {
+ constructor(config: NextTimerConfigType) {
   this.MIN_SECONDS = config?.MIN_SECONDS || 10;
   this.MAX_SECONDS = config?.MAX_SECONDS || 300;
   this.listeners = new Set();
+  this.timerAbsolute = new TimerAbsolute(config);
  }
 
  // ストレージイベントのハンドラーを設定
@@ -46,7 +47,7 @@ export class TimerStorageController {
  // タイマーを開始
  startTimer(seconds: number, secondAdjust: SecondAdjustType): void {
   const rawTime = new Date(Date.now() + seconds * 1000);
-  const timestamp = this.timerAbsolute.processTime(rawTime, secondAdjust);
+  const timestamp = this.timerAbsolute.processTimeDate(rawTime, secondAdjust);
   if (timestamp) this.saveAction({ action: 'start', data: { timestamp } });
  }
 

@@ -19,7 +19,8 @@ export class PostMessage {
  async post(): Promise<void> {
   try {
    // 枠情報の取得
-   this.services = await this.serviceAPI.getServices();
+   const services = await this.serviceAPI.getServices();
+   this.services = services ?? [];
 
    // 順次処理を保証
    await Promise.all(

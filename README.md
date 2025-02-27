@@ -4,9 +4,9 @@
 
 ## 概要
 
-- 「おみくじメーカー OmikenEditor for わんコメ」は、コメントアプリ「わんコメ」で使用可能なプラグイン「おみくじ BOT プラグイン OmikenPlugin for わんコメ」のjsonデータを編集するアプリです。
+- 「おみくじメーカー OmikenEditor for わんコメ」は、コメントアプリ「わんコメ」で使用可能なプラグイン「おみくじ BOT プラグイン OmikenPlugin for わんコメ」の json データを編集するアプリです。
 
-# !!!以下編集中!!!
+# !!!以下編集中!!
 
 ## インストール方法
 
@@ -31,7 +31,9 @@
 ### 本番ビルド
 
 Vite を使って本番用ビルドを行います。
+
 生成物の名称は「plugin.js」です。CommonJS で生成する必要があります。
+
 プラグインの詳細は プラグイン<https://onecomme.com/docs/developer/plugin> をご覧ください。
 
 ## 必要な依存関係
@@ -65,7 +67,7 @@ Vite を使って本番用ビルドを行います。
 
 ## ライセンス
 
-このプラグインは、[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0) の下で提供されています。ソフトウェアを使用、改変、再配布する場合は、[わんコメの利用規約](https://onecomme.com/terms)に加え、ライセンスの条件に従う必要があります。
+このプラグインは、[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0) の下で提供されています。ソフトウェアを使用、改変、再配布する場合は、[わんコメの利用規約](https://onecomme.com/terms) に加え、ライセンスの条件に従う必要があります。
 
 詳細は、リポジトリ内の `LICENSE` ファイルをご確認ください。
 

@@ -11,7 +11,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 // コンポーネント名を挿入 (AnyGenerator/App.vueの変更も行うこと)
-const app = 'OldPattern05';
+const app = 'NightRider';
 
 // BasicCounter
 // SimpleCounter
@@ -52,7 +52,7 @@ export default (env, argv) => {
    // AnyGenerator
    new HtmlWebpackPlugin({
     template: path.resolve(dirname, `./src/apps/AnyGenerator/index.ejs`),
-    filename: `${app}.html`,
+    filename: `index.html`,
     chunks: [app], // このHTMLファイルで使用するチャンク
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]
