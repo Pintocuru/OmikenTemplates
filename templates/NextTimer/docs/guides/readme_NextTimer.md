@@ -1,8 +1,10 @@
 ---
 title: 2025-02-27
 date: 2025-02-27
-tags: [Readme]
-aliases: []
+tags:
+ - Readme
+ - Omiken
+aliases:
 ---
 
 # スナイプタイマー NextTimer v0.2.0

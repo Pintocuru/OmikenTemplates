@@ -3,24 +3,26 @@
  <div class="flex justify-center items-center">
   <transition name="custom-transition" mode="out-in">
    <div v-show="isVisible" class="font-mono">
-    <div class="card w-80 bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
+    <div
+     class="w-80 bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 p-4"
+    >
      <!-- カードヘッダー -->
-     <div class="card-title justify-center mt-4 text-primary">
+     <div class="flex justify-center mt-4 text-blue-600">
       <h1 class="uppercase tracking-wider text-xl font-bold">Countdown</h1>
      </div>
 
      <!-- カウントダウン表示 -->
-     <div class="card-body pb-2 pt-0">
-      <div class="rounded-xl bg-base-300 p-4 mb-2 relative overflow-hidden">
+     <div class="px-4 py-2">
+      <div class="rounded-xl bg-gray-100 p-4 mb-2 relative overflow-hidden">
        <!-- パルスエフェクト（タイマー実行中のみ） -->
-       <div v-if="isTimerRunning" class="absolute inset-0 bg-primary/5 animate-pulse"></div>
+       <div v-if="isTimerRunning" class="absolute inset-0 bg-blue-50 animate-pulse"></div>
 
        <!-- カウントダウン数字 -->
        <div class="flex justify-center z-10 relative">
         <div
          v-for="(digit, index) in countdownDigits"
          :key="index"
-         class="w-12 h-16 mx-1 bg-base-100 rounded-lg overflow-hidden relative shadow-inner border border-base-200"
+         class="w-12 h-16 mx-1 bg-white rounded-lg overflow-hidden relative shadow-inner border border-gray-200"
         >
          <!-- オドメーターアニメーション -->
          <div
@@ -30,7 +32,7 @@
           <span
            v-for="n in 10"
            :key="n"
-           class="flex items-center justify-center h-16 text-3xl font-bold text-primary w-full"
+           class="flex items-center justify-center h-16 text-3xl font-bold text-blue-600 w-full"
           >
            {{ (n - 1 + 10) % 10 }}
           </span>
@@ -38,17 +40,17 @@
 
          <!-- グラデーションオーバーレイ -->
          <div
-          class="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-base-100 to-transparent z-20"
+          class="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-white to-transparent z-20"
          ></div>
          <div
-          class="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-base-100 to-transparent z-20"
+          class="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-white to-transparent z-20"
          ></div>
         </div>
        </div>
       </div>
 
       <!-- 次のカウントダウン時間 -->
-      <div class="text-center font-semibold text-primary">
+      <div class="text-center font-semibold text-blue-600">
        <span class="uppercase tracking-wide" :class="{ 'animate-pulse': isTimerRunning }">
         Next {{ displayTime }}
        </span>
@@ -57,16 +59,16 @@
       <!-- ステータスインジケーター -->
       <div class="flex justify-center gap-3 mt-2 mb-1">
        <div
-        class="indicator size-3 rounded-full"
-        :class="isTimerRunning ? 'bg-success animate-pulse' : 'bg-base-300'"
+        class="w-3 h-3 rounded-full"
+        :class="isTimerRunning ? 'bg-green-500 animate-pulse' : 'bg-gray-300'"
        ></div>
        <div
-        class="indicator size-3 rounded-full"
-        :class="isTimerRunning ? 'bg-primary animate-pulse delay-300' : 'bg-base-300'"
+        class="w-3 h-3 rounded-full"
+        :class="isTimerRunning ? 'bg-blue-500 animate-pulse delay-300' : 'bg-gray-300'"
        ></div>
        <div
-        class="indicator size-3 rounded-full"
-        :class="isTimerRunning ? 'bg-secondary animate-pulse delay-700' : 'bg-base-300'"
+        class="w-3 h-3 rounded-full"
+        :class="isTimerRunning ? 'bg-purple-500 animate-pulse delay-700' : 'bg-gray-300'"
        ></div>
       </div>
      </div>

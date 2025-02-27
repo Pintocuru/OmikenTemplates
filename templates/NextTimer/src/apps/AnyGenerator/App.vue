@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 // 読み込ませるコンポーネント
-import AnyGenerator from '@components/NightRider.vue';
+import AnyGenerator from '@components/BasicCounter.vue';
 // その他
 import { onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
