@@ -65,12 +65,16 @@ export default (env, argv) => {
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]
    }),
-   // Copy config.js to dist
+   // Copy config.js & template.json
    new CopyWebpackPlugin({
     patterns: [
      {
-      from: path.resolve(dirname, './src/assets/config.js'),
+      from: path.resolve(dirname, './assets/config.js'),
       to: path.resolve(dirname, 'dist/config.js')
+     },
+     {
+      from: path.resolve(dirname, './assets/template.json'),
+      to: path.resolve(dirname, 'dist/template.json')
      }
     ]
    })

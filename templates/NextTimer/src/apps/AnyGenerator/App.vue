@@ -49,13 +49,15 @@ const timeConfig: NextTimerConfigType = {
 // コンポーザブル
 const { isInitFlag, initOneSDK, userCommentsMap } = CommentGet();
 
-// 初期化
-onMounted(async () => {
- document.body.removeAttribute('hidden'); // hiddenの削除
- // わんコメから枠情報を取得し、1枠以上あるならわんコメ対応
+// わんコメから枠情報を取得し、1枠以上あるならわんコメ対応
+(async () => {
  const response = await new ServiceAPI().getServices();
- if (response) await initOneSDK(config);
- else isInitFlag.value = false; // わんコメ対応なし
+ if (!response) isInitFlag.value = false; // わんコメ対応なし
+})();
+
+onMounted(async () => {
+ if (isInitFlag.value) await initOneSDK(config);
+ document.body.removeAttribute('hidden'); // hiddenの削除
 });
 </script>
 
