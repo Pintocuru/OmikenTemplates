@@ -121,7 +121,7 @@ export class TimerAbsolute {
   );
 
   // 数値と単位を抽出（1〜3桁の数字に対応）
-  const match = normalized.match(/([0-9]{1,3})([秒びょうsS]|[分ふんmM])後/);
+  const match = normalized.match(/([0-9]{1,3})(秒|びょう|s|S|分|ふん|m|M)後/);
   if (!match) return null;
 
   const value = parseInt(match[1]);
@@ -134,19 +134,26 @@ export class TimerAbsolute {
   const target = new Date(now);
   target.setMilliseconds(0); // ミリ秒を0に設定
 
-  // 単位に応じて時間を計算
-  if (unit.match(/[秒びょうsS]/)) {
-   // 秒単位の場合
-   const adjustedSeconds = Math.ceil(value / this.secondAdjust) * this.secondAdjust;
-   // 最低でも10秒以上あることを確認
-   if (adjustedSeconds < this.MIN_SECONDS) {
-    return null;
-   }
-   target.setSeconds(now.getSeconds() + adjustedSeconds);
-  } else if (unit.match(/[分ふんmM]/)) {
-   // 分単位の場合
-   target.setMinutes(now.getMinutes() + value, 0);
+  // 単位に応じて秒数を計算
+  let secondsToAdd = 0;
+  if (unit.match(/分|ふん|m|M/)) {
+   // 分単位の場合、60倍して秒数に変換
+   secondsToAdd = value * 60;
+  } else if (unit.match(/秒|びょう|s|S/)) {
+   // 秒単位の場合、そのまま使用
+   secondsToAdd = value;
   }
+
+  // 現在時刻の秒数と追加する秒数を合計
+  const totalSeconds = now.getSeconds() + secondsToAdd;
+
+  // adjustTime を使って秒数を調整
+  const adjustedTime = this.adjustTime(now.getHours(), now.getMinutes(), totalSeconds);
+
+  // 調整後の時刻を設定
+  target.setHours(adjustedTime.hours);
+  target.setMinutes(adjustedTime.minutes);
+  target.setSeconds(adjustedTime.seconds);
 
   return target;
  }
