@@ -1,46 +1,50 @@
 <!-- src/FlipCoin.vue -->
 <template>
  <div class="flex justify-center items-center min-h-screen bg-gradient-to-br">
-  <div v-show="isVisible" class="font-mono animate-fade-up relative">
-   <!-- 波紋アニメーション -->
-   <div v-if="isTimerRunning" class="ripple-container">
-    <div v-for="i in 3" :key="i" class="ripple" :style="{ animationDelay: `${i * 0.3}s` }"></div>
-   </div>
+  <transition name="custom-transition" mode="out-in">
+   <div v-show="isVisible" class="font-mono animate-fade-up relative">
+    <!-- 波紋アニメーション -->
+    <div v-if="isTimerRunning" class="ripple-container">
+     <div v-for="i in 3" :key="i" class="ripple" :style="{ animationDelay: `${i * 0.3}s` }"></div>
+    </div>
 
-   <!-- パーティクル -->
-   <div v-if="countdown <= 3 && isTimerRunning" class="particles-container">
-    <div v-for="i in 15" :key="i" class="particle" :style="getParticleStyle(i)"></div>
-   </div>
+    <!-- パーティクル -->
+    <div v-if="countdown <= 3 && isTimerRunning" class="particles-container">
+     <div v-for="i in 15" :key="i" class="particle" :style="getParticleStyle(i)"></div>
+    </div>
 
-   <!-- カウントダウン表示（コイン風） -->
-   <div
-    class="coin relative shadow-2xl animate-coin rounded-full w-48 h-48 flex items-center justify-center overflow-hidden"
-    :class="{ 'animate-pulse': countdown <= 3 && isTimerRunning }"
-   >
-    <!-- コインの縁 -->
-    <div class="absolute inset-0 rounded-full border-8 border-yellow-300 shadow-inner"></div>
-
-    <!-- グラデーションの背景 -->
-    <div class="absolute inset-4 rounded-full bg-gradient-to-bl from-yellow-500 to-amber-600"></div>
-
-    <!-- 数字と内側の円 -->
+    <!-- カウントダウン表示（コイン風） -->
     <div
-     class="absolute inset-8 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center"
+     class="coin relative shadow-2xl animate-coin rounded-full w-48 h-48 flex items-center justify-center overflow-hidden"
+     :class="{ 'animate-pulse': countdown <= 3 && isTimerRunning }"
     >
+     <!-- コインの縁 -->
+     <div class="absolute inset-0 rounded-full border-8 border-yellow-300 shadow-inner"></div>
+
+     <!-- グラデーションの背景 -->
      <div
-      class="text-8xl font-extrabold text-white text-center drop-shadow-lg"
-      :class="{ 'animate-wiggle': countdown <= 3 && isTimerRunning }"
+      class="absolute inset-4 rounded-full bg-gradient-to-bl from-yellow-500 to-amber-600"
+     ></div>
+
+     <!-- 数字と内側の円 -->
+     <div
+      class="absolute inset-8 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center"
      >
-      {{ countdown }}
+      <div
+       class="text-8xl font-extrabold text-white text-center drop-shadow-lg"
+       :class="{ 'animate-wiggle': countdown <= 3 && isTimerRunning }"
+      >
+       {{ countdown }}
+      </div>
      </div>
     </div>
-   </div>
 
-   <!-- 次のカウントダウン時間 -->
-   <div class="text-center font-semibold text-amber-300 mt-6 animate-flash text-xl">
-    Next {{ displayTime }}
+    <!-- 次のカウントダウン時間 -->
+    <div class="text-center font-semibold text-amber-300 mt-6 animate-flash text-xl">
+     Next {{ displayTime }}
+    </div>
    </div>
-  </div>
+  </transition>
  </div>
 </template>
 
@@ -92,6 +96,17 @@ watch(
 </script>
 
 <style lang="scss" scoped>
+.custom-transition-enter-active,
+.custom-transition-leave-active {
+ transition: all 0.5s ease;
+}
+
+.custom-transition-enter-from,
+.custom-transition-leave-to {
+ opacity: 0;
+ transform: translateY(20px);
+}
+
 /* コインのアニメーション */
 @keyframes coin {
  0%,

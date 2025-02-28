@@ -12,7 +12,7 @@ export const ENV = {
  // development:開発環境設定
  development: {
   vuePath: 'https://unpkg.com/vue@3/dist/vue.global.js', // Vueのパス
-  onesdkPath: '../../public/onesdk.js' // OneSDKのパス(distから見て)
+  onesdkPath: path.resolve(dirname, './public/onesdk.js') // OneSDKのパス
  },
  // production:本番環境設定
  production: {
@@ -22,7 +22,7 @@ export const ENV = {
 };
 
 // 基本設定を作成する関数
-export function createConfig(childDir, mode = 'development') {
+export function createConfig(childDir, mode = 'development', isOneSDK = true) {
  return {
   mode, // モード
   entry: path.resolve(childDir, './src/main.ts'), // エントリーポイント
@@ -79,7 +79,7 @@ export function createConfig(childDir, mode = 'development') {
   // 外部で使用するもの
   externals: {
    vue: 'Vue',
-   '@onecomme.com/onesdk': 'OneSDK'
+   '@onecomme.com/onesdk': isOneSDK ? 'OneSDK' : false
   },
   optimization: {
    minimize: false, // コードの最小化

@@ -6,22 +6,22 @@
     <button
      @click="() => adjustTimer(-5)"
      class="h-8 w-8 border border-gray-600 rounded flex items-center justify-center hover:bg-gray-700 transition-colors"
-     :disabled="initialTime <= MIN_SECONDS"
+     :disabled="initialTime <= timeConfig.MIN_SECONDS"
     >
      <MinusIcon
       class="h-4 w-4"
-      :class="initialTime <= MIN_SECONDS ? 'text-gray-500' : 'text-gray-300'"
+      :class="initialTime <= timeConfig.MIN_SECONDS ? 'text-gray-500' : 'text-gray-300'"
      />
     </button>
     <span class="text-2xl font-bold w-16 text-center text-gray-200"> {{ initialTime }}秒 </span>
     <button
      @click="() => adjustTimer(5)"
      class="h-8 w-8 border border-gray-600 rounded flex items-center justify-center hover:bg-gray-700 transition-colors"
-     :disabled="initialTime >= MAX_SECONDS"
+     :disabled="initialTime >= timeConfig.MAX_SECONDS"
     >
      <PlusIcon
       class="h-4 w-4"
-      :class="initialTime >= MAX_SECONDS ? 'text-gray-500' : 'text-gray-300'"
+      :class="initialTime >= timeConfig.MAX_SECONDS ? 'text-gray-500' : 'text-gray-300'"
      />
     </button>
    </div>
@@ -82,7 +82,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { TimerStorageController } from '@/scripts/TimerStorage';
-import { SecondAdjustType } from '@/scripts/types';
+import { NextTimerConfigType, SecondAdjustType } from '@/scripts/types';
 import { TimerAbsolute } from '@/scripts/TimerAbsolute';
 import { toast } from 'vue-sonner';
 import {
@@ -95,12 +95,20 @@ import {
 } from 'lucide-vue-next';
 
 // 定数
-const MIN_SECONDS = window.TIME_CONFIG?.MIN_SECONDS || 10; // タイマーの最低値(秒)
-const MAX_SECONDS = window.TIME_CONFIG?.MAX_SECONDS || 300; // タイマーの最大値(秒)
+const timeConfig: NextTimerConfigType = {
+ ALWAYS_VISIBLE: window.TIME_CONFIG?.ALWAYS_VISIBLE || false, // 常時表示させるか
+ MIN_SECONDS: window.TIME_CONFIG?.MIN_SECONDS || 10, // タイマーの最低値(秒)
+ MAX_SECONDS: window.TIME_CONFIG?.MAX_SECONDS || 300, // タイマーの最大値(秒)
+ AFTER_SHOW: window.TIME_CONFIG?.AFTER_SHOW || 5, // 時間経過後に表示する時間(秒)
+ SECOND_ADJUST: window.TIME_CONFIG?.SECOND_ADJUST || 10, // 秒数を丸める(default=10秒単位)
+ COUNT_PARTY: window.TIME_CONFIG?.COUNT_PARTY || {}, // WordPartyの発火タイミング
+ COUNT_PARTY_START: window.TIME_CONFIG?.COUNT_PARTY_START || '', // タイマー起動時に発火するWordParty
+ COUNT_PARTY_FINISH: window.TIME_CONFIG?.COUNT_PARTY_FINISH || '' // タイマー0で発火するWordParty
+};
 
 // タイマーコントローラーの初期化と状態管理
-const timerController = new TimerStorageController(window.TIME_CONFIG);
-const timerAbsolute = new TimerAbsolute();
+const timerController = new TimerStorageController(timeConfig);
+const timerAbsolute = new TimerAbsolute(timeConfig);
 const initialTime = ref(30);
 const secondAdjust = ref<SecondAdjustType>(10);
 const now = ref(Date.now()); // 現在時刻
@@ -108,7 +116,7 @@ const now = ref(Date.now()); // 現在時刻
 // タイマー終了時刻を計算（常に更新）
 const endTime = computed(() => {
  const rawTime = new Date(now.value + initialTime.value * 1000);
- const timestamp = timerAbsolute.processTime(rawTime, secondAdjust.value);
+ const timestamp = timerAbsolute.processTimeDate(rawTime, secondAdjust.value);
  return timestamp ? timestamp.toLocaleTimeString() : '';
 });
 
@@ -122,7 +130,10 @@ const copyToClipboard = async () => {
 
 // タイマーの調整
 const adjustTimer = (amount: number) => {
- const newValue = Math.max(MIN_SECONDS, Math.min(MAX_SECONDS, initialTime.value + amount));
+ const newValue = Math.max(
+  timeConfig.MIN_SECONDS,
+  Math.min(timeConfig.MAX_SECONDS, initialTime.value + amount)
+ );
 
  if (newValue !== initialTime.value) {
   initialTime.value = newValue;

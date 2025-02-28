@@ -11,7 +11,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 // コンポーネント名を挿入 (AnyGenerator/App.vueの変更も行うこと)
-const app = 'BasicCounter';
+const app = 'WesternDuel';
 
 // BasicCounter
 // SimpleCounter
@@ -20,12 +20,11 @@ const app = 'BasicCounter';
 // FireComic
 
 // ---
-
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default (env, argv) => {
  const { mode } = argv;
- const baseConfig = createConfig(dirname, mode);
+ const baseConfig = createConfig(dirname, mode, false);
 
  const childConfig = {
   entry: {

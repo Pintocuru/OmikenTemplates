@@ -5,6 +5,10 @@ tags: [Readme, Omiken]
 aliases: []
 ---
 
+```javascript
+もし、OneSDK の同梱がOKになった場合、こちらを使用する
+```
+
 # スナイプタイマー NextTimer v0.2.0
 
 最終更新日：2025/02/27
