@@ -13,7 +13,7 @@ export const TIME_PATTERN = new RegExp(
 // 分単位表記
 export const MINUTES_ONLY_PATTERN = /(?:^|[^０-９0-9])([０-９0-9]{1,2})[分ふんmM]/g;
 // 相対時間表記
-export const RELATIVE_TIME_PATTERN = /([０-９0-9]{1,2})([秒びょうsS]|[分ふんmM])後/g;
+export const RELATIVE_TIME_PATTERN = /([０-９0-9]{1,3})([秒びょうsS]|[分ふんmM])後/g;
 // reactiveの型定義
 export interface TimerState {
  isVisible: boolean; // 表示/非表示

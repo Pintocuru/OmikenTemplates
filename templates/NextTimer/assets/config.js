@@ -6,7 +6,7 @@ const TIME_CONFIG = {
  // -------------------------------------------------
  ALWAYS_VISIBLE: false, // 常時表示させるか(true/false)
  MIN_SECONDS: 10, // タイマーの最低値(秒,最低10秒)
- MAX_SECONDS: 21600, // タイマーの最大値(秒,最大43200秒=12時間)
+ MAX_SECONDS: 43200, // タイマーの最大値(秒,最大43200秒=12時間)
  AFTER_SHOW: 5, // 時間経過後に表示する時間(秒)
  SECOND_ADJUST: 10, // 秒数を丸める(default=10秒単位)
 

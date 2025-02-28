@@ -11,7 +11,7 @@ import {
 export class TimerAbsolute {
  secondAdjust: number = 10;
  MIN_SECONDS: number = 10; // タイマーの最低値(秒)
- MAX_SECONDS: number = 21600; // タイマーの最大値(秒)
+ MAX_SECONDS: number = 43200; // タイマーの最大値(秒)
  constructor(config: NextTimerConfigType) {
   this.MIN_SECONDS = config.MIN_SECONDS;
   this.MAX_SECONDS = Math.min(config.MAX_SECONDS, 43200);
@@ -20,6 +20,13 @@ export class TimerAbsolute {
  // 文字列から時間入力を処理して日時オブジェクトを返す
  processTime(input: string, secondAdjust: SecondAdjustType): Date | null {
   this.secondAdjust = secondAdjust;
+
+  // 相対時間表記
+  const relativeMatch = input.match(RELATIVE_TIME_PATTERN);
+  if (relativeMatch) {
+   const targetDate = this.processRelativeTime(relativeMatch[0].trim());
+   return targetDate ? this.validateTimeRange(targetDate) : null;
+  }
 
   // フルタイム表記
   const timeMatch = input.match(TIME_PATTERN);
@@ -37,13 +44,6 @@ export class TimerAbsolute {
   const minutesMatch = input.match(MINUTES_ONLY_PATTERN);
   if (minutesMatch) {
    const targetDate = this.processMinutesOnly(minutesMatch[0].trim());
-   return targetDate ? this.validateTimeRange(targetDate) : null;
-  }
-
-  // 相対時間表記
-  const relativeMatch = input.match(RELATIVE_TIME_PATTERN);
-  if (relativeMatch) {
-   const targetDate = this.processRelativeTime(relativeMatch[0].trim());
    return targetDate ? this.validateTimeRange(targetDate) : null;
   }
 
@@ -105,9 +105,9 @@ export class TimerAbsolute {
   // 現在時刻の時間を維持し、指定された分に設定
   target.setHours(now.getHours(), minutes, 0, 0);
 
-  // もし指定された分が過ぎている場合は無効とする
+  // もし指定された分が過ぎている場合は次の時間に設定
   if (target <= now) {
-   return null;
+   target.setHours(now.getHours() + 1);
   }
 
   return target;
@@ -120,8 +120,8 @@ export class TimerAbsolute {
    String.fromCharCode(ch.charCodeAt(0) - 0xfee0)
   );
 
-  // 数値と単位を抽出
-  const match = normalized.match(/([0-9]{1,2})([秒びょうsS]|[分ふんmM])後/);
+  // 数値と単位を抽出（1〜3桁の数字に対応）
+  const match = normalized.match(/([0-9]{1,3})([秒びょうsS]|[分ふんmM])後/);
   if (!match) return null;
 
   const value = parseInt(match[1]);
@@ -193,8 +193,16 @@ export class TimerAbsolute {
 
   target.setHours(hours, minutes, seconds, 0);
 
-  // 過去の時間の場合は無効（nullを返す）
+  // 過去の時間の場合は翌日とみなして日付を1日進める
   if (target <= now) {
+   target.setDate(target.getDate() + 1);
+  }
+
+  // 現在時刻との差分を計算
+  const diffSeconds = Math.floor((target.getTime() - now.getTime()) / 1000);
+
+  // 設定した時間が遠すぎる場合（指定された最大秒数よりも離れている場合）は無効と判断
+  if (diffSeconds > this.MAX_SECONDS) {
    return null;
   }
 

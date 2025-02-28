@@ -148,7 +148,7 @@ export function useTimer(config: NextTimerConfigType, isInitFlagRef: Ref<boolean
  // コメントによるタイマー発動
  const processComment = (comment: string) => {
   // タイマー稼働中は新たな設定を受け付けない
-  if (!state.isTimerRunning) return;
+  if (state.isTimerRunning) return;
   const time = timeProcessor.processTime(comment, state.secondAdjust);
   if (time) startCountdown(time);
  };
