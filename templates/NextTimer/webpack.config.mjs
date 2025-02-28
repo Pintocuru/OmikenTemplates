@@ -11,7 +11,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 // コンポーネント名を挿入 (AnyGenerator/App.vueの変更も行うこと)
-const app = 'BasicCounter';
+const app = 'test';
 
 // BasicCounter
 // SimpleCounter

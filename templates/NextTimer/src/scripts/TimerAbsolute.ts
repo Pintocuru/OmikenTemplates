@@ -25,52 +25,57 @@ export class TimerAbsolute {
   const timeMatch = input.match(TIME_PATTERN);
   if (timeMatch) {
    const parts = this.extractTimeParts(timeMatch[0].trim());
+   // 無効な時間フォーマットをチェック（99:90など）
+   if (parts.hours >= 24 || parts.minutes >= 60 || parts.seconds >= 60) {
+    return null;
+   }
    const targetDate = this.createTargetTime(parts);
-   return this.validateTimeRange(targetDate);
+   return targetDate ? this.validateTimeRange(targetDate) : null;
   }
 
   // 分単位表記
   const minutesMatch = input.match(MINUTES_ONLY_PATTERN);
   if (minutesMatch) {
    const targetDate = this.processMinutesOnly(minutesMatch[0].trim());
-   return this.validateTimeRange(targetDate);
+   return targetDate ? this.validateTimeRange(targetDate) : null;
   }
 
   // 相対時間表記
   const relativeMatch = input.match(RELATIVE_TIME_PATTERN);
   if (relativeMatch) {
    const targetDate = this.processRelativeTime(relativeMatch[0].trim());
-   return this.validateTimeRange(targetDate);
+   return targetDate ? this.validateTimeRange(targetDate) : null;
   }
 
   return null;
  }
 
  // Date型から時間入力を処理
- processTimeDate(date: Date, secondAdjust: SecondAdjustType): Date {
+ processTimeDate(date: Date, secondAdjust: SecondAdjustType): Date | null {
   this.secondAdjust = secondAdjust;
   const normalizedDate = this.normalizeTime(date);
-  return this.validateTimeRange(normalizedDate);
+  return normalizedDate ? this.validateTimeRange(normalizedDate) : null;
  }
 
  // 設定された最小・最大秒数の範囲内かチェックし、必要に応じて調整
- private validateTimeRange(targetDate: Date): Date {
+ private validateTimeRange(targetDate: Date): Date | null {
   const now = new Date();
 
   // 現在時刻と目標時刻の差分を秒単位で計算
   let diffSeconds = Math.floor((targetDate.getTime() - now.getTime()) / 1000);
 
-  // 最小値と最大値の範囲内に調整
-  if (diffSeconds < this.MIN_SECONDS) {
-   // 最小秒数を下回る場合、現在時刻から最小秒数後の時刻に設定
-   const newDate = new Date(now.getTime() + this.MIN_SECONDS * 1000);
-   // 秒数のみ調整し、ミリ秒は0に設定
+  // 最小値を確認（10秒 + adjustTimeで加算した秒数）
+  const minAcceptableSeconds = Math.max(this.MIN_SECONDS, this.secondAdjust);
+
+  // 最小値を下回る場合
+  if (diffSeconds < minAcceptableSeconds) {
+   // 最小秒数以上になるように調整
+   const newDate = new Date(now.getTime() + minAcceptableSeconds * 1000);
    newDate.setMilliseconds(0);
    return newDate;
   } else if (diffSeconds > this.MAX_SECONDS) {
-   // 最大秒数を上回る場合、現在時刻から最大秒数後の時刻に設定
+   // 最大秒数を上回る場合
    const newDate = new Date(now.getTime() + this.MAX_SECONDS * 1000);
-   // 秒数のみ調整し、ミリ秒は0に設定
    newDate.setMilliseconds(0);
    return newDate;
   }
@@ -81,7 +86,7 @@ export class TimerAbsolute {
  }
 
  // 分単位表記を処理
- private processMinutesOnly(minutesStr: string): Date {
+ private processMinutesOnly(minutesStr: string): Date | null {
   // 全角数字を半角に変換
   const normalized = minutesStr.replace(/[０-９]/g, (ch) =>
    String.fromCharCode(ch.charCodeAt(0) - 0xfee0)
@@ -89,25 +94,27 @@ export class TimerAbsolute {
 
   // 数字部分を抽出
   const match = normalized.match(/([0-9]{1,2})[分ふんmM]/);
-  if (!match) return new Date(); // マッチしない場合は現在時刻を返す
+  if (!match) return null;
 
   const minutes = parseInt(match[1]);
+  if (minutes >= 60) return null; // 無効な分数の場合
+
   const now = new Date();
   const target = new Date(now);
 
   // 現在時刻の時間を維持し、指定された分に設定
   target.setHours(now.getHours(), minutes, 0, 0);
 
-  // もし指定された分が過ぎている場合は次の時間に設定
+  // もし指定された分が過ぎている場合は無効とする
   if (target <= now) {
-   target.setHours(now.getHours() + 1);
+   return null;
   }
 
   return target;
  }
 
  // 相対時間表記を処理
- private processRelativeTime(relativeStr: string): Date {
+ private processRelativeTime(relativeStr: string): Date | null {
   // 全角数字を半角に変換
   const normalized = relativeStr.replace(/[０-９]/g, (ch) =>
    String.fromCharCode(ch.charCodeAt(0) - 0xfee0)
@@ -115,10 +122,13 @@ export class TimerAbsolute {
 
   // 数値と単位を抽出
   const match = normalized.match(/([0-9]{1,2})([秒びょうsS]|[分ふんmM])後/);
-  if (!match) return new Date();
+  if (!match) return null;
 
   const value = parseInt(match[1]);
   const unit = match[2];
+
+  // 値が0の場合は無効
+  if (value <= 0) return null;
 
   const now = new Date();
   const target = new Date(now);
@@ -128,6 +138,10 @@ export class TimerAbsolute {
   if (unit.match(/[秒びょうsS]/)) {
    // 秒単位の場合
    const adjustedSeconds = Math.ceil(value / this.secondAdjust) * this.secondAdjust;
+   // 最低でも10秒以上あることを確認
+   if (adjustedSeconds < this.MIN_SECONDS) {
+    return null;
+   }
    target.setSeconds(now.getSeconds() + adjustedSeconds);
   } else if (unit.match(/[分ふんmM]/)) {
    // 分単位の場合
@@ -137,7 +151,7 @@ export class TimerAbsolute {
   return target;
  }
 
- //  時間文字列から時、分、秒を抽出
+ // 時間文字列から時、分、秒を抽出
  private extractTimeParts(timeStr: string): TimeParts {
   const normalized = timeStr.replace(/[０-９]/g, (ch) =>
    String.fromCharCode(ch.charCodeAt(0) - 0xfee0)
@@ -154,7 +168,7 @@ export class TimerAbsolute {
  }
 
  // 時間を指定のルールに従って調整する
- normalizeTime(date: Date): Date {
+ normalizeTime(date: Date): Date | null {
   const parts: TimeParts = this.adjustTime(date.getHours(), date.getMinutes(), date.getSeconds());
   return this.createTargetTime(parts);
  }
@@ -173,14 +187,15 @@ export class TimerAbsolute {
  }
 
  // 現在の日時を基に目標時間を計算する
- private createTargetTime({ hours, minutes, seconds }: TimeParts): Date {
+ private createTargetTime({ hours, minutes, seconds }: TimeParts): Date | null {
   const now = new Date();
   const target = new Date(now);
 
   target.setHours(hours, minutes, seconds, 0);
+
+  // 過去の時間の場合は無効（nullを返す）
   if (target <= now) {
-   // 過去の時間の場合は12時間先に設定（43200000ミリ秒 = 12時間）
-   return new Date(target.getTime() + 43200000);
+   return null;
   }
 
   return target;

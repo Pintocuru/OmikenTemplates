@@ -77,15 +77,21 @@ export const filterUserId = (
 };
 
 export const filterAccess = (comments: Comment[], config: ConfigNoPlugin): Comment[] => {
- return comments.filter((comment) => {
-  const { id, data } = comment;
+ return comments.filter(({ id, data }) => {
   const level = config.USER_ACCESS_LEVEL;
-  if (!level) return true;
+  if (!level) return true; // levelが未定義または0のとき、すべてtrue
   if (id === 'COMMENT_TESTER') return true; // コメントテスターは配信者と同じ扱い
-  if (level === 4 && data.isOwner) return true;
-  if (level >= 3 && 'isModerator' in data && data.isModerator === true) return true;
-  if (level >= 2 && 'isMember' in data && data.isMember === true) return true;
-  if (level >= 1) return true;
+
+  // 存在しないプロパティは `in` 演算子でチェック
+  const isOwner = Boolean(data.isOwner);
+  const isModerator = 'isModerator' in data && Boolean(data.isModerator);
+  const isMember = 'isMember' in data && Boolean(data.isMember);
+
+  if (level === 4 && isOwner) return true;
+  if (level === 3 && (isOwner || isModerator)) return true;
+  if (level === 2 && (isOwner || isMember || isModerator)) return true;
+  if (level === 1) return true;
+
   return false;
  });
 };

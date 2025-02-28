@@ -1,7 +1,14 @@
 // common/CommentGet.ts
 import { ref } from 'vue';
 import { CharaType, DataType } from '../type';
-import { CommentChara, ConfigType, ConfigPlugin, ConfigNoPlugin } from './commonTypes';
+import {
+ CommentChara,
+ ConfigType,
+ ConfigPlugin,
+ ConfigNoPlugin,
+ BotParamFilterType,
+ UserWordMatchType
+} from './commonTypes';
 import { fetchData } from './ApiHandler';
 import {
  charaComment,
@@ -9,7 +16,8 @@ import {
  filterMatch,
  filterUserId,
  getIdParams,
- isValidComment
+ isValidComment,
+ matchPattern
 } from './CommentGetHelper';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
@@ -57,57 +65,121 @@ export function CommentGet() {
  // BOTのコメントをidごとに取得
  const botCommentsProcess = (comments: Comment[], config: ConfigPlugin) => {
   config.BOT_PARAM_FILTERS?.forEach((filter) => {
-   const validComments = filterBotComments(comments, config);
-   updateCommentsMap(botCommentsMap.value, filter.id, validComments);
+   const validComments = filterBotComments(comments, config, filter);
+   // フィルタリングで弾かれなかった場合のみ更新
+   if (validComments.length > 0) {
+    updateCommentsMap(botCommentsMap.value, filter.id, validComments, config.IS_DIFF_MODE);
+   }
   });
  };
 
  // ユーザーのコメントをidごとに取得
  const userCommentsProcess = (comments: Comment[], config: ConfigNoPlugin) => {
   config.USER_WORD_MATCH?.forEach((filter) => {
-   const validComments = filterUserComments(comments, config);
-   updateCommentsMap(userCommentsMap.value, filter.id, validComments);
+   const validComments = filterUserComments(comments, config, filter);
+   // フィルタリングで弾かれなかった場合のみ更新
+   if (validComments.length > 0) {
+    updateCommentsMap(userCommentsMap.value, filter.id, validComments, config.IS_DIFF_MODE);
+   }
   });
  };
 
+ /**
+  * コメントマップの更新
+  * 新しいコメントを既存のマップに追加（重複は除外）
+  * IS_DIFF_MODE=trueの場合は上書き、falseの場合は蓄積
+  */
  const updateCommentsMap = (
   map: Record<string, CommentChara[]>,
   id: string,
-  newComments: CommentChara[]
+  newComments: CommentChara[],
+  isDiffMode: boolean
  ) => {
-  map[id] = [
-   ...(map[id] || []),
-   ...newComments.filter(
-    (newComment) =>
-     !(map[id] || []).some((existingComment) => existingComment.data.id === newComment.data.id)
-   )
-  ];
+  // 空ならreturn
+  if (newComments.length === 0) return;
+  // 差分モードの場合は上書き
+  if (isDiffMode) {
+   map[id] = [...newComments];
+  } else {
+   // 蓄積モードの場合は追加（重複除外）
+   map[id] = [
+    ...(map[id] || []),
+    ...newComments.filter(
+     (newComment) =>
+      !(map[id] || []).some((existingComment) => existingComment.data.id === newComment.data.id)
+    )
+   ];
+  }
  };
 
  // BOTのコメントを抽出してフィルタリング
- const filterBotComments = (comments: Comment[], config: ConfigPlugin): CommentChara[] => {
+ const filterBotComments = (
+  comments: Comment[],
+  config: ConfigPlugin,
+  currentFilter: BotParamFilterType
+ ): CommentChara[] => {
   return comments
    .map((comment) => ({
     comment,
     params: getIdParams(comment.data.id)
    }))
-   .filter(({ comment, params }) =>
-    config.BOT_PARAM_FILTERS?.some(
-     (filter) => params && isValidComment(comment, config.BOT_USER_ID, params, filter)
-    )
+   .filter(
+    ({ comment, params }) =>
+     params && isValidComment(comment, config.BOT_USER_ID, params, currentFilter)
    )
    .map(({ comment, params }) => {
-    if (params && 'charaId' in params) return charaComment(comment, params.charaId, Charas.value);
+    if (params && 'charaId' in params) {
+     return charaComment(comment, params.charaId, Charas.value);
+    }
     return null;
    })
    .filter((comment): comment is CommentChara => comment !== null);
  };
 
  // PLUGIN_UID なしの場合のフィルタリング
- const filterUserComments = (comments: Comment[], config: ConfigNoPlugin): CommentChara[] => {
+ const filterUserComments = (
+  comments: Comment[],
+  config: ConfigNoPlugin,
+  currentFilter: UserWordMatchType
+ ): CommentChara[] => {
+  // ユーザーIDによるフィルタリング
   const filter1 = filterUserId(comments, config);
+  // アクセスレベルによるフィルタリング
   const filter2 = filterAccess(filter1, config);
-  return filterMatch(filter2, config);
+
+  // キーワードによるフィルタリング（特定のフィルターに対してのみ）
+  const matchedComments: CommentChara[] = [];
+
+  filter2.forEach((comment) => {
+   let matched: CommentChara | null = null;
+
+   // 文字列フィルターの場合
+   if (typeof currentFilter === 'string') {
+    if (matchPattern(comment.data.comment, currentFilter)) {
+     matched = { ...comment, userWordMatchId: currentFilter } as CommentChara;
+    }
+   } else {
+    // オブジェクトフィルターの場合
+    if (currentFilter.isGift && comment.data.hasGift) {
+     matched = { ...comment, userWordMatchId: currentFilter.id } as CommentChara;
+    } else if (
+     currentFilter.keywords?.some((prefix) => matchPattern(comment.data.comment, prefix))
+    ) {
+     matched = { ...comment, userWordMatchId: currentFilter.id } as CommentChara;
+    } else if (
+     currentFilter.regex?.some((pattern) => new RegExp(pattern).test(comment.data.comment))
+    ) {
+     matched = { ...comment, userWordMatchId: currentFilter.id } as CommentChara;
+    }
+   }
+
+   // マッチしたコメントのみを追加
+   if (matched) {
+    matchedComments.push(matched);
+   }
+  });
+
+  return matchedComments;
  };
 
  return {
