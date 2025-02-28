@@ -95,17 +95,7 @@ export function createConfig(childDir, mode = 'development', isOneSDK = true) {
    usedExports: true, // 使用されていないエクスポートを削除
    sideEffects: true, // サイドエフェクトがない場合、不要なコードを削除
    // コード分割
-   splitChunks: {
-    chunks: 'all',
-    minSize: 30 * 1024, // 50KB 以上のファイルを分割
-    cacheGroups: {
-     vendor: {
-      test: /[\\/]node_modules[\\/]/,
-      name: 'vendor',
-      chunks: 'all'
-     }
-    }
-   }
+   splitChunks: false
   },
   plugins: createCommonPlugins(dirname, mode)
  };
