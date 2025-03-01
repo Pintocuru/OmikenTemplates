@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { CommentGet } from '@common/CommentGet';
+import { GetComments } from '@common/comment/GetComments';
 import { ConfigNoPlugin } from '@common/commonTypes';
 import BasicNew from './BasicNew.vue';
 
@@ -27,12 +27,12 @@ const config: ConfigNoPlugin = {
 };
 
 // コンポーザブル
-const { initOneSDK, newComments } = CommentGet();
+const { initOneSDK, newComments } = GetComments();
 
 // 初期化
 onMounted(async () => {
  document.body.removeAttribute('hidden'); // hiddenの削除
- await initOneSDK(config); // コメント初期化
+ await initOneSDK(config.IS_DIFF_MODE); // コメント初期化
 });
 </script>
 

@@ -50,3 +50,20 @@ export type UserWordMatchType = {
  keywords: string[]; // isGiftがfalseであるとき、この文字列で始まるコメントを有効にする
  regex?: RegExp[]; // 正規表現でマッチするコメントを有効にする
 };
+
+// おみくじBOTプラグインでBOT用のconfig
+export type ConfigBotType = {
+ PLUGIN_UID: string;
+ PLUGIN_RULE_ID: string | null; // Gamesで使う、rulesのid
+ BOT_USER_ID?: string; // プラグインのcomment.data.userId(Default:'FirstCounter')
+ BOT_POST_PARAM: string[]; // paramがPOST_PARAMに含まれているか(!paramなら含まれていないか)
+};
+
+// おみくじBOTプラグインでBOT用のconfig
+export type ConfigUserType = {
+ IS_DIFF_MODE: boolean; // 差分モードにするか(true:'diff',false:'all')
+ ALLOWED_IDS: string[]; // 通すユーザーIDリスト(!IDなら通さない)
+ ACCESS_LEVEL?: 1 | 2 | 3 | 4; // 1:だれでも/2:メンバー/3:モデレーター/4:管理者
+ IS_GIFT: boolean; // ギフトで有効にするか
+ KEYWORDS: string[]; // isGiftがfalseであるとき、この文字列で始まるコメントを有効にする
+};

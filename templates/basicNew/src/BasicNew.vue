@@ -3,7 +3,7 @@
  <div class="container">
   <transition-group class="comments" name="comment" tag="div">
    <div
-    v-for="(comment, index) in newComments"
+    v-for="(comment, index) in comments"
     :class="getClassName(index)"
     :key="comment.data.id"
     :style="getStyle(comment)"
@@ -51,48 +51,16 @@
 import { computed } from 'vue';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { useCommentGuards } from '@common/comment/CommentGuards';
 
 const props = defineProps<{ newComments: Comment[] }>();
 
-// コメント監視とクリーンアップ
 const comments = computed(() => {
- return props.newComments; // そのまま newComments を返す
+ return props.newComments;
 });
 
-// getClassName は index を引数にして偶数・奇数でクラスを返す
-const getClassName = (index: number) => (index % 2 === 0 ? 'comment even' : 'comment odd');
+// コンポーザブル
+const { hasMembership, isModerator, isMember, hasPaidText } = useCommentGuards();
+const getClassName = (index: number): string => (index % 2 === 0 ? 'comment even' : 'comment odd');
 const getStyle = (comment: Comment) => OneSDK.getCommentStyle(comment);
-
-// 共通の型ガード関数
-function hasProperty<T extends keyof any, V>(
- comment: Comment,
- key: T,
- typeGuard: (value: any) => value is V
-): comment is Comment & { data: { [K in T]: V } } {
- return key in comment.data && typeGuard((comment.data as any)[key]);
-}
-
-// 型ガード: membership を持つか
-const hasMembership = (comment: Comment) =>
- hasProperty(
-  comment,
-  'membership',
-  (value): value is { sub: string; primary: string } =>
-   typeof value === 'object' && value !== null && typeof value.sub === 'string' && typeof value.primary === 'string'
- );
-
-// 型ガード: isModerator を持つか
-function isModerator(comment: Comment): comment is Comment & { data: { isModerator: boolean } } {
- return hasProperty(comment, 'isModerator', (value): value is boolean => typeof value === 'boolean');
-}
-
-// 型ガード: isMember を持つか
-function isMember(comment: Comment): comment is Comment & { data: { isMember: boolean } } {
- return hasProperty(comment, 'isMember', (value): value is boolean => typeof value === 'boolean');
-}
-
-// 型ガード: paidText を持つか
-function hasPaidText(comment: Comment): comment is Comment & { data: { paidText: string } } {
- return hasProperty(comment, 'paidText', (value): value is string => typeof value === 'string' && value.trim() !== '');
-}
 </script>

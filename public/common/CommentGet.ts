@@ -55,8 +55,8 @@ export function CommentGet() {
      else userCommentsProcess(comments, config as ConfigNoPlugin);
     }
    });
-  } catch (error) {
-   console.error('OneSDK初期化エラー:', error);
+  } catch (err) {
+   console.error('OneSDK初期化エラー:', err);
    isInitFlag.value = false; // 初期化NGフラグ
    throw new Error('OneSDK initialization failed');
   }
