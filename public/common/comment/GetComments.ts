@@ -31,8 +31,8 @@ export function GetComments() {
  };
 
  return {
-  isInitFlag, // 初期化フラグ
+  isInitFlag: readonly(isInitFlag), // 初期化フラグ
   initOneSDK, // わんコメの購読に必須
-  newComments // すべてのコメント
+  newComments: readonly(newComments) // すべてのコメント
  };
 }

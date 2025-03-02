@@ -14,13 +14,15 @@ export function GetUserComments(newComments: Ref<Comment[]>, config: ConfigUserT
   newComments,
   (comments) => {
    // 空でなければ更新
-   const processComments = processor.process(comments, userComments.value);
-   if (processComments !== null) userComments.value = processComments;
+   const processed = processor.process(comments, userComments.value);
+   if (processed !== null) userComments.value = processed;
   },
   { immediate: true }
  );
 
- return { userComments };
+ return {
+  userComments: readonly(userComments)
+ };
 }
 
 export class UserCommentsProcess {
@@ -43,15 +45,8 @@ export class UserCommentsProcess {
 
  // 新しいコメントを既存のコメントに追加（重複排除）
  private mergeComments(existingComments: Comment[], newComments: Comment[]): Comment[] {
-  if (newComments.length === 0) return existingComments;
-
-  return [
-   ...existingComments,
-   ...newComments.filter(
-    (newComment) =>
-     !existingComments.some((existingComment) => existingComment.data.id === newComment.data.id)
-   )
-  ];
+  const existingIds = new Set(existingComments.map((c) => c.data.id));
+  return [...existingComments, ...newComments.filter((c) => !existingIds.has(c.data.id))];
  }
 
  // 個別のコメントに対するユーザーIDフィルタリング

@@ -27,7 +27,7 @@ export function GetBotComments(newComments: Ref<Comment[]>, config: ConfigBotTyp
  });
 
  return {
-  botComments,
+  botComments: readonly(botComments),
   initCharas
  };
 }
