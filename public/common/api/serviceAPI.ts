@@ -16,24 +16,15 @@ export class ServiceAPI {
  async getServices(): Promise<Service[] | null> {
   try {
    const response = await OneSDK.get(this.servicesURL, {});
-
    if (response.status !== 200) {
     console.warn('枠情報取得: 無効なステータスコード', response.status);
     return null;
    }
 
-   const services = JSON.parse(response.data.response) as Service[];
-
-   // TODO:データが期待通りなら下記の検証コードを削除
-   if (!Array.isArray(services)) {
-    console.warn('枠情報取得: 無効なデータ形式', services);
-    return null;
-   }
+   const services = response.data as Service[];
 
    // コールバックがあれば実行
-   if (this.onFetchCallback) {
-    this.onFetchCallback(services);
-   }
+   if (this.onFetchCallback) this.onFetchCallback(services);
 
    return services;
   } catch (err) {

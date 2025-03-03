@@ -72,6 +72,10 @@ export interface NextTimerConfigType {
 // グローバル変数の型定義
 declare global {
  interface Window {
+  AppComponent: {
+   component: any;
+   initApp: any;
+  };
   CONFIG?: ConfigNoPlugin;
   TIME_CONFIG?: NextTimerConfigType;
  }

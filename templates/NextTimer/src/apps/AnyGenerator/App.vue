@@ -8,10 +8,8 @@
 </template>
 
 <script setup lang="ts">
-// 読み込ませるコンポーネント
-import AnyGenerator from '@components/Modern/WesternDuel.vue';
 // その他
-import { onMounted } from 'vue';
+import { defineAsyncComponent, onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
 import { ServiceAPI } from '@common/api/ServiceAPI';
 import { ConfigType } from '@common/commonTypes';
@@ -21,6 +19,9 @@ import {
  MINUTES_ONLY_PATTERN,
  RELATIVE_TIME_PATTERN
 } from '@/scripts/types';
+
+// 読み込ませるコンポーネント
+const AnyGenerator = defineAsyncComponent(() => Promise.resolve(window.AppComponent.component));
 
 // 定数
 const config: ConfigType = {

@@ -10,14 +10,8 @@ import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
-// コンポーネント名を挿入 (AnyGenerator/App.vueの変更も行うこと)
-const app = 'WesternDuel';
-
-// BasicCounter
-// SimpleCounter
-// NightRider
-// FlipCoin
-// FireComic
+// コンポーネント名を挿入 (AnyGenerator/generator.vueの変更も行うこと)
+export const appName = 'BasicCounter';
 
 // ---
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -25,10 +19,12 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 export default (env, argv) => {
  const { mode } = argv;
  const baseConfig = createConfig(dirname, mode, false);
+ const commonResolve = createCommonResolve();
 
  const childConfig = {
   entry: {
-   [app]: path.resolve(dirname, './src/apps/AnyGenerator/main.ts'),
+   main: path.resolve(dirname, './src/apps/AnyGenerator/main.ts'),
+   [appName]: path.resolve(dirname, './src/apps/AnyGenerator/generator.ts'),
    controller: path.resolve(dirname, './src/apps/controller/main.ts')
   },
   output: {
@@ -37,9 +33,9 @@ export default (env, argv) => {
    clean: true
   },
   resolve: {
-   ...createCommonResolve(),
+   ...commonResolve,
    alias: {
-    ...createCommonResolve().alias,
+    ...commonResolve.alias,
     '@': path.resolve(dirname, 'src'),
     '@components': path.resolve(dirname, 'src/components'),
     '@scripts': path.resolve(dirname, 'src/scripts'),
@@ -51,8 +47,8 @@ export default (env, argv) => {
    // AnyGenerator
    new HtmlWebpackPlugin({
     template: path.resolve(dirname, `./src/apps/AnyGenerator/index.ejs`),
-    filename: `index.html`,
-    chunks: [app], // このHTMLファイルで使用するチャンク
+    filename: `${appName}.html`,
+    chunks: ['main', appName], // このHTMLファイルで使用するチャンク
     inject: 'body', // スクリプトを body 内に挿入
     templateParameters: ENV[mode]
    }),
