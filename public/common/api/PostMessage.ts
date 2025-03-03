@@ -1,7 +1,7 @@
 // src/Modules/api/PostMessage.ts
 import { CharaType, OneCommePostType, SendCommentParamsType, SendCommentType } from '../../type';
 import { postSpeech, postSystemMessage, postWordParty, sendComment } from './PostOneComme';
-import { ServiceAPI } from './serviceAPI';
+import { ServiceAPI } from './ServiceAPI';
 import { SETTINGS } from '../settings';
 import { Service } from '@onecomme.com/onesdk/types/Service';
 

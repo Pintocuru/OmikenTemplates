@@ -1,5 +1,5 @@
-// common/comment/GetBotComments.ts
-import { computed, ref, Ref } from 'vue';
+// common/subscribe/GetBotComments.ts
+import { computed, readonly, ref, Ref } from 'vue';
 import { CharaType, DataType, SendCommentParamsType } from '../../type';
 import { fetchData } from '../ApiHandler';
 import { CommentChara, ConfigBotType } from '../commonTypes';

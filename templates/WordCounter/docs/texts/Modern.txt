@@ -1,0 +1,18 @@
+# スナイプタイマー NextTimer Modern Set
+
+最終更新日：2025/02/28
+
+OBS で使える、ライバー・配信者向けカウントダウンタイマーです。
+ダウンロードして頂きありがとうございます。
+
+## 通常版:
+- BasicCounter(index):白をベースにしたオーソドックスなタイマー
+
+導入方法・使用方法は[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/templates/NextTimer/docs/guides/readme_NextTimer.md)をご覧ください
+
+・クレジット表記は任意ですが、記載していただけると励みになります。
+
+---
+
+作成者：せすじピンとしてます [@pintocuru](https://twitter.com/pintocuru)
+YouTube : [せすじピンとしてます](https://www.youtube.com/@pintocuru)

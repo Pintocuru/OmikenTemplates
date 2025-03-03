@@ -1,14 +1,15 @@
-// common/comment/GetUserVisits.ts
-import { ref, Ref } from 'vue';
+// common/subscribe/GetUserVisits.ts
+import { ref, Ref, watch } from 'vue';
 import { Comment, CommentData } from '@onecomme.com/onesdk/types/Comment';
 import { Service, ServiceType } from '@onecomme.com/onesdk/types/Service';
-import { ServiceAPI } from '../api/serviceAPI';
+import { ServiceAPI } from '../api/ServiceAPI';
 
 // サービスごとの結果の型定義
 export interface ServiceVisitType {
- serviceKey: ServiceType;
- liveId: string;
- frameData: Service | null;
+ serviceKey: ServiceType; // 配信プラットフォーム
+ liveId: string; // 配信のid
+ frameData: Service | null; // 現在の配信枠情報
+ totalCount: number; // フィルタされた配信枠のコメント数
  user: {
   [userId: string]: UserVisitType;
  };
@@ -16,11 +17,10 @@ export interface ServiceVisitType {
 
 // ユーザーコメント情報の型定義
 export interface UserVisitType {
- isSyoken: boolean;
- profileImage: string;
- count: number;
- totalCount: number;
- price: number;
+ isSyoken: boolean; // 初見判定
+ profileImage: string; // アイコン画像
+ count: number; // フィルタされた配信枠の個人のコメント数
+ price: number; // 配信枠での個人のギフト総額
 }
 
 export function GetUserVisits(userComments: Ref<Comment[]>) {
@@ -46,10 +46,7 @@ export function GetUserVisits(userComments: Ref<Comment[]>) {
    processor.setFrames(newFrames);
 
    // 処理して結果を取得
-   const result = processor.mergeComments(newComments);
-
-   // リアクティブな値を更新
-   userVisits.value = { ...result };
+   userVisits.value = processor.mergeComments(newComments);
   },
   { deep: true }
  );
@@ -61,7 +58,6 @@ export function GetUserVisits(userComments: Ref<Comment[]>) {
 }
 
 // ユーザー訪問データを処理
-
 export class UserVisitsProcessor {
  // 内部状態
  private result: Record<string, ServiceVisitType> = {};
@@ -131,8 +127,8 @@ export class UserVisitsProcessor {
      if (!existingUsers[userId]) {
       existingUsers[userId] = newUsers[userId];
      } else {
-      existingUsers[userId].count += newUsers[userId].count;
-      existingUsers[userId].totalCount += newUsers[userId].totalCount;
+      // price は加算
+      existingUsers[userId].count = newUsers[userId].count;
       existingUsers[userId].price += newUsers[userId].price;
      }
     });
@@ -147,18 +143,23 @@ export class UserVisitsProcessor {
 
   if (!result[serviceKey]) {
    result[serviceKey] = {
-    serviceKey: serviceKey,
+    serviceKey,
     liveId,
     frameData: null,
+    totalCount: 0,
     user: {}
    };
   }
 
   // liveId が異なったら配信枠が変わったのでリセット
   if (result[serviceKey].liveId !== liveId) {
-   result[serviceKey].user = {};
    result[serviceKey].liveId = liveId;
+   result[serviceKey].totalCount = 0;
+   result[serviceKey].user = {};
   }
+
+  // totalCountをインクリメント
+  result[serviceKey].totalCount++;
  }
 
  // フレームデータの関連付け（内部メソッド）
@@ -193,7 +194,6 @@ export class UserVisitsProcessor {
     isSyoken: false,
     profileImage: profileImage || '',
     count: 0,
-    totalCount: 0,
     price: 0
    };
   }
@@ -206,9 +206,8 @@ export class UserVisitsProcessor {
    userInfo.profileImage = profileImage || userInfo.profileImage;
   }
 
-  // カウント情報の更新
-  userInfo.count = no;
-  userInfo.totalCount = lc;
+  // インクリメント
+  userInfo.count++;
 
   // ギフト金額/回数の更新
   this.updateGiftInfo(userInfo, data);

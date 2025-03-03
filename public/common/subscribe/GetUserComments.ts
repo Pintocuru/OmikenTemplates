@@ -1,4 +1,4 @@
-// common/comment/GetUserComments.ts
+// common/subscribe/GetUserComments.ts
 import { ref, Ref, watch } from 'vue';
 import { ConfigUserType } from '../commonTypes';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
@@ -21,7 +21,7 @@ export function GetUserComments(newComments: Ref<Comment[]>, config: ConfigUserT
  );
 
  return {
-  userComments: readonly(userComments)
+  userComments
  };
 }
 

@@ -23,9 +23,9 @@ const TIME_CONFIG = {
 };
 
 const CONFIG = {
- ALLOWED_IDS: [], // 通すuserIDリスト
- ACCESS_LEVEL: 3, // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
- KEYWORDS: [] // 通すuserIDリスト
+ ALLOWED_IDS: [], // 通すユーザーIDリスト(!IDでネガティブ)
+ ACCESS_LEVEL: 1, // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
+ KEYWORDS: ['おはよう', 'おはみこ', '', '', ''] // 通すuserIDリスト
 };
 
 // -------------------------------------------------

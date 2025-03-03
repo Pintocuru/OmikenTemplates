@@ -1,4 +1,4 @@
-// src/Modules/api/serviceAPI.ts
+// src/Modules/api/ServiceAPI.ts
 import { SETTINGS } from '../settings';
 import { systemMessage } from './ErrorHandler';
 import { Service } from '@onecomme.com/onesdk/types/Service';

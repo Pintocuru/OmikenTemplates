@@ -62,7 +62,7 @@ export type ConfigBotType = {
 // おみくじBOTプラグインでBOT用のconfig
 export type ConfigUserType = {
  IS_DIFF_MODE: boolean; // 差分モードにするか(true:'diff',false:'all')
- ALLOWED_IDS: string[]; // 通すユーザーIDリスト(!IDなら通さない)
+ ALLOWED_IDS: string[]; // 通すユーザーIDリスト(!IDでネガティブ)
  ACCESS_LEVEL?: 1 | 2 | 3 | 4; // 1:だれでも/2:メンバー/3:モデレーター/4:管理者
  IS_GIFT: boolean; // ギフトで有効にするか
  KEYWORDS: string[]; // isGiftがfalseであるとき、この文字列で始まるコメントを有効にする
