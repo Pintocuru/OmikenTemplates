@@ -1,8 +1,10 @@
 // common/subscribe/GetUserVisits.ts
-import { ref, Ref, watch } from 'vue';
+import { ref } from 'vue';
+import { ConfigUserType } from '../commonTypes';
+import { GetUserComments } from './GetUserComments';
+import { ServiceAPI } from '../api/ServiceAPI';
 import { Comment, CommentData } from '@onecomme.com/onesdk/types/Comment';
 import { Service, ServiceType } from '@onecomme.com/onesdk/types/Service';
-import { ServiceAPI } from '../api/ServiceAPI';
 
 // サービスごとの結果の型定義
 export interface ServiceVisitType {
@@ -23,50 +25,41 @@ export interface UserVisitType {
  price: number; // 配信枠での個人のギフト総額
 }
 
-export function GetUserVisits(userComments: Ref<Comment[]>) {
- // 10秒ごとに枠情報を自動更新
- const frames = ref<Service[] | null>([]);
- new ServiceAPI().startPolling((services) => {
-  if (services) frames.value = services;
- });
-
- // ユーザー訪問の計算
+export function GetUserVisits(config: ConfigUserType) {
+ const processor = new UserVisitsProcessor();
+ const { fetchComments: userFetch } = GetUserComments(config, true);
  const userVisits = ref<Record<string, ServiceVisitType>>({});
 
- // UserVisitsProcessorのインスタンスを作成
- const processor = new UserVisitsProcessor();
-
- // `userComments` の変更を監視し、`userVisits` を更新
- watch(
-  [userComments, frames],
-  ([newComments, newFrames]) => {
-   if (!newComments.length) return;
-
-   // フレームデータを更新
-   processor.setFrames(newFrames);
-
+ const fetchComments = async (
+  callback?: (userVisits: Record<string, ServiceVisitType>) => void
+ ): Promise<boolean> => {
+  return await userFetch((comments) => {
+   if (!comments.length) return;
    // 処理して結果を取得
-   userVisits.value = processor.mergeComments(newComments);
-  },
-  { deep: true }
- );
+   userVisits.value = processor.mergeComments(comments);
+
+   // 外部から処理を追加するcallback
+   if (callback) callback(userVisits.value);
+  });
+ };
 
  return {
-  userVisits,
-  frames
+  userVisits, // ユーザーのコメント数やギフト回数
+  fetchComments // 初期化
  };
 }
 
 // ユーザー訪問データを処理
-export class UserVisitsProcessor {
+class UserVisitsProcessor {
  // 内部状態
  private result: Record<string, ServiceVisitType> = {};
+ frames: Service[] | null = null;
 
- constructor(private frames: Service[] | null = null) {}
-
- // 新しいフレームデータをセット
- setFrames(frames: Service[] | null): void {
-  this.frames = frames;
+ constructor() {
+  // 10秒ごとに枠情報を自動更新
+  new ServiceAPI().startPolling((services) => {
+   if (services) this.frames = services;
+  });
  }
 
  // コメントを処理して結果を返す
@@ -132,6 +125,8 @@ export class UserVisitsProcessor {
       existingUsers[userId].price += newUsers[userId].price;
      }
     });
+    // totalCount を加算
+    this.result[serviceKey].totalCount += newVisits[serviceKey].totalCount;
    }
   });
  }

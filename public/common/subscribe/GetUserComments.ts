@@ -1,27 +1,29 @@
 // common/subscribe/GetUserComments.ts
-import { ref, Ref, watch } from 'vue';
+import { ref } from 'vue';
 import { ConfigUserType } from '../commonTypes';
+import { GetComments } from './GetComments';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import emojiRegex from 'emoji-regex';
 
-export function GetUserComments(newComments: Ref<Comment[]>, config: ConfigUserType) {
+export function GetUserComments(config: ConfigUserType, isFirstComment: boolean = false) {
  const processor = new UserCommentsProcess(config);
- // userComments を ref として定義
  const userComments = ref<Comment[]>([]);
 
- // newComments の変更を監視
- watch(
-  newComments,
-  (comments) => {
-   // 空でなければ更新
+ const fetchComments = async (callback?: (comments: Comment[]) => void): Promise<boolean> => {
+  return await GetComments(true, isFirstComment, (comments) => {
+   // コメントをフィルタリング
    const processed = processor.process(comments, userComments.value);
-   if (processed !== null) userComments.value = processed;
-  },
-  { immediate: true }
- );
+   if (processed !== null) {
+    userComments.value = processed;
+    // 外部から処理を追加するcallback
+    if (callback) callback(processed);
+   }
+  });
+ };
 
  return {
-  userComments
+  userComments, // フィルタリングされたコメント
+  fetchComments // 初期化
  };
 }
 
@@ -93,10 +95,11 @@ export class UserCommentsProcess {
 
  // 正規表現マッチング
  private matchPattern(text: string, pattern: string): boolean {
-  // 絵文字専用パターン
-  if (pattern === ':emoji:') return emojiRegex().test(text);
-
+  // 空パターンはfalse
+  if (pattern === '') return false;
   try {
+   // 絵文字専用パターン
+   if (pattern === ':emoji:') return emojiRegex().test(text);
    // 正規表現パターン
    return new RegExp(pattern).test(text);
   } catch (err) {

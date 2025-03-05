@@ -1,16 +1,32 @@
 // useWordCounter.ts
-import { computed, onUnmounted, toRefs, onMounted, Ref, watch, reactive } from 'vue';
-import type { ControllerAction, ControllerActionData, WordCounterConfig } from './types';
+import { computed, onUnmounted, onMounted, reactive, ref, toRef } from 'vue';
+import { ControllerAction, ControllerActionData, WordCounterConfig } from './types';
 import { WordCounterController } from './WordCounterController';
-import { ServiceVisitType } from '@public/common/subscribe/GetUserVisits';
+import { ConfigUserType } from '@common/commonTypes';
+import { GetUserVisits, ServiceVisitType } from '@common/subscribe/GetUserVisits';
 
-export function useWordCounter(config: WordCounterConfig) {
+// 定数
+const WordConfig: WordCounterConfig = {
+ IS_USER_COUNT: true // ユーザー数をカウントか、コメント数をカウントか
+};
+
+const config: ConfigUserType = {
+ IS_DIFF_MODE: true, // 差分モードにするか(true:'diff',false:'all')
+ ALLOWED_IDS: window.CONFIG?.ALLOWED_IDS || [], // 通すユーザーIDリスト(!IDでネガティブ)
+ ACCESS_LEVEL: window.CONFIG?.ACCESS_LEVEL || 1, // アクセスレベル
+ IS_GIFT: false, // ギフト無効
+ KEYWORDS: window.CONFIG?.KEYWORDS || [] // この文字列で始まるコメントを有効にする
+};
+
+export function useWordCounter() {
  // プロセッサー初期化
- const controller = new WordCounterController(config);
+ const controller = new WordCounterController(WordConfig);
+ const { fetchComments } = GetUserVisits(config);
 
  // userの数をカウントするstate
  const state = reactive({
-  isUserCount: config.IS_USER_COUNT,
+  isInitFlag: true,
+  isUserCount: WordConfig.IS_USER_COUNT,
   originUserCount: 0,
   originCommentCount: 0,
   userCount: 0,
@@ -45,6 +61,9 @@ export function useWordCounter(config: WordCounterConfig) {
 
  // コメントによるタイマー発動
  const processComment = (visits: Record<string, ServiceVisitType>) => {
+  // わんコメが起動できていないなら早期return
+  if (!state.isInitFlag) return;
+
   // 合計値を計算
   let currentUserCount = 0;
   let currentCommentCount = 0;
@@ -94,8 +113,15 @@ export function useWordCounter(config: WordCounterConfig) {
   }
  };
 
- // 初期化時に LocalStorage を稼働（今回は使用しない）
- onMounted(() => {
+ // 初期化
+ onMounted(async () => {
+  // わんコメの初期化ができたかをチェック
+  state.isInitFlag = await fetchComments((visits) => {
+   // 更新があるたびにチェック
+   processComment(visits);
+   console.log(visits);
+  });
+  // LocalStorage 初期化
   controller.initialize();
   controller.addListener(handleControllerAction);
  });
@@ -106,7 +132,7 @@ export function useWordCounter(config: WordCounterConfig) {
  });
 
  return {
-  processComment,
+  isInitFlag: toRef(state, 'isInitFlag'),
   count
  };
 }

@@ -1,46 +1,53 @@
 // common/subscribe/GetBotComments.ts
-import { computed, readonly, ref, Ref } from 'vue';
 import { CharaType, DataType, SendCommentParamsType } from '../../type';
-import { fetchData } from '../ApiHandler';
 import { CommentChara, ConfigBotType } from '../commonTypes';
+import { fetchData } from '../ApiHandler';
+import { GetComments } from './GetComments';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
-export function GetBotComments(newComments: Ref<Comment[]>, config: ConfigBotType) {
- const charas = ref<Record<string, CharaType>>({});
- const processor = new BotCommentsProcessor(config, charas);
+export function GetBotComments(config: ConfigBotType, callback: (comments: Comment[]) => void) {
+ const processor = new BotCommentsProcessor(config);
  // Charas データを初期化
  const initCharas = async () => {
   try {
    const { PLUGIN_UID } = config;
    const charasData = await fetchData(PLUGIN_UID, DataType.Charas);
    if (!charasData) throw new Error('Charasデータの取得に失敗しました');
-   charas.value = charasData;
+   processor.getCharas(charasData);
+
+   // わんコメの初期化
+   initOneSDK(true);
   } catch (err) {
    console.error('Failed to GetBotComments:', err);
    throw err;
   }
  };
 
- // BOTコメントを計算
- const botComments = computed(() => {
-  return processor.process(newComments.value);
+ // BOTコメント処理
+ const { isInitFlag, initOneSDK } = GetComments(false, (comments) => {
+  const processed = processor.process(comments);
+  // 外部から処理を追加するcallback
+  if (processed) callback(processed);
  });
 
  return {
-  botComments: readonly(botComments),
-  initCharas
+  isInitFlag, // 初期化フラグ
+  initCharas // Charasとわんコメの初期化
  };
 }
 
 export class BotCommentsProcessor {
- constructor(
-  private readonly config: ConfigBotType,
-  private readonly Charas: Ref<Record<string, CharaType>>
- ) {}
+ Charas: Record<string, CharaType> = {};
+ constructor(private readonly config: ConfigBotType) {}
+
+ // コメントからBOTのコメントをフィルタリングする
+ getCharas(Charas: Record<string, CharaType>): void {
+  this.Charas = { ...Charas };
+ }
 
  // コメントからBOTのコメントをフィルタリングする
  process(comments: Comment[]): CommentChara[] | null {
-  const validComments = this.filterComments(comments);
+  const validComments = this.filterComments(comments) ?? [];
   return validComments.length > 0 ? validComments : null;
  }
 
