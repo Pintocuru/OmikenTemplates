@@ -46,6 +46,7 @@
 import { ref } from 'vue';
 import { WordCounterConfig } from '@/scripts/types';
 import { useWordCounter } from '@/scripts/useWordCounter';
+import { PlusCircle, MinusCircle, RefreshCw, ToggleLeft, ToggleRight } from 'lucide-vue-next';
 
 // コンポーザブル
 const { controller } = useWordCounter();

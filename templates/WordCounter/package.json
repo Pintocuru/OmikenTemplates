@@ -3,8 +3,8 @@
  "version": "0.0.1",
  "description": "わんコメで特定のコメントをカウントする",
  "scripts": {
-  "dev:word": "webpack --mode development --config webpack.config.mjs",
-  "build:word": "webpack --mode production --config webpack.config.mjs"
+  "dev:word": "vite --mode development",
+  "build:wordold": "webpack --mode production --config webpack.config.mjs"
  },
  "author": "Pintocuru",
  "license": "Apache-2.0",

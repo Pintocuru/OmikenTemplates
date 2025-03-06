@@ -1,4 +1,4 @@
-// src/main.ts
+// src/apps/controller/main.ts
 import { createApp } from 'vue';
 import App from './App.vue';
 import OneSDK from '@onecomme.com/onesdk';
