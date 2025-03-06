@@ -43,21 +43,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { WordCounterConfig } from '@/scripts/types';
 import { useWordCounter } from '@/scripts/useWordCounter';
 import { PlusCircle, MinusCircle, RefreshCw, ToggleLeft, ToggleRight } from 'lucide-vue-next';
 
 // コンポーザブル
-const { controller } = useWordCounter();
-
-// 設定
-const wordCounterConfig = ref<WordCounterConfig>({
- IS_USER_COUNT: false // デフォルトはおはカウントモード
-});
-
-// 現在のモード
-const isUserCount = ref(wordCounterConfig.value.IS_USER_COUNT);
+const { isInitFlag, controller, isUserCount } = useWordCounter();
 </script>
 
 <style>

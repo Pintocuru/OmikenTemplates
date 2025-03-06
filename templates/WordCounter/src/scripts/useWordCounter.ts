@@ -1,14 +1,17 @@
 // useWordCounter.ts
-import { computed, onUnmounted, onMounted, reactive, toRef } from 'vue';
+import { computed, onUnmounted, onMounted, reactive, toRef, watch } from 'vue';
 import { ControllerAction, ControllerActionData, WordCounterConfig } from './types';
 import { createProcessComment } from './createProcessComment';
 import { ConfigUserType } from '@common/commonTypes';
 import { GetUserVisits } from '@common/subscribe/GetUserVisits';
 import { ActionConfig, LocalStorageController } from '@common/LocalStorage/LocalStorageController';
+import { postWordParty } from '@common/api/PostOneComme';
 
 // 定数
 const WordConfig: WordCounterConfig = {
- IS_USER_COUNT: true // ユーザー数をカウントか、コメント数をカウントか
+ IS_USER_COUNT: true, // ユーザー数をカウントか、コメント数をカウントか
+ COUNT_PARTY: window.WORD_CONFIG?.COUNT_PARTY || {}, // WordPartyの発火タイミング
+ COUNT_PARTY_EVENT: window.WORD_CONFIG?.COUNT_PARTY_EVENT || '' // カウント増加時に発火するWordParty
 };
 
 const config: ConfigUserType = {
@@ -74,6 +77,25 @@ export function useWordCounter() {
   if (action in actions) actions[action]();
  };
 
+ // WordParty投稿ハンドラー
+ const handleWordParty = (type: string) => {
+  postWordParty(type, -2);
+ };
+
+ // countが増加したり、特定の数値になった時にhandleWordPartyを実行する
+ watch(count, (newCount, oldCount) => {
+  // カウントが増加した場合
+  if (newCount > oldCount) {
+   handleWordParty(WordConfig.COUNT_PARTY_EVENT); // 増加時に発火するWordParty
+  }
+
+  // 特定の数値になった場合
+  const partyMessage = WordConfig.COUNT_PARTY[newCount];
+  if (partyMessage) {
+   handleWordParty(partyMessage); // 特定の数値に対応するWordPartyを発火
+  }
+ });
+
  // 初期化
  onMounted(async () => {
   // わんコメの初期化ができたかをチェック
@@ -95,6 +117,7 @@ export function useWordCounter() {
  return {
   controller,
   isInitFlag: toRef(state, 'isInitFlag'),
+  isUserCount: toRef(state, 'isUserCount'),
   count
  };
 }

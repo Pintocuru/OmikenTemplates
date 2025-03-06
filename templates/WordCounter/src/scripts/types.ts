@@ -31,6 +31,8 @@ export type ControllerActionData = {};
 // 追加configの型定義
 export interface WordCounterConfig {
  IS_USER_COUNT: boolean; // ユーザー数をカウントか、コメント数をカウントか
+ COUNT_PARTY: Record<number, string>; // WordPartyの発火タイミング
+ COUNT_PARTY_EVENT: string; // カウント増加時に発火するWordParty
 }
 
 // ---
@@ -43,6 +45,6 @@ declare global {
    initApp: any;
   };
   CONFIG?: ConfigUserType;
-  APP_CONFIG?: WordCounterConfig;
+  WORD_CONFIG?: WordCounterConfig;
  }
 }

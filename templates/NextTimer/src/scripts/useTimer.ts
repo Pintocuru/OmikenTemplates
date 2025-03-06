@@ -1,4 +1,4 @@
-import { reactive, computed, onUnmounted, toRefs, onMounted, Ref, watchEffect } from 'vue';
+import { reactive, computed, onUnmounted, toRefs, onMounted, Ref } from 'vue';
 import type {
  NextTimerConfigType,
  SecondAdjustType,
