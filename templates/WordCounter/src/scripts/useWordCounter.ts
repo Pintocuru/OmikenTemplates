@@ -37,7 +37,7 @@ export function useWordCounter() {
   commentCount: 0
  });
 
- // processComment関数の作成
+ // コメントを受け取った時の処理
  const processComment = createProcessComment(state);
 
  const count = computed(() => (state.isUserCount ? state.userCount : state.commentCount));
