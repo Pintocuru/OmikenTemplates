@@ -7,16 +7,26 @@ type StorageData = {
  timestamp?: number;
 };
 
+export interface ActionConfig<
+ Action extends StorageAction = string,
+ ActionData extends StorageActionData = Record<string, any>
+> {
+ action: Action;
+ data: ActionData;
+}
+
 export class LocalStorageController<
  Action extends StorageAction = string,
  ActionData extends StorageActionData = Record<string, any>
 > {
  private readonly storageKey: string;
  private listeners: Set<(action: Action, data: ActionData) => void>;
+ private actionMap: Record<string, ActionConfig<Action, ActionData>>;
 
  constructor(storageKey: string) {
   this.storageKey = storageKey;
   this.listeners = new Set();
+  this.actionMap = {};
  }
 
  // ストレージイベントのハンドラーを設定
@@ -35,13 +45,28 @@ export class LocalStorageController<
   this.listeners.add(callback);
  }
 
- // アクションリスナーを削除
- removeListener(callback: (action: Action, data: ActionData) => void): void {
-  this.listeners.delete(callback);
+ // アクションマップに新しいアクションを追加
+ registerAction(key: string, config: ActionConfig<Action, ActionData>): void {
+  this.actionMap[key] = config;
+ }
+
+ // 複数のアクションを一度に登録
+ registerActions(actions: Record<string, ActionConfig<Action, ActionData>>): void {
+  this.actionMap = { ...this.actionMap, ...actions };
+ }
+
+ // アクションを実行
+ action(actionKey: string): void {
+  const actionConfig = this.actionMap[actionKey];
+  if (actionConfig) {
+   this.saveAction(actionConfig);
+  } else {
+   console.error(`Action "${actionKey}" not found.`);
+  }
  }
 
  // アクションを保存
- protected saveAction(data: { action: Action; data: ActionData }): void {
+ protected saveAction(data: ActionConfig<Action, ActionData>): void {
   const actionWithTimestamp: StorageData = { ...data, timestamp: Date.now() };
   localStorage.setItem(this.storageKey, JSON.stringify(actionWithTimestamp));
 
@@ -52,19 +77,6 @@ export class LocalStorageController<
     newValue: JSON.stringify(actionWithTimestamp)
    })
   );
- }
-
- // 値を取得
- protected getStoredValue(): StorageData | null {
-  const storedData = localStorage.getItem(this.storageKey);
-  if (!storedData) return null;
-
-  try {
-   return JSON.parse(storedData);
-  } catch (error) {
-   console.error('Failed to parse stored data:', error);
-   return null;
-  }
  }
 
  // ストレージイベントのハンドラー

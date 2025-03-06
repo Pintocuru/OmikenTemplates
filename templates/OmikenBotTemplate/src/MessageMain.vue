@@ -1,4 +1,4 @@
-<!-- src/ToastMessage.vue -->
+<!-- src/MessageMain.vue -->
 <template>
  <TransitionGroup
   class="fixed flex flex-col-reverse items-center w-full"
@@ -143,7 +143,7 @@ const clearAllTimers = () => {
 onUnmounted(clearAllTimers);
 </script>
 
-<style>
+<style lang="scss" scoped>
 @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap');
 
 * {

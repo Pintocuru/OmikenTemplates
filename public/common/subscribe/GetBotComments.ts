@@ -1,12 +1,16 @@
 // common/subscribe/GetBotComments.ts
+import { ref } from 'vue';
 import { CharaType, DataType, SendCommentParamsType } from '../../type';
 import { CommentChara, ConfigBotType } from '../commonTypes';
 import { fetchData } from '../ApiHandler';
 import { GetComments } from './GetComments';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
-export function GetBotComments(config: ConfigBotType, callback: (comments: Comment[]) => void) {
+export function GetBotComments(config: ConfigBotType) {
  const processor = new BotCommentsProcessor(config);
+ // ref
+ const botComments = ref<CommentChara[]>([]);
+
  // Charas データを初期化
  const initCharas = async () => {
   try {
@@ -14,9 +18,6 @@ export function GetBotComments(config: ConfigBotType, callback: (comments: Comme
    const charasData = await fetchData(PLUGIN_UID, DataType.Charas);
    if (!charasData) throw new Error('Charasデータの取得に失敗しました');
    processor.getCharas(charasData);
-
-   // わんコメの初期化
-   initOneSDK(true);
   } catch (err) {
    console.error('Failed to GetBotComments:', err);
    throw err;
@@ -24,15 +25,21 @@ export function GetBotComments(config: ConfigBotType, callback: (comments: Comme
  };
 
  // BOTコメント処理
- const { isInitFlag, initOneSDK } = GetComments(false, (comments) => {
-  const processed = processor.process(comments);
-  // 外部から処理を追加するcallback
-  if (processed) callback(processed);
- });
+ const fetchComments = async (callback?: (comments: CommentChara[]) => void): Promise<boolean> => {
+  initCharas();
+  return await GetComments(true, false, (comments) => {
+   const processed = processor.process(comments);
+   // 外部から処理を追加するcallback
+   if (processed) {
+    botComments.value = processed;
+    if (callback) callback(processed);
+   }
+  });
+ };
 
  return {
-  isInitFlag, // 初期化フラグ
-  initCharas // Charasとわんコメの初期化
+  botComments, // BOTコメント
+  fetchComments // 初期化
  };
 }
 

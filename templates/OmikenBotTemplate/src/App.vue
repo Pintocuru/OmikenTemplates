@@ -1,8 +1,8 @@
 <!-- App.vue -->
 <template>
  <div v-if="isInitFlag">
-  <MessageMain :botComments="botCommentsMap.main || []" />
-  <MessageToast :botComments="botCommentsMap.toast || []" />
+  <MessageMain :botComments="botComments || []" />
+  <MessageToast :botComments="botToasts || []" />
  </div>
  <!-- App.vue -->
  <div v-else>
@@ -11,48 +11,45 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { CommentGet } from '@common/CommentGet';
-import { ConfigType } from '@common/commonTypes';
+import { onMounted, ref } from 'vue';
+import { GetBotComments } from '@common/subscribe/GetBotComments';
 import ErrorInitComponent from '@common/ErrorInitComponent.vue';
 import MessageMain from './MessageMain.vue';
 import MessageToast from './MessageToast.vue';
+import { ConfigBotType } from '@common/commonTypes';
 
 // グローバル変数の型定義
 declare global {
  interface Window {
-  CONFIG?: ConfigType;
+  CONFIG_MAIN?: ConfigBotType;
+  CONFIG_TOAST?: ConfigBotType;
  }
 }
 
 // 定数
-const config: ConfigType = {
- PLUGIN_UID: window.CONFIG?.PLUGIN_UID || 'OmikenPlugin01', // 使用しているプラグイン名
- IS_DIFF_MODE: true, // 差分モードにするか(true:'diff',false:'all')
- BOT_USER_ID: 'FirstCounter', // プラグインのuserId
- BOT_PARAM_FILTERS: [
-  {
-   // main
-   id: 'main',
-   POST_PARAM: [], // postが特定のparamのときに表示
-   NON_POST_PARAM: ['toast'] // POST_PARAMが空の時、postが特定のparamではないときに表示
-  },
-  {
-   // toast
-   id: 'toast',
-   POST_PARAM: ['toast'], // postが特定のparamのときに表示
-   NON_POST_PARAM: [] // POST_PARAMが空の時、postが特定のparamではないときに表示
-  }
- ],
- USER_STATUS_FILTERS: []
+const configMain: ConfigBotType = {
+ PLUGIN_UID: window.CONFIG_MAIN?.PLUGIN_UID || 'OmikenPlugin01', // 使用しているプラグイン名
+ PLUGIN_RULE_ID: null, // Gamesで使う、rulesのid
+ BOT_POST_PARAM: window.CONFIG_MAIN?.BOT_POST_PARAM || ['!toast'] // paramがPOST_PARAMに含まれているか(!paramなら含まれていないか)
+};
+const configToast: ConfigBotType = {
+ PLUGIN_UID: window.CONFIG_TOAST?.PLUGIN_UID || 'OmikenPlugin01', // 使用しているプラグイン名
+ PLUGIN_RULE_ID: null, // Gamesで使う、rulesのid
+ BOT_POST_PARAM: window.CONFIG_TOAST?.BOT_POST_PARAM || ['toast'] // paramがPOST_PARAMに含まれているか(!paramなら含まれていないか)
 };
 
+// 初期化フラグ
+const isInitFlag = ref(true);
+
 // コンポーザブル
-const { isInitFlag, initOneSDK, botCommentsMap } = CommentGet(config);
+const { botComments, fetchComments } = GetBotComments(configMain);
+const { botComments: botToasts, fetchComments: fetchToast } = GetBotComments(configToast);
 
 // 初期化
 onMounted(async () => {
  document.body.removeAttribute('hidden'); // hiddenの削除
- await initOneSDK(); // コメント初期化
+ // Botコメントの初期化
+ isInitFlag.value = await fetchComments();
+ await fetchToast();
 });
 </script>

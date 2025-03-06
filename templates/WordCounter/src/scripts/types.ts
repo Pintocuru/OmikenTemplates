@@ -1,16 +1,28 @@
 // src/types.ts
 import { ConfigUserType } from '@public/common/commonTypes';
 
+// stateの型定義
+export type WordCounterState = {
+ isInitFlag: boolean;
+ isUserCount: boolean;
+ originUserCount: number;
+ originCommentCount: number;
+ userCount: number;
+ commentCount: number;
+};
+
+// ---
+
 // コントローラーの型定義
-export interface TimerStorageData {
+export interface ControllerStorageData {
  action: ControllerAction;
- data?: ControllerActionData; // useWordCounterでは不使用
+ data: ControllerActionData; // useWordCounterでは不使用
 }
 // コントローラーのアクション定義
 export type ControllerAction =
  | 'countUp' // カウントアップ
  | 'countDown' // カウントダウン
- | 'UserCountToggle' // モード切替
+ | 'userCountToggle' // モード切替
  | 'resetCounter'; // リセット
 
 // アクションのデータ定義 // useWordCounterでは不使用
