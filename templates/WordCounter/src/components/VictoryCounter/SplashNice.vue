@@ -1,32 +1,14 @@
+<!-- SplashNice.vue -->
 <template>
  <div class="flex items-center justify-center">
   <div
    class="relative flex flex-col items-center justify-center w-64 h-64 rounded-full shadow-lg overflow-hidden transition-all duration-500"
-   :class="counterColorClass"
+   :class="counterStyle.colorClass"
    :style="{
     transform: isAnimating ? 'scale(1.05) rotate(2deg)' : 'scale(1) rotate(0deg)',
-    boxShadow: `0 0 ${20 + pulseIntensity * 20}px ${pulseIntensity * 15}px rgba(${getBoxShadowColor()}, ${0.5 + pulseIntensity * 0.3})`
+    boxShadow: `0 0 ${20 + pulseIntensity * 20}px ${pulseIntensity * 15}px ${convertHexToRGBA(counterStyle.textColor, 0.5 + pulseIntensity * 0.3)}`
    }"
   >
-   <!-- インクスプラッシュ背景 -->
-   <div class="absolute inset-0">
-    <div
-     v-for="(_, i) in Math.min(count * 2, 15)"
-     :key="i"
-     class="absolute rounded-full mix-blend-screen"
-     :class="splashColorClass[i % splashColorClass.length]"
-     :style="{
-      width: `${Math.random() * 40 + 20}px`,
-      height: `${Math.random() * 40 + 20}px`,
-      left: `${Math.random() * 80 + 10}%`,
-      top: `${Math.random() * 80 + 10}%`,
-      transform: `scale(${Math.random() * 0.8 + 0.8}) rotate(${Math.random() * 360}deg)`,
-      opacity: 0.7,
-      filter: `blur(${Math.random() * 2 + 1}px)`
-     }"
-    ></div>
-   </div>
-
    <div
     class="absolute inset-2 rounded-full bg-white/30 backdrop-blur-sm border-4 border-white/60"
    ></div>
@@ -35,12 +17,12 @@
    <div
     v-for="(_, i) in 4"
     :key="`splash-${i}`"
-    class="absolute w-10 h-10 rounded-full bg-yellow-300"
+    class="absolute w-10 h-10 rounded-full"
     :class="i % 2 === 0 ? 'bg-cyan-400' : 'bg-pink-400'"
     :style="{
      top: i < 2 ? '10%' : '80%',
      left: i % 2 === 0 ? '15%' : '85%',
-     transform: `scale(${0.8 + count * 0.05}) rotate(${i * 90}deg)`,
+     transform: `scale(${0.8 + count * 0.05}) rotate(${i * 90 + count}deg)`,
      clipPath: 'polygon(50% 0%, 80% 40%, 100% 30%, 70% 70%, 80% 100%, 30% 70%, 0% 80%, 30% 30%)',
      transition: 'all 0.5s ease',
      opacity: 0.8
@@ -49,6 +31,7 @@
 
    <!-- カウンター -->
    <div class="relative z-10 flex flex-col items-center justify-center">
+    <!-- 数値 -->
     <TransitionGroup name="count">
      <div
       :key="count"
@@ -56,24 +39,25 @@
       :style="{
        textShadow: `0 0 ${5 + pulseIntensity * 10}px rgba(0, 0, 0, ${0.3 + pulseIntensity * 0.3}), 
                           4px 4px 0px #FF00FF, -4px -4px 0px #00FFFF`,
-       transform: isAnimating ? 'scale(1.2) rotate(-5deg)' : 'scale(1) rotate(0deg)',
-       opacity: 1
+       transform: isAnimating ? 'scale(1.2) rotate(-5deg)' : 'scale(1) rotate(0deg)'
       }"
      >
       {{ count }}
      </div>
     </TransitionGroup>
 
+    <!-- ステータステキスト -->
     <div
+     v-if="counterStyle.text.length > 0"
      class="text-2xl font-bold mt-2 tracking-wide transition-all duration-500 bg-white rounded-full px-4 py-1"
      :style="{
-      color: getCelebrationTextColor(),
+      color: counterStyle.textColor,
       transform: isAnimating ? 'translateY(2px) scale(1.1)' : 'translateY(0) scale(1)',
       boxShadow: '0 3px 0 rgba(0,0,0,0.2)'
      }"
     >
      <span class="relative">
-      {{ celebrationText }}
+      {{ counterStyle.text }}
      </span>
     </div>
    </div>
@@ -118,25 +102,6 @@
      style="animation-duration: 0.7s"
     ></div>
    </div>
-
-   <!-- ボイスバブル演出 (カウント増加時) -->
-   <div
-    v-if="isAnimating"
-    class="absolute speech-bubble"
-    :style="{
-     top: `-${20 + Math.random() * 20}px`,
-     left: `${Math.random() * 70 + 15}%`,
-     transform: 'scale(0)',
-     animation: 'bubblePop 1s ease-out forwards'
-    }"
-   >
-    <div
-     class="bg-white rounded-full px-3 py-1 font-bold text-sm"
-     :style="{ color: getCelebrationTextColor() }"
-    >
-     {{ randomCheer }}
-    </div>
-   </div>
   </div>
  </div>
 </template>
@@ -144,92 +109,102 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 
-const props = defineProps<{ isInitFlag: boolean; count: number }>();
+interface Props {
+ count: number;
+ targetCount?: number;
+ loopCount?: boolean;
+ progressTexts?: string[];
+}
 
-const isAnimating = ref(false);
-const pulseIntensity = ref(0);
-const prevCount = ref(props.count);
-
-// 色関連の配列
-const splashColorClass = [
- 'bg-cyan-400',
- 'bg-pink-400',
- 'bg-yellow-300',
- 'bg-green-400',
- 'bg-orange-400',
- 'bg-purple-400'
-];
-
-// 応援メッセージの配列
-const cheers = [
- 'ナイス！',
- 'いくぞ！',
- 'スゴイ！',
- 'ワオ！',
- 'イェーイ！',
- 'やったね！',
- 'サイコー！',
- 'ヤッター！',
- 'ウホッ！',
- 'ラッキー！'
-];
-
-// ランダムな応援メッセージ
-const randomCheer = computed(() => {
- return cheers[Math.floor(Math.random() * cheers.length)];
+const props = withDefaults(defineProps<Props>(), {
+ targetCount: 15,
+ loopCount: true,
+ progressTexts: () => [
+  '高評価👍️',
+  'ナイス！',
+  'ナイスプレイ！',
+  'イカしてる！',
+  'ファンタスティック！',
+  'スーパースター！',
+  'ウルトラスーパー！'
+ ]
 });
 
+const isAnimating = ref(false);
+const pulseIntensity = computed(() => Math.min(props.count / props.targetCount, 1));
+
+// 進捗率に基づくテキスト設定
+const PROGRESS_TEXTS: string[] = props.progressTexts;
+
+// 進捗率に基づくスタイル設定
+const PROGRESS_STYLES = [
+ {
+  textColor: '#10b981',
+  colorClass: 'bg-gradient-to-br from-green-400 to-cyan-500'
+ },
+ {
+  textColor: '#0ea5e9',
+  colorClass: 'bg-gradient-to-br from-cyan-500 to-blue-500'
+ },
+ {
+  textColor: '#d946ef',
+  colorClass: 'bg-gradient-to-br from-purple-500 to-pink-500'
+ }
+];
+
+// 進捗率の計算
+const getProgressIndex = (totalItems: number) => {
+ const index = Math.floor((progressPercentage.value / 100) * totalItems);
+ return totalItems > 0 ? index % totalItems : 0;
+};
+
+// 進捗率の計算
+const progressPercentage = computed(() => {
+ const percentage = (props.count / props.targetCount) * 100;
+ return props.loopCount ? percentage % 100 : Math.min(percentage, 100);
+});
+
+// 進捗率に基づいたテキストとスタイルを取得
+const progressText = computed(() => PROGRESS_TEXTS[getProgressIndex(PROGRESS_TEXTS.length)]);
+const progressStyle = computed(() => PROGRESS_STYLES[getProgressIndex(PROGRESS_STYLES.length)]);
+
+const counterStyle = computed(() => ({
+ text: progressText.value,
+ ...progressStyle.value
+}));
+
+// 16進数カラーコードを rgba に変換する関数
+function convertHexToRGBA(hex: string, alpha: number = 1): string {
+ // 16進数カラーコードを rgba に変換
+ const r = parseInt(hex.slice(1, 3), 16);
+ const g = parseInt(hex.slice(3, 5), 16);
+ const b = parseInt(hex.slice(5, 7), 16);
+ return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 // カウント変更時のアニメーション
+const triggerAnimation = () => {
+ isAnimating.value = true;
+ setTimeout(() => {
+  isAnimating.value = false;
+ }, 800);
+};
 watch(
  () => props.count,
  (newCount, oldCount) => {
-  if (newCount !== oldCount) {
-   isAnimating.value = true;
-   pulseIntensity.value = Math.min(newCount / 5, 1); // 最大5キル以上で最大強度
-
-   setTimeout(() => {
-    isAnimating.value = false;
-    prevCount.value = newCount;
-   }, 800);
-  }
+  if (newCount !== oldCount) triggerAnimation();
  },
  { immediate: true }
 );
-
-// キル数に応じたスタイルの変更
-const counterColorClass = computed(() => {
- if (props.count >= 10) return 'bg-gradient-to-br from-purple-500 to-pink-500';
- if (props.count >= 5) return 'bg-gradient-to-br from-cyan-500 to-blue-500';
- return 'bg-gradient-to-br from-green-400 to-cyan-500';
-});
-
-// キル数に応じた称賛テキスト
-const celebrationText = computed(() => {
- if (props.count >= 15) return 'ウルトラスーパー！';
- if (props.count >= 10) return 'スーパースター！';
- if (props.count >= 7) return 'ファンタスティック！';
- if (props.count >= 5) return 'イカしてる！';
- if (props.count >= 3) return 'ナイスプレイ！';
- if (props.count >= 1) return 'ナイス！';
- return 'がんばれ～！';
-});
-
-// 称賛テキストの色
-const getCelebrationTextColor = () => {
- if (props.count >= 10) return '#d946ef';
- if (props.count >= 5) return '#0ea5e9';
- return '#10b981';
-};
-
-// ボックスシャドウの色
-const getBoxShadowColor = () => {
- if (props.count >= 10) return '212, 70, 239';
- if (props.count >= 5) return '14, 165, 233';
- return '16, 185, 129';
-};
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Lilita+One&family=Mochiy+Pop+One&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* 丸みを帯びたフォント風の設定 */
+.font-rounded {
+ font-family: 'Mochiy Pop One', 'Rounded Mplus 1c', 'Varela Round', sans-serif;
+}
+
 /* カウント変更時のアニメーション */
 .count-enter-active,
 .count-leave-active {
@@ -309,10 +284,5 @@ const getBoxShadowColor = () => {
 .speech-bubble {
  position: absolute;
  z-index: 20;
-}
-
-/* 丸みを帯びたフォント風の設定 */
-.font-rounded {
- font-family: 'Mochiy Pop One', 'Rounded Mplus 1c', 'Varela Round', sans-serif;
 }
 </style>
