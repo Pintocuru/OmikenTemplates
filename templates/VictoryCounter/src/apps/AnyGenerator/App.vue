@@ -1,10 +1,12 @@
 <!-- src/App.vue -->
 <template>
  <AnyGenerator
-  :count="count"
+  :count="simpleCount"
   :loopCount="WordConfig.LOOP_COUNT"
   :targetCount="WordConfig.TARGET_COUNT"
   :progressTexts="WordConfig.PROGRESS_TEXTS"
+  @click.prevent="increment"
+  @contextmenu.prevent="decrement"
  />
 </template>
 
@@ -16,7 +18,15 @@ import { useWordCounter } from '@/scripts/useWordCounter';
 const AnyGenerator = defineAsyncComponent(() => Promise.resolve(window.AppComponent.component));
 
 // useWordCounter
-const { count, WordConfig } = useWordCounter();
+const { simpleCount, WordConfig } = useWordCounter();
+
+const increment = () => {
+ simpleCount.value++;
+};
+const decrement = () => {
+ if (simpleCount.value <= 0) return;
+ simpleCount.value--;
+};
 </script>
 
 <style>

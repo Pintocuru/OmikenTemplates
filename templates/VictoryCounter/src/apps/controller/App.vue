@@ -29,21 +29,13 @@
     <RefreshCw class="w-12 h-12" />
     <span>リセット</span>
    </button>
-
-   <button
-    @click="controller.action('userCountToggle')"
-    class="p-6 rounded-xl shadow-lg transition-all text-3xl font-bold bg-blue-500 text-white hover:bg-blue-600 flex items-center justify-center gap-3 h-28"
-   >
-    <ToggleLeft class="w-12 h-12" />
-    <span>モード切替</span>
-   </button>
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
 import { useLocalStorage } from '@/scripts/useLocalStorage';
-import { PlusCircle, MinusCircle, RefreshCw, ToggleLeft } from 'lucide-vue-next';
+import { PlusCircle, MinusCircle, RefreshCw, ToggleLeft, ToggleRight } from 'lucide-vue-next';
 
 // コンポーザブル
 const { controller } = useLocalStorage();

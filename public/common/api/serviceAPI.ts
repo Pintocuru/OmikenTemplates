@@ -28,7 +28,7 @@ export class ServiceAPI {
 
    return services;
   } catch (err) {
-   console.info('枠情報取得に失敗。再試行予定…', err);
+   console.info('わんコメの枠情報取得に失敗しました。', err);
    return null;
   }
  }

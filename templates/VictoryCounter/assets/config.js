@@ -23,13 +23,13 @@ const WORD_CONFIG = {
   10: '!count_10',
   20: '!count_20'
  },
- COUNT_PARTY_EVENT: '!count_event' // カウント増加時に発火するWordParty
+ COUNT_PARTY_EVENT: 'ひき肉' // カウント増加時に発火するWordParty
 };
 
 const CONFIG = {
  ALLOWED_IDS: [], // 通すユーザーIDリスト(!IDでネガティブ)
- ACCESS_LEVEL: 1, // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
- KEYWORDS: ['おはよう', 'おはみこ', '', '', ''] // 通すuserIDリスト
+ ACCESS_LEVEL: 3, // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
+ KEYWORDS: ['👑', '🔪', '🔫', '', ''] // 通すキーワード
 };
 
 // -------------------------------------------------

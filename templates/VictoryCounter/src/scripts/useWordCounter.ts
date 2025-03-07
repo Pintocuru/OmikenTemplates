@@ -1,5 +1,5 @@
 // src/apps/scripts/useWordCounter.ts
-import { computed, onUnmounted, onMounted, reactive, toRef, watch } from 'vue';
+import { computed, onUnmounted, onMounted, reactive, toRef, watch, ref } from 'vue';
 import { ControllerAction, ControllerActionData, WordCounterConfig } from './types';
 import { createProcessComment } from './createProcessComment';
 import { ConfigUserType } from '@common/commonTypes';
@@ -48,6 +48,7 @@ export function useWordCounter() {
  const processComment = createProcessComment(state);
 
  const count = computed(() => (state.isUserCount ? state.userCount : state.commentCount));
+ const simpleCount = ref<number>(0);
 
  // アクション処理
  const handleControllerAction = (action: ControllerAction, data: ControllerActionData) => {
@@ -55,10 +56,12 @@ export function useWordCounter() {
    countUp: () => {
     if (state.isUserCount) state.userCount += 1;
     else state.commentCount += 1;
+    simpleCount.value += 1;
    },
    countDown: () => {
     if (state.isUserCount) state.userCount -= 1;
     else state.commentCount -= 1;
+    simpleCount.value -= 1;
    },
    userCountToggle: () => {
     state.isUserCount = !state.isUserCount;
@@ -66,6 +69,7 @@ export function useWordCounter() {
    resetCounter: () => {
     state.userCount = state.originUserCount;
     state.commentCount = state.originCommentCount;
+    simpleCount.value = 0;
    }
   };
 
@@ -104,6 +108,7 @@ export function useWordCounter() {
   isInitFlag: toRef(state, 'isInitFlag'),
   isUserCount: toRef(state, 'isUserCount'),
   count,
+  simpleCount,
   WordConfig
  };
 }
