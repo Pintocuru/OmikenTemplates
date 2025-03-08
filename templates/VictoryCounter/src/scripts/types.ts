@@ -35,7 +35,16 @@ export interface WordCounterConfig {
  COUNT_PARTY_EVENT: string; // カウント増加時に発火するWordParty
  TARGET_COUNT: number; // 目標となる数値
  LOOP_COUNT: boolean; // 目標達成後、色を変化させるか
- PROGRESS_TEXTS: string[]; // 数値が増えるたびに変化するテキスト
+ PROGRESS_TEXTS: string[] | undefined; // 数値が増えるたびに変化するテキスト
+ PROGRESS_TEXTS_AFTER: string[] | undefined; // 目標達成後、変化するテキスト(ランダム)
+ // 数値が増えるたびに変化するカラー(TailwindCSS使用)
+ PROGRESS_STYLES:
+  | {
+     textColor: string;
+     colorClass: string;
+    }[]
+  | undefined;
+ SECOND_NAME_MODE?: boolean; // Splatoonの二つ名モード(隠し)trueで上記を無視して稼働
 }
 
 // ---

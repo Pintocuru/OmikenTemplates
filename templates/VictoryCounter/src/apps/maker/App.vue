@@ -1,4 +1,4 @@
-<!-- src/App.vue -->
+<!-- src/apps/maker/App.vue -->
 <template>
  <div class="flex flex-col items-center justify-center h-screen space-y-4">
   <AnyGenerator
@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import AnyGenerator from '@/components/VictoryCounter/KillingSpree.vue';
+import AnyGenerator from '@/components/VictoryCounter/FallCrown.vue';
 
 const isInitFlag = ref<boolean>(true);
 const simpleCount = ref<number>(0);

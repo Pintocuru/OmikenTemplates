@@ -1,6 +1,6 @@
 <!-- SamuraiKatana.vue -->
 <template>
- <div class="relative flex items-center justify-center">
+ <div>
   <!-- 和風の背景 -->
   <div
    class="relative flex flex-col items-center justify-center w-72 h-72 rounded-full shadow-xl border-8 transform transition-all duration-300"
@@ -100,15 +100,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Props, useVictoryComponent } from '@/scripts/useVictoryComponent';
 
 const props = withDefaults(defineProps<Props>(), {
- isInitFlag: false,
- targetCount: 15,
  loopCount: true,
+ targetCount: 5,
  // 進捗率に基づくテキスト設定
  progressTexts: () => [
+  '⚔️ いざ、尋常に',
+  '⚡ 一刀両断！',
+  '🌀 神速斬り！',
+  '🔥 炎魔討伐！',
+  '✨ 奥義炸裂！'
+ ],
+ // 達成後のテキスト
+ progressTextsAfter: () => [
   '⚔️ 妖気斬り！',
   '⚡ 一刀両断！',
   '🌀 神速斬り！',

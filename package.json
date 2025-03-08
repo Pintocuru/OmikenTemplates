@@ -3,8 +3,7 @@
  "version": "0.0.14",
  "description": "わんコメで使える、ジェネレーター開発キット",
  "scripts": {
-  "dev": "webpack --mode development",
-  "build": "webpack --mode production"
+  "buildVendor": "webpack --config webpack.vendor.config.mjs"
  },
  "author": "Pintocuru",
  "license": "Apache-2.0",

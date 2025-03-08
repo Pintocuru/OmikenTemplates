@@ -1,6 +1,6 @@
 <!-- KillingSpree.vue -->
 <template>
- <div class="flex items-center justify-center">
+ <div>
   <div
    class="relative flex flex-col items-center justify-center w-64 h-64 rounded-lg shadow-lg overflow-hidden transition-all duration-500"
    :class="counterStyle.colorClass"
@@ -124,9 +124,8 @@ import { Props, useVictoryComponent } from '@/scripts/useVictoryComponent';
 import { Crosshair, Skull, Target } from 'lucide-vue-next';
 
 const props = withDefaults(defineProps<Props>(), {
- isInitFlag: false,
- targetCount: 15,
  loopCount: false,
+ targetCount: 15,
  // 進捗率に基づくテキスト設定
  progressTexts: () => [
   'NO KILLS',
@@ -148,17 +147,69 @@ const props = withDefaults(defineProps<Props>(), {
  ],
  // 進捗率に基づくスタイル設定
  progressStyles: () => [
+  // 初期ランク - 暗めの色調
   {
-   textColor: '#8b5cf6',
-   colorClass: 'bg-gradient-to-br from-indigo-500 to-purple-600'
+   textColor: '#4b5563',
+   colorClass: 'bg-gradient-to-br from-gray-600 to-gray-800' // 新兵/初心者
   },
   {
-   textColor: '#f59e0b',
-   colorClass: 'bg-gradient-to-br from-amber-500 to-orange-600'
+   textColor: '#9ca3af',
+   colorClass: 'bg-gradient-to-br from-gray-400 to-gray-600' // 上等兵/経験者
+  },
+  {
+   textColor: '#9ca3af',
+   colorClass: 'bg-gradient-to-br from-gray-400 to-gray-600' // 上等兵/経験者
+  },
+  // 中間ランク - 攻撃的な赤系統
+  {
+   textColor: '#dc2626',
+   colorClass: 'bg-gradient-to-br from-red-600 to-red-800' // 軍曹/ベテラン
+  },
+  {
+   textColor: '#dc2626',
+   colorClass: 'bg-gradient-to-br from-red-600 to-red-800' // 軍曹/ベテラン
   },
   {
    textColor: '#ef4444',
-   colorClass: 'bg-gradient-to-br from-red-500 to-orange-600'
+   colorClass: 'bg-gradient-to-br from-red-500 to-red-700' // 上級軍曹/エキスパート
+  },
+  {
+   textColor: '#ef4444',
+   colorClass: 'bg-gradient-to-br from-red-500 to-red-700' // 上級軍曹/エキスパート
+  },
+  {
+   textColor: '#ef4444',
+   colorClass: 'bg-gradient-to-br from-red-500 to-red-700' // 上級軍曹/エキスパート
+  },
+  // 上級ランク - 情熱を示すオレンジから黄色
+  {
+   textColor: '#f97316',
+   colorClass: 'bg-gradient-to-br from-orange-500 to-orange-700' // 少尉/マスター
+  },
+  {
+   textColor: '#f97316',
+   colorClass: 'bg-gradient-to-br from-orange-500 to-orange-700' // 少尉/マスター
+  },
+  {
+   textColor: '#d97706',
+   colorClass: 'bg-gradient-to-br from-amber-600 to-amber-800' // 大尉/エリート
+  },
+  {
+   textColor: '#d97706',
+   colorClass: 'bg-gradient-to-br from-amber-600 to-amber-800' // 大尉/エリート
+  },
+  // 最高ランク - 高貴な紫と金
+  {
+   textColor: '#f59e0b',
+   colorClass: 'bg-gradient-to-br from-amber-500 to-yellow-600' // 少佐/チャンピオン
+  },
+  {
+   textColor: '#f59e0b',
+   colorClass: 'bg-gradient-to-br from-amber-500 to-yellow-600' // 少佐/チャンピオン
+  },
+  {
+   textColor: '#8b5cf6',
+   colorClass: 'bg-gradient-to-br from-indigo-500 to-purple-600' // 将軍/レジェンド
   }
  ]
 });

@@ -9,11 +9,15 @@
    rel="stylesheet"
   />
   <!-- 設定ファイル -->
-  <script src="./config.js"></script>
+  <script src="./config_<%= appName %>.js"></script>
  </head>
  <body>
   <div id="App"></div>
   <!-- Vue3 -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Original vendor.js(onesdk & emoji-regex) -->
+  <script src="./script/vendor.js"></script>
  </body>
 </html>

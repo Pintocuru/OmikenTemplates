@@ -82,9 +82,10 @@ export function createConfig(childDir, mode = 'development', isOneSDK = true) {
    '@onecomme.com/onesdk': isOneSDK ? 'OneSDK' : false
   },
   optimization: {
-   minimize: false, // コードの最小化
+   minimize: true, // コードの最小化
    minimizer: [
     new TerserPlugin({
+     exclude: [/config_.*\.js$/], // config_で始まるJSファイルを除外
      terserOptions: {
       compress: {
        drop_console: true // console.log を削除
@@ -94,8 +95,27 @@ export function createConfig(childDir, mode = 'development', isOneSDK = true) {
    ],
    usedExports: true, // 使用されていないエクスポートを削除
    sideEffects: true, // サイドエフェクトがない場合、不要なコードを削除
-   // コード分割
-   splitChunks: false
+   splitChunks: {
+    chunks: 'all', // 全てのチャンクを対象に分割
+    minSize: 20000, // 分割する最小サイズ（デフォルト 30KB）
+    maxSize: 500000, // 分割する最大サイズ
+    minChunks: 2, // 2つ以上のエントリーポイントで使われているモジュールを共通化
+    automaticNameDelimiter: '-',
+    cacheGroups: {
+     vendors: {
+      test: /[\\/]node_modules[\\/]/, // node_modules 内のモジュールを vendor チャンクとして分割
+      name: 'vendors',
+      chunks: 'all',
+      priority: -10
+     },
+     common: {
+      minChunks: 2,
+      name: 'common',
+      chunks: 'all',
+      priority: -20
+     }
+    }
+   }
   },
   plugins: createCommonPlugins(dirname, mode)
  };

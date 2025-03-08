@@ -1,6 +1,6 @@
 <!-- FallCrown.vue -->
 <template>
- <div class="relative flex items-center justify-center">
+ <div>
   <!-- Background bubble with shadow effect -->
   <div
    class="relative flex flex-col items-center justify-center w-72 h-72 rounded-full shadow-xl transform transition-all duration-300"
@@ -38,7 +38,11 @@
      :style="{ color: counterStyle.textColor, backgroundColor: 'white' }"
      :class="{ 'scale-110 rotate-2': isAnimating }"
     >
-     {{ counterStyle.text }}
+     <div class="w-full flex justify-center">
+      <span class="relative text-center">
+       {{ counterStyle.text }}
+      </span>
+     </div>
 
      <!-- Small decoration elements on the bubble -->
      <div class="absolute -left-2 -top-2 w-5 h-5 rounded-full bg-pink-400"></div>
@@ -56,48 +60,67 @@ import { Crown } from 'lucide-vue-next';
 import { Props, useVictoryComponent } from '@/scripts/useVictoryComponent';
 
 const props = withDefaults(defineProps<Props>(), {
- targetCount: 15,
  loopCount: false,
+ targetCount: 5,
  // 進捗率に基づくテキスト設定
  progressTexts: () => [
   '勝利をつかめ！',
   'ナイスプレイ！',
-  'ナイスプレイ！',
   'すごい！',
-  'すごい！',
-  '燃えてるぞ！',
-  '燃えてるぞ！',
   '絶好調！',
-  '絶好調！',
+  '超のつく大ファン！'
+ ],
+ // 達成後のテキスト
+ progressTextsAfter: () => [
   '上位3位確定！',
-  '上位3位確定！',
+  '燃えてるぞ！',
+  '大好き！',
+  'アストロビーン！',
+  'エネルギー満タン！',
+  'おバカなガチョウ！',
+  'かっこつけて落下！',
+  'クラーケンに挑戦！',
+  'こっちこないで！',
+  'サンザンダーランド！',
+  'しっぽハンタ―！',
+  'ジョイビーン！',
+  'スライムクライマー！',
+  'スライムスイマー！',
+  'ただいま探検中！',
+  'ダイナミック・デュオ！',
+  'つかみ魔！',
+  'タマゴ泥棒！',
+  'デジトライアル中！',
+  'バウンドガイ！',
   'ハグ大好き卿！',
-  'ハグ大好き卿！',
-  '超のつく大ファン！',
-  '超のつく大ファン！',
-  '大好き！'
+  'ハンマークラン！',
+  'ヒヤヒヤ曲芸師！',
+  'ブラストボーラー！',
+  'フリーハグ！',
+  'ベイクドビーンズ！',
+  'ペンギンチェイサー！',
+  'ホットドッグギャング！',
+  'レーザービーン！',
+  '王冠コレクター！',
+  '金メダルが目標！',
+  '見て見てー！',
+  '雪玉サバイバー！',
+  '全力でつかみます！',
+  '桃色一筋！',
+  '美しいぶよぶよ！',
+  '魅せプレイヤー！',
+  '理想のスクワッド！',
+  '遊泳不可！'
  ],
  // 進捗率に基づくスタイル設定
  progressStyles: () => [
   {
-   textColor: '#06b6d4', // Cyan (最低ランク)
+   textColor: '#06b6d4', // Cyan
    colorClass: 'bg-gradient-to-br from-cyan-400 via-blue-400 to-indigo-500'
-  },
-  {
-   textColor: '#3b82f6', // Blue
-   colorClass: 'bg-gradient-to-br from-blue-400 via-indigo-400 to-purple-500'
   },
   {
    textColor: '#10b981', // Emerald
    colorClass: 'bg-gradient-to-br from-green-400 via-emerald-400 to-teal-500'
-  },
-  {
-   textColor: '#eab308', // Amber
-   colorClass: 'bg-gradient-to-br from-amber-400 via-yellow-400 to-orange-500'
-  },
-  {
-   textColor: '#f97316', // Orange
-   colorClass: 'bg-gradient-to-br from-orange-400 via-red-400 to-rose-500'
   },
   {
    textColor: '#ec4899', // Pink
@@ -108,7 +131,7 @@ const props = withDefaults(defineProps<Props>(), {
    colorClass: 'bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-500'
   },
   {
-   textColor: '#d4af37', // Gold (最高ランク)
+   textColor: '#d4af37', // Gold
    colorClass: 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600'
   }
  ]

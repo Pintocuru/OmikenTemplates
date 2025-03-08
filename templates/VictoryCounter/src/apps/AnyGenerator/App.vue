@@ -1,13 +1,18 @@
 <!-- src/App.vue -->
 <template>
- <AnyGenerator
-  :count="simpleCount"
-  :loopCount="WordConfig.LOOP_COUNT"
-  :targetCount="WordConfig.TARGET_COUNT"
-  :progressTexts="WordConfig.PROGRESS_TEXTS"
-  @click.prevent="increment"
-  @contextmenu.prevent="decrement"
- />
+ <div class="flex flex-col items-center justify-center h-screen">
+  <AnyGenerator
+   :count="simpleCount"
+   :loopCount="WordConfig.LOOP_COUNT"
+   :targetCount="WordConfig.TARGET_COUNT"
+   :secondNameMode="WordConfig.SECOND_NAME_MODE"
+   :progressTexts="WordConfig.PROGRESS_TEXTS"
+   :progressTextsAfter="WordConfig.PROGRESS_TEXTS_AFTER"
+   :progressStyles="WordConfig.PROGRESS_STYLES"
+   @click.prevent="increment"
+   @contextmenu.prevent="decrement"
+  />
+ </div>
 </template>
 
 <script setup lang="ts">

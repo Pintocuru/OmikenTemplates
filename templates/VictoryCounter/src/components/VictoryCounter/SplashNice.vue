@@ -1,6 +1,6 @@
 <!-- SplashNice.vue -->
 <template>
- <div class="flex items-center justify-center">
+ <div>
   <div
    class="relative flex flex-col items-center justify-center w-64 h-64 rounded-full shadow-lg overflow-hidden transition-all duration-500"
    :class="counterStyle.colorClass"
@@ -56,9 +56,11 @@
       boxShadow: '0 3px 0 rgba(0,0,0,0.2)'
      }"
     >
-     <span class="relative">
-      {{ counterStyle.text }}
-     </span>
+     <div class="w-full flex justify-center">
+      <span class="relative text-center">
+       {{ counterStyle.text }}
+      </span>
+     </div>
     </div>
    </div>
 
@@ -110,31 +112,40 @@
 import { Props, useVictoryComponent } from '@/scripts/useVictoryComponent';
 
 const props = withDefaults(defineProps<Props>(), {
- isInitFlag: false,
- targetCount: 15,
  loopCount: false,
+ targetCount: 15,
+ secondNameMode: false, // 隠しモード
  // 進捗率に基づくテキスト設定
  progressTexts: () => [
-  '高評価👍️',
+  'カモン！',
   'ナイス！',
-  'ナイスプレイ！',
+  'ナイス！',
+  'クール！',
+  'クール！',
   'イカしてる！',
+  'イカしてる！',
+  'グレイト！',
+  'グレイト！',
+  'アメイジング！',
+  'アメイジング！',
   'ファンタスティック！',
+  'ファンタスティック！',
+  'スーパースター！',
   'スーパースター！',
   'ウルトラスーパー！'
  ],
  // 進捗率に基づくスタイル設定
  progressStyles: () => [
   {
-   textColor: '#10b981',
+   textColor: '#0d9466',
    colorClass: 'bg-gradient-to-br from-green-400 to-cyan-500'
   },
   {
-   textColor: '#0ea5e9',
+   textColor: '#0b8dc2',
    colorClass: 'bg-gradient-to-br from-cyan-500 to-blue-500'
   },
   {
-   textColor: '#d946ef',
+   textColor: '#b737c4',
    colorClass: 'bg-gradient-to-br from-purple-500 to-pink-500'
   }
  ]
