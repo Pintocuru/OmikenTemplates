@@ -87,6 +87,7 @@ export class UserCommentsProcess {
   if (this.config.IS_GIFT && comment.data.hasGift) return true;
 
   // キーワードチェック（正規表現を適用）
+  if (this.config.KEYWORDS.length === 0) return true;
   if (this.config.KEYWORDS?.some((keyword) => this.matchPattern(comment.data.comment, keyword)))
    return true;
 

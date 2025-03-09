@@ -65,5 +65,5 @@ export type ConfigUserType = {
  ALLOWED_IDS: string[]; // 通すユーザーIDリスト(!IDでネガティブ)
  ACCESS_LEVEL?: 1 | 2 | 3 | 4; // 1:だれでも/2:メンバー/3:モデレーター/4:管理者
  IS_GIFT: boolean; // ギフトで有効にするか
- KEYWORDS: string[]; // isGiftがfalseであるとき、この文字列で始まるコメントを有効にする
+ KEYWORDS: string[]; // isGiftがfalseなら、このコメントで判定(正規表現)
 };

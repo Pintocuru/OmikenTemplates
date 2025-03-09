@@ -1,9 +1,9 @@
-// common/subscribe/GetRefComments.ts
+// common/subscribe/GetNewComments.ts
 import { ref } from 'vue';
 import { GetComments } from './GetComments';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
-export async function GetRefComments(isDiff: boolean = false) {
+export function GetNewComments(isDiff: boolean = false) {
  // ref
  const newComments = ref<Comment[]>([]);
 

@@ -11,6 +11,10 @@
     "jsx": "preserve", // JSXをそのまま残す
     "forceConsistentCasingInFileNames": true, // 大文字小文字を守る
   },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  },
   // 除外するディレクトリ
   "exclude": [
     "node_modules"

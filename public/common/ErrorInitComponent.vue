@@ -26,18 +26,23 @@
     <li>わんコメが正常に起動していることを確認してください</li>
 
     <!-- props.config.PLUGIN_UID が null でない場合に内容を追加 -->
-    <template v-if="props.config.PLUGIN_UID">
+    <template v-if="props.pluginUid">
      <li>
       本ジェネレーターは「
-      <a href="https://booth.pm/ja/items/6499304" class="text-blue-600 hover:text-blue-800"> おみくじBOTプラグイン </a>
+      <a href="https://booth.pm/ja/items/6499304" class="text-blue-600 hover:text-blue-800">
+       おみくじBOTプラグイン
+      </a>
       」専用です
      </li>
-     <li>わんコメのメニュー > プラグインで「おみくじBOTプラグイン」が表示されていることを確認してください</li>
+     <li>
+      わんコメのメニュー >
+      プラグインで「おみくじBOTプラグイン」が表示されていることを確認してください
+     </li>
      <li>プラグインが有効（ON）になっていることを確認してください</li>
      <li>
       config.js の
       <code class="bg-gray-200 p-1 rounded">PLUGIN_UID</code> が
-      <code class="bg-gray-200 p-1 rounded">{{ props.config.PLUGIN_UID }}</code>
+      <code class="bg-gray-200 p-1 rounded">{{ props.pluginUid }}</code>
       となっています。「おみくじBOTプラグイン」のディレクトリ名と、config.js の PLUGIN_UID
       が同じになるように編集してください。
      </li>
@@ -47,7 +52,9 @@
    <p class="font-medium">エラーの原因を探るには:</p>
    <ul class="list-disc pl-6">
     <li>OBSでの使用時に問題が発生した場合は、<strong>コンソールログ</strong>をご確認ください。</li>
-    <li>コンソールログとは、アプリケーションが出力するエラーメッセージやデバッグ情報が表示される場所です。</li>
+    <li>
+     コンソールログとは、アプリケーションが出力するエラーメッセージやデバッグ情報が表示される場所です。
+    </li>
     <li>OBSの設定画面の「ログの表示」から確認できます。</li>
     <li>エラーが表示されている場合、設定や接続に関する情報が得られることがあります。</li>
    </ul>
@@ -64,9 +71,9 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { ConfigType } from './commonTypes';
 
-const props = defineProps<{ config: ConfigType }>();
+// PLUGIN_UID
+const props = defineProps<{ pluginUid?: string | null }>();
 
 const handleReload = () => {
  window.location.reload();

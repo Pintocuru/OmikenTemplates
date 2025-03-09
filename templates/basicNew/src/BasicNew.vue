@@ -51,7 +51,7 @@
 import { computed } from 'vue';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { useCommentGuards } from '@common/comment/CommentGuards';
+import { useCommentGuards } from '@common/subscribe/CommentGuards';
 
 const props = defineProps<{ newComments: Comment[] }>();
 
@@ -61,6 +61,8 @@ const comments = computed(() => {
 
 // コンポーザブル
 const { hasMembership, isModerator, isMember, hasPaidText } = useCommentGuards();
-const getClassName = (index: number): string => (index % 2 === 0 ? 'comment even' : 'comment odd');
+const getClassName = (index: any): string => {
+ return parseInt(index, 10) % 2 === 0 ? 'comment even' : 'comment odd';
+};
 const getStyle = (comment: Comment) => OneSDK.getCommentStyle(comment);
 </script>

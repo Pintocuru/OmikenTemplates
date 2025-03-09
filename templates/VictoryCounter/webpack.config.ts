@@ -1,12 +1,8 @@
-// [packages] webpack.config.mjs
-import {
- ENV,
- createConfig,
- createCommonPlugins,
- createCommonResolve
-} from '../../webpackAll.config.mjs';
+// [packages] webpack.config.ts
+import { ENV, createConfig, createCommonPlugins, createCommonResolve } from '../../webpack.config';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { WebpackOptionsNormalized } from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
@@ -16,18 +12,17 @@ export const appNames = ['FallCrown', 'KillingSpree', 'SamuraiKatana', 'SplashNi
 // ---
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export default (env, argv) => {
- const { mode } = argv;
+export default (env: { [key: string]: any }, argv: WebpackOptionsNormalized) => {
+ const { mode = 'development' } = argv;
  const baseConfig = createConfig(dirname, mode, false);
  const commonResolve = createCommonResolve();
 
- // エントリーポイントを動的に生成
- const entries = {
+ // エントリーポイント
+ const entries: Record<string, string> = {
   main: path.resolve(dirname, './src/apps/AnyGenerator/main.ts'),
   controller: path.resolve(dirname, './src/apps/controller/main.ts')
  };
-
- // 各アプリ名に対応するエントリーポイントを追加
+ // 各アプリ名に対応するエントリーポイント
  appNames.forEach((appName) => {
   entries[appName] = path.resolve(dirname, `./src/apps/AnyGenerator/VictoryCounter/${appName}.ts`);
  });
@@ -40,7 +35,7 @@ export default (env, argv) => {
    filename: `controller.html`,
    chunks: ['controller'],
    inject: 'body',
-   templateParameters: ENV[mode]
+   templateParameters: ENV[mode] || ENV['development']
   })
  ];
 
@@ -97,7 +92,7 @@ export default (env, argv) => {
    vue: 'Vue'
   },
   plugins: [
-   ...createCommonPlugins(dirname, mode),
+   ...createCommonPlugins(),
    ...htmlPlugins,
    // Copy config.js & template.json
    new CopyWebpackPlugin({
