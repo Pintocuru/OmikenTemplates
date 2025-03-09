@@ -55,7 +55,8 @@ watch(
 
 // Color management
 const getNextColor = () => {
- currentColorIndex.value = currentColorIndex.value + 1 < props.config.colors.length ? currentColorIndex.value + 1 : 0;
+ currentColorIndex.value =
+  currentColorIndex.value + 1 < props.config.colors.length ? currentColorIndex.value + 1 : 0;
  return props.config.colors[currentColorIndex.value];
 };
 
@@ -244,7 +245,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .fullscreen-canvas {
  position: fixed; /* 親のスタイルに関係なく画面全体に配置 */
  top: 0;

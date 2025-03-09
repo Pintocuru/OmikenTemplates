@@ -162,7 +162,7 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .container {
  width: 100vw;
  height: 100vh;

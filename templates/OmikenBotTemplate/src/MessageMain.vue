@@ -143,7 +143,7 @@ const clearAllTimers = () => {
 onUnmounted(clearAllTimers);
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap');
 
 * {

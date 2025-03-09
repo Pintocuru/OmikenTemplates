@@ -142,7 +142,7 @@ const props = withDefaults(defineProps<Props>(), {
 const { isAnimating, counterStyle } = useVictoryComponent(props, 800);
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 /* 和風フォント（既存のフォントを使用するか、和風に似合うフォントを指定） */
 @import url('https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap');
 

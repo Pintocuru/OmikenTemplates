@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { VueLoaderPlugin } from 'vue-loader';
 import TerserPlugin from 'terser-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 
 // 親ディレクトリ
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -68,11 +69,6 @@ export function createConfig(childDir, mode = 'development', isOneSDK = true) {
        }
       }
      ]
-    },
-    // SCSSファイルを処理
-    {
-     test: /\.scss$/,
-     use: ['style-loader', 'css-loader', 'sass-loader']
     }
    ]
   },
@@ -91,6 +87,10 @@ export function createConfig(childDir, mode = 'development', isOneSDK = true) {
        drop_console: true // console.log を削除
       }
      }
+    }),
+    // CSSの最適化
+    new CssMinimizerPlugin({
+     test: /\.css$/ // CSSファイルのみ対象
     })
    ],
    usedExports: true, // 使用されていないエクスポートを削除

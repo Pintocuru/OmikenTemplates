@@ -113,7 +113,7 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 // 基本トランジションアニメーション
 .locomotive-transition-enter-active,
 .locomotive-transition-leave-active {

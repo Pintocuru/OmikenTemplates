@@ -111,7 +111,7 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 /* Comic-Style Typography */
 .font-digital {
  font-family: 'Impact', 'Arial Black', sans-serif;
