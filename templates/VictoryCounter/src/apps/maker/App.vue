@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import AnyGenerator from '@/components/VictoryCounter/FallCrown.vue';
+import AnyGenerator from '@/components/splash/FallCrown.vue';
 
 const isInitFlag = ref<boolean>(true);
 const simpleCount = ref<number>(0);

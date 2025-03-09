@@ -100,7 +100,7 @@ export class UserCommentsProcess {
   if (pattern === '') return false;
   try {
    // 絵文字専用パターン
-   if (pattern === ':emoji:') return emojiRegex().test(text);
+   if (text.includes(pattern)) return emojiRegex().test(text);
    // 正規表現パターン
    return new RegExp(pattern).test(text);
   } catch (err) {

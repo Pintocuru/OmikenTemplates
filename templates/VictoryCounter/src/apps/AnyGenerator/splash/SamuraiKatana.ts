@@ -1,4 +1,4 @@
-import AnyGenerator from '@/components/VictoryCounter/FallCrown.vue';
+import AnyGenerator from '@/components/splash/SamuraiKatana.vue';
 
 window.AppComponent = window.AppComponent || {};
 window.AppComponent.component = AnyGenerator;

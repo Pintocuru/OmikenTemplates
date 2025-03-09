@@ -4,8 +4,8 @@ import path from 'path';
 import { defineConfig, mergeConfig } from 'vite';
 
 // ホットリロード用設定
-export default defineConfig(({ mode }) => {
- return mergeConfig(baseViteConfig(__dirname, mode, false), {
+export default defineConfig(() => {
+ return mergeConfig(baseViteConfig(__dirname), {
   resolve: {
    alias: {
     '@': path.resolve(__dirname, 'src'),

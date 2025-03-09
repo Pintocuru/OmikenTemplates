@@ -97,7 +97,30 @@ export function useWordCounter() {
  // 初期化
  onMounted(async () => {
   // わんコメの初期化ができたかをチェック
-  state.isInitFlag = await fetchComments((visits) => processComment(visits));
+  state.isInitFlag = await fetchComments((visits) => {
+   simpleCount.value += 1; // 更新が来たら単にインクリメント
+   // 合計値を計算
+   const { currentUserCount, currentCommentCount } = Object.values(visits).reduce(
+    (acc, service) => ({
+     currentUserCount: acc.currentUserCount + Object.keys(service.user).length,
+     currentCommentCount: acc.currentCommentCount + service.totalCount
+    }),
+    { currentUserCount: 0, currentCommentCount: 0 }
+   );
+
+   // リセットケース
+   if (currentCommentCount === 0) {
+    simpleCount.value = 0;
+    return;
+   }
+
+   // 初回実行時
+   if (state.originUserCount === 0 && state.originCommentCount === 0) {
+    simpleCount.value = currentUserCount;
+    return;
+   }
+   processComment(visits);
+  });
   // LocalStorage 初期化
   controller.initialize();
   controller.addListener(handleControllerAction);

@@ -1,4 +1,4 @@
-import AnyGenerator from '@/components/VictoryCounter/SplashNice.vue';
+import AnyGenerator from '@/components/splash/KillingSpree.vue';
 
 window.AppComponent = window.AppComponent || {};
 window.AppComponent.component = AnyGenerator;
