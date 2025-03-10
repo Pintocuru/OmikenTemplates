@@ -13,24 +13,12 @@ import { LocalStorageController } from '@common/LocalStorage/LocalStorageControl
 import { postWordParty } from '@common/api/PostOneComme';
 
 // 定数
-const WordConfig: WordCounterConfig = {
- generator: {
-  TARGET: window.WORD_CONFIG?.generator?.TARGET || 15, // 目標となる数値
-  IS_LOOP: window.WORD_CONFIG?.generator?.IS_LOOP || false, // 目標達成後、色を変化させるか
-  TEXTS_FIRST: window.WORD_CONFIG?.generator?.TEXTS_FIRST || null, // countが初期値のテキスト
-  STYLES_FIRST: window.WORD_CONFIG?.generator?.STYLES_FIRST || null, // countが初期値のカラー(TailwindCSS使用)
-  TEXTS: window.WORD_CONFIG?.generator?.TEXTS || undefined, // 数値が増えるたびに変化するテキスト
-  TEXTS_AFTER: window.WORD_CONFIG?.generator?.TEXTS_AFTER || null, // 目標達成後、変化するテキスト(ランダム)
-  STYLES: window.WORD_CONFIG?.generator?.STYLES || undefined, // 数値が増えるたびに変化するカラー(TailwindCSS使用)
-  EASTER_MODE: window.WORD_CONFIG?.generator?.EASTER_MODE || false, // Splatoonの二つ名モード(隠し)
-  EASTER_DATA: window.WORD_CONFIG?.generator?.EASTER_DATA || undefined // Splatoonの二つ名モード(隠し)
- },
- counter: {
-  COUNT_MODE: window.WORD_CONFIG?.counter?.COUNT_MODE || 'comment', // カウントモード
-  PARTY: window.WORD_CONFIG?.counter?.PARTY || {}, // WordPartyの発火タイミング
-  PARTY_EVENT: window.WORD_CONFIG?.counter?.PARTY_EVENT || '', // カウント増加時に発火するWordParty
-  PARTY_SUCCESS: window.WORD_CONFIG?.counter?.PARTY_SUCCESS || '' // TARGET_COUNT達成時に発火するWordParty
- }
+const TARGET = window.WORD_CONFIG?.generator?.TARGET || 15; // 目標となる数値
+const counter: WordCounterConfig['counter'] = {
+ COUNT_MODE: window.WORD_CONFIG?.counter?.COUNT_MODE || 'comment', // カウントモード
+ PARTY: window.WORD_CONFIG?.counter?.PARTY || {}, // WordPartyの発火タイミング
+ PARTY_EVENT: window.WORD_CONFIG?.counter?.PARTY_EVENT || '', // カウント増加時に発火するWordParty
+ PARTY_SUCCESS: window.WORD_CONFIG?.counter?.PARTY_SUCCESS || '' // TARGET_COUNT達成時に発火するWordParty
 };
 
 const config: ConfigUserType = {
@@ -71,15 +59,15 @@ export function useWordCounter() {
    commentDown: state.commentCount,
    syoken: state.syokenCount
   };
-  return countModeMap[WordConfig.counter.COUNT_MODE] || 0;
+  return countModeMap[counter.COUNT_MODE] || 0;
  };
 
  // カウント計算のロジック
  const count = computed(() => {
   const baseCount = getBaseCount();
-  const isDownMode = WordConfig.counter.COUNT_MODE.endsWith('Down');
+  const isDownMode = counter.COUNT_MODE.endsWith('Down');
   const value = isDownMode
-   ? WordConfig.generator.TARGET - (baseCount + state.manualAdjustment)
+   ? TARGET - (baseCount + state.manualAdjustment)
    : baseCount + state.manualAdjustment;
 
   return Math.max(value, 0);
@@ -110,23 +98,23 @@ export function useWordCounter() {
   // わんコメ初期化できてない場合はreturn
   if (!state.isInitFlag) return;
 
-  const isDownMode = WordConfig.counter.COUNT_MODE.endsWith('Down');
+  const isDownMode = counter.COUNT_MODE.endsWith('Down');
 
   // カウント変化によるWordParty処理
   if ((newCount > oldCount && !isDownMode) || (newCount < oldCount && isDownMode)) {
-   if (WordConfig.counter.PARTY_EVENT !== '') {
-    postWordParty(WordConfig.counter.PARTY_EVENT, -2);
+   if (counter.PARTY_EVENT !== '') {
+    postWordParty(counter.PARTY_EVENT, -2);
    }
   }
 
   // 特定の数値に対応するWordParty
-  const partyMessage = WordConfig.counter.PARTY[newCount];
+  const partyMessage = counter.PARTY[newCount];
   if (partyMessage) postWordParty(partyMessage, -2);
 
   // PARTY_SUCCESS の発火条件
-  const isSuccess = isDownMode ? newCount === 0 : newCount === WordConfig.generator.TARGET;
+  const isSuccess = isDownMode ? newCount === 0 : newCount === TARGET;
   if (isSuccess) {
-   postWordParty(WordConfig.counter.PARTY_SUCCESS, -2);
+   postWordParty(counter.PARTY_SUCCESS, -2);
   }
  });
 
@@ -150,7 +138,6 @@ export function useWordCounter() {
   controller,
   isInitFlag: toRef(state, 'isInitFlag'),
   count,
-  WordConfig,
   // 手動操作関数を公開
   increment,
   decrement,

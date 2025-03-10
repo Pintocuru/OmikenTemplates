@@ -16,10 +16,12 @@ const WORD_CONFIG = {
   // 数値が増えるたびに変化するテキスト
   TEXTS: [
    'FIRST BLOOD',
+   'FIRST BLOOD',
    'DOUBLE KILL',
    'TRIPLE KILL',
    'MULTI KILL',
    'MULTI KILL',
+   'MULTI KILL',
    'KILLING SPREE!',
    'KILLING SPREE!',
    'KILLING SPREE!',
@@ -27,12 +29,27 @@ const WORD_CONFIG = {
    'RAMPAGE!',
    'DOMINATING!',
    'DOMINATING!',
+   'DOMINATING!',
    'UNSTOPPABLE!',
    'UNSTOPPABLE!',
+   'GODLIKE!',
    'GODLIKE!'
   ],
   // TARGET_COUNT達成後、ランダムで変化するテキスト
-  TEXTS_AFTER: null,
+  TEXTS_AFTER: [
+   'LEGENDARY!',
+   'MYTHICAL!',
+   'TRANSCENDENT!',
+   'ASCENDED!',
+   'IMMORTAL!',
+   'DIVINE!',
+   'INHUMAN REACTIONS!',
+   'BEYOND GODLIKE!',
+   'OMNIPOTENT!',
+   'UNFATHOMABLE POWER!',
+   'ABSOLUTE DESTRUCTION!',
+   'YOU ARE THE FINAL BOSS!'
+  ],
   STYLES: [
    {
     textColor: '#9ca3af',
@@ -62,8 +79,8 @@ const WORD_CONFIG = {
     colorClass: 'bg-gradient-to-br from-amber-500 to-yellow-600' // 少佐/チャンピオン
    },
    {
-    textColor: '#8b5cf6',
-    colorClass: 'bg-gradient-to-br from-indigo-500 to-purple-600' // 将軍/レジェンド
+    textColor: '#5a189a', // 青みの強い紫
+    colorClass: 'bg-gradient-to-br from-violet-700 via-blue-600 to-indigo-900 animate-gradient' // クールで神秘的な紫
    }
   ]
  },

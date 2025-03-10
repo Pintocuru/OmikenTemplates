@@ -45,11 +45,11 @@ export interface WordCounterConfig {
  generator: {
   TARGET: number; // 目標となる数値
   IS_LOOP: boolean; // 目標達成後、色を変化させるか
-  TEXTS_FIRST: string | null | undefined; // countが初期値のテキスト
-  STYLES_FIRST: Styles | null | undefined; // countが初期値のカラー(TailwindCSS使用)
-  TEXTS: string[] | null | undefined; // 数値が増えるたびに変化するテキスト
-  TEXTS_AFTER: string[] | null | undefined; // 目標達成後、変化するテキスト(ランダム)
-  STYLES: Styles[] | undefined; // 数値が増えるたびに変化するカラー(TailwindCSS使用)
+  TEXTS_FIRST?: string | null; // countが初期値のテキスト
+  STYLES_FIRST?: Styles | null; // countが初期値のカラー(TailwindCSS使用)
+  TEXTS: string[] | null; // 数値が増えるたびに変化するテキスト
+  TEXTS_AFTER: string[] | null; // 目標達成後、変化するテキスト(ランダム)
+  STYLES: Styles[]; // 数値が増えるたびに変化するカラー(TailwindCSS使用)
   EASTER_MODE?: boolean; // Splatoonの二つ名モード(隠し)trueで上記を無視して稼働
   EASTER_DATA?: (pulseIntensity: number) => string; // Splatoonの二つ名モード(隠し)trueで上記を無視して稼働
  };

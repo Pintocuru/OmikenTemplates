@@ -15,7 +15,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 // コンポーネント名を配列として定義 'KillingSpree', 'SamuraiKatana',
 const appNames = ['FallCrown', 'SplashNice'];
-const appDir = 'AnyGenerator';
+const appDir = 'splash';
 
 // ---
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -24,7 +24,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
  * @param {WebpackEnv} env
  * @param {WebpackArgv} argv
  */
-export default (env, argv) => {
+export default () => {
  const baseConfig = createConfig(dirname, false);
  const commonResolve = createCommonResolve();
 
@@ -35,7 +35,7 @@ export default (env, argv) => {
  };
  // 各アプリ名に対応するエントリーポイント
  appNames.forEach((appName) => {
-  entries[appName] = path.resolve(dirname, `./src/apps/components/${appDir}/${appName}.ts`);
+  entries[appName] = path.resolve(dirname, `./src/components/${appDir}/${appName}.ts`);
  });
 
  // HTML Webpack Pluginを動的に生成
@@ -48,13 +48,8 @@ export default (env, argv) => {
   })
  ];
 
- // コピーするファイルのパターンを動的に生成
- const copyPatterns = [
-  {
-   from: path.resolve(dirname, './assets/template.json'),
-   to: path.resolve(dirname, 'dist/template.json')
-  }
- ];
+ // コピーするファイル
+ const copyPatterns = [];
 
  // 各アプリ用のHTMLプラグインとコピーパターンを追加
  appNames.forEach((appName) => {
@@ -71,11 +66,29 @@ export default (env, argv) => {
    })
   );
 
-  // コピーパターンの追加
-  copyPatterns.push({
-   from: path.resolve(dirname, `./src/apps/components/${appDir}/config_${appName}.js`),
-   to: path.resolve(dirname, `dist/config_${appName}.js`)
-  });
+  // コピーパターン
+  copyPatterns.push(
+   // config
+   {
+    from: path.resolve(dirname, `./src/components/${appDir}/config_${appName}.js`),
+    to: path.resolve(dirname, `dist/config_${appName}.js`)
+   },
+   // Readme
+   {
+    from: path.resolve(dirname, `./src/components/${appDir}/${appName}.txt`),
+    to: path.resolve(dirname, `dist/readme.txt`)
+   },
+   // template.json
+   {
+    from: path.resolve(dirname, `./src/components/${appDir}/${appName}.json`),
+    to: path.resolve(dirname, `dist/template.json`)
+   },
+   // thumb.png
+   {
+    from: path.resolve(dirname, `./src/components/${appDir}/${appName}.png`),
+    to: path.resolve(dirname, `dist/thumb.png`)
+   }
+  );
  });
 
  // 上記の内容をマージ

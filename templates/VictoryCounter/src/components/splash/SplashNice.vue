@@ -110,17 +110,19 @@
 
 <script setup lang="ts">
 import { WordCounterConfig } from '@/scripts/types';
-import { SecondNameMode } from './secondNameMode';
-import { Props, useWordComponent } from '@/scripts/useWordComponent';
+import { useWordComponent } from '@/scripts/useWordComponent';
+import { toRef } from 'vue';
 
-const defaultGenerator: WordCounterConfig['generator'] = {
- IS_LOOP: false,
- TARGET: 15,
+const generatorTest: WordCounterConfig['generator'] = {
+ TARGET: 15, // 目標となる数値
+ IS_LOOP: false, // 目標達成後、色を変化させるか
+ // countが初期値のテキスト・カラー
  TEXTS_FIRST: 'カモン！',
  STYLES_FIRST: {
   textColor: '#0d9466', // Green
   colorClass: 'bg-gradient-to-br from-green-400 to-cyan-500'
  },
+ // 数値が増えるたびに変化するテキスト
  TEXTS: [
   'ナイス！',
   'クール！',
@@ -131,31 +133,35 @@ const defaultGenerator: WordCounterConfig['generator'] = {
   'スーパースター！',
   'ウルトラスーパー！'
  ],
- TEXTS_AFTER: null,
+ // TARGET_COUNT達成後、ランダムで変化するテキスト
+ TEXTS_AFTER: [],
  STYLES: [
   {
-   textColor: '#0d9466', // Green
+   textColor: '#0d9466',
    colorClass: 'bg-gradient-to-br from-green-400 to-cyan-500'
   },
   {
-   textColor: '#0b8dc2', // Blue
+   textColor: '#0b8dc2',
    colorClass: 'bg-gradient-to-br from-cyan-500 to-blue-500'
   },
   {
-   textColor: '#b737c4', // Purple
+   textColor: '#b737c4',
    colorClass: 'bg-gradient-to-br from-purple-500 to-pink-500'
   }
  ],
- EASTER_MODE: false,
- EASTER_DATA: SecondNameMode
+ EASTER_MODE: false // 隠しモード(trueにすると、Splatoonの二つ名になります)
 };
 
-const props = withDefaults(defineProps<Props>(), {
- generator: () => defaultGenerator
-});
+const props = defineProps<{
+ count: number;
+}>();
 
 // コンポーザブル
-const { isAnimating, pulseIntensity, counterStyle } = useWordComponent(props, 800);
+const { generator, isAnimating, pulseIntensity, counterStyle } = useWordComponent(
+ toRef(props, 'count'),
+ 800,
+ generatorTest
+);
 
 // 16進数カラーコードを rgba に変換する関数
 function convertHexToRGBA(hex: string, alpha: number = 1): string {

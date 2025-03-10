@@ -1,12 +1,7 @@
 <!-- src/App.vue -->
 <template>
  <div class="flex flex-col items-center justify-center h-screen">
-  <AnyGenerator
-   :count="count"
-   :generator="WordConfig.generator"
-   @click.prevent="increment"
-   @contextmenu.prevent="decrement"
-  />
+  <AnyGenerator :count="count" @click.prevent="increment" @contextmenu.prevent="decrement" />
  </div>
 </template>
 
@@ -18,7 +13,7 @@ import { useWordCounter } from '@/scripts/useWordCounter';
 const AnyGenerator = defineAsyncComponent(() => Promise.resolve(window.AppComponent.component));
 
 // useWordCounter
-const { count, WordConfig, increment, decrement } = useWordCounter();
+const { count, increment, decrement } = useWordCounter();
 </script>
 
 <style>

@@ -99,11 +99,11 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted, toRef } from 'vue';
 import { WordCounterConfig } from '@/scripts/types';
-import { Props, useWordComponent } from '@/scripts/useWordComponent';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { useWordComponent } from '@/scripts/useWordComponent';
 
-const defaultGenerator: WordCounterConfig['generator'] = {
+const generatorTest: WordCounterConfig['generator'] = {
  IS_LOOP: true,
  TARGET: 15,
  TEXTS_FIRST: null,
@@ -127,12 +127,16 @@ const defaultGenerator: WordCounterConfig['generator'] = {
  EASTER_DATA: undefined
 };
 
-const props = withDefaults(defineProps<Props>(), {
- generator: () => defaultGenerator
-});
+const props = defineProps<{
+ count: number;
+}>();
 
 // コンポーザブル
-const { isAnimating, pulseIntensity, counterStyle } = useWordComponent(props, 1200);
+const { generator, isAnimating, pulseIntensity, counterStyle } = useWordComponent(
+ toRef(props, 'count'),
+ 800,
+ generatorTest
+);
 
 // ランダムアニメーション状態
 const randomAnimation = ref(false);

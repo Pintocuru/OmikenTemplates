@@ -62,7 +62,11 @@
      }"
     >
      <span class="relative uppercase">
-      {{ counterStyle.text }}
+      <div class="w-full flex justify-center">
+       <span class="relative text-center">
+        {{ counterStyle.text }}
+       </span>
+      </div>
       <span
        class="absolute bottom-0 left-0 w-full h-0.5 bg-white/40 transform origin-left"
        :style="{
@@ -121,25 +125,29 @@
 </template>
 
 <script setup lang="ts">
+import { toRef } from 'vue';
 import { WordCounterConfig } from '@/scripts/types';
-import { Props, useWordComponent } from '@/scripts/useWordComponent';
+import { useWordComponent } from '@/scripts/useWordComponent';
 import { Crosshair, Skull, Target } from 'lucide-vue-next';
 
-const defaultGenerator: WordCounterConfig['generator'] = {
- IS_LOOP: false,
- TARGET: 15,
+const generatorTest: WordCounterConfig['generator'] = {
+ TARGET: 15, // 目標となる数値
+ IS_LOOP: false, // 目標達成後、色を変化させるか
+ // countが初期値のテキスト・カラー
  TEXTS_FIRST: 'NO KILLS',
- // 初期ランク - 暗めの色調
  STYLES_FIRST: {
   textColor: '#4b5563',
   colorClass: 'bg-gradient-to-br from-gray-600 to-gray-800' // 新兵/初心者
  },
+ // 数値が増えるたびに変化するテキスト
  TEXTS: [
+  'FIRST BLOOD',
   'FIRST BLOOD',
   'DOUBLE KILL',
   'TRIPLE KILL',
   'MULTI KILL',
   'MULTI KILL',
+  'MULTI KILL',
   'KILLING SPREE!',
   'KILLING SPREE!',
   'KILLING SPREE!',
@@ -147,11 +155,27 @@ const defaultGenerator: WordCounterConfig['generator'] = {
   'RAMPAGE!',
   'DOMINATING!',
   'DOMINATING!',
+  'DOMINATING!',
   'UNSTOPPABLE!',
   'UNSTOPPABLE!',
+  'GODLIKE!',
   'GODLIKE!'
  ],
- TEXTS_AFTER: null,
+ // TARGET_COUNT達成後、ランダムで変化するテキスト
+ TEXTS_AFTER: [
+  'LEGENDARY!',
+  'MYTHICAL!',
+  'TRANSCENDENT!',
+  'ASCENDED!',
+  'IMMORTAL!',
+  'DIVINE!',
+  'INHUMAN REACTIONS!',
+  'BEYOND GODLIKE!',
+  'OMNIPOTENT!',
+  'UNFATHOMABLE POWER!',
+  'ABSOLUTE DESTRUCTION!',
+  'YOU ARE THE FINAL BOSS!'
+ ],
  STYLES: [
   {
    textColor: '#9ca3af',
@@ -181,19 +205,22 @@ const defaultGenerator: WordCounterConfig['generator'] = {
    colorClass: 'bg-gradient-to-br from-amber-500 to-yellow-600' // 少佐/チャンピオン
   },
   {
-   textColor: '#8b5cf6',
-   colorClass: 'bg-gradient-to-br from-indigo-500 to-purple-600' // 将軍/レジェンド
+   textColor: '#5a189a', // 青みの強い紫
+   colorClass: 'bg-gradient-to-br from-violet-700 via-blue-600 to-indigo-900 animate-gradient' // クールで神秘的な紫
   }
- ],
- EASTER_DATA: undefined
+ ]
 };
 
-const props = withDefaults(defineProps<Props>(), {
- generator: () => defaultGenerator
-});
+const props = defineProps<{
+ count: number;
+}>();
 
 // コンポーザブル
-const { isAnimating, pulseIntensity, counterStyle } = useWordComponent(props, 600);
+const { generator, isAnimating, pulseIntensity, counterStyle } = useWordComponent(
+ toRef(props, 'count'),
+ 600,
+ generatorTest
+);
 
 // 16進数カラーコードを rgba に変換する関数
 function convertHexToRGBA(hex: string, alpha: number = 1): string {
@@ -249,5 +276,22 @@ function convertHexToRGBA(hex: string, alpha: number = 1): string {
   opacity: 0;
   transform: rotate(var(--rotation)) translateX(80px) scale(1);
  }
+}
+
+@keyframes gradientShift {
+ 0% {
+  background-position: 0% 50%;
+ }
+ 50% {
+  background-position: 100% 50%;
+ }
+ 100% {
+  background-position: 0% 50%;
+ }
+}
+
+.animate-gradient {
+ background-size: 200% 200%;
+ animation: gradientShift 3s ease infinite;
 }
 </style>

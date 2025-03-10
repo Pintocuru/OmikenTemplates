@@ -100,15 +100,19 @@
 </template>
 
 <script setup lang="ts">
+import { toRef } from 'vue';
 import { WordCounterConfig } from '@/scripts/types';
-import { Props, useWordComponent } from '@/scripts/useWordComponent';
+import { useWordComponent } from '@/scripts/useWordComponent';
 
-const defaultGenerator: WordCounterConfig['generator'] = {
- IS_LOOP: true,
- TARGET: 5,
+const generatorTest: WordCounterConfig['generator'] = {
+ TARGET: 5, // 目標となる数値
+ IS_LOOP: true, // 目標達成後、色を変化させるか
+ // countが初期値のテキスト・カラー
  TEXTS_FIRST: '⚔️ いざ、尋常に',
  STYLES_FIRST: null,
+ // 数値が増えるたびに変化するテキスト
  TEXTS: ['⚡ 一刀両断！', '🌀 神速斬り！', '🔥 炎魔討伐！', '✨ 奥義炸裂！'],
+ // TARGET_COUNT達成後、ランダムで変化するテキスト
  TEXTS_AFTER: [
   '⚔️ 妖気斬り！',
   '⚡ 一刀両断！',
@@ -131,20 +135,16 @@ const defaultGenerator: WordCounterConfig['generator'] = {
    textColor: '#000',
    colorClass: 'bg-gradient-to-br from-stone-700 via-yellow-700 to-amber-800'
   },
-  {
-   textColor: '#000',
-   colorClass: 'bg-gradient-to-br from-emerald-900 via-green-800 to-teal-900'
-  }
- ],
- EASTER_DATA: undefined
+  { textColor: '#000', colorClass: 'bg-gradient-to-br from-emerald-900 via-green-800 to-teal-900' }
+ ]
 };
 
-const props = withDefaults(defineProps<Props>(), {
- generator: () => defaultGenerator
-});
+const props = defineProps<{
+ count: number;
+}>();
 
 // コンポーザブル
-const { isAnimating, counterStyle } = useWordComponent(props, 800);
+const { generator, isAnimating, counterStyle } = useWordComponent(toRef(props, 'count'), 800);
 </script>
 
 <style scoped>

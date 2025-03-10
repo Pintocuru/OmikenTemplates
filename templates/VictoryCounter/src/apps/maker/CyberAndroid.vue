@@ -131,9 +131,9 @@
 
 <script setup lang="ts">
 import { WordCounterConfig } from '@/scripts/types';
-import { Props, useWordComponent } from '@/scripts/useWordComponent';
+import { useWordComponent } from '@/scripts/useWordComponent';
 
-const defaultGenerator: WordCounterConfig['generator'] = {
+const generatorTest: WordCounterConfig['generator'] = {
  IS_LOOP: true,
  TARGET: 15,
  TEXTS_FIRST: null,
@@ -157,12 +157,16 @@ const defaultGenerator: WordCounterConfig['generator'] = {
  EASTER_DATA: undefined
 };
 
-const props = withDefaults(defineProps<Props>(), {
- generator: () => defaultGenerator
-});
+const props = defineProps<{
+ count: number;
+}>();
 
 // コンポーザブル
-const { isAnimating, pulseIntensity, counterStyle } = useWordComponent(props, 1000);
+const { generator, isAnimating, pulseIntensity, counterStyle } = useWordComponent(
+ props.count,
+ 1000,
+ generatorTest
+);
 
 // ビートマニア風の評価を取得
 const getRating = () => {

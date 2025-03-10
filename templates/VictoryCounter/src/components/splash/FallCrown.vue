@@ -56,19 +56,23 @@
 </template>
 
 <script setup lang="ts">
-import { Crown } from 'lucide-vue-next';
+import { toRef } from 'vue';
+import { useWordComponent } from '@/scripts/useWordComponent';
 import { WordCounterConfig } from '@/scripts/types';
-import { Props, useWordComponent } from '@/scripts/useWordComponent';
+import { Crown } from 'lucide-vue-next';
 
-const defaultGenerator: WordCounterConfig['generator'] = {
- IS_LOOP: false,
- TARGET: 5,
+const generatorTest: WordCounterConfig['generator'] = {
+ TARGET: 5, // 目標となる数値
+ IS_LOOP: false, // 目標達成後、色を変化させるか
+ // countが初期値のテキスト・カラー
  TEXTS_FIRST: '勝利をつかめ！',
  STYLES_FIRST: {
   textColor: '#06b6d4', // Cyan
   colorClass: 'bg-gradient-to-br from-cyan-400 via-blue-400 to-indigo-500'
  },
+ // 数値が増えるたびに変化するテキスト
  TEXTS: ['ナイスプレイ！', 'すごい！', '絶好調！', '超のつく大ファン！'],
+ // TARGET_COUNT達成後、ランダムで変化するテキスト
  TEXTS_AFTER: [
   '上位3位確定！',
   '燃えてるぞ！',
@@ -120,6 +124,10 @@ const defaultGenerator: WordCounterConfig['generator'] = {
    colorClass: 'bg-gradient-to-br from-green-400 via-emerald-400 to-teal-500'
   },
   {
+   textColor: '#10b981', // Emerald
+   colorClass: 'bg-gradient-to-br from-green-400 via-emerald-400 to-teal-500'
+  },
+  {
    textColor: '#ec4899', // Pink
    colorClass: 'bg-gradient-to-br from-pink-400 via-rose-400 to-red-500'
   },
@@ -131,15 +139,20 @@ const defaultGenerator: WordCounterConfig['generator'] = {
    textColor: '#d4af37', // Gold
    colorClass: 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600'
   }
- ]
+ ],
+ EASTER_MODE: false // 隠しモード(trueにすると、Splatoonの二つ名になります)
 };
 
-const props = withDefaults(defineProps<Props>(), {
- generator: () => defaultGenerator
-});
+const props = defineProps<{
+ count: number;
+}>();
 
 // コンポーザブル
-const { isAnimating, counterStyle } = useWordComponent(props, 1000);
+const { generator, isAnimating, counterStyle } = useWordComponent(
+ toRef(props, 'count'),
+ 800,
+ generatorTest
+);
 </script>
 
 <style scoped>

@@ -30,42 +30,44 @@
 </template>
 
 <script setup lang="ts">
+import { toRef } from 'vue';
 import { WordCounterConfig } from '@/scripts/types';
-import { Props, useWordComponent } from '@/scripts/useWordComponent';
+import { useWordComponent } from '@/scripts/useWordComponent';
 
-const defaultGenerator: WordCounterConfig['generator'] = {
+const generatorTest: WordCounterConfig['generator'] = {
  IS_LOOP: true,
  TARGET: 15,
  TEXTS_FIRST: null,
- STYLES_FIRST: {
-  textColor: '#0d9466',
-  colorClass: 'bg-gradient-to-br from-green-400 to-cyan-500'
- },
- TEXTS: ['高評価👍️', 'ナイス！', 'ファンタスティック！', 'スーパースター！', 'ウルトラスーパー！'],
+ STYLES_FIRST: null,
+ TEXTS: ['CYBER_SYNC', 'NEURO_LINK', 'HYPER_DRIVE', 'ULTRA_BOOST', 'MAX_LEVEL'],
  TEXTS_AFTER: null,
  STYLES: [
   {
-   textColor: '#0d9466',
-   colorClass: 'bg-gradient-to-br from-green-400 to-cyan-500'
+   textColor: '#06b6d4',
+   colorClass: 'bg-gradient-to-br from-cyan-900 to-black'
   },
   {
-   textColor: '#0b8dc2',
-   colorClass: 'bg-gradient-to-br from-cyan-500 to-blue-500'
+   textColor: '#d946ef',
+   colorClass: 'bg-gradient-to-br from-pink-900 to-black'
   },
   {
-   textColor: '#b737c4',
-   colorClass: 'bg-gradient-to-br from-purple-500 to-pink-500'
+   textColor: '#ec4899',
+   colorClass: 'bg-gradient-to-br from-purple-900 to-black'
   }
- ]
+ ],
+ EASTER_DATA: undefined
 };
 
-const props = withDefaults(defineProps<Props>(), {
- count: 0,
- generator: () => defaultGenerator
-});
+const props = defineProps<{
+ count: number;
+}>();
 
 // コンポーザブル
-const { isAnimating, pulseIntensity, counterStyle } = useWordComponent(props, 800);
+const { generator, isAnimating, pulseIntensity, counterStyle } = useWordComponent(
+ toRef(props, 'count'),
+ 800,
+ generatorTest
+);
 </script>
 
 <style scoped>
