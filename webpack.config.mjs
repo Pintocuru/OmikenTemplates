@@ -32,9 +32,9 @@ export const ENV = {
  * @param {boolean} [isOneSDK=true] - OneSDKを使用するか
  * @returns {import('webpack').Configuration}
  */
-export function createConfig(childDir, mode = 'development', isOneSDK = true) {
+export function createConfig(childDir, isOneSDK = true) {
  return {
-  mode, // Webpackのモード設定
+  mode: 'production', // Webpackは production のみ
   entry: path.resolve(childDir, './src/main.ts'), // エントリーポイント
   context: path.resolve(childDir), // Webpackのルートディレクトリ
   output: {

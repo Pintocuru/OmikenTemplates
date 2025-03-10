@@ -48,7 +48,7 @@
 
     <!-- ステータステキスト -->
     <div
-     v-if="counterStyle.text.length > 0"
+     v-if="generator.TEXTS && generator.TEXTS.length > 0"
      class="text-2xl font-bold mt-2 tracking-wide transition-all duration-500 bg-white rounded-full px-4 py-1"
      :style="{
       color: counterStyle.textColor,
@@ -109,50 +109,53 @@
 </template>
 
 <script setup lang="ts">
-import { Props, useVictoryComponent } from '@/scripts/useVictoryComponent';
+import { WordCounterConfig } from '@/scripts/types';
+import { SecondNameMode } from './secondNameMode';
+import { Props, useWordComponent } from '@/scripts/useWordComponent';
 
-const props = withDefaults(defineProps<Props>(), {
- loopCount: false,
- targetCount: 15,
- secondNameMode: false, // 隠しモード
- // 進捗率に基づくテキスト設定
- progressTexts: () => [
-  'カモン！',
-  'ナイス！',
+const defaultGenerator: WordCounterConfig['generator'] = {
+ IS_LOOP: false,
+ TARGET: 15,
+ TEXTS_FIRST: 'カモン！',
+ STYLES_FIRST: {
+  textColor: '#0d9466', // Green
+  colorClass: 'bg-gradient-to-br from-green-400 to-cyan-500'
+ },
+ TEXTS: [
   'ナイス！',
   'クール！',
-  'クール！',
-  'イカしてる！',
   'イカしてる！',
   'グレイト！',
-  'グレイト！',
-  'アメイジング！',
   'アメイジング！',
   'ファンタスティック！',
-  'ファンタスティック！',
-  'スーパースター！',
   'スーパースター！',
   'ウルトラスーパー！'
  ],
- // 進捗率に基づくスタイル設定
- progressStyles: () => [
+ TEXTS_AFTER: null,
+ STYLES: [
   {
-   textColor: '#0d9466',
+   textColor: '#0d9466', // Green
    colorClass: 'bg-gradient-to-br from-green-400 to-cyan-500'
   },
   {
-   textColor: '#0b8dc2',
+   textColor: '#0b8dc2', // Blue
    colorClass: 'bg-gradient-to-br from-cyan-500 to-blue-500'
   },
   {
-   textColor: '#b737c4',
+   textColor: '#b737c4', // Purple
    colorClass: 'bg-gradient-to-br from-purple-500 to-pink-500'
   }
- ]
+ ],
+ EASTER_MODE: false,
+ EASTER_DATA: SecondNameMode
+};
+
+const props = withDefaults(defineProps<Props>(), {
+ generator: () => defaultGenerator
 });
 
 // コンポーザブル
-const { isAnimating, pulseIntensity, counterStyle } = useVictoryComponent(props, 800);
+const { isAnimating, pulseIntensity, counterStyle } = useWordComponent(props, 800);
 
 // 16進数カラーコードを rgba に変換する関数
 function convertHexToRGBA(hex: string, alpha: number = 1): string {

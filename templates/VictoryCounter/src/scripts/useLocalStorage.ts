@@ -5,7 +5,7 @@ import { ActionConfig, LocalStorageController } from '@common/LocalStorage/Local
 
 // 定数
 const WordConfig: WordCounterConfig = {
- IS_USER_COUNT: true, // ユーザー数をカウントか、コメント数をカウントか
+ USER_COUNT_MODE: window.WORD_CONFIG?.USER_COUNT_MODE || 'comment', // カウントモード
  COUNT_PARTY: window.WORD_CONFIG?.COUNT_PARTY || {}, // WordPartyの発火タイミング
  COUNT_PARTY_EVENT: window.WORD_CONFIG?.COUNT_PARTY_EVENT || '', // カウント増加時に発火するWordParty
  TARGET_COUNT: window.WORD_CONFIG?.TARGET_COUNT || 15, // 目標となる数値
@@ -26,7 +26,6 @@ export function useLocalStorage() {
  const actionMap: Record<string, ActionConfig<ControllerAction, ControllerActionData>> = {
   countUp: { action: 'countUp', data: {} },
   countDown: { action: 'countDown', data: {} },
-  userCountToggle: { action: 'userCountToggle', data: {} },
   resetCounter: { action: 'resetCounter', data: {} }
  };
 

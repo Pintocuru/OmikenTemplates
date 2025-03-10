@@ -33,7 +33,7 @@
 
     <!-- Status text displayed in a fun bubble -->
     <div
-     v-if="progressTexts.length > 0"
+     v-if="generator.TEXTS && generator.TEXTS.length > 0"
      class="status-bubble relative mt-4 px-6 py-2 font-game text-2xl font-bold tracking-wide rounded-full transform transition-all duration-300"
      :style="{ color: counterStyle.textColor, backgroundColor: 'white' }"
      :class="{ 'scale-110 rotate-2': isAnimating }"
@@ -57,21 +57,19 @@
 
 <script setup lang="ts">
 import { Crown } from 'lucide-vue-next';
-import { Props, useVictoryComponent } from '@/scripts/useVictoryComponent';
+import { WordCounterConfig } from '@/scripts/types';
+import { Props, useWordComponent } from '@/scripts/useWordComponent';
 
-const props = withDefaults(defineProps<Props>(), {
- loopCount: false,
- targetCount: 5,
- // 進捗率に基づくテキスト設定
- progressTexts: () => [
-  '勝利をつかめ！',
-  'ナイスプレイ！',
-  'すごい！',
-  '絶好調！',
-  '超のつく大ファン！'
- ],
- // 達成後のテキスト
- progressTextsAfter: () => [
+const defaultGenerator: WordCounterConfig['generator'] = {
+ IS_LOOP: false,
+ TARGET: 5,
+ TEXTS_FIRST: '勝利をつかめ！',
+ STYLES_FIRST: {
+  textColor: '#06b6d4', // Cyan
+  colorClass: 'bg-gradient-to-br from-cyan-400 via-blue-400 to-indigo-500'
+ },
+ TEXTS: ['ナイスプレイ！', 'すごい！', '絶好調！', '超のつく大ファン！'],
+ TEXTS_AFTER: [
   '上位3位確定！',
   '燃えてるぞ！',
   '大好き！',
@@ -112,8 +110,7 @@ const props = withDefaults(defineProps<Props>(), {
   '理想のスクワッド！',
   '遊泳不可！'
  ],
- // 進捗率に基づくスタイル設定
- progressStyles: () => [
+ STYLES: [
   {
    textColor: '#06b6d4', // Cyan
    colorClass: 'bg-gradient-to-br from-cyan-400 via-blue-400 to-indigo-500'
@@ -135,10 +132,14 @@ const props = withDefaults(defineProps<Props>(), {
    colorClass: 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600'
   }
  ]
+};
+
+const props = withDefaults(defineProps<Props>(), {
+ generator: () => defaultGenerator
 });
 
 // コンポーザブル
-const { isAnimating, counterStyle } = useVictoryComponent(props, 1000);
+const { isAnimating, counterStyle } = useWordComponent(props, 1000);
 </script>
 
 <style scoped>

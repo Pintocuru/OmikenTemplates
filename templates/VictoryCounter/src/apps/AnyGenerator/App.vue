@@ -2,13 +2,8 @@
 <template>
  <div class="flex flex-col items-center justify-center h-screen">
   <AnyGenerator
-   :count="simpleCount"
-   :loopCount="WordConfig.LOOP_COUNT"
-   :targetCount="WordConfig.TARGET_COUNT"
-   :secondNameMode="WordConfig.SECOND_NAME_MODE"
-   :progressTexts="WordConfig.PROGRESS_TEXTS"
-   :progressTextsAfter="WordConfig.PROGRESS_TEXTS_AFTER"
-   :progressStyles="WordConfig.PROGRESS_STYLES"
+   :count="count"
+   :generator="WordConfig.generator"
    @click.prevent="increment"
    @contextmenu.prevent="decrement"
   />
@@ -23,15 +18,7 @@ import { useWordCounter } from '@/scripts/useWordCounter';
 const AnyGenerator = defineAsyncComponent(() => Promise.resolve(window.AppComponent.component));
 
 // useWordCounter
-const { simpleCount, WordConfig } = useWordCounter();
-
-const increment = () => {
- simpleCount.value++;
-};
-const decrement = () => {
- if (simpleCount.value <= 0) return;
- simpleCount.value--;
-};
+const { count, WordConfig, increment, decrement } = useWordCounter();
 </script>
 
 <style>

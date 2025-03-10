@@ -1,6 +1,11 @@
 // src/apps/scripts/useWordCounter.ts
 import { computed, onUnmounted, onMounted, reactive, toRef, watch, ref } from 'vue';
-import { ControllerAction, ControllerActionData, WordCounterConfig } from './types';
+import {
+ ControllerAction,
+ ControllerActionData,
+ WordCounterConfig,
+ WordCounterState
+} from './types';
 import { createProcessComment } from './createProcessComment';
 import { ConfigUserType } from '@common/commonTypes';
 import { GetUserVisits } from '@common/subscribe/GetUserVisits';
@@ -9,15 +14,23 @@ import { postWordParty } from '@common/api/PostOneComme';
 
 // 定数
 const WordConfig: WordCounterConfig = {
- IS_USER_COUNT: true, // ユーザー数をカウントか、コメント数をカウントか
- COUNT_PARTY: window.WORD_CONFIG?.COUNT_PARTY || {}, // WordPartyの発火タイミング
- COUNT_PARTY_EVENT: window.WORD_CONFIG?.COUNT_PARTY_EVENT || '', // カウント増加時に発火するWordParty
- TARGET_COUNT: window.WORD_CONFIG?.TARGET_COUNT || 15, // 目標となる数値
- LOOP_COUNT: window.WORD_CONFIG?.LOOP_COUNT || false, // 目標達成後、色を変化させるか
- PROGRESS_TEXTS: window.WORD_CONFIG?.PROGRESS_TEXTS, // 数値が増えるたびに変化するテキスト
- PROGRESS_TEXTS_AFTER: window.WORD_CONFIG?.PROGRESS_TEXTS_AFTER, // 数値が増えるたびに変化するテキスト
- PROGRESS_STYLES: window.WORD_CONFIG?.PROGRESS_STYLES, // 数値が増えるたびに変化するテキスト
- SECOND_NAME_MODE: window.WORD_CONFIG?.SECOND_NAME_MODE // Splatoonの二つ名モード(隠し)
+ generator: {
+  TARGET: window.WORD_CONFIG?.generator?.TARGET || 15, // 目標となる数値
+  IS_LOOP: window.WORD_CONFIG?.generator?.IS_LOOP || false, // 目標達成後、色を変化させるか
+  TEXTS_FIRST: window.WORD_CONFIG?.generator?.TEXTS_FIRST || null, // countが初期値のテキスト
+  STYLES_FIRST: window.WORD_CONFIG?.generator?.STYLES_FIRST || null, // countが初期値のカラー(TailwindCSS使用)
+  TEXTS: window.WORD_CONFIG?.generator?.TEXTS || undefined, // 数値が増えるたびに変化するテキスト
+  TEXTS_AFTER: window.WORD_CONFIG?.generator?.TEXTS_AFTER || null, // 目標達成後、変化するテキスト(ランダム)
+  STYLES: window.WORD_CONFIG?.generator?.STYLES || undefined, // 数値が増えるたびに変化するカラー(TailwindCSS使用)
+  EASTER_MODE: window.WORD_CONFIG?.generator?.EASTER_MODE || false, // Splatoonの二つ名モード(隠し)
+  EASTER_DATA: window.WORD_CONFIG?.generator?.EASTER_DATA || undefined // Splatoonの二つ名モード(隠し)
+ },
+ counter: {
+  COUNT_MODE: window.WORD_CONFIG?.counter?.COUNT_MODE || 'comment', // カウントモード
+  PARTY: window.WORD_CONFIG?.counter?.PARTY || {}, // WordPartyの発火タイミング
+  PARTY_EVENT: window.WORD_CONFIG?.counter?.PARTY_EVENT || '', // カウント増加時に発火するWordParty
+  PARTY_SUCCESS: window.WORD_CONFIG?.counter?.PARTY_SUCCESS || '' // TARGET_COUNT達成時に発火するWordParty
+ }
 };
 
 const config: ConfigUserType = {
@@ -38,44 +51,57 @@ export function useWordCounter() {
  const { fetchComments } = GetUserVisits(config);
 
  // userの数をカウントするstate
- const state = reactive({
-  isInitFlag: true,
-  isUserCount: WordConfig.IS_USER_COUNT,
-  originUserCount: 0,
-  originCommentCount: 0,
-  userCount: 0,
-  commentCount: 0
+ const state: WordCounterState = reactive({
+  isInitFlag: true, // わんコメ初期化フラグ
+  commentCount: 0, // fetchCommentsで取得した基本コメント数
+  userCount: 0, // fetchCommentsで取得した基本ユーザー数
+  syokenCount: 0, // fetchCommentsで取得した基本ユーザー数のうち、初見さん
+  manualAdjustment: 0 // 手動で加算・減算した数値
  });
 
  // コメントを受け取った時の処理
  const processComment = createProcessComment(state);
 
- const count = computed(() => (state.isUserCount ? state.userCount : state.commentCount));
- const simpleCount = ref<number>(0);
+ // カウントモードに応じた基準値を取得
+ const getBaseCount = () => {
+  const countModeMap = {
+   user: state.userCount,
+   userDown: state.userCount,
+   comment: state.commentCount,
+   commentDown: state.commentCount,
+   syoken: state.syokenCount
+  };
+  return countModeMap[WordConfig.counter.COUNT_MODE] || 0;
+ };
+
+ // カウント計算のロジック
+ const count = computed(() => {
+  const baseCount = getBaseCount();
+  const isDownMode = WordConfig.counter.COUNT_MODE.endsWith('Down');
+  const value = isDownMode
+   ? WordConfig.generator.TARGET - (baseCount + state.manualAdjustment)
+   : baseCount + state.manualAdjustment;
+
+  return Math.max(value, 0);
+ });
 
  // アクション処理
- const handleControllerAction = (action: ControllerAction, data: ControllerActionData) => {
-  const actions: Record<ControllerAction, () => void> = {
-   countUp: () => {
-    if (state.isUserCount) state.userCount += 1;
-    else state.commentCount += 1;
-    simpleCount.value += 1;
-   },
-   countDown: () => {
-    if (state.isUserCount) state.userCount -= 1;
-    else state.commentCount -= 1;
-    simpleCount.value -= 1;
-   },
-   userCountToggle: () => {
-    state.isUserCount = !state.isUserCount;
-   },
-   resetCounter: () => {
-    state.userCount = state.originUserCount;
-    state.commentCount = state.originCommentCount;
-    simpleCount.value = 0;
-   }
-  };
+ const increment = () => {
+  state.manualAdjustment += 1;
+ };
+ const decrement = () => {
+  if (count.value > 0) state.manualAdjustment -= 1;
+ };
+ const resetManualAdjustment = () => {
+  state.manualAdjustment = 0;
+ };
 
+ const handleControllerAction = (action: ControllerAction, data: ControllerActionData) => {
+  const actions = {
+   countUp: increment,
+   countDown: decrement,
+   resetCounter: resetManualAdjustment
+  };
   if (action in actions) actions[action]();
  };
 
@@ -84,41 +110,30 @@ export function useWordCounter() {
   // わんコメ初期化できてない場合はreturn
   if (!state.isInitFlag) return;
 
-  // カウント増加時に発火するWordParty
-  if (newCount > oldCount && WordConfig.COUNT_PARTY_EVENT !== '') {
-   postWordParty(WordConfig.COUNT_PARTY_EVENT, -2);
+  const isDownMode = WordConfig.counter.COUNT_MODE.endsWith('Down');
+
+  // カウント変化によるWordParty処理
+  if ((newCount > oldCount && !isDownMode) || (newCount < oldCount && isDownMode)) {
+   if (WordConfig.counter.PARTY_EVENT !== '') {
+    postWordParty(WordConfig.counter.PARTY_EVENT, -2);
+   }
   }
 
   // 特定の数値に対応するWordParty
-  const partyMessage = WordConfig.COUNT_PARTY[newCount];
+  const partyMessage = WordConfig.counter.PARTY[newCount];
   if (partyMessage) postWordParty(partyMessage, -2);
+
+  // PARTY_SUCCESS の発火条件
+  const isSuccess = isDownMode ? newCount === 0 : newCount === WordConfig.generator.TARGET;
+  if (isSuccess) {
+   postWordParty(WordConfig.counter.PARTY_SUCCESS, -2);
+  }
  });
 
  // 初期化
  onMounted(async () => {
   // わんコメの初期化ができたかをチェック
   state.isInitFlag = await fetchComments((visits) => {
-   simpleCount.value += 1; // 更新が来たら単にインクリメント
-   // 合計値を計算
-   const { currentUserCount, currentCommentCount } = Object.values(visits).reduce(
-    (acc, service) => ({
-     currentUserCount: acc.currentUserCount + Object.keys(service.user).length,
-     currentCommentCount: acc.currentCommentCount + service.totalCount
-    }),
-    { currentUserCount: 0, currentCommentCount: 0 }
-   );
-
-   // リセットケース
-   if (currentCommentCount === 0) {
-    simpleCount.value = 0;
-    return;
-   }
-
-   // 初回実行時
-   if (state.originUserCount === 0 && state.originCommentCount === 0) {
-    simpleCount.value = currentUserCount;
-    return;
-   }
    processComment(visits);
   });
   // LocalStorage 初期化
@@ -134,9 +149,11 @@ export function useWordCounter() {
  return {
   controller,
   isInitFlag: toRef(state, 'isInitFlag'),
-  isUserCount: toRef(state, 'isUserCount'),
   count,
-  simpleCount,
-  WordConfig
+  WordConfig,
+  // 手動操作関数を公開
+  increment,
+  decrement,
+  resetManualAdjustment
  };
 }

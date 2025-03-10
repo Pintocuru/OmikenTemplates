@@ -7,35 +7,37 @@ export function createProcessComment(state: WordCounterState) {
   if (!state.isInitFlag) return;
 
   // 合計値を計算
-  const { currentUserCount, currentCommentCount } = Object.values(visits).reduce(
+  const { currentCommentCount, currentUserCount, currentSyokenCount } = Object.values(
+   visits
+  ).reduce(
    (acc, service) => ({
     currentUserCount: acc.currentUserCount + Object.keys(service.user).length,
-    currentCommentCount: acc.currentCommentCount + service.totalCount
+    currentCommentCount: acc.currentCommentCount + service.totalCount,
+    currentSyokenCount: acc.currentSyokenCount + service.syokenCount
    }),
-   { currentUserCount: 0, currentCommentCount: 0 }
+   { currentCommentCount: 0, currentUserCount: 0, currentSyokenCount: 0 }
   );
 
   // リセットケース
   if (currentCommentCount === 0) {
-   state.originUserCount = state.originCommentCount = state.userCount = state.commentCount = 0;
+   state.commentCount = 0;
+   state.userCount = 0;
+   state.syokenCount = 0;
+   state.manualAdjustment = 0;
    return;
   }
 
   // 初回実行時
-  if (state.originUserCount === 0 && state.originCommentCount === 0) {
-   state.originUserCount = state.userCount = currentUserCount;
-   state.originCommentCount = state.commentCount = currentCommentCount;
+  if (state.userCount === 0 && state.commentCount === 0) {
+   state.commentCount = currentCommentCount;
+   state.userCount = currentUserCount;
+   state.syokenCount = currentSyokenCount;
    return;
   }
 
   // ユーザー数とコメント数の変化を検出
-  if (currentUserCount > state.originUserCount) {
-   state.userCount += currentUserCount - state.originUserCount;
-   state.originUserCount = currentUserCount;
-  }
-  if (currentCommentCount > state.originCommentCount) {
-   state.commentCount += currentCommentCount - state.originCommentCount;
-   state.originCommentCount = currentCommentCount;
-  }
+  if (currentCommentCount > state.commentCount) state.commentCount = currentCommentCount;
+  if (currentUserCount > state.userCount) state.userCount = currentUserCount;
+  if (currentSyokenCount > state.syokenCount) state.syokenCount = currentSyokenCount;
  };
 }

@@ -2,8 +2,8 @@
 <template>
  <div class="flex flex-col items-center justify-center h-screen space-y-4">
   <AnyGenerator
-   :isInitFlag="isInitFlag"
    :count="simpleCount"
+   :generator="{} as WordCounterConfig['generator']"
    @click.prevent="increment"
    @contextmenu.prevent="decrement"
   />
@@ -26,9 +26,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import AnyGenerator from '@/components/splash/FallCrown.vue';
+import AnyGenerator from '@/apps/maker/BasicCounter.vue';
+import { WordCounterConfig } from '@/scripts/types';
 
-const isInitFlag = ref<boolean>(true);
 const simpleCount = ref<number>(0);
 
 const increment = () => {

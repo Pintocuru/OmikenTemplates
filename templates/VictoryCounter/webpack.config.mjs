@@ -13,8 +13,9 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 /** @typedef {import('./webpack.config.d.ts').WebpackEnv} WebpackEnv */
 /** @typedef {import('./webpack.config.d.ts').WebpackArgv} WebpackArgv */
 
-// コンポーネント名を配列として定義
-export const appNames = ['FallCrown', 'KillingSpree', 'SamuraiKatana', 'SplashNice'];
+// コンポーネント名を配列として定義 'KillingSpree', 'SamuraiKatana',
+const appNames = ['FallCrown', 'SplashNice'];
+const appDir = 'AnyGenerator';
 
 // ---
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -24,8 +25,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
  * @param {WebpackArgv} argv
  */
 export default (env, argv) => {
- const { mode = 'development' } = argv;
- const baseConfig = createConfig(dirname, mode, false);
+ const baseConfig = createConfig(dirname, false);
  const commonResolve = createCommonResolve();
 
  // エントリーポイント
@@ -35,7 +35,7 @@ export default (env, argv) => {
  };
  // 各アプリ名に対応するエントリーポイント
  appNames.forEach((appName) => {
-  entries[appName] = path.resolve(dirname, `./src/apps/AnyGenerator/splash/${appName}.ts`);
+  entries[appName] = path.resolve(dirname, `./src/apps/components/${appDir}/${appName}.ts`);
  });
 
  // HTML Webpack Pluginを動的に生成
@@ -44,8 +44,7 @@ export default (env, argv) => {
    template: path.resolve(dirname, `./src/apps/controller/index.ejs`),
    filename: `controller.html`,
    chunks: ['controller'],
-   inject: 'body',
-   templateParameters: ENV[mode] || ENV['development']
+   inject: 'body'
   })
  ];
 
@@ -63,11 +62,10 @@ export default (env, argv) => {
   htmlPlugins.push(
    new HtmlWebpackPlugin({
     template: path.resolve(dirname, `./src/apps/AnyGenerator/index.ejs`),
-    filename: `${appName}.html`,
+    filename: `${appName === appNames[0] ? 'index' : appName}.html`,
     chunks: ['main', appName],
     inject: 'body',
     templateParameters: {
-     ENV: ENV[mode],
      appName: appName
     }
    })
@@ -75,7 +73,7 @@ export default (env, argv) => {
 
   // コピーパターンの追加
   copyPatterns.push({
-   from: path.resolve(dirname, `./assets/splash/config_${appName}.js`),
+   from: path.resolve(dirname, `./src/apps/components/${appDir}/config_${appName}.js`),
    to: path.resolve(dirname, `dist/config_${appName}.js`)
   });
  });

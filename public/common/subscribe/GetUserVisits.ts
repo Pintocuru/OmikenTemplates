@@ -12,9 +12,8 @@ export interface ServiceVisitType {
  liveId: string; // 配信のid
  frameData: Service | null; // 現在の配信枠情報
  totalCount: number; // フィルタされた配信枠のコメント数
- user: {
-  [userId: string]: UserVisitType;
- };
+ syokenCount: number; // 初見さん(初コメ)の数
+ user: Record<string, UserVisitType>;
 }
 
 // ユーザーコメント情報の型定義
@@ -142,6 +141,7 @@ class UserVisitsProcessor {
     liveId,
     frameData: null,
     totalCount: 0,
+    syokenCount: 0,
     user: {}
    };
   }
@@ -198,7 +198,7 @@ class UserVisitsProcessor {
   // 初回コメントの処理
   if (!isRepeater) {
    userInfo.isSyoken = interval === 0;
-   userInfo.profileImage = profileImage || userInfo.profileImage;
+   if (interval === 0) result[serviceKey].syokenCount = +1;
   }
 
   // インクリメント
