@@ -1,10 +1,10 @@
 {
- "name": "victory-counter",
- "version": "0.0.1",
- "description": "わんコメで特定のコメントをカウントする",
+ "name": "word-counter",
+ "version": "0.1.0",
+ "description": "わんコメでコメントをカウントするジェネレーター",
  "scripts": {
-  "dev:victory": "vite",
-  "build:victory": "webpack"
+  "dev:word": "vite",
+  "build:word": "webpack"
  },
  "author": "Pintocuru",
  "license": "Apache-2.0",

@@ -28,16 +28,28 @@ const WORD_CONFIG = {
   TEXTS_AFTER: [],
   STYLES: [
    {
-    textColor: '#0d9466',
-    colorClass: 'bg-gradient-to-br from-green-400 to-cyan-500'
+    textColor: '#c70064', // Deep Magenta
+    colorClass: 'bg-gradient-to-br from-pink-700 via-rose-300 to-red-700'
    },
    {
-    textColor: '#0b8dc2',
-    colorClass: 'bg-gradient-to-br from-cyan-500 to-blue-500'
+    textColor: '#008c4a', // Deep Neon Green
+    colorClass: 'bg-gradient-to-br from-green-800 via-emerald-200 to-teal-700'
    },
    {
-    textColor: '#b737c4',
-    colorClass: 'bg-gradient-to-br from-purple-500 to-pink-500'
+    textColor: '#0050a5', // Deep Blue
+    colorClass: 'bg-gradient-to-br from-cyan-800 via-blue-300 to-indigo-700'
+   },
+   {
+    textColor: '#b35500', // Deep Orange
+    colorClass: 'bg-gradient-to-br from-orange-700 via-amber-300 to-yellow-600'
+   },
+   {
+    textColor: '#7d007d', // Dark Purple
+    colorClass: 'bg-gradient-to-br from-indigo-800 via-purple-300 to-fuchsia-900'
+   },
+   {
+    textColor: '#8a7300', // Deep Yellow
+    colorClass: 'bg-gradient-to-br from-yellow-700 via-amber-300 to-orange-800'
    }
   ],
   EASTER_MODE: false // 隠しモード(trueにすると、Splatoonの二つ名になります)
