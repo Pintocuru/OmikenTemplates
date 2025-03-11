@@ -1151,10 +1151,9 @@ const Y = [
  '若者'
 ];
 // Splatoon:二つ名
-export function SecondNameMode(pulseIntensity: number): string {
+export function SecondNameMode(progressRatio: number): string {
  // 進捗率が0ならカモン!
- if (pulseIntensity <= 0) return 'カモン!';
-
+ if (progressRatio <= 0) return 'カモン!';
  // 上の句と下の句を合わせる
  function arraySelect(name: string[]): string {
   const randomIndex = Math.floor(Math.random() * name.length);

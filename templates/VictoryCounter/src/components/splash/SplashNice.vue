@@ -6,7 +6,7 @@
    :class="counterStyle.colorClass"
    :style="{
     transform: isAnimating ? 'scale(1.05) rotate(2deg)' : 'scale(1) rotate(0deg)',
-    boxShadow: `0 0 ${20 + pulseIntensity * 20}px ${pulseIntensity * 15}px ${convertHexToRGBA(counterStyle.textColor, 0.5 + pulseIntensity * 0.3)}`
+    boxShadow: `0 0 ${20 + progressRatio * 20}px ${progressRatio * 15}px ${convertHexToRGBA(counterStyle.textColor, 0.5 + progressRatio * 0.3)}`
    }"
   >
    <div
@@ -37,7 +37,7 @@
       :key="count"
       class="text-8xl font-rounded font-black text-white tracking-tight transition-all duration-500"
       :style="{
-       textShadow: `0 0 ${5 + pulseIntensity * 10}px rgba(0, 0, 0, ${0.3 + pulseIntensity * 0.3}), 
+       textShadow: `0 0 ${5 + progressRatio * 10}px rgba(0, 0, 0, ${0.3 + progressRatio * 0.3}), 
                           4px 4px 0px #FF00FF, -4px -4px 0px #00FFFF`,
        transform: isAnimating ? 'scale(1.2) rotate(-5deg)' : 'scale(1) rotate(0deg)'
       }"
@@ -159,7 +159,7 @@ const props = defineProps<{
 }>();
 
 // コンポーザブル
-const { generator, isAnimating, pulseIntensity, counterStyle } = useWordComponent(
+const { generator, isAnimating, progressRatio, counterStyle } = useWordComponent(
  toRef(props, 'count'),
  800,
  undefined,

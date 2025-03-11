@@ -79,7 +79,7 @@ const WORD_CONFIG = {
     colorClass: 'bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600'
    }
   ],
-  EASTER_MODE: false // 隠しモード(trueにすると、Splatoonの二つ名になります)
+  EASTER_MODE: true // 隠しモード(trueにすると、Splatoonの二つ名になります)
  },
  counter: {
   // -------------------------------------------------

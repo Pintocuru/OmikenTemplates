@@ -6,7 +6,7 @@
    :class="counterStyle.colorClass"
    :style="{
     transform: isAnimating ? 'scale(1.05)' : 'scale(1)',
-    boxShadow: `0 0 ${20 + pulseIntensity * 30}px ${pulseIntensity * 20}px ${convertHexToRGBA(counterStyle.textColor, 0.4 + pulseIntensity * 0.3)}`
+    boxShadow: `0 0 ${20 + progressRatio * 30}px ${progressRatio * 20}px ${convertHexToRGBA(counterStyle.textColor, 0.4 + progressRatio * 0.3)}`
    }"
   >
    <!-- 背景エフェクト - 弾痕模様 -->
@@ -44,7 +44,7 @@
       :key="count"
       class="text-8xl font-mono font-bold text-white tracking-tight transition-all duration-500"
       :style="{
-       textShadow: `0 0 ${10 + pulseIntensity * 20}px rgba(255, 255, 255, ${0.5 + pulseIntensity * 0.5})`,
+       textShadow: `0 0 ${10 + progressRatio * 20}px rgba(255, 255, 255, ${0.5 + progressRatio * 0.5})`,
        transform: isAnimating ? 'scale(1.2)' : 'scale(1)'
       }"
      >
@@ -57,7 +57,7 @@
      v-if="generator.TEXTS && generator.TEXTS.length > 0"
      class="text-xl font-bold text-white/90 mt-2 tracking-widest transition-all duration-500"
      :style="{
-      textShadow: `0 0 ${5 + pulseIntensity * 10}px rgba(255, 255, 255, ${0.3 + pulseIntensity * 0.3})`,
+      textShadow: `0 0 ${5 + progressRatio * 10}px rgba(255, 255, 255, ${0.3 + progressRatio * 0.3})`,
       transform: isAnimating ? 'translateY(2px)' : 'translateY(0)'
      }"
     >
@@ -216,7 +216,7 @@ const props = defineProps<{
 }>();
 
 // コンポーザブル
-const { generator, isAnimating, pulseIntensity, counterStyle } = useWordComponent(
+const { generator, isAnimating, progressRatio, counterStyle } = useWordComponent(
  toRef(props, 'count'),
  600,
  generatorTest
