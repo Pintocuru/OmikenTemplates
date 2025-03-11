@@ -8,7 +8,7 @@ const WORD_CONFIG = {
   TARGET: 5, // 目標となる数値
   IS_LOOP: false, // 目標達成後、色を変化させるか
   // countが初期値のテキスト・カラー
-  TEXTS_FIRST: '勝利をつかめ！',
+  TEXTS_FIRST: '勝利をつかもう！',
   STYLES_FIRST: {
    textColor: '#06b6d4', // Cyan
    colorClass: 'bg-gradient-to-br from-cyan-400 via-blue-400 to-indigo-500'
@@ -96,14 +96,16 @@ const WORD_CONFIG = {
   // -------------------------------------------------
   // 特殊な設定(これらを変更すると挙動が変わります)
   // -------------------------------------------------
+  MULTIPLIER: 1, // 値を掛け算する
   COUNT_MODE: 'comment' // カウントモード
  }
 };
 
 const CONFIG = {
- ALLOWED_IDS: [], // 通すユーザーIDリスト(!IDでネガティブ)
+ ENABLED_SERVICES: [], // 適用するプラットフォーム('!'でネガティブ、'platforms'で配信サイトのみ)
+ ALLOWED_IDS: [], // 適用するユーザーIDリスト('!'でネガティブ)
  ACCESS_LEVEL: 3, // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
- KEYWORDS: ['👑', '優勝', '勝利'] // インクリメントするキーワード
+ KEYWORDS: ['👑'] // インクリメントするキーワード
 };
 
 // -------------------------------------------------

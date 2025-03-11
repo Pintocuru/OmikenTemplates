@@ -1,4 +1,4 @@
-# 勝数カウンター VictoryCounter splash
+# キルカウンター KillingCounter Spree DX
 
 最終更新日：2025/03/11
 
@@ -6,7 +6,8 @@ OBS で使用できる、ライバー・配信者向けのカウンターです�
 ダウンロードして頂きありがとうございます。
 
 ## 内容物:
-- SplashNice(index):ナイスの飛び交う、イカしたデザインのカウンター
+- KillingSpree(index):銃痕が目立つ、デザインのカウンター
+- SamuraiKatana: バッサリ感が心地よい、斬撃でカウントアップするカウンター
 
 導入方法・使用方法については[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/templates/VictoryCounter/docs/readme_WordCounter.md)をご覧ください
 

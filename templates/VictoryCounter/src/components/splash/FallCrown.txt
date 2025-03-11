@@ -1,14 +1,15 @@
 # 勝数カウンター VictoryCounter splash DX
 
-最終更新日：2025/02/28
+最終更新日：2025/03/11
 
-OBS で使える、ライバー・配信者向けのカウンターです。
+OBS で使用できる、ライバー・配信者向けのカウンターです。
 ダウンロードして頂きありがとうございます。
 
-## 通常版:
-- BasicCounter(index):白をベースにしたオーソドックスなタイマー
+## 内容物:
+- SplashNice(index):ナイスの飛び交う、イカしたデザインのカウンター
+- FallCrown:ポップで飛び出しそうなデザインのカウンター
 
-導入方法・使用方法は[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/templates/NextTimer/docs/guides/readme_NextTimer.md)をご覧ください
+導入方法・使用方法については[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/templates/VictoryCounter/docs/readme_WordCounter.md)をご覧ください
 
 ・クレジット表記は任意ですが、記載していただけると励みになります。
 

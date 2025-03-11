@@ -6,16 +6,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import AnyGenerator from '@/apps/maker/MarioCoin.vue';
+import AnyGenerator from '@/components/splash/SplashNice.vue';
+import { useWordCounter } from '@/scripts/useWordCounter';
 
-const count = ref<number>(0);
-
-const increment = () => {
- count.value++;
-};
-const decrement = () => {
- if (count.value <= 0) return;
- count.value--;
-};
+// useWordCounter
+const { count, increment, decrement } = useWordCounter();
 </script>

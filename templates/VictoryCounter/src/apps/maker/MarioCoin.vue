@@ -3,17 +3,16 @@
  <div class="flex items-center justify-center">
   <!-- マリオ風の背景 -->
   <div
-   class="relative w-80 h-80 bg-sky-500 overflow-hidden rounded-lg shadow-xl border-4 border-white"
+   class="relative w-64 h-72 bg-sky-500 overflow-hidden rounded-lg shadow-xl border-4 border-white"
   >
    <!-- 雲 -->
    <div class="absolute top-4 left-4 w-16 h-8 bg-white rounded-full"></div>
-   <div class="absolute top-4 left-12 w-10 h-10 bg-white rounded-full"></div>
-   <div class="absolute top-4 right-8 w-20 h-10 bg-white rounded-full"></div>
-   <div class="absolute top-4 right-16 w-12 h-12 bg-white rounded-full"></div>
+   <div class="absolute top-12 right-2 w-16 h-8 bg-white rounded-full"></div>
+   <div class="absolute top-28 left-2 w-16 h-8 bg-white rounded-full"></div>
 
    <!-- 土管 -->
    <div class="absolute bottom-0 left-4 w-16 h-32 bg-green-600 rounded-t-lg shadow-lg">
-    <div class="absolute top-0 left-0 right-0 h-8 bg-green-500 rounded-t-lg"></div>
+    <div class="absolute top-0 left-[-6px] right-[-6px] h-8 bg-green-500 rounded-t-lg"></div>
    </div>
 
    <!-- メインカウンター -->
@@ -27,15 +26,14 @@
       class="w-48 h-48 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl shadow-lg border-4 border-yellow-700 overflow-hidden"
      >
       <!-- コインの質感パターン -->
-      <div class="absolute top-2 left-2 w-6 h-6 bg-yellow-300 rounded-full opacity-50"></div>
-      <div class="absolute bottom-2 right-2 w-8 h-8 bg-yellow-300 rounded-full opacity-30"></div>
+      <div class="absolute top-3 left-3 w-8 h-8 bg-yellow-300 rounded-full opacity-50"></div>
 
       <!-- カウンター数値 -->
       <div class="absolute inset-0 flex items-center justify-center">
        <TransitionGroup name="count">
         <div
          :key="count"
-         class="text-8xl font-mario text-white drop-shadow-glow tracking-tight"
+         class="text-8xl font-mario text-white drop-shadow-glow tracking-tight flex items-center justify-center"
          :class="{ 'animate-pulse-custom': pulseIntensity > 0.7 }"
         >
          {{ count }}
@@ -47,8 +45,7 @@
      <!-- ステータステキスト -->
      <div
       v-if="generator.TEXTS && generator.TEXTS.length > 0"
-      class="mt-4 px-6 py-2 bg-red-600 text-2xl font-mario text-white rounded-full transform rotate-2 border-4 border-white shadow-lg"
-      :class="{ 'animate-pulse': pulseIntensity > 0.5 && !isAnimating }"
+      class="mt-0 px-6 py-2 bg-red-600 text-2xl font-mario text-white rounded-full transform rotate-2 border-4 border-white shadow-lg"
      >
       <span class="relative">
        {{ counterStyle.text }}
@@ -56,14 +53,6 @@
      </div>
     </div>
    </div>
-
-   <!-- 装飾用ブロック -->
-   <div
-    class="absolute bottom-0 right-8 w-16 h-16 bg-yellow-700 rounded-lg border-t-4 border-yellow-500"
-   ></div>
-   <div
-    class="absolute bottom-20 right-24 w-12 h-12 bg-amber-600 rounded-lg border-t-4 border-amber-400"
-   ></div>
   </div>
  </div>
 </template>
@@ -141,10 +130,10 @@ const { generator, isAnimating, pulseIntensity, counterStyle } = useWordComponen
 @keyframes bounce-custom {
  0%,
  100% {
-  transform: translateY(0) scale(1);
+  transform: translate(-50%, -50%) scale(1);
  }
  50% {
-  transform: translateY(-20px) scale(1.05);
+  transform: translate(-50%, -50%) translateY(-20px) scale(1.05);
  }
 }
 

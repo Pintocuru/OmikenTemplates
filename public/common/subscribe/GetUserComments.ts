@@ -4,6 +4,7 @@ import { ConfigUserType } from '../commonTypes';
 import { GetComments } from './GetComments';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import emojiRegex from 'emoji-regex';
+import { ServiceType } from '@onecomme.com/onesdk/types/Service';
 
 export function GetUserComments(config: ConfigUserType, isFirstComment: boolean = false) {
  const processor = new UserCommentsProcess(config);
@@ -33,6 +34,7 @@ export class UserCommentsProcess {
  // ユーザーのコメントをconfig に沿ってフィルタリング
  process(comments: Comment[], existingComments: Comment[] = []): Comment[] | null {
   const validComments = comments
+   .filter(this.isServiceAllowed.bind(this))
    .filter(this.isUserIdAllowed.bind(this))
    .filter(this.hasRequiredAccessLevel.bind(this))
    .filter(this.matchesFilterCriteria.bind(this));
@@ -49,6 +51,29 @@ export class UserCommentsProcess {
  private mergeComments(existingComments: Comment[], newComments: Comment[]): Comment[] {
   const existingIds = new Set(existingComments.map((c) => c.data.id));
   return [...existingComments, ...newComments.filter((c) => !existingIds.has(c.data.id))];
+ }
+
+ // プラットフォームのフィルタリングService
+ isServiceAllowed(comment: Comment): boolean {
+  const { ENABLED_SERVICES } = this.config;
+
+  // 'platforms' なら ['!external', '!system'] にする
+  const servicesToCheck = ENABLED_SERVICES.includes('platforms')
+   ? ['!external', '!system']
+   : ENABLED_SERVICES;
+
+  // `!` で始まるものを `ServiceType` に変換
+  const disallowedIds: ServiceType[] = servicesToCheck
+   .filter((id): id is `!${ServiceType}` => typeof id === 'string' && id.startsWith('!'))
+   .map((id) => id.substring(1) as ServiceType);
+
+  // `!` がついていないものを `ServiceType` として扱う
+  const allowedIds: ServiceType[] = servicesToCheck.filter(
+   (id): id is ServiceType => typeof id === 'string' && !id.startsWith('!')
+  );
+
+  const { service } = comment;
+  return (!allowedIds.length || allowedIds.includes(service)) && !disallowedIds.includes(service);
  }
 
  // 個別のコメントに対するユーザーIDフィルタリング

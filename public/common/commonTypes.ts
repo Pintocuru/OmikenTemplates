@@ -1,6 +1,7 @@
 // common/commonTypes.ts
 import { CharaType } from '../type';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { ServiceType } from '@onecomme.com/onesdk/types/Service';
 
 // コメントの追加型定義
 export type CommentChara = Comment & {
@@ -62,6 +63,7 @@ export type ConfigBotType = {
 // おみくじBOTプラグインでBOT用のconfig
 export type ConfigUserType = {
  IS_DIFF_MODE: boolean; // 差分モードにするか(true:'diff',false:'all')
+ ENABLED_SERVICES: ('platforms' | ServiceType | `!${ServiceType}`)[]; // 'platforms' またはサービスリスト
  ALLOWED_IDS: string[]; // 通すユーザーIDリスト(!IDでネガティブ)
  ACCESS_LEVEL?: 1 | 2 | 3 | 4; // 1:だれでも/2:メンバー/3:モデレーター/4:管理者
  IS_GIFT: boolean; // ギフトで有効にするか

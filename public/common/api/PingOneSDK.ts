@@ -1,4 +1,4 @@
-// src/Modules/api/ServiceAPI.ts
+// src/Modules/api/PingOneSDK.ts
 
 export async function PingOneSDK(): Promise<boolean> {
  const controller = new AbortController();

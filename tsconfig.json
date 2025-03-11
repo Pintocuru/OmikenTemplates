@@ -6,6 +6,7 @@
     "moduleResolution": "node", // モジュール解決方法
     "esModuleInterop": true, // ESモジュールとCommonJSのインポート互換
     "strict": true, // 厳格な型チェック
+    "strictNullChecks": true,
     "noImplicitAny": true, // 暗黙的にanyになる値をエラーにする
     "skipLibCheck": true, // ライブラリファイルの型チェックをスキップ
     "jsx": "preserve", // JSXをそのまま残す

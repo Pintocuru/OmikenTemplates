@@ -112,6 +112,7 @@
 import { WordCounterConfig } from '@/scripts/types';
 import { useWordComponent } from '@/scripts/useWordComponent';
 import { toRef } from 'vue';
+import { SecondNameMode } from './secondNameMode';
 
 const generatorTest: WordCounterConfig['generator'] = {
  TARGET: 15, // 目標となる数値
@@ -149,7 +150,8 @@ const generatorTest: WordCounterConfig['generator'] = {
    colorClass: 'bg-gradient-to-br from-purple-500 to-pink-500'
   }
  ],
- EASTER_MODE: false // 隠しモード(trueにすると、Splatoonの二つ名になります)
+ EASTER_MODE: false, // 隠しモード(trueにすると、Splatoonの二つ名になります)
+ EASTER_DATA: SecondNameMode
 };
 
 const props = defineProps<{
@@ -160,7 +162,8 @@ const props = defineProps<{
 const { generator, isAnimating, pulseIntensity, counterStyle } = useWordComponent(
  toRef(props, 'count'),
  800,
- generatorTest
+ undefined,
+ generatorTest.EASTER_DATA
 );
 
 // 16進数カラーコードを rgba に変換する関数

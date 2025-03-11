@@ -1,11 +1,6 @@
 // src/apps/scripts/useWordCounter.ts
-import { computed, onUnmounted, onMounted, reactive, toRef, watch, ref } from 'vue';
-import {
- ControllerAction,
- ControllerActionData,
- WordCounterConfig,
- WordCounterState
-} from './types';
+import { computed, onUnmounted, onMounted, reactive, watch, toRefs } from 'vue';
+import { ControllerAction, ControllerActionData, CounterConfig, WordCounterState } from './types';
 import { createProcessComment } from './createProcessComment';
 import { ConfigUserType } from '@common/commonTypes';
 import { GetUserVisits } from '@common/subscribe/GetUserVisits';
@@ -14,8 +9,9 @@ import { postWordParty } from '@common/api/PostOneComme';
 
 // 定数
 const TARGET = window.WORD_CONFIG?.generator?.TARGET || 15; // 目標となる数値
-const counter: WordCounterConfig['counter'] = {
+const counter: CounterConfig = {
  COUNT_MODE: window.WORD_CONFIG?.counter?.COUNT_MODE || 'comment', // カウントモード
+ MULTIPLIER: window.WORD_CONFIG?.counter?.MULTIPLIER || 1,
  PARTY: window.WORD_CONFIG?.counter?.PARTY || {}, // WordPartyの発火タイミング
  PARTY_EVENT: window.WORD_CONFIG?.counter?.PARTY_EVENT || '', // カウント増加時に発火するWordParty
  PARTY_SUCCESS: window.WORD_CONFIG?.counter?.PARTY_SUCCESS || '' // TARGET_COUNT達成時に発火するWordParty
@@ -23,6 +19,7 @@ const counter: WordCounterConfig['counter'] = {
 
 const config: ConfigUserType = {
  IS_DIFF_MODE: true, // 差分モードにするか(true:'diff',false:'all')
+ ENABLED_SERVICES: window.CONFIG?.ENABLED_SERVICES || [], // 通すユーザーIDリスト(!IDでネガティブ)
  ALLOWED_IDS: window.CONFIG?.ALLOWED_IDS || [], // 通すユーザーIDリスト(!IDでネガティブ)
  ACCESS_LEVEL: window.CONFIG?.ACCESS_LEVEL || 1, // アクセスレベル
  IS_GIFT: false, // ギフト無効
@@ -70,19 +67,15 @@ export function useWordCounter() {
    ? TARGET - (baseCount + state.manualAdjustment)
    : baseCount + state.manualAdjustment;
 
-  return Math.max(value, 0);
+  return Math.max(value * counter.MULTIPLIER, 0);
  });
 
  // アクション処理
- const increment = () => {
-  state.manualAdjustment += 1;
- };
+ const increment = () => state.manualAdjustment++;
  const decrement = () => {
   if (count.value > 0) state.manualAdjustment -= 1;
  };
- const resetManualAdjustment = () => {
-  state.manualAdjustment = 0;
- };
+ const resetManualAdjustment = () => (state.manualAdjustment = 0);
 
  const handleControllerAction = (action: ControllerAction, data: ControllerActionData) => {
   const actions = {
@@ -135,9 +128,9 @@ export function useWordCounter() {
  });
 
  return {
-  controller,
-  isInitFlag: toRef(state, 'isInitFlag'),
+  ...toRefs(state),
   count,
+  counterConfig: counter,
   // 手動操作関数を公開
   increment,
   decrement,

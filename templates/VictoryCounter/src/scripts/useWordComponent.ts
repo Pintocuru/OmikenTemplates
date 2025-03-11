@@ -11,13 +11,14 @@ const generatorProduction: WordCounterConfig['generator'] = {
  TEXTS_AFTER: window.WORD_CONFIG?.generator?.TEXTS_AFTER || null, // 目標達成後、変化するテキスト(ランダム)
  STYLES: window.WORD_CONFIG?.generator?.STYLES || [], // 数値が増えるたびに変化するカラー(TailwindCSS使用)
  EASTER_MODE: window.WORD_CONFIG?.generator?.EASTER_MODE || undefined, // Splatoonの二つ名モード(隠し)
- EASTER_DATA: window.WORD_CONFIG?.generator?.EASTER_DATA || undefined // Splatoonの二つ名モード(隠し)
+ EASTER_DATA: undefined // Splatoonの二つ名モード(隠し)
 };
 
 export function useWordComponent(
  count: Ref<number, number>,
  msAnimation = 1000,
- generatorTest?: WordCounterConfig['generator']
+ generatorTest?: WordCounterConfig['generator'],
+ EASTER_DATA?: WordCounterConfig['generator']['EASTER_DATA']
 ) {
  const generator = generatorTest ? generatorTest : generatorProduction;
 
@@ -53,7 +54,7 @@ export function useWordComponent(
 
  // TEXTS_AFTERからランダムなテキストを選択する関数
  const getRandomAfterText = () => {
-  const { TEXTS_AFTER } = generator;
+  const TEXTS_AFTER = generator?.TEXTS_AFTER ?? [];
   if (!TEXTS_AFTER || TEXTS_AFTER.length === 0) return '';
 
   afterTextIndex.value = Math.floor(Math.random() * TEXTS_AFTER.length);
@@ -66,12 +67,12 @@ export function useWordComponent(
 
   // pulseIntensityが0の場合、TEXTS_FIRSTを適用
   if (pulseIntensity.value === 0 && TEXTS_FIRST !== undefined && TEXTS_FIRST !== null) {
-   return TEXTS_FIRST;
+   return TEXTS_FIRST ?? '';
   }
 
   // イースターエッグ(隠しモード)
-  if (generator.EASTER_MODE && generator.EASTER_DATA) {
-   return generator.EASTER_DATA(pulseIntensity.value);
+  if (generator.EASTER_MODE && EASTER_DATA) {
+   return EASTER_DATA(pulseIntensity.value);
   }
 
   // targetCountを超えていて、TEXTS_AFTERがある場合は現在のランダム選択テキストを返す
@@ -80,7 +81,8 @@ export function useWordComponent(
   }
 
   // 通常の処理
-  return TEXTS?.[getProgressIndex(TEXTS?.length || 0)] || '';
+  const totalItems = TEXTS?.length ?? 0; // `null` / `undefined` の場合は `0`
+  return totalItems > 0 ? TEXTS![getProgressIndex(totalItems)] : '';
  });
 
  // 進捗率に基づいたスタイルを取得

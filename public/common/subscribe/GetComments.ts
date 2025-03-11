@@ -1,5 +1,5 @@
 // common/subscribe/GetComments.ts
-import { ServiceAPI } from '../api/ServiceAPI';
+import { PingOneSDK } from '../api/PingOneSDK';
 import { GetHttpApi } from '../api/GetHttpApi';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
@@ -12,12 +12,7 @@ export async function GetComments(
 ): Promise<boolean> {
  try {
   // わんコメの枠情報を取得(ping)
-  const service = await new ServiceAPI().getServices();
-  if (!service) {
-   console.info('わんコメの起動を確認できませんでした。通常モードで起動します。');
-   return false;
-  }
-  console.info('わんコメの購読を開始します。');
+  if (!(await PingOneSDK())) return false;
 
   await OneSDK.setup({
    permissions: OneSDK.usePermission([OneSDK.PERM.COMMENT]),

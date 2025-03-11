@@ -54,7 +54,7 @@ export function createConfig(childDir, isOneSDK = true) {
      test: /\.ts$/, // TypeScriptの処理
      loader: 'ts-loader',
      exclude: /node_modules/,
-     options: { transpileOnly: false, appendTsSuffixTo: [/\.vue$/] }
+     options: { transpileOnly: true, appendTsSuffixTo: [/\.vue$/] }
     },
     {
      test: /\.css$/, // CSSの処理
