@@ -15,8 +15,6 @@ export class ServiceAPI {
  // 枠情報を取得
  async getServices(): Promise<Service[] | null> {
   try {
-   console.log('リクエスト開始:', this.servicesURL);
-
    const controller = new AbortController();
    const timeout = setTimeout(() => controller.abort(), 3000); // 3秒でタイムアウト
 

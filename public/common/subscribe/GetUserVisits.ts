@@ -32,14 +32,16 @@ export function GetUserVisits(config: ConfigUserType) {
  const fetchComments = async (
   callback?: (userVisits: Record<string, ServiceVisitType>) => void
  ): Promise<boolean> => {
-  return await userFetch((comments) => {
+  const result = await userFetch((comments) => {
    if (!comments.length) return;
    // 処理して結果を取得
    userVisits.value = processor.mergeComments(comments);
-
    // 外部から処理を追加するcallback
    if (callback) callback(userVisits.value);
   });
+  // わんコメ接続時のみポーリングを開始
+  if (result) processor.startServicePolling();
+  return result;
  };
 
  return {
@@ -53,12 +55,19 @@ class UserVisitsProcessor {
  // 内部状態
  private result: Record<string, ServiceVisitType> = {};
  frames: Service[] | null = null;
+ private apiPoller: ServiceAPI | null = null;
 
  constructor() {
-  // 10秒ごとに枠情報を自動更新
-  new ServiceAPI().startPolling((services) => {
-   if (services) this.frames = services;
-  });
+  this.apiPoller = new ServiceAPI();
+ }
+
+ // 10秒ごとに枠情報を自動更新
+ startServicePolling() {
+  if (this.apiPoller) {
+   this.apiPoller.startPolling((services) => {
+    if (services) this.frames = services;
+   });
+  }
  }
 
  // コメントを処理して結果を返す

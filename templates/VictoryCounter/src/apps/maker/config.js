@@ -102,10 +102,10 @@ const WORD_CONFIG = {
 };
 
 const CONFIG = {
- ENABLED_SERVICES: [], // 適用するプラットフォーム('!'でネガティブ、'platforms'で配信サイトのみ)
+ ENABLED_SERVICES: ['platforms'], // 適用するプラットフォーム('!'でネガティブ、'platforms'で配信サイトのみ)
  ALLOWED_IDS: [], // 適用するユーザーIDリスト('!'でネガティブ)
  ACCESS_LEVEL: 3, // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
- KEYWORDS: ['👑'] // インクリメントするキーワード
+ KEYWORDS: [] // インクリメントするキーワード
 };
 
 // -------------------------------------------------

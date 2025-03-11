@@ -56,6 +56,8 @@ export class UserCommentsProcess {
  // プラットフォームのフィルタリングService
  isServiceAllowed(comment: Comment): boolean {
   const { ENABLED_SERVICES } = this.config;
+  // コメントテスターのコメントは external 扱いにする
+  if (comment.id === 'COMMENT_TESTER') comment.service = 'external';
 
   // 'platforms' なら ['!external', '!system'] にする
   const servicesToCheck = ENABLED_SERVICES.includes('platforms')
