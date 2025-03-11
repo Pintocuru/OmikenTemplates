@@ -15,33 +15,8 @@ export class ServiceAPI {
  // 枠情報を取得
  async getServices(): Promise<Service[] | null> {
   try {
-   const controller = new AbortController();
-   const timeout = setTimeout(() => controller.abort(), 3000); // 3秒でタイムアウト
-
-   const response = await Promise.race([
-    OneSDK.get(this.servicesURL, { signal: controller.signal }).catch((err) => {
-     console.error('OneSDK.get() でエラー:', err);
-     throw new Error('リクエスト失敗');
-    }),
-    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Timeout!')), 3000))
-   ]);
-
-   clearTimeout(timeout);
-
-   if (response instanceof Error) {
-    console.warn('枠情報取得: タイムアウトまたはエラー', response.message);
-    return null;
-   }
-
-   if (!response || response.status !== 200) {
-    console.warn('枠情報取得: 無効なステータスコード', response?.status);
-    return null;
-   }
-
-   const services = response.data as Service[];
-
+   const services = await OneSDK.getServices();
    if (this.onFetchCallback) this.onFetchCallback(services);
-
    return services;
   } catch (err) {
    console.info('わんコメの枠情報取得に失敗しました。', err);
@@ -102,13 +77,8 @@ export class ServiceAPI {
  startPolling(callback?: (services: Service[] | null) => void, intervalMs: number = 10000): this {
   // 既存のインターバルがあれば停止
   this.stopPolling();
-
   this.intervalMs = intervalMs;
-
-  if (callback) {
-   this.onFetchCallback = callback;
-  }
-
+  if (callback) this.onFetchCallback = callback;
   // 初回実行
   this.getServices();
 

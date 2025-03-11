@@ -1,6 +1,5 @@
 // common/subscribe/GetComments.ts
 import { PingOneSDK } from '../api/PingOneSDK';
-import { GetHttpApi } from '../api/GetHttpApi';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
@@ -21,7 +20,7 @@ export async function GetComments(
   await OneSDK.connect();
 
   // 通常モードなら初期読み込み
-  if (isFirstComment) callback(await GetHttpApi('comments'));
+  if (isFirstComment) callback(await OneSDK.getComments());
 
   OneSDK.subscribe({
    action: 'comments',

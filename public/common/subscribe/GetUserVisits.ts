@@ -66,7 +66,7 @@ class UserVisitsProcessor {
   if (this.apiPoller) {
    this.apiPoller.startPolling((services) => {
     if (services) this.frames = services;
-   });
+   }, 10000);
   }
  }
 

@@ -11,7 +11,6 @@
 // その他
 import { defineAsyncComponent, onMounted } from 'vue';
 import { CommentGet } from '@common/CommentGet';
-import { ServiceAPI } from '@common/api/ServiceAPI';
 import { ConfigType } from '@common/commonTypes';
 import {
  TIME_PATTERN,
@@ -19,6 +18,7 @@ import {
  MINUTES_ONLY_PATTERN,
  RELATIVE_TIME_PATTERN
 } from '@/scripts/types';
+import { PingOneSDK } from '@public/common/api/PingOneSDK';
 
 // 読み込ませるコンポーネント
 const AnyGenerator = defineAsyncComponent(() => Promise.resolve(window.AppComponent.component));
@@ -57,8 +57,7 @@ const { isInitFlag, initOneSDK, userCommentsMap } = CommentGet();
 
 // わんコメから枠情報を取得し、1枠以上あるならわんコメ対応
 (async () => {
- const response = await new ServiceAPI().getServices();
- if (response) await initOneSDK(config);
+ if (await PingOneSDK()) await initOneSDK(config);
  else isInitFlag.value = false; // わんコメ対応なし
 })();
 
