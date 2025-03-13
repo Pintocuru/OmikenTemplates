@@ -1,13 +1,6 @@
----
-title: 2025-02-27
-date: 2025-02-28
-tags: [Readme, Omiken]
-aliases: []
----
+# テンプレートの導入方法
 
-# ジェネレーター 共通の導入方法マニュアル
-
-最終更新日：2025/03/09
+最終更新日：2025/03/13
 
 ## はじめに
 
@@ -24,7 +17,7 @@ aliases: []
 
 ### 1-A. 基本的な導入方法（OBS のみ）
 
-![OBSにドラッグ＆ドロップする](../templates/NextTimer/docs/guides/images/2-1.jpg)
+![OBSにドラッグ＆ドロップする](./images/2-1.jpg)
 
 1. 使用したいパッケージのリリースページから zip ファイルをダウンロード
 2. ダウンロードした zip ファイルを解凍
@@ -32,7 +25,7 @@ aliases: []
 
 ### 1-B. わんコメと連携する場合の導入方法
 
-![テンプレートにZIPを丸ごと入れる](../templates/NextTimer/docs/guides/images/2-2.jpg)
+![テンプレートにZIPを丸ごと入れる](./images/2-2.jpg)
 
 1. 使用したいパッケージのリリースページから zip ファイルをダウンロード
 2. わんコメを起動（zip ファイルは解凍不要）
@@ -43,7 +36,7 @@ aliases: []
 
 ### 2-A. index.html の設定
 
-![テンプレートにZIPを丸ごと入れる](../templates/NextTimer/docs/guides/images/2-3.png)
+![テンプレートにZIPを丸ごと入れる](./images/2-3.png)
 
 1. ソースを右クリックして「プロパティ」を選択
 2. 以下の 2 つにチェックを入れる
@@ -51,11 +44,11 @@ aliases: []
    - ✅ シーンがアクティブになったときにブラウザの表示を更新する
 3. 幅と高さを適切に設定
 
-### 2-B. 「支援版」でスタイルを変更する
+### 2-B. 「DX 版」でスタイルを変更する
 
-![](../templates/NextTimer/docs/guides/images/2-4.jpg)
+![](./images/2-4.jpg)
 
-「支援版」には、デザインの異なる、複数の HTML ファイルが同梱されています。下記に従い、読み込むファイルを変更してください。
+「DX 版」には、デザインの異なる HTML ファイルが同梱されています。下記に従い、読み込むファイルを変更してください。
 
 1. 「ローカルファイル」の「参照」をクリック
 2. html と書かれた、任意のファイルを選択して開く
@@ -63,7 +56,7 @@ aliases: []
 
 ### 3. controller.html の設定
 
-![コントローラーの操作方法](../templates/NextTimer/docs/guides/images/1-2.jpg)
+![コントローラーの操作方法](./images/1-2.jpg)
 
 パッケージによっては、`controller.html` というカウンターを操作する HTML ファイルが同梱されています。上記に従い、予め `controller.html` を OBS にソースとして挿入して下さい。
 
@@ -74,7 +67,7 @@ aliases: []
 
 ## 2. 設定のカスタマイズ
 
-![config.jsを編集する](../templates/NextTimer/docs/guides/images/4-1.jpg)
+![config.jsを編集する](./images/4-1.jpg)
 
 1. `config.js` を開き、各種設定を変更します。
    - 表示内容やフィルタリング内容をカスタマイズできます。
