@@ -2,7 +2,7 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 
-// OneSDKの初期化を待ってからアプリをマウント
+// アプリをマウント
 async function initApp() {
  try {
   const app = createApp(App);

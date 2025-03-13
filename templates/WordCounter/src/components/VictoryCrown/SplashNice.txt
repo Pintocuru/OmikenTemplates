@@ -1,0 +1,17 @@
+# 勝数カウンター WordCounter VictoryCrown DX
+
+最終更新日：2025/03/13
+
+OBS で使用できる、ライバー・配信者向けのカウンターです。
+ダウンロードして頂きありがとうございます。
+
+## 内容物:
+- FallCrown(index):ポップで飛び出しそうなデザインのカウンター
+- SplashNice:ナイスの飛び交う、イカしたデザインのカウンター
+
+導入方法・使用方法については[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/templates/WordCounter/docs/readme_WordCounter.md)をご覧ください
+
+---
+
+作成者：せすじピンとしてます [@pintocuru](https://twitter.com/pintocuru)
+YouTube : [せすじピンとしてます](https://www.youtube.com/@pintocuru)

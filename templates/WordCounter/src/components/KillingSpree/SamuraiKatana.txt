@@ -1,17 +1,15 @@
-# キルカウンター KillingCounter Spree DX
+# キルカウンター WordCounter KillingSpree DX
 
-最終更新日：2025/03/11
+最終更新日：2025/03/13
 
 OBS で使用できる、ライバー・配信者向けのカウンターです。
 ダウンロードして頂きありがとうございます。
 
 ## 内容物:
-- KillingSpree(index):銃痕が目立つ、デザインのカウンター
+- KillingSpree(index):銃痕が目立つ、FPSに合うカウンター
 - SamuraiKatana: バッサリ感が心地よい、斬撃でカウントアップするカウンター
 
-導入方法・使用方法については[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/templates/VictoryCounter/docs/readme_WordCounter.md)をご覧ください
-
-・クレジット表記は任意ですが、記載していただけると励みになります。
+導入方法・使用方法については[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/templates/WordCounter/docs/readme_WordCounter.md)をご覧ください
 
 ---
 

@@ -7,12 +7,12 @@ aliases: []
 
 # ワードカウンター WordCounter v0.1.0
 
-最終更新日：2025/03/10
+最終更新日：2025/03/13
 
 このテンプレートは、下記のパッケージの内容を含みます。
 
-- 勝数カウンター VictoryCounter Splash
-- キルカウンター KillingCounter Killing
+- 勝数カウンター WordCounter VictoryCrown
+- キルカウンター KillingCounter KillingSpree
 
 OBS で使える、ライバー・配信者向けカウントダウンタイマーです。
 

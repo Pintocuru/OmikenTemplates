@@ -4,6 +4,7 @@ import { postSpeech, postSystemMessage, postWordParty, sendComment } from './Pos
 import { ServiceAPI } from './ServiceAPI';
 import { SETTINGS } from '../settings';
 import { Service } from '@onecomme.com/onesdk/types/Service';
+import OneSDK from '@onecomme.com/onesdk';
 
 export class PostMessage {
  private readonly serviceAPI: ServiceAPI;
@@ -19,7 +20,7 @@ export class PostMessage {
  async post(): Promise<void> {
   try {
    // 枠情報の取得
-   const services = await this.serviceAPI.getServices();
+   const services = await OneSDK.getServices();
    this.services = services ?? [];
 
    // 順次処理を保証
@@ -48,6 +49,7 @@ export class PostMessage {
   if (type === 'onecomme' && chara && chara.isIconDisplay && SETTINGS.isCreateService) {
    const existingService = this.services.some((s) => s.id === chara.frameId);
    if (!existingService && chara.frameId !== null) {
+    // TODO 枠はここでしか作らないので、専用のコードとしたい
     const newService = await this.serviceAPI.createService(
      chara.name,
      chara.frameId,
