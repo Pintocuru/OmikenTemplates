@@ -63,7 +63,7 @@ const props = defineProps<{
 }>();
 
 // コンポーザブル
-const { generator, isAnimating, pulseIntensity, counterStyle } = useWordComponent(
+const { generator, isAnimating, progress, progressRatio, counterStyle } = useWordComponent(
  toRef(props, 'count'),
  800,
  generatorTest

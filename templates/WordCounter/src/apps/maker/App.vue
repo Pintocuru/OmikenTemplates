@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import AnyGenerator from '@/components/splash/SplashNice.vue';
+import AnyGenerator from './ColorChanging.vue';
 import { useWordCounter } from '@/scripts/useWordCounter';
 
 // useWordCounter
