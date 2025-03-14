@@ -48,7 +48,7 @@ OBS で使える、ライバー・配信者向けカウントダウンタイマ�
 
 ## 2.導入方法
 
-テンプレートの導入は、[テンプレートの導入方法](https://github.com/Pintocuru/OmikenTemplates/blob/main/docs/readme_install.md) を御覧ください。
+テンプレートの導入は、[テンプレートの導入方法](../install/readme_install.md) を御覧ください。
 
 ## 3. 使い方
 
