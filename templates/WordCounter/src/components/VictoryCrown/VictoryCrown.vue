@@ -1,4 +1,4 @@
-<!-- FallCrown.vue -->
+<!-- VictoryCrown.vue -->
 <template>
  <div>
   <!-- Background bubble with shadow effect -->

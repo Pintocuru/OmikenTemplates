@@ -1,4 +1,4 @@
-# 勝数カウンター WordCounter VictoryCrown DX
+# 勝数カウンター WordCounter SplashNice
 
 最終更新日：2025/03/13
 
@@ -6,10 +6,9 @@ OBS で使用できる、ライバー・配信者向けのカウンターです�
 ダウンロードして頂きありがとうございます。
 
 ## 内容物:
-- FallCrown(index):ポップで飛び出しそうなデザインのカウンター
-- SplashNice:ナイスの飛び交う、イカしたデザインのカウンター
+- SplashNice:ポップでイカしたアニメーションのカウンター
 
-導入方法・使用方法については[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/templates/WordCounter/docs/readme_WordCounter.md)をご覧ください
+導入方法・使用方法については[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/docs/WordCounter/readme_WordCounter.md)をご覧ください
 
 ---
 

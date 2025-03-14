@@ -1,4 +1,4 @@
-import AnyGenerator from '@/components/splash/SplashNice.vue';
+import AnyGenerator from '@/components/VictoryCrown/SplashNice.vue';
 
 window.AppComponent = window.AppComponent || {};
 window.AppComponent.component = AnyGenerator;
