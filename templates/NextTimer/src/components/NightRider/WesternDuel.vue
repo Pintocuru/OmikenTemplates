@@ -80,18 +80,18 @@
 
 <script setup lang="ts">
 import { toRef, watch } from 'vue';
-import { useTimer } from '@scripts/useTimer';
+import { useTimerComponent } from '@/scripts/useTimerComponent';
 import { CommentChara } from '@common/commonTypes';
-import { NextTimerConfigType } from '@/scripts/types';
+import { NextTimerConfig } from '@/scripts/types';
 
 const props = defineProps<{
  isInitFlag: boolean;
  nextTimer: CommentChara[];
- timeConfig: NextTimerConfigType;
+ timeConfig: NextTimerConfig;
 }>();
 
 const { displayTime, isVisible, isTimerRunning, countdown, countdownDigits, processComment } =
- useTimer(props.timeConfig, toRef(props, 'isInitFlag'));
+ useTimerComponent(props.timeConfig, toRef(props, 'isInitFlag'));
 
 watch(
  () => props.nextTimer,

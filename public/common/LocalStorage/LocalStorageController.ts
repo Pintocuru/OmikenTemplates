@@ -66,7 +66,7 @@ export class LocalStorageController<
  }
 
  // アクションを保存
- protected saveAction(data: ActionConfig<Action, ActionData>): void {
+ saveAction(data: ActionConfig<Action, ActionData>): void {
   const actionWithTimestamp: StorageData = { ...data, timestamp: Date.now() };
   localStorage.setItem(this.storageKey, JSON.stringify(actionWithTimestamp));
 

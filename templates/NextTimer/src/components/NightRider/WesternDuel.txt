@@ -1,4 +1,4 @@
-# スナイプタイマー NextTimer Modern Set DX
+# スナイプタイマー NextTimer NightRider
 
 最終更新日：2025/02/28
 
@@ -6,17 +6,9 @@ OBS で使える、ライバー・配信者向けカウントダウンタイマ�
 ダウンロードして頂きありがとうございます。
 
 ## 通常版:
-- BasicCounter(index):白をベースにしたオーソドックスなタイマー
-
-## DX版
-- NightRider:夜闇で光るバイクをイメージ
-- SteelSymphony:機関車が発明され動き出した時のイメージ
-- FlipCoin:回転しそーで、ちょっとしないコイン
-- WesternDuel:西部劇のお尋ね者(決闘要素isどこ)
+- WesternDuel:西部劇のお尋ね者をイメージしたタイマー(決闘要素isどこ)
 
 導入方法・使用方法は[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/docs/NextTimer/readme_NextTimer.md)をご覧ください
-
- 
 
 ---
 

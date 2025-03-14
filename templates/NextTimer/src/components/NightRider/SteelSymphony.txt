@@ -6,11 +6,11 @@ OBS で使える、ライバー・配信者向けカウントダウンタイマ�
 ダウンロードして頂きありがとうございます。
 
 ## 通常版:
-- BasicCounter(index):白をベースにしたオーソドックスなタイマー
+- SteelSymphony:機関車が発明され動き出した時のイメージ
 
-導入方法・使用方法は[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/templates/NextTimer/docs/guides/readme_NextTimer.md)をご覧ください
+導入方法・使用方法は[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/docs/NextTimer/readme_NextTimer.md)をご覧ください
 
-・クレジット表記は任意ですが、記載していただけると励みになります。
+ 
 
 ---
 

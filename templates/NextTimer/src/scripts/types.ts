@@ -1,5 +1,5 @@
 // src/types.ts
-import { ConfigNoPlugin } from '@public/common/commonTypes';
+import { ConfigUserType } from '@public/common/commonTypes';
 
 // 時間に関する正規表現パターン
 // フルタイム表記
@@ -16,6 +16,7 @@ export const MINUTES_ONLY_PATTERN = /(?:^|[^０-９0-9])([０-９0-9]{1,2})[分�
 export const RELATIVE_TIME_PATTERN = /([０-９0-9]{1,3})([秒びょうsS]|[分ふんmM])後/g;
 // reactiveの型定義
 export interface TimerState {
+ isInitFlag: boolean; // わんコメ初期化フラグ
  isVisible: boolean; // 表示/非表示
  isTimerRunning: boolean; // カウント中か
  countdown: number; // 残り時間(秒)
@@ -28,12 +29,12 @@ export const VALID_ADJUSTS = [10, 15, 20, 30] as const;
 export type SecondAdjustType = (typeof VALID_ADJUSTS)[number];
 
 // コントローラーの型定義
-export interface TimerStorageData {
- action: TimerAction;
- data: TimerActionData;
+export interface ControllerStorageData {
+ action: ControllerAction;
+ data: ControllerActionData;
 }
 // コントローラーのアクション定義
-export type TimerAction =
+export type ControllerAction =
  | 'start'
  | 'pause'
  | 'reset'
@@ -42,7 +43,7 @@ export type TimerAction =
  | 'second_adjust';
 
 // アクションのデータ定義
-export type TimerActionData = {
+export type ControllerActionData = {
  timestamp?: Date;
  value?: number;
  secondAdjust?: SecondAdjustType;
@@ -56,15 +57,15 @@ export interface TimeParts {
 }
 
 // 追加configの型定義
-export interface NextTimerConfigType {
- ALWAYS_VISIBLE: boolean; // 常時表示させるか
+export interface NextTimerConfig {
  MIN_SECONDS: number; // タイマーの最低値(秒)
  MAX_SECONDS: number; // タイマーの最大値(秒)
+ ALWAYS_VISIBLE: boolean; // 常時表示させるか
  AFTER_SHOW: number; // 時間経過後に表示する時間(秒)
  SECOND_ADJUST: SecondAdjustType; // 秒数を丸める(default=10秒)
- COUNT_PARTY: Record<number, string>; // WordPartyの発火タイミング
- COUNT_PARTY_START: string; // タイマー起動時に発火するWordParty
- COUNT_PARTY_FINISH: string; // タイマー0で発火するWordParty
+ PARTY: Record<number, string>; // WordPartyの発火タイミング
+ PARTY_START: string; // タイマー起動時に発火するWordParty
+ PARTY_FINISH: string; // タイマー0で発火するWordParty
 }
 
 // ---
@@ -76,7 +77,7 @@ declare global {
    component: any;
    initApp: any;
   };
-  CONFIG?: ConfigNoPlugin;
-  TIME_CONFIG?: NextTimerConfigType;
+  CONFIG?: ConfigUserType;
+  TIME_CONFIG?: NextTimerConfig;
  }
 }

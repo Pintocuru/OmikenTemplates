@@ -3,8 +3,8 @@
  "version": "0.0.1",
  "description": "わんコメのテンプレートbasicをVue+TypeScriptで対応させたバージョン",
  "scripts": {
-  "dev:timer": "webpack --mode development --config webpack.config.mjs",
-  "build:timer": "webpack --mode production --config webpack.config.mjs"
+  "dev:timer": "vite",
+  "build:timer": "webpack"
  },
  "author": "Pintocuru",
  "license": "Apache-2.0",

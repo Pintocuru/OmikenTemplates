@@ -52,12 +52,12 @@ import { computed } from 'vue';
 import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { CommentChara } from '@public/common/commonTypes';
-import { NextTimerConfigType } from '@/scripts/types';
+import { NextTimerConfig } from '@/scripts/types';
 
 const props = defineProps<{
  isInitFlag: boolean;
  nextTimer: CommentChara[];
- timeConfig: NextTimerConfigType;
+ timeConfig: NextTimerConfig;
 }>();
 
 // コメント監視とクリーンアップ

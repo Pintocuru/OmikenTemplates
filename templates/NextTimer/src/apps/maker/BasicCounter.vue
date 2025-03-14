@@ -6,7 +6,7 @@
    enter-active-class="animated zoomInUp"
    leave-active-class="animated zoomOut"
   >
-   <div v-show="isVisible" class="font-racing flex justify-center items-center">
+   <div v-show="timerState.isVisible" class="font-racing flex justify-center items-center">
     <div
      class="bg-gradient-to-br from-gray-950 to-gray-900 rounded-full shadow-2xl p-6 transform transition-all duration-500 hover:scale-105 border-4 border-gray-800 relative overflow-hidden"
     >
@@ -82,7 +82,7 @@
 
      <!-- 次のカウントダウン時間 -->
      <div class="text-center text-xl font-semibold text-cyan-400 animate-pulse">
-      <span class="uppercase tracking-wide">Next {{ displayTime }}</span>
+      <span class="uppercase tracking-wide">Next {{ timerState.displayTime }}</span>
      </div>
 
      <!-- ダッシュボードスタイルの装飾インジケーター -->
@@ -104,31 +104,12 @@
 </template>
 
 <script setup lang="ts">
-import { toRef, watch } from 'vue';
-import { useTimer } from '@scripts/useTimer';
-import { CommentChara } from '@common/commonTypes';
-import { NextTimerConfigType } from '@/scripts/types';
+import { TimerState } from '@/scripts/types';
 
 const props = defineProps<{
- isInitFlag: boolean;
- nextTimer: CommentChara[];
- timeConfig: NextTimerConfigType;
+ timerState: TimerState;
+ countdownDigits: number[];
 }>();
-
-const { displayTime, isVisible, isTimerRunning, countdownDigits, processComment } = useTimer(
- props.timeConfig,
- toRef(props, 'isInitFlag')
-);
-
-watch(
- () => props.nextTimer,
- (comments: CommentChara[]) => {
-  comments.forEach((comment) => {
-   processComment(comment.data.comment);
-  });
- },
- { deep: true, immediate: true }
-);
 </script>
 
 <style scoped>

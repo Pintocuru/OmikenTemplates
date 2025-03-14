@@ -2,7 +2,6 @@
 import {
  TimeParts,
  SecondAdjustType,
- NextTimerConfigType,
  TIME_PATTERN,
  MINUTES_ONLY_PATTERN,
  RELATIVE_TIME_PATTERN
@@ -13,9 +12,9 @@ export class TimerAbsolute {
  private readonly MAX_SECONDS: number;
  private secondAdjust: number;
 
- constructor(config: NextTimerConfigType) {
-  this.MIN_SECONDS = config.MIN_SECONDS;
-  this.MAX_SECONDS = Math.min(config.MAX_SECONDS, 43200);
+ constructor(MIN_SECONDS: number, MAX_SECONDS: number) {
+  this.MIN_SECONDS = MIN_SECONDS;
+  this.MAX_SECONDS = Math.min(MAX_SECONDS, 43200);
   this.secondAdjust = 10;
  }
 

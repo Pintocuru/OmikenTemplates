@@ -82,7 +82,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { TimerStorageController } from '@/scripts/TimerStorage';
-import { NextTimerConfigType, SecondAdjustType } from '@/scripts/types';
+import { NextTimerConfig, SecondAdjustType } from '@/scripts/types';
 import { TimerAbsolute } from '@/scripts/TimerAbsolute';
 import { toast } from 'vue-sonner';
 import {
@@ -95,15 +95,15 @@ import {
 } from 'lucide-vue-next';
 
 // 定数
-const timeConfig: NextTimerConfigType = {
+const timeConfig: NextTimerConfig = {
  ALWAYS_VISIBLE: window.TIME_CONFIG?.ALWAYS_VISIBLE || false, // 常時表示させるか
  MIN_SECONDS: window.TIME_CONFIG?.MIN_SECONDS || 10, // タイマーの最低値(秒)
  MAX_SECONDS: window.TIME_CONFIG?.MAX_SECONDS || 300, // タイマーの最大値(秒)
  AFTER_SHOW: window.TIME_CONFIG?.AFTER_SHOW || 5, // 時間経過後に表示する時間(秒)
  SECOND_ADJUST: window.TIME_CONFIG?.SECOND_ADJUST || 10, // 秒数を丸める(default=10秒単位)
- COUNT_PARTY: window.TIME_CONFIG?.COUNT_PARTY || {}, // WordPartyの発火タイミング
- COUNT_PARTY_START: window.TIME_CONFIG?.COUNT_PARTY_START || '', // タイマー起動時に発火するWordParty
- COUNT_PARTY_FINISH: window.TIME_CONFIG?.COUNT_PARTY_FINISH || '' // タイマー0で発火するWordParty
+ PARTY: window.TIME_CONFIG?.PARTY || {}, // WordPartyの発火タイミング
+ PARTY_START: window.TIME_CONFIG?.PARTY_START || '', // タイマー起動時に発火するWordParty
+ PARTY_FINISH: window.TIME_CONFIG?.PARTY_FINISH || '' // タイマー0で発火するWordParty
 };
 
 // タイマーコントローラーの初期化と状態管理

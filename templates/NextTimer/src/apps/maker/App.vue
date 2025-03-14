@@ -1,6 +1,8 @@
-<!-- src/App.vue -->
+<!-- src/apps/maker/App.vue -->
 <template>
- <AnyGenerator :timerState="timerState" :countdownDigits="countdownDigits" />
+ <div class="flex flex-col items-center justify-center h-screen space-y-4">
+  <AnyGenerator :timerState="timerState" :countdownDigits="countdownDigits" />
+ </div>
 </template>
 
 <script setup lang="ts">

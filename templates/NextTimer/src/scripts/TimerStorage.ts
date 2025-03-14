@@ -1,11 +1,11 @@
 // src/scripts/TimerStorage.ts
 import { TimerAbsolute } from './TimerAbsolute';
 import {
- NextTimerConfigType,
+ NextTimerConfig,
  SecondAdjustType,
- TimerAction,
- TimerActionData,
- TimerStorageData,
+ ControllerAction,
+ ControllerActionData,
+ ControllerStorageData,
  VALID_ADJUSTS
 } from './types';
 
@@ -13,14 +13,14 @@ export class TimerStorageController {
  private readonly STORAGE_KEY = 'timer_control';
  private MIN_SECONDS;
  private MAX_SECONDS;
- private listeners: Set<(action: TimerAction, data: TimerActionData) => void>;
+ private listeners: Set<(action: ControllerAction, data: ControllerActionData) => void>;
  timerAbsolute: TimerAbsolute;
 
- constructor(config: NextTimerConfigType) {
-  this.MIN_SECONDS = config?.MIN_SECONDS || 10;
-  this.MAX_SECONDS = config?.MAX_SECONDS || 300;
+ constructor(MIN_SECONDS: number, MAX_SECONDS: number) {
+  this.MIN_SECONDS = MIN_SECONDS;
+  this.MAX_SECONDS = MAX_SECONDS;
   this.listeners = new Set();
-  this.timerAbsolute = new TimerAbsolute(config);
+  this.timerAbsolute = new TimerAbsolute(MIN_SECONDS, MAX_SECONDS);
  }
 
  // ストレージイベントのハンドラーを設定
@@ -35,12 +35,12 @@ export class TimerStorageController {
  }
 
  // アクションリスナーを追加
- addListener(callback: (action: TimerAction, data: TimerActionData) => void): void {
+ addListener(callback: (action: ControllerAction, data: ControllerActionData) => void): void {
   this.listeners.add(callback);
  }
 
  // アクションリスナーを削除
- removeListener(callback: (action: TimerAction, data: TimerActionData) => void): void {
+ removeListener(callback: (action: ControllerAction, data: ControllerActionData) => void): void {
   this.listeners.delete(callback);
  }
 
@@ -86,7 +86,7 @@ export class TimerStorageController {
    const storageData = JSON.parse(event.newValue || '');
    const { timestamp, ...actualData } = storageData; // タイムスタンプを除外
 
-   const result: TimerActionData = {
+   const result: ControllerActionData = {
     timestamp: actualData.data.timestamp ? new Date(actualData.data.timestamp) : undefined,
     value: actualData.data.value
    };
@@ -97,7 +97,7 @@ export class TimerStorageController {
   }
  };
 
- private saveAction(data: TimerStorageData): void {
+ private saveAction(data: ControllerStorageData): void {
   const actionWithTimestamp = { ...data, timestamp: Date.now() };
   localStorage.setItem(this.STORAGE_KEY, JSON.stringify(actionWithTimestamp));
   this.handleStorageEvent(
