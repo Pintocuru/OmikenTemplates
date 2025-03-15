@@ -1,4 +1,4 @@
-<!-- SimpleWhite/SimpleWhite.vue -->
+<!-- sample1.vue -->
 <template>
  <div
   class="font-mono w-80 bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 p-4"

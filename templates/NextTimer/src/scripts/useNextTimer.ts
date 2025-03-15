@@ -1,11 +1,12 @@
 // src/apps/scripts/useNextTimer.ts
-import { onUnmounted, onMounted, reactive, toRefs, computed, toRef } from 'vue';
+import { onUnmounted, onMounted, reactive, computed, toRef } from 'vue';
 import {
  ControllerAction,
  ControllerActionData,
  NextTimerConfig,
  SecondAdjustType,
- TimerState
+ TimerState,
+ VALID_ADJUSTS
 } from './types';
 import { ConfigUserType } from '@common/commonTypes';
 import { GetUserComments } from '@common/subscribe/GetUserComments';
@@ -131,7 +132,7 @@ export function useNextTimer() {
   if (adjustedTime) startCountdown(adjustedTime);
  };
 
- const startActionTest = (time: number = 30) => {
+ const startActionInput = (time: number = state.initialTime) => {
   const futureTime = new Date(Date.now() + time * 1000); // 現在時刻 + 30秒
   startAction(futureTime);
  };
@@ -174,6 +175,20 @@ export function useNextTimer() {
 
  // タイマーアクション処理
  const handleControllerAction = (action: ControllerAction, data?: ControllerActionData) => {
+  if (data) {
+   // 必要に応じて型変換
+   const parsedData: ControllerActionData = {
+    ...data,
+    timestamp: typeof data.timestamp === 'string' ? new Date(data.timestamp) : data.timestamp,
+    initialTime: typeof data.initialTime === 'string' ? Number(data.initialTime) : data.initialTime,
+    secondAdjust:
+     typeof data.secondAdjust === 'string'
+      ? (VALID_ADJUSTS.find((v) => v === Number(data!.secondAdjust)) ?? undefined)
+      : data.secondAdjust
+   };
+   data = parsedData; // 変換後のデータを使う
+  }
+
   const actions: Record<ControllerAction, (data?: ControllerActionData) => void> = {
    start: (data) => data?.timestamp && startAction(data.timestamp),
    pause: pauseAction,
@@ -221,7 +236,7 @@ export function useNextTimer() {
 
   // 各アクション
   startAction,
-  startActionTest,
+  startActionInput,
   pauseAction,
   resetAction,
   toggleVisibilityAction,

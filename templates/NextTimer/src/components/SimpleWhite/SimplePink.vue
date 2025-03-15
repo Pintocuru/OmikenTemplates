@@ -1,3 +1,4 @@
+<!-- SimpleWhite/SimplePink.vue -->
 <template>
  <div class="rounded-2xl bg-pink-300 px-2 py-4 border-4 border-white shadow-lg text-center">
   <!-- カウントダウン -->

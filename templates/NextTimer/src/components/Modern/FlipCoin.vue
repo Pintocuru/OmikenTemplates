@@ -1,69 +1,57 @@
-<!-- src/FlipCoin.vue -->
+<!-- any/FlipCoin.vue -->
 <template>
- <div class="flex justify-center items-center min-h-screen bg-gradient-to-br">
-  <transition name="custom-transition" mode="out-in">
-   <div v-show="isVisible" class="font-mono animate-fade-up relative">
-    <!-- 波紋アニメーション -->
-    <div v-if="isTimerRunning" class="ripple-container">
-     <div v-for="i in 3" :key="i" class="ripple" :style="{ animationDelay: `${i * 0.3}s` }"></div>
-    </div>
+ <div class="font-mono animate-fade-up relative">
+  <!-- 波紋アニメーション -->
+  <div v-if="timerState.isTimerRunning" class="ripple-container">
+   <div v-for="i in 3" :key="i" class="ripple" :style="{ animationDelay: `${i * 0.3}s` }"></div>
+  </div>
 
-    <!-- パーティクル -->
-    <div v-if="countdown <= 3 && isTimerRunning" class="particles-container">
-     <div v-for="i in 15" :key="i" class="particle" :style="getParticleStyle(i)"></div>
-    </div>
+  <!-- パーティクル -->
+  <div v-if="timerState.countdown <= 3 && timerState.isTimerRunning" class="particles-container">
+   <div v-for="i in 15" :key="i" class="particle" :style="getParticleStyle(i)"></div>
+  </div>
 
-    <!-- カウントダウン表示（コイン風） -->
+  <!-- カウントダウン表示（コイン風） -->
+  <div
+   class="coin relative shadow-2xl rounded-full w-48 h-48 flex items-center justify-center overflow-hidden"
+   :class="{
+    'animate-coin': timerState.isTimerRunning,
+    'animate-pulse': timerState.countdown <= 3 && timerState.isTimerRunning
+   }"
+  >
+   <!-- コインの縁 -->
+   <div class="absolute inset-0 rounded-full border-8 border-yellow-300 shadow-inner"></div>
+
+   <!-- グラデーションの背景 -->
+   <div class="absolute inset-4 rounded-full bg-gradient-to-bl from-yellow-500 to-amber-600"></div>
+
+   <!-- 数字と内側の円 -->
+   <div
+    class="absolute inset-8 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center"
+   >
     <div
-     class="coin relative shadow-2xl animate-coin rounded-full w-48 h-48 flex items-center justify-center overflow-hidden"
-     :class="{ 'animate-pulse': countdown <= 3 && isTimerRunning }"
+     class="text-8xl font-extrabold text-white text-center drop-shadow-lg"
+     :class="{ 'animate-wiggle': timerState.countdown <= 5 && timerState.isTimerRunning }"
     >
-     <!-- コインの縁 -->
-     <div class="absolute inset-0 rounded-full border-8 border-yellow-300 shadow-inner"></div>
-
-     <!-- グラデーションの背景 -->
-     <div
-      class="absolute inset-4 rounded-full bg-gradient-to-bl from-yellow-500 to-amber-600"
-     ></div>
-
-     <!-- 数字と内側の円 -->
-     <div
-      class="absolute inset-8 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center"
-     >
-      <div
-       class="text-8xl font-extrabold text-white text-center drop-shadow-lg"
-       :class="{ 'animate-wiggle': countdown <= 3 && isTimerRunning }"
-      >
-       {{ countdown }}
-      </div>
-     </div>
-    </div>
-
-    <!-- 次のカウントダウン時間 -->
-    <div class="text-center font-semibold text-amber-300 mt-6 animate-flash text-xl">
-     Next {{ displayTime }}
+     {{ timerState.countdown }}
     </div>
    </div>
-  </transition>
+  </div>
+
+  <!-- 次のカウントダウン時間 -->
+  <div class="text-center font-semibold text-amber-300 mt-6 animate-flash text-xl">
+   Next {{ timerState.displayTime }}
+  </div>
  </div>
 </template>
 
 <script setup lang="ts">
-import { toRef, watch, computed } from 'vue';
-import { useTimerComponent } from '@/scripts/useTimerComponent';
-import { CommentChara } from '@common/commonTypes';
-import { NextTimerConfig } from '@/scripts/types';
+import { TimerState } from '@/scripts/types';
 
 const props = defineProps<{
- isInitFlag: boolean;
- nextTimer: CommentChara[];
- timeConfig: NextTimerConfig;
+ timerState: TimerState;
+ countdownDigits: number[];
 }>();
-
-const { displayTime, isVisible, isTimerRunning, countdown, processComment } = useTimerComponent(
- props.timeConfig,
- toRef(props, 'isInitFlag')
-);
 
 // パーティクルのランダムスタイル生成
 const getParticleStyle = (index: number) => {
@@ -83,16 +71,6 @@ const getParticleStyle = (index: number) => {
   '--y': `${y}px`
  };
 };
-
-watch(
- () => props.nextTimer,
- (comments: CommentChara[]) => {
-  comments.forEach((comment) => {
-   processComment(comment.data.comment);
-  });
- },
- { deep: true, immediate: true }
-);
 </script>
 
 <style scoped>

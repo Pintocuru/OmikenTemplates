@@ -2,23 +2,30 @@
 
 export async function PingOneSDK(): Promise<boolean> {
  const controller = new AbortController();
- const timeout = setTimeout(() => controller.abort(), 1000); // 1秒でタイムアウト
+
+ // 1秒後に `AbortController` を発火する Promise
+ const timeoutPromise = new Promise<never>((_, reject) => {
+  setTimeout(() => {
+   controller.abort();
+   reject(new Error('Request timeout'));
+  }, 1000);
+ });
 
  try {
-  const response = await fetch('http://localhost:11180/api/info', {
-   signal: controller.signal // AbortControllerを使用
-  });
-  clearTimeout(timeout); // タイムアウトをクリア
+  const response = await Promise.race([
+   fetch('http://localhost:11180/api/info', { signal: controller.signal }),
+   timeoutPromise
+  ]);
 
-  if (response.ok) {
+  if ((response as Response).ok) {
    console.info('わんコメ起動OK');
    return true;
   } else {
-   console.warn(`サーバーエラー: ステータスコード ${response.status}`);
+   console.warn(`サーバーエラー: ステータスコード ${(response as Response).status}`);
    return false;
   }
  } catch (err) {
   console.info('わんコメ起動なし');
-  return false; // 接続できなければ false
+  return false;
  }
 }

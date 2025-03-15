@@ -78,7 +78,7 @@ export function createConfig(childDir, isOneSDK = true) {
    minimizer: [
     new TerserPlugin({
      exclude: [/config_.*\.js$/], // config_で始まるJSファイルを除外
-     terserOptions: { compress: { drop_console: true } }
+     terserOptions: { compress: { drop_console: false } } // コンソールを削除
     }),
     new CssMinimizerPlugin({ test: /\.css$/ }) // CSSの最適化
    ],

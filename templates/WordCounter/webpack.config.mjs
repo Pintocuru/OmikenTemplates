@@ -11,6 +11,8 @@ const components = [
  { appDir: 'VictoryCrown', appName: 'SplashNice' }
 ];
 
+// ---
+
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default components.map(({ appDir, appName }) => {

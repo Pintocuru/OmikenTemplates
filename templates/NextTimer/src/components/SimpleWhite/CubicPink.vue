@@ -1,162 +1,104 @@
-<!-- src/apps/components/OldPattern05.vue -->
+<!-- SimpleWhite/CubicPink.vue -->
 <template>
- <div id="container">
-  <transition
-   name="zoom"
-   enter-active-class="animated zoomInUp"
-   leave-active-class="animated zoomOut"
-  >
-   <div v-if="isVisible" id="clock-container">
-    <div id="countdown">
-     <span v-for="(digit, index) in countdownDigits" :key="index" class="digit">{{ digit }}</span>
+ <div class="inline-block rounded-2xl bg-purple-300 p-5 shadow-lg">
+  <div class="text-center text-5xl font-bold text-white drop-shadow-md relative">
+   <!-- 親要素を相対配置にして、絶対配置の基準点を作成 -->
+   <div class="relative w-full h-full">
+    <!-- 左の羽 -->
+    <div v-if="timerState.isTimerRunning" class="absolute top-0 z-0" style="left: -120px">
+     <img src="./wing.svg" alt="Left Wing" class="w-24 h-24 wing-left opacity-70" />
     </div>
-    <div id="next-clock" :class="{ animated: isTimerRunning }">
-     Next <span class="heart">♥</span> {{ displayTime }}
+
+    <!-- 右の羽 -->
+    <div v-if="timerState.isTimerRunning" class="absolute top-0 z-0" style="right: -120px">
+     <img src="./wing.svg" alt="Right Wing" class="w-24 h-24 wing-right opacity-70" />
     </div>
    </div>
-  </transition>
+
+   <span v-for="(digit, index) in countdownDigits" :key="index" class="mx-1">{{ digit }}</span>
+  </div>
+  <div
+   class="mt-2 text-xl text-white transition-transform duration-300 ease-in-out flex items-center justify-center"
+   :class="{ 'translate-y-[-5px]': timerState.isTimerRunning }"
+  >
+   Next
+   <!-- Animated heart that rotates when timer is running -->
+   <div class="mx-1 inline-block" :class="{ 'heart-rotate': timerState.isTimerRunning }">
+    <span class="text-pink-400">♥</span>
+   </div>
+   {{ timerState.displayTime }}
+  </div>
  </div>
 </template>
 
 <script setup lang="ts">
-import { toRef, watch } from 'vue';
-import { useTimerComponent } from '@/scripts/useTimerComponent';
-import { CommentChara } from '@common/commonTypes';
-import { NextTimerConfig } from '@/scripts/types';
+import { TimerState } from '@/scripts/types';
 
-const props = defineProps<{
- isInitFlag: boolean;
- nextTimer: CommentChara[];
- timeConfig: NextTimerConfig;
+defineProps<{
+ timerState: TimerState;
+ countdownDigits: number[];
 }>();
-
-const { displayTime, isVisible, isTimerRunning, countdown, countdownDigits, processComment } =
- useTimerComponent(props.timeConfig, toRef(props, 'isInitFlag'));
-
-watch(
- () => props.nextTimer,
- (comments: CommentChara[]) => {
-  comments.forEach((comment) => {
-   processComment(comment.data.comment);
-  });
- },
- { deep: true, immediate: true }
-);
 </script>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
-/* フォント設定 */
-.font-racing {
- font-family: 'Archivo', sans-serif;
-}
-
-:root {
- /* カラー編集 */
- --text-color: #fafafa; /* 文字色 */
- --odometer-color: #212121; /* オドメーターの背景色 */
- --background-primary: #000000; /* 時間表示の背景色1 */
- --background-secondary: #45484d; /* 時間表示の背景色2 */
-}
-
-#clock-container {
+<style scoped>
+.heart-rotate {
+ animation: heartbeat 1.5s infinite;
+ transform-origin: center;
  display: inline-block;
- padding: 20px 30px;
- border-radius: 20px;
- background-color: rgba(200, 162, 255, 0.7);
- box-shadow: 0 0 15px rgba(200, 162, 255, 0.5);
 }
 
-#countdown {
- font-family: 'Arial', sans-serif;
- font-size: 48px;
- font-weight: bold;
- color: #fff;
- text-align: center;
- text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-}
-
-.digit {
- display: inline-block;
- margin: 0 3px;
-}
-
-#next-clock {
- font-family: 'Arial', sans-serif;
- font-size: 24px;
- color: #fff;
- margin-top: 10px;
- transition: transform 0.3s ease-in-out;
-}
-
-#next-clock.animated2 {
- transform: translateY(-5px);
-}
-
-.heart {
- color: #ff69b4;
-}
-
-.sparkles {
- position: absolute;
- top: -15px;
- left: -15px;
- right: -15px;
- bottom: -15px;
-}
-
-@keyframes wingFloat {
- 0%,
- 100% {
-  transform: translateY(0) rotate(0);
+@keyframes heartbeat {
+ 0% {
+  transform: rotateY(0deg) scale(1);
  }
-
+ 25% {
+  transform: rotateY(90deg) scale(1.1);
+ }
  50% {
-  transform: translateY(-10px) rotate(5deg);
+  transform: rotateY(180deg) scale(1);
+ }
+ 75% {
+  transform: rotateY(270deg) scale(1.1);
+ }
+ 100% {
+  transform: rotateY(360deg) scale(1);
  }
 }
 
-.wing {
- position: absolute;
- width: 100px;
- height: 150px;
- background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 150'%3E%3Cpath d='M50 0 C20 30 0 60 0 90 C0 120 20 150 50 150 C80 150 100 120 100 90 C100 60 80 30 50 0Z' fill='%23fff' opacity='0.8'/%3E%3C/svg%3E");
- background-repeat: no-repeat;
- animation: wingFloat 4s ease-in-out infinite;
+/* 左の羽のアニメーション */
+.wing-left {
+ transform-origin: center;
+ animation: wingFlapLeft 2s ease-in-out infinite;
+ transform: scaleX(-1);
 }
 
-.left-wing {
- left: -110px;
- top: 50%;
- transform: translateY(-50%) scaleX(-1);
+/* 右の羽のアニメーション */
+.wing-right {
+ transform-origin: center;
+ animation: wingFlapRight 2s ease-in-out infinite;
 }
 
-.right-wing {
- right: -110px;
- top: 50%;
- transform: translateY(-50%);
+@keyframes wingFlapLeft {
+ 0% {
+  transform: scaleX(-1) rotate(0deg);
+ }
+ 50% {
+  transform: scaleX(-1) rotate(15deg);
+ }
+ 100% {
+  transform: scaleX(-1) rotate(0deg);
+ }
 }
 
-/* --OLD対応-------------------------------------------- */
-
-#container {
- position: relative;
- display: flex;
- justify-content: center;
- align-items: center;
- height: 100%;
-}
-
-.animated {
- animation-duration: 0.5s;
- animation-fill-mode: both;
-}
-
-.zoomInUp {
- animation-name: zoomInUp;
-}
-
-.zoomOut {
- animation-name: zoomOut;
+@keyframes wingFlapRight {
+ 0% {
+  transform: rotate(0deg);
+ }
+ 50% {
+  transform: rotate(15deg);
+ }
+ 100% {
+  transform: rotate(0deg);
+ }
 }
 </style>

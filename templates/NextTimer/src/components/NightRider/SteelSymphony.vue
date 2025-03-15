@@ -1,116 +1,92 @@
-<!-- src/SteelSymphony.vue -->
+<!-- NightRider/SteelSymphony.vue -->
 <template>
- <div class="flex justify-center items-center">
-  <transition name="locomotive-transition" mode="out-in">
-   <div v-show="isVisible" class="font-serif">
+ <div
+  class="font-serif w-96 bg-gray-800 rounded-lg border-4 border-amber-700 shadow-2xl p-6 relative overflow-hidden locomotive-container"
+ >
+  <!-- 背景の楽譜パターン -->
+  <div class="absolute inset-0 bg-music-pattern opacity-10"></div>
+
+  <!-- 蒸気エフェクト (タイマー実行中のみ) -->
+  <div v-if="timerState.isTimerRunning" class="steam-effect"></div>
+
+  <!-- 金属の光沢エフェクト -->
+  <div class="metal-shine"></div>
+
+  <!-- カウントダウン表示 -->
+  <div class="px-2 py-3">
+   <div
+    class="rounded-md bg-gray-900 p-4 mb-4 relative overflow-hidden border-2 border-amber-800 shadow-inner"
+   >
+    <!-- 機関車の車輪動作エフェクト（タイマー実行中のみ） -->
     <div
-     class="w-96 bg-gray-800 rounded-lg border-4 border-amber-700 shadow-2xl p-6 relative overflow-hidden locomotive-container"
-    >
-     <!-- 背景の楽譜パターン -->
-     <div class="absolute inset-0 bg-music-pattern opacity-10"></div>
+     v-if="timerState.isTimerRunning"
+     class="absolute bottom-0 left-0 right-0 h-1 locomotive-tracks"
+    ></div>
 
-     <!-- 蒸気エフェクト (タイマー実行中のみ) -->
-     <div v-if="isTimerRunning" class="steam-effect"></div>
-
-     <!-- 金属の光沢エフェクト -->
-     <div class="metal-shine"></div>
-
-     <!-- カウントダウン表示 -->
-     <div class="px-2 py-3">
+    <!-- カウントダウン数字 -->
+    <div class="flex justify-center z-10 relative">
+     <div
+      v-for="(digit, index) in countdownDigits"
+      :key="index"
+      class="w-16 h-20 mx-1 bg-gray-800 rounded-md overflow-hidden relative border-2 border-amber-700 shadow-lg counter-digit"
+      :class="{ spinning: timerState.isTimerRunning }"
+     >
+      <!-- オドメーターアニメーション -->
       <div
-       class="rounded-md bg-gray-900 p-4 mb-4 relative overflow-hidden border-2 border-amber-800 shadow-inner"
+       class="absolute top-0 left-0 w-full transition-all duration-500 ease-in-out"
+       :style="{ transform: `translateY(-${digit * 10}%)` }"
       >
-       <!-- 機関車の車輪動作エフェクト（タイマー実行中のみ） -->
-       <div
-        v-if="isTimerRunning"
-        class="absolute bottom-0 left-0 right-0 h-1 locomotive-tracks"
-       ></div>
-
-       <!-- カウントダウン数字 -->
-       <div class="flex justify-center z-10 relative">
-        <div
-         v-for="(digit, index) in countdownDigits"
-         :key="index"
-         class="w-16 h-20 mx-1 bg-gray-800 rounded-md overflow-hidden relative border-2 border-amber-700 shadow-lg counter-digit"
-         :class="{ spinning: isTimerRunning }"
-        >
-         <!-- オドメーターアニメーション -->
-         <div
-          class="absolute top-0 left-0 w-full transition-all duration-500 ease-in-out"
-          :style="{ transform: `translateY(-${digit * 10}%)` }"
-         >
-          <span
-           v-for="n in 10"
-           :key="n"
-           class="flex items-center justify-center h-20 text-4xl font-black w-full metal-digit"
-          >
-           {{ (n - 1 + 10) % 10 }}
-          </span>
-         </div>
-
-         <!-- ネジと金属のディテール -->
-         <div class="absolute top-1 left-1 w-2 h-2 rounded-full bg-amber-600 rivet"></div>
-         <div class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-600 rivet"></div>
-         <div class="absolute bottom-1 left-1 w-2 h-2 rounded-full bg-amber-600 rivet"></div>
-         <div class="absolute bottom-1 right-1 w-2 h-2 rounded-full bg-amber-600 rivet"></div>
-
-         <!-- グラデーションオーバーレイ -->
-         <div
-          class="absolute inset-x-0 top-0 h-5 bg-gradient-to-b from-gray-900 to-transparent z-20"
-         ></div>
-         <div
-          class="absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-gray-900 to-transparent z-20"
-         ></div>
-        </div>
-       </div>
-      </div>
-
-      <!-- 次のカウントダウン時間 -->
-      <div class="text-center font-bold">
        <span
-        class="uppercase tracking-widest text-amber-500 metal-text-small"
-        :class="{ 'pulse-glow': isTimerRunning }"
+        v-for="n in 10"
+        :key="n"
+        class="flex items-center justify-center h-20 text-4xl font-black w-full metal-digit"
        >
-        Next {{ displayTime }}
+        {{ (n - 1 + 10) % 10 }}
        </span>
       </div>
-     </div>
 
-     <!-- 機関車のディテール -->
-     <div class="absolute bottom-2 left-4 right-4 h-1 bg-amber-700"></div>
-     <div v-if="isTimerRunning" class="piston-animation left-2"></div>
-     <div v-if="isTimerRunning" class="piston-animation right-2"></div>
+      <!-- ネジと金属のディテール -->
+      <div class="absolute top-1 left-1 w-2 h-2 rounded-full bg-amber-600 rivet"></div>
+      <div class="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-600 rivet"></div>
+      <div class="absolute bottom-1 left-1 w-2 h-2 rounded-full bg-amber-600 rivet"></div>
+      <div class="absolute bottom-1 right-1 w-2 h-2 rounded-full bg-amber-600 rivet"></div>
+
+      <!-- グラデーションオーバーレイ -->
+      <div
+       class="absolute inset-x-0 top-0 h-5 bg-gradient-to-b from-gray-900 to-transparent z-20"
+      ></div>
+      <div
+       class="absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-gray-900 to-transparent z-20"
+      ></div>
+     </div>
     </div>
    </div>
-  </transition>
+
+   <!-- 次のカウントダウン時間 -->
+   <div class="text-center font-bold">
+    <span
+     class="uppercase tracking-widest text-amber-500 metal-text-small"
+     :class="{ 'pulse-glow': timerState.isTimerRunning }"
+    >
+     Next {{ timerState.displayTime }}
+    </span>
+   </div>
+  </div>
+
+  <!-- 機関車のディテール -->
+  <div class="absolute bottom-2 left-4 right-4 h-1 bg-amber-700"></div>
+  <div v-if="timerState.isTimerRunning" class="piston-animation left-2"></div>
+  <div v-if="timerState.isTimerRunning" class="piston-animation right-2"></div>
  </div>
 </template>
 
 <script setup lang="ts">
-import { toRef, watch } from 'vue';
-import { useTimerComponent } from '@/scripts/useTimerComponent';
-import { CommentChara } from '@common/commonTypes';
-import { NextTimerConfig } from '@/scripts/types';
-import { Clock } from 'lucide-vue-next';
+import { TimerState } from '@/scripts/types';
 
 const props = defineProps<{
- isInitFlag: boolean;
- nextTimer: CommentChara[];
- timeConfig: NextTimerConfig;
+ timerState: TimerState;
+ countdownDigits: number[];
 }>();
-
-const { displayTime, isVisible, isTimerRunning, countdown, countdownDigits, processComment } =
- useTimerComponent(props.timeConfig, toRef(props, 'isInitFlag'));
-
-watch(
- () => props.nextTimer,
- (comments: CommentChara[]) => {
-  comments.forEach((comment) => {
-   processComment(comment.data.comment);
-  });
- },
- { deep: true, immediate: true }
-);
 </script>
 
 <style scoped>

@@ -1,107 +1,78 @@
-<!-- src/apps/components/WesternDuel.vue -->
+<!-- NightRider/WesternDuel.vue -->
 <template>
- <div class="relative flex justify-center items-center h-full">
-  <transition
-   name="zoom"
-   enter-active-class="animated zoomInUp"
-   leave-active-class="animated zoomOut"
+ <div
+  class="font-western bg-western-paper relative p-8 rounded border border-western-dark shadow-lg transform rotate-1 transition-transform duration-300 max-w-lg"
+  :class="{ 'shake-animation': timerState.isTimerRunning }"
+ >
+  <div class="paper-texture"></div>
+
+  <div class="text-center mb-6 pb-4 border-b-2 border-dashed border-western-brown">
+   <h1 class="text-5xl font-bold text-western-red m-0 font-rye tracking-wide text-shadow-western">
+    WANTED
+   </h1>
+   <h2 class="text-2xl font-bold text-western-dark mt-2 mb-0 tracking-wide font-elite">
+    SNIPE COUNTER
+   </h2>
+  </div>
+
+  <div
+   class="bg-western-tan relative p-6 mb-5 rounded border-2 border-western-brown overflow-hidden"
   >
-   <div v-if="isVisible" class="flex justify-center items-center font-western">
+   <!-- Dust particles container -->
+   <div class="absolute inset-0 pointer-events-none z-10" v-if="timerState.isTimerRunning">
+    <div v-for="i in 15" :key="i" :class="`dust-particle dust-${i}`"></div>
+   </div>
+
+   <div class="flex justify-center relative z-20">
     <div
-     class="bg-western-paper relative p-8 rounded border border-western-dark shadow-lg transform rotate-1 transition-transform duration-300 max-w-lg"
-     :class="{ 'shake-animation': isTimerRunning }"
+     v-for="(digit, index) in countdownDigits"
+     :key="index"
+     class="w-14 h-24 mx-1 overflow-hidden relative bg-western-dark rounded border border-black shadow-inner"
     >
-     <div class="paper-texture"></div>
-
-     <div class="text-center mb-6 pb-4 border-b-2 border-dashed border-western-brown">
-      <h1
-       class="text-5xl font-bold text-western-red m-0 font-rye tracking-wide text-shadow-western"
+     <div
+      class="absolute top-0 left-0 transition-transform duration-500 ease-out"
+      :style="{ transform: `translateY(-${digit * 10}%)` }"
+     >
+      <span
+       v-for="n in 10"
+       :key="n"
+       class="flex items-center justify-center pl-2 h-24 text-5xl font-bold text-white font-elite text-shadow"
       >
-       WANTED
-      </h1>
-      <h2 class="text-2xl font-bold text-western-dark mt-2 mb-0 tracking-wide font-elite">
-       SNIPE COUNTER
-      </h2>
+       {{ (n - 1 + 10) % 10 }}
+      </span>
      </div>
-
-     <div
-      class="bg-western-tan relative p-6 mb-5 rounded border-2 border-western-brown overflow-hidden"
-     >
-      <!-- Dust particles container -->
-      <div class="absolute inset-0 pointer-events-none z-10" v-if="isTimerRunning">
-       <div v-for="i in 15" :key="i" :class="`dust-particle dust-${i}`"></div>
-      </div>
-
-      <div class="flex justify-center relative z-20">
-       <div
-        v-for="(digit, index) in countdownDigits"
-        :key="index"
-        class="w-14 h-24 mx-1 overflow-hidden relative bg-western-dark rounded border border-black shadow-inner"
-       >
-        <div
-         class="absolute top-0 left-0 transition-transform duration-500 ease-out"
-         :style="{ transform: `translateY(-${digit * 10}%)` }"
-        >
-         <span
-          v-for="n in 10"
-          :key="n"
-          class="flex items-center justify-center pl-2 h-24 text-5xl font-bold text-white font-elite text-shadow"
-         >
-          {{ (n - 1 + 10) % 10 }}
-         </span>
-        </div>
-        <!-- Overlay to create vintage digit effect -->
-        <div class="absolute top-0 left-0 w-full h-0.5 bg-white bg-opacity-20"></div>
-       </div>
-      </div>
-
-      <div class="text-center text-western-dark font-bold tracking-wide mt-3 text-shadow-light">
-       TIME REMAINING
-      </div>
-     </div>
-
-     <div
-      class="text-center text-xl font-semibold text-western-dark relative py-2"
-      :class="{ 'tumble-animation': isTimerRunning }"
-     >
-      <span>Next {{ displayTime }}</span>
-
-      <!-- Rope decoration -->
-      <div v-if="isTimerRunning" class="absolute -top-4 w-full h-5 overflow-hidden">
-       <div class="absolute h-0.5 bg-western-brown top-2.5 left-8 w-20 transform rotate-12"></div>
-       <div class="absolute h-0.5 bg-western-brown top-2.5 right-8 w-20 transform -rotate-12"></div>
-      </div>
-     </div>
+     <!-- Overlay to create vintage digit effect -->
+     <div class="absolute top-0 left-0 w-full h-0.5 bg-white bg-opacity-20"></div>
     </div>
    </div>
-  </transition>
+
+   <div class="text-center text-western-dark font-bold tracking-wide mt-3 text-shadow-light">
+    TIME REMAINING
+   </div>
+  </div>
+
+  <div
+   class="text-center text-xl font-semibold text-western-dark relative py-2"
+   :class="{ 'tumble-animation': timerState.isTimerRunning }"
+  >
+   <span>Next {{ timerState.displayTime }}</span>
+
+   <!-- Rope decoration -->
+   <div v-if="timerState.isTimerRunning" class="absolute -top-4 w-full h-5 overflow-hidden">
+    <div class="absolute h-0.5 bg-western-brown top-2.5 left-8 w-20 transform rotate-12"></div>
+    <div class="absolute h-0.5 bg-western-brown top-2.5 right-8 w-20 transform -rotate-12"></div>
+   </div>
+  </div>
  </div>
 </template>
 
 <script setup lang="ts">
-import { toRef, watch } from 'vue';
-import { useTimerComponent } from '@/scripts/useTimerComponent';
-import { CommentChara } from '@common/commonTypes';
-import { NextTimerConfig } from '@/scripts/types';
+import { TimerState } from '@/scripts/types';
 
 const props = defineProps<{
- isInitFlag: boolean;
- nextTimer: CommentChara[];
- timeConfig: NextTimerConfig;
+ timerState: TimerState;
+ countdownDigits: number[];
 }>();
-
-const { displayTime, isVisible, isTimerRunning, countdown, countdownDigits, processComment } =
- useTimerComponent(props.timeConfig, toRef(props, 'isInitFlag'));
-
-watch(
- () => props.nextTimer,
- (comments: CommentChara[]) => {
-  comments.forEach((comment) => {
-   processComment(comment.data.comment);
-  });
- },
- { deep: true, immediate: true }
-);
 </script>
 
 <style>

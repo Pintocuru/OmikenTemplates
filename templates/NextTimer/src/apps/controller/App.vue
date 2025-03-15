@@ -18,7 +18,7 @@
 
   <div class="grid grid-cols-3 gap-2">
    <button
-    @click="start"
+    @click="start()"
     class="px-4 py-2 rounded-lg shadow-md transition-all text-3xl font-semibold bg-blue-500 text-white hover:bg-blue-600 flex items-center justify-center gap-2 col-span-2 h-36"
    >
     <PlayIcon class="w-16 h-16" />
