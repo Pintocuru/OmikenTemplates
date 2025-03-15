@@ -1,7 +1,6 @@
 // src/scripts/TimerStorage.ts
 import { TimerAbsolute } from './TimerAbsolute';
 import {
- NextTimerConfig,
  SecondAdjustType,
  ControllerAction,
  ControllerActionData,
@@ -76,7 +75,7 @@ export class TimerStorageController {
  // 初期開始時間を変更
  setInitialTime(seconds: number): void {
   const adjustedSeconds = Math.max(this.MIN_SECONDS, Math.min(this.MAX_SECONDS, seconds));
-  this.saveAction({ action: 'initial_time', data: { value: adjustedSeconds } });
+  this.saveAction({ action: 'initial_time', data: { initialTime: adjustedSeconds } });
  }
 
  private handleStorageEvent = (event: StorageEvent): void => {
@@ -88,7 +87,7 @@ export class TimerStorageController {
 
    const result: ControllerActionData = {
     timestamp: actualData.data.timestamp ? new Date(actualData.data.timestamp) : undefined,
-    value: actualData.data.value
+    initialTime: actualData.data.value
    };
 
    this.listeners.forEach((listener) => listener(actualData.action, result));

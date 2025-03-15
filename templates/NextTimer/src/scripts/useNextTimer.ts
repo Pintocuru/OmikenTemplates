@@ -50,7 +50,7 @@ export function useNextTimer() {
 
  // userの数をカウントするstate
  const state: TimerState = reactive({
-  isInitFlag: true, // わんコメ初期化フラグ
+  isInitFlag: false, // わんコメ初期化フラグ
   isVisible: timeConfig.ALWAYS_VISIBLE, // 表示中か
   isTimerRunning: false, // カウント中か
   countdown: 0, // 残り時間(秒)
@@ -108,9 +108,7 @@ export function useNextTimer() {
   state.isTimerRunning = true;
   state.displayTime = targetTime.toTimeString().slice(0, 8);
 
-  if (!calledAt[-1]) {
-   calledAt[-1] = handleWordParty(timeConfig.PARTY_START);
-  }
+  if (!calledAt[-1]) calledAt[-1] = handleWordParty(timeConfig.PARTY_START);
 
   const updateCountdown = () => {
    const diff = targetTime.getTime() - Date.now();
@@ -128,48 +126,64 @@ export function useNextTimer() {
  };
 
  // タイマーアクション処理
- const handleControllerAction = (action: ControllerAction, data: ControllerActionData) => {
-  const actions: Record<ControllerAction, () => void> = {
-   start: () => {
-    if (data.timestamp) {
-     const adjustedTime = timeProcessor.processTimeDate(data.timestamp, state.secondAdjust);
-     if (adjustedTime) startCountdown(adjustedTime);
-    }
-   },
-   pause: () => {
-    if (timers.countdown) {
-     cancelAnimationFrame(timers.countdown);
-     state.isTimerRunning = false;
-    }
-   },
-   reset: () => {
-    cleanup();
-    state.countdown = state.initialTime;
-    state.displayTime = '---';
-    state.isTimerRunning = false;
-   },
-   toggle_visibility: () => {
-    if (state.isVisible && timers.countdown) {
-     cancelAnimationFrame(timers.countdown);
-     state.isTimerRunning = false;
-    }
-    state.isVisible = !state.isVisible;
-   },
-   initial_time: () => {
-    if (data.value && !state.isTimerRunning) {
-     state.initialTime = data.value;
-     state.countdown = data.value;
-     state.displayTime = '---';
-    }
-   },
-   second_adjust: () => {
-    if (data.value && [10, 15, 20, 30].includes(data.value)) {
-     state.secondAdjust = data.value as SecondAdjustType;
-    }
-   }
+ const startAction = (timestamp: Date) => {
+  const adjustedTime = timeProcessor.processTimeDate(timestamp, state.secondAdjust);
+  if (adjustedTime) startCountdown(adjustedTime);
+ };
+
+ const startActionTest = (time: number = 30) => {
+  const futureTime = new Date(Date.now() + time * 1000); // 現在時刻 + 30秒
+  startAction(futureTime);
+ };
+
+ const pauseAction = () => {
+  if (timers.countdown) {
+   cancelAnimationFrame(timers.countdown);
+   state.isTimerRunning = false;
+  }
+ };
+
+ const resetAction = () => {
+  cleanup();
+  state.countdown = state.initialTime;
+  state.displayTime = '---';
+  state.isTimerRunning = false;
+ };
+
+ const toggleVisibilityAction = () => {
+  if (state.isVisible && timers.countdown) {
+   cancelAnimationFrame(timers.countdown);
+   state.isTimerRunning = false;
+  }
+  state.isVisible = !state.isVisible;
+ };
+
+ const initialTimeAction = (data: ControllerActionData) => {
+  if (data.initialTime && !state.isTimerRunning) {
+   state.initialTime = data.initialTime;
+   state.countdown = data.initialTime;
+   state.displayTime = '---';
+  }
+ };
+
+ const secondAdjustAction = (data: ControllerActionData) => {
+  if (data.initialTime && [10, 15, 20, 30].includes(data.initialTime)) {
+   state.secondAdjust = data.initialTime as SecondAdjustType;
+  }
+ };
+
+ // タイマーアクション処理
+ const handleControllerAction = (action: ControllerAction, data?: ControllerActionData) => {
+  const actions: Record<ControllerAction, (data?: ControllerActionData) => void> = {
+   start: (data) => data?.timestamp && startAction(data.timestamp),
+   pause: pauseAction,
+   reset: resetAction,
+   toggle_visibility: toggleVisibilityAction,
+   initial_time: (data) => data && initialTimeAction(data),
+   second_adjust: (data) => data && secondAdjustAction(data)
   };
 
-  if (action in actions) actions[action]();
+  if (action in actions) actions[action](data);
  };
 
  // クリーンアップ関数
@@ -203,6 +217,15 @@ export function useNextTimer() {
 
  return {
   timerState: toRef(state),
-  countdownDigits
+  countdownDigits,
+
+  // 各アクション
+  startAction,
+  startActionTest,
+  pauseAction,
+  resetAction,
+  toggleVisibilityAction,
+  initialTimeAction,
+  secondAdjustAction
  };
 }

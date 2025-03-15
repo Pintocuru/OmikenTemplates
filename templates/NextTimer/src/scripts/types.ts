@@ -44,9 +44,9 @@ export type ControllerAction =
 
 // アクションのデータ定義
 export type ControllerActionData = {
- timestamp?: Date;
- value?: number;
- secondAdjust?: SecondAdjustType;
+ timestamp?: Date; // 開始時間
+ initialTime?: number; // 初期値
+ secondAdjust?: SecondAdjustType; // 丸める秒数
 };
 
 // 時間を時間・分・秒で分解する

@@ -1,4 +1,4 @@
-// src/apps/scripts/useLocalStorage.ts
+// src/apps/scripts/useController.ts
 import { onUnmounted, onMounted, ref } from 'vue';
 import {
  ControllerAction,
@@ -27,7 +27,7 @@ export function useLocalStorage() {
  const controller = new LocalStorageController<ControllerAction, ControllerActionData>(
   'WordCounter'
  );
- const timerAbsolute = new TimerAbsolute(timeConfig);
+ const timerAbsolute = new TimerAbsolute(timeConfig.MIN_SECONDS, timeConfig.MAX_SECONDS);
  const initialTime = ref(30);
  const secondAdjust = ref<SecondAdjustType>(10);
  const now = ref(Date.now()); // 現在時刻
@@ -43,24 +43,20 @@ export function useLocalStorage() {
 
  // 初期開始時間を変更
  const setInitialTime = (amount: number) => {
-  const newValue = Math.max(
-   timeConfig.MIN_SECONDS,
-   Math.min(timeConfig.MAX_SECONDS, initialTime.value + amount)
+  const clampedValue = Math.min(
+   timeConfig.MAX_SECONDS,
+   Math.max(timeConfig.MIN_SECONDS, initialTime.value + amount)
   );
-
-  if (newValue !== initialTime.value) {
-   initialTime.value = newValue;
-   const huga = Math.max(timeConfig.MIN_SECONDS, Math.min(timeConfig.MAX_SECONDS, newValue));
-   controller.saveAction({ action: 'initial_time', data: { value: huga } });
+  if (clampedValue !== initialTime.value) {
+   initialTime.value = clampedValue;
+   controller.saveAction({ action: 'initial_time', data: { initialTime: clampedValue } });
   }
  };
 
  // secondAdjustを設定
  const setSecondAdjust = (seconds: SecondAdjustType) => {
-  let hoge;
-  if (VALID_ADJUSTS.includes(seconds)) hoge = seconds;
-  if (hoge) {
-   controller.saveAction({ action: 'second_adjust', data: { secondAdjust: hoge } });
+  if (VALID_ADJUSTS.includes(seconds)) {
+   controller.saveAction({ action: 'second_adjust', data: { secondAdjust: seconds } });
   }
  };
 
@@ -70,7 +66,7 @@ export function useLocalStorage() {
   pause: { action: 'pause', data: {} },
   reset: { action: 'reset', data: {} },
   toggle_visibility: { action: 'toggle_visibility', data: {} },
-  initial_time: { action: 'initial_time', data: { value: 10 } },
+  initial_time: { action: 'initial_time', data: { initialTime: 10 } },
   second_adjust: { action: 'second_adjust', data: { secondAdjust: 10 } }
  };
 

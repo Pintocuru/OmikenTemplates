@@ -1,84 +1,31 @@
 // config.js
 
-const WORD_CONFIG = {
- generator: {
-  // -------------------------------------------------
-  // 一般設定
-  // -------------------------------------------------
-  TARGET: 6, // 目標となる数値
-  IS_LOOP: false, // 目標達成後、色を変化させるか
-  // countが初期値のテキスト・カラー
-  TEXTS_FIRST: 'カモン！',
-  STYLES_FIRST: {
-   textColor: '#06b6d4', // Cyan
-   colorClass: 'bg-gradient-to-br from-cyan-400 via-blue-400 to-indigo-500'
-  },
-  // 数値が増えるたびに変化するテキスト
-  TEXTS: [
-   'ナイス！',
-   'クール！',
-   'イカしてる！',
-   'グレイト！',
-   'アメイジング！',
-   'ファンタスティック！',
-   'スーパースター！',
-   'ウルトラスーパー！'
-  ],
-  // TARGET_COUNT達成後、ランダムで変化するテキスト
-  TEXTS_AFTER: [],
-  STYLES: [
-   {
-    textColor: '#c70064', // Deep Magenta
-    colorClass: 'bg-gradient-to-br from-pink-700 via-rose-300 to-red-700'
-   },
-   {
-    textColor: '#008c4a', // Deep Neon Green
-    colorClass: 'bg-gradient-to-br from-green-800 via-emerald-200 to-teal-700'
-   },
-   {
-    textColor: '#0050a5', // Deep Blue
-    colorClass: 'bg-gradient-to-br from-cyan-800 via-blue-300 to-indigo-700'
-   },
-   {
-    textColor: '#b35500', // Deep Orange
-    colorClass: 'bg-gradient-to-br from-orange-700 via-amber-300 to-yellow-600'
-   },
-   {
-    textColor: '#7d007d', // Dark Purple
-    colorClass: 'bg-gradient-to-br from-indigo-800 via-purple-300 to-fuchsia-900'
-   },
-   {
-    textColor: '#8a7300', // Deep Yellow
-    colorClass: 'bg-gradient-to-br from-yellow-700 via-amber-300 to-orange-800'
-   }
-  ],
-  EASTER_MODE: true // 隠しモード(trueにすると、Splatoonの二つ名になります)
- },
- counter: {
-  // -------------------------------------------------
-  // わんコメ設定(わんコメを稼働している時のみ機能します)
-  // -------------------------------------------------
-  // WordPartyの発火タイミング
-  PARTY: {
-   10: '!count_10',
-   20: '!count_20'
-  },
-  PARTY_EVENT: '!count_event', // カウント増加時に発火するWordParty
-  PARTY_SUCCESS: '!count_success', // TARGET_COUNT達成時に発火するWordParty
+const TIME_CONFIG = {
+ // -------------------------------------------------
+ // 一般設定
+ // -------------------------------------------------
+ ALWAYS_VISIBLE: true, // 常時表示させるか(true/false)
+ MIN_SECONDS: 10, // タイマーの最低値(秒,最低10秒)
+ MAX_SECONDS: 43200, // タイマーの最大値(秒,最大43200秒=12時間)
+ AFTER_SHOW: 5, // 時間経過後に表示する時間(秒)
+ SECOND_ADJUST: 10, // 秒数を丸める(default=10秒単位)
 
-  // -------------------------------------------------
-  // 特殊な設定(これらを変更すると挙動が変わります)
-  // -------------------------------------------------
-  MULTIPLIER: 1, // 値を掛け算する
-  COUNT_MODE: 'comment' // カウントモード
- }
+ // -------------------------------------------------
+ // わんコメ設定(わんコメを稼働している時のみ機能します)
+ // -------------------------------------------------
+ // WordPartyの発火タイミング
+ COUNT_PARTY: {
+  10: '!count_10',
+  20: '!count_20'
+ },
+ COUNT_PARTY_START: '!count_start', // タイマー起動時に発火するWordParty
+ COUNT_PARTY_FINISH: '!count_finish' // タイマー0で発火するWordParty
 };
 
 const CONFIG = {
- ENABLED_SERVICES: [], // 適用するプラットフォーム('!'でネガティブ、'platforms'で配信サイトのみ)
- ALLOWED_IDS: [], // 適用するユーザーIDリスト('!'でネガティブ)
- ACCESS_LEVEL: 1, // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
- KEYWORDS: [] // インクリメントするキーワード
+ ALLOWED_IDS: [], // 通すuserIDリスト
+ ACCESS_LEVEL: 3, // 1:誰でも 2:メンバー 3:モデレーター 4:配信者
+ KEYWORDS: [] // 通すuserIDリスト
 };
 
 // -------------------------------------------------
@@ -86,4 +33,4 @@ const CONFIG = {
 // -------------------------------------------------
 
 if (typeof window !== 'undefined') window.CONFIG = CONFIG;
-if (typeof window !== 'undefined') window.WORD_CONFIG = WORD_CONFIG;
+if (typeof window !== 'undefined') window.TIME_CONFIG = TIME_CONFIG;

@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLocalStorage } from '@/scripts/useLocalStorage';
+import { useLocalStorage } from '@/scripts/useController';
 import { SecondAdjustType } from '@/scripts/types';
 import { Play as PlayIcon, Square as SquareIcon, Eye as EyeIcon } from 'lucide-vue-next';
 
