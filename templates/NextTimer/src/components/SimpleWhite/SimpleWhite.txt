@@ -1,0 +1,16 @@
+# スナイプタイマー NextTimer SimpleWhite
+
+最終更新日：2025/03/16
+
+OBS で使える、ライバー・配信者向けカウントダウンタイマーです。
+ダウンロードして頂きありがとうございます。
+
+## 通常版:
+- SimpleWhite:夜闇で光るバイクをイメージ
+
+導入方法・使用方法は[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/docs/NextTimer/readme_NextTimer.md)をご覧ください
+
+---
+
+作成者：せすじピンとしてます [@pintocuru](https://twitter.com/pintocuru)
+YouTube : [せすじピンとしてます](https://www.youtube.com/@pintocuru)

@@ -66,6 +66,18 @@ export function createConfig(childDir, isOneSDK = true) {
        options: { postcssOptions: { plugins: ['tailwindcss', 'autoprefixer'] } }
       }
      ]
+    },
+    {
+     test: /\.(png|jpe?g|gif|svg)$/,
+     use: [
+      {
+       loader: 'file-loader',
+       options: {
+        name: '[name].[ext]',
+        outputPath: 'script/'
+       }
+      }
+     ]
     }
    ]
   },

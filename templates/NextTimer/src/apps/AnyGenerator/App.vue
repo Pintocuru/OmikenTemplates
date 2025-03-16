@@ -1,6 +1,9 @@
 <!-- src/App.vue -->
 <template>
- <div class="flex flex-col items-center justify-center h-screen space-y-4">
+ <div
+  class="flex flex-col items-center justify-center h-screen space-y-4"
+  @click="startActionInput()"
+ >
   <transition
    name="zoom"
    enter-active-class="animated zoomInUp"
@@ -10,7 +13,6 @@
     v-show="timerState.isVisible"
     :timerState="timerState"
     :countdownDigits="countdownDigits"
-    @click.prevent="startActionInput()"
     @contextmenu.prevent="resetAction"
    />
   </transition>

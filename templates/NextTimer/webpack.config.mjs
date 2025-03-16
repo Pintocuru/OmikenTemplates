@@ -12,7 +12,10 @@ export const appName = 'BasicCounter';
 const components = [
  { appDir: 'NightRider', appName: 'NightRider' },
  { appDir: 'NightRider', appName: 'SteelSymphony' },
- { appDir: 'NightRider', appName: 'WesternDuel' }
+ { appDir: 'NightRider', appName: 'WesternDuel' },
+ { appDir: 'SimpleWhite', appName: 'SimpleWhite' },
+ { appDir: 'SimpleWhite', appName: 'CubicPink' },
+ { appDir: 'SimpleWhite', appName: 'SimplePink' }
 ];
 
 // ---
