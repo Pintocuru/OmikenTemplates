@@ -5,7 +5,7 @@
 OBS で使える、ライバー・配信者向けカウントダウンタイマーです。
 ダウンロードして頂きありがとうございます。
 
-## 通常版:
+## カスタム版:
 - SteelSymphony:機関車が発明され動き出した時のイメージ
 
 導入方法・使用方法は[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/docs/NextTimer/readme_NextTimer.md)をご覧ください

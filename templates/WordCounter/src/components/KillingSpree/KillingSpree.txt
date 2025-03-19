@@ -5,8 +5,8 @@
 OBS で使用できる、ライバー・配信者向けのカウンターです。
 ダウンロードして頂きありがとうございます。
 
-## 内容物:
-- KillingSpree(index):銃痕が目立つ、FPSに合うカウンター
+## 無料版:
+- KillingSpree:銃痕が目立つ、FPSに合うカウンター
 
 導入方法・使用方法については[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/docs/WordCounter/readme_WordCounter.md)をご覧ください
 

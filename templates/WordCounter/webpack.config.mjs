@@ -8,7 +8,9 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 // コンポーネント名を配列として定義
 const components = [
  { appDir: 'VictoryCrown', appName: 'VictoryCrown' },
- { appDir: 'VictoryCrown', appName: 'SplashNice' }
+ { appDir: 'VictoryCrown', appName: 'SplashNice' },
+ { appDir: 'KillingSpree', appName: 'KillingSpree' },
+ { appDir: 'KillingSpree', appName: 'SamuraiKatana' }
 ];
 
 // ---

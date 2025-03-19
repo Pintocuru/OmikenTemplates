@@ -7,7 +7,7 @@
 - 勝数カウンター WordCounter VictoryCrown
 - キルカウンター KillingCounter KillingSpree
 
-OBS で使える、ライバー・配信者向けカウントダウンタイマーです。
+OBS で使える、ライバー・配信者向けの、単一なカウンターです。
 
 ## はじめに
 
