@@ -1,10 +1,10 @@
 {
  "name": "live-streamer-bingo",
- "version": "0.0.1",
- "description": "わんコメのテンプレートbasicをVue+TypeScriptで対応させたバージョン",
+ "version": "0.1.0",
+ "description": "ビンゴ",
  "scripts": {
-  "dev:counter": "webpack --mode development --config webpack.config.mjs",
-  "build": "webpack --mode production --config webpack.config.mjs"
+  "dev:bingo": "vite",
+  "build:bingo": "webpack"
  },
  "author": "Pintocuru",
  "license": "Apache-2.0",

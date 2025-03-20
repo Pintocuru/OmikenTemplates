@@ -1,5 +1,6 @@
 // src/main.ts
-import App from './App.vue';
+import { createApp } from 'vue';
+import App from './VtuberBingoCard.vue';
 import OneSDK from '@onecomme.com/onesdk';
 
 // OneSDKの初期化を待ってからアプリをマウント
