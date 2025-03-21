@@ -1,0 +1,1 @@
+// src/parts/funcs.vue

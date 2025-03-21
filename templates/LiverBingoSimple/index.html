@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html data-theme="cupcake">
+
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>My App</title>
+</head>
+
+<body>
+ <div id="App"></div>
+
+ <!-- 設定ファイル（ESモジュール指定） -->
+ <script type="module" src="./src/config.js"></script>
+
+ <!-- ■■■対象のエントリーポイント■■■ -->
+ <script type="module">
+  import "./src/main.ts";
+
+  // テーマを設定（Vueで管理する場合は不要）
+  document.documentElement.setAttribute("data-theme", "cupcake");
+ </script>
+</body>
+
+</html>

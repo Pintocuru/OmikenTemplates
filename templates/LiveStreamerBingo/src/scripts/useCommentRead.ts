@@ -1,50 +1,44 @@
 // composables/useCommentRead.ts
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { BingoItem } from './types';
+import { createProcessComment } from './CreateProcessComment';
 import { ConfigUserType } from '@common/commonTypes';
+import { GetUserComments } from '@common/subscribe/GetUserComments';
 import { GetUserVisits } from '@common/subscribe/GetUserVisits';
 
 export function useCommentRead() {
- let config: ConfigUserType = {
-  IS_DIFF_MODE: false,
-  ENABLED_SERVICES: [],
-  ALLOWED_IDS: [],
-  IS_GIFT: false,
-  KEYWORDS: []
- };
-
  // State to manage initialization
- const state = ref({
-  isInitFlag: false
+ const state = reactive({
+  isInitFlag: false,
+  configUser: {
+   IS_DIFF_MODE: false,
+   ENABLED_SERVICES: [],
+   ALLOWED_IDS: [],
+   IS_GIFT: false,
+   KEYWORDS: []
+  }
  });
 
- //
+ // ビンゴ内容が変化する度に取得する条件も変化させる
  const initializeGetUserVisits = (newConfig: ConfigUserType) => {
   // Update config
-  config = newConfig;
+  state.configUser = newConfig;
 
+  // フィルタリングしたコメントを取得
+  const { fetchComments: userFetch } = GetUserComments(state.configUser);
   // Re-initialize fetchComments with the new config
-  const { fetchComments } = GetUserVisits(config);
+  const { fetchComments: visitFetch } = GetUserVisits(state.configUser);
+  // コメントを受け取った時の処理
+  const { processCommentUser, processCommentVisit } = createProcessComment();
 
   // Execute fetchComments
-  fetchComments((visits) => {
-   processComment(visits);
+  userFetch((comments) => {
+   processCommentUser(comments);
+  });
+  visitFetch((visits) => {
+   processCommentVisit(visits);
   });
  };
 
- // Watch for changes in config and re-initialize
- watch(
-  () => config,
-  (newConfig) => {
-   initializeGetUserVisits(newConfig);
-  },
-  { immediate: true }
- );
-
- // Initial mount
- onMounted(() => {
-  initializeGetUserVisits(config);
- });
-
- return {};
+ return { initializeGetUserVisits };
 }

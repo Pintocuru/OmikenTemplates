@@ -37,6 +37,3 @@ export interface ConfettiStyle {
 export interface Confetti {
  style: ConfettiStyle;
 }
-
-// ビンゴパターン（勝利条件）の型
-export type WinPattern = number[];

@@ -1,0 +1,13 @@
+{
+ "name": "liver-bingo-simple",
+ "version": "0.1.0",
+ "description": "ビンゴ",
+ "scripts": {
+  "dev:bingoSimple": "vite",
+  "build:bingoSimple": "webpack"
+ },
+ "author": "Pintocuru",
+ "license": "Apache-2.0",
+ "main": "src/main.js",
+ "type": "module"
+}

@@ -5,10 +5,10 @@ export function useBingoItems() {
  // 難易度別 & 固定項目
  const rawItems: BingoItem[] = [
   // 配信状況
-  { text: '初コメント', mode: 'syoken', value: [3, 5, 7, 10, 15], weight: 5 },
+  { text: '初コメ', mode: 'syoken', value: [3, 5, 7, 10, 15], weight: 5 },
   { text: '配信開始から X分経過', value: [5, 10, 15, 20, 30], weight: 5 },
   { text: 'スパチャ送信 X回以上', value: [2, 4, 6, 8, 10], weight: 3 },
-  { text: '視聴者数 X人以上', value: [30, 50, 70, 100, 150], weight: 4 },
+  { text: '視聴者数 X人以上', value: [5, 10, 20, 50, 300], weight: 4 },
   { text: 'メンバーシップ加入 X人以上', value: [1, 2, 3, 4, 5], difficulty: 4, weight: 2 },
 
   // コメント内容
@@ -52,26 +52,7 @@ export function useBingoItems() {
   rawItems // Level5
  ];
 
- const shuffleArray = <T>(array: T[]): T[] => {
-  const newArray = [...array];
-  for (let i = newArray.length - 1; i > 0; i--) {
-   const j = Math.floor(Math.random() * (i + 1));
-   [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-  }
-  return newArray;
- };
-
- const formatCellText = (item: BingoItem, targetValue?: number): string => {
-  if (!targetValue && item.value === null) {
-   return item.text; // 固定項目
-  }
-
-  return targetValue ? item.text.replace(/X/g, targetValue.toString()) : item.text;
- };
-
  return {
-  items,
-  shuffleArray,
-  formatCellText
+  items
  };
 }

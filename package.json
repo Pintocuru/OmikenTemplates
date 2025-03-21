@@ -19,6 +19,7 @@
   "@onecomme.com/onesdk": "^7.0.0",
   "@vitejs/plugin-vue": "^5.2.1",
   "animejs": "^3.2.2",
+  "daisyui": "^5.0.9",
   "emoji-regex": "^10.4.0",
   "lucide-vue-next": "^0.475.0",
   "vite-plugin-html": "^3.2.2",
