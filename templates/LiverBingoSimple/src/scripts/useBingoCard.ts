@@ -6,7 +6,7 @@ export function useBingoCard() {
  const { items } = useBingoItems();
 
  // 状態管理
- const cardSize: Ref<3 | 4 | 5> = ref(4);
+ const cardSize: Ref<3 | 4 | 5> = ref(5);
  const difficultyLevel: Ref<number> = ref(3);
  const clicksRequired: Ref<number> = ref(3);
 

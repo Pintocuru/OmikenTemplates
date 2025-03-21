@@ -1,12 +1,17 @@
 // tailwind.config.js
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
+ darkMode: 'class',
  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
  theme: {
-  extend: {}
+  extend: {
+   colors: {
+    transparent: 'transparent'
+   }
+  }
  },
- plugins: [require('daisyui')],
+ plugins: [import('daisyui')],
  daisyui: {
-  themes: ['light', 'dark', 'cupcake', 'cyberpunk'] // 追加可能
+  themes: ['cupcake', 'light', 'dark']
  }
 };

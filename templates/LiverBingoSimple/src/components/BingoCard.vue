@@ -6,31 +6,36 @@
    :key="index"
    @click="handleCellClick(index)"
    @contextmenu.prevent="decrementCell(index)"
+   class="btn flex flex-col items-center justify-center p-2 text-center text-sm rounded-lg transition-all transform hover:scale-105 cursor-pointer relative"
    :class="[
-    'flex flex-col items-center justify-center p-2 text-center text-sm rounded transition-all transform hover:scale-105 cursor-pointer relative',
-    getCellSize(cardSize),
     completedCells[index]
-     ? 'bg-purple-600 border-2 border-pink-400'
-     : 'bg-gray-800 bg-opacity-80 border-2 border-purple-600',
-    highlightedCells.includes(index) ? 'bg-pink-500 border-yellow-300' : ''
+     ? 'btn-primary border-2 border-secondary'
+     : 'bg-base-200 border border-primary',
+    highlightedCells.includes(index) ? 'bg-secondary text-white' : '',
+    getCellSize(cardSize)
    ]"
   >
-   <div class="cell-text">{{ formatCellText(cell.text, itemTargets[index]) }}</div>
-   <div
-    class="mt-2 text-xs font-bold counter-display"
-    :class="{ 'animate-pulse-count': isAnimating[index] }"
-   >
-    <span class="count-value">{{ cellProgress[index] }}</span
-    >/{{ itemTargets[index] }}
+   <div class="text-xs font-bold">{{ formatCellText(cell.text, itemTargets[index]) }}</div>
+
+   <!-- 数値（クリック時拡大アニメーション） -->
+   <div class="mt-1 text-xs font-bold">
+    <span
+     class="count-value transition-transform duration-200"
+     :class="{ 'scale-150 text-xl font-extrabold text-primary animate-pulse': isAnimating[index] }"
+    >
+     {{ cellProgress[index] }}
+    </span>
+    / {{ itemTargets[index] }}
    </div>
+
    <!-- 進捗バー -->
-   <div class="absolute bottom-1 left-1 right-1 h-1 bg-gray-700 rounded-full overflow-hidden">
-    <div
-     class="h-full bg-green-400 transition-all duration-300"
-     :style="{ width: `${(cellProgress[index] / itemTargets[index]) * 100}%` }"
-    ></div>
-   </div>
-   <!-- クリック時の円形アニメーション -->
+   <progress
+    class="progress progress-success w-full mt-1"
+    :value="cellProgress[index]"
+    :max="itemTargets[index]"
+   ></progress>
+
+   <!-- クリック時のアニメーション -->
    <div v-show="isAnimating[index]" class="absolute inset-0 flex items-center justify-center">
     <div class="circle-animation"></div>
    </div>
@@ -60,11 +65,11 @@ const isAnimating = ref(Array(props.bingoItems.length).fill(false));
 const getCellSize = (size: number) => {
  switch (size) {
   case 3:
-   return 'w-24 h-24';
+   return 'w-32 h-32';
   case 4:
-   return 'w-20 h-20';
+   return 'w-28 h-28';
   case 5:
-   return 'w-16 h-16';
+   return 'w-24 h-24';
   default:
    return 'w-24 h-24';
  }
@@ -99,7 +104,7 @@ const formatCellText = (text: string, target: number) => {
  if (!text) return '';
 
  // カードサイズに応じて文字数を調整
- const maxLength = props.cardSize === 3 ? 25 : props.cardSize === 4 ? 20 : 15;
+ const maxLength = props.cardSize === 5 ? 15 : 24;
  if (text.length > maxLength) return text.substring(0, maxLength - 3) + '...';
 
  return text;
