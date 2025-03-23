@@ -11,6 +11,7 @@
 
   <!-- コントロールパネル -->
   <ControlPanel
+   v-model:theme="theme"
    v-model:difficultyLevel="difficultyLevel"
    v-model:clicksRequired="clicksRequired"
    @generate="generateBingoCard"
@@ -48,6 +49,7 @@ import { useBingoCelebration } from './scripts/useBingoCelebration';
 // コンポーザブルから機能を取得
 const {
  cardSize,
+ theme,
  difficultyLevel,
  clicksRequired,
  bingoItems,

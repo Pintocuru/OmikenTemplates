@@ -1,4 +1,4 @@
-import { ref, computed, Ref, ComputedRef } from 'vue';
+import { ref, computed, Ref, ComputedRef, watch } from 'vue';
 import { useBingoItems } from './useBingoItems';
 import { BingoItem } from './types';
 
@@ -6,9 +6,10 @@ export function useBingoCard() {
  const { items } = useBingoItems();
 
  // 状態管理
- const cardSize: Ref<3 | 4 | 5> = ref(5);
+ const cardSize: Ref<3 | 4 | 5> = ref(3);
  const difficultyLevel: Ref<number> = ref(3);
  const clicksRequired: Ref<number> = ref(3);
+ const theme = ref('light'); // テーマの管理
 
  // 配列サイズをcardSizeに基づいて動的に計算
  const totalCells = computed(() => cardSize.value * cardSize.value);
@@ -94,8 +95,11 @@ export function useBingoCard() {
    }
   }
 
+  // 重複を防ぐためにSetを利用
+  const uniqueItems = Array.from(new Set(selectedItems));
+
   // アイテムをシャッフルしてカードサイズに応じた数を選択
-  const selectedBingoItems = shuffleArray(selectedItems).slice(0, totalCells.value);
+  const selectedBingoItems = shuffleArray(uniqueItems).slice(0, totalCells.value);
 
   // 項目テキストと目標値を設定
   bingoItems.value = selectedBingoItems;
@@ -125,20 +129,27 @@ export function useBingoCard() {
   return newArray;
  };
 
+ // カードのリセット
  const resetCard = (): void => {
   cellProgress.value = Array(totalCells.value).fill(0);
  };
 
+ // 特定のマスの増減
  const incrementCell = (index: number): void => {
   cellProgress.value[index]++;
  };
-
  const decrementCell = (index: number): void => {
   if (cellProgress.value[index] > 0) cellProgress.value[index]--;
  };
 
+ // テーマ変更の監視
+ watch(theme, (newTheme) => {
+  document.documentElement.setAttribute('data-theme', newTheme);
+ });
+
  return {
   cardSize,
+  theme,
   difficultyLevel,
   clicksRequired,
   bingoItems,

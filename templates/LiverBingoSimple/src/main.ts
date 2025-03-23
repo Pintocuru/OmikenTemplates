@@ -1,6 +1,7 @@
 // src/main.ts
 import { createApp } from 'vue';
 import App from './App.vue';
+import '../assets/app.css';
 
 // OneSDKの初期化を待ってからアプリをマウント
 async function initApp() {

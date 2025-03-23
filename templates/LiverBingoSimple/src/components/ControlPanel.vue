@@ -8,7 +8,8 @@
    <div class="flex justify-between items-center mb-4">
     <h2 class="text-lg font-bold">設定パネル</h2>
     <button @click="$emit('toggleControlPanel')" class="btn btn-circle btn-ghost">
-     <span class="material-icons">close</span>
+     <X class="w-6 h-6" />
+     <!-- バツ印のアイコン -->
     </button>
    </div>
 
@@ -24,7 +25,7 @@
        <button
         v-for="level in 5"
         :key="level"
-        @click="setDifficulty(level)"
+        @click="generateWithDifficulty(level)"
         class="btn btn-sm"
         :class="difficultyLevel === level ? 'btn-primary' : 'btn-outline'"
        >
@@ -33,28 +34,19 @@
       </div>
      </div>
 
-     <!-- 基本達成回数 -->
+     <!-- テーマ選択 -->
      <div>
-      <label class="block text-sm font-medium mb-1">基本達成回数: {{ clicksRequired }}</label>
-      <input
-       type="range"
-       v-model="localClicksRequired"
-       min="1"
-       max="10"
-       class="range"
-       @input="updateClicksRequired"
-      />
-      <div class="flex justify-between text-xs text-gray-400">
-       <span>1</span>
-       <span>5</span>
-       <span>10</span>
-      </div>
+      <label class="block text-sm font-medium mb-1">テーマ: {{ theme }}</label>
+      <select class="select select-bordered w-full" v-model="themeValue">
+       <option v-for="themeOption in themes" :key="themeOption" :value="themeOption">
+        {{ themeOption }}
+       </option>
+      </select>
      </div>
 
-     <!-- ボタン -->
-     <div class="flex gap-2 mt-4">
-      <button @click="$emit('generate')" class="btn btn-success flex-1">カード生成</button>
-      <button @click="$emit('reset')" class="btn btn-error flex-1">リセット</button>
+     <!-- リセットボタン -->
+     <div class="flex justify-center mt-4">
+      <button @click="$emit('reset')" class="btn btn-error w-full">リセット</button>
      </div>
     </div>
    </div>
@@ -63,20 +55,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
+import { X } from 'lucide-vue-next';
 
-const props = defineProps({
- difficultyLevel: {
-  type: Number,
-  default: 3
- },
- clicksRequired: {
-  type: Number,
-  default: 3
- }
-});
+const props = defineProps<{
+ theme: string;
+ difficultyLevel: number;
+ clicksRequired: number;
+}>();
 
 const emit = defineEmits([
+ 'update:theme',
  'update:difficultyLevel',
  'update:clicksRequired',
  'generate',
@@ -84,7 +73,56 @@ const emit = defineEmits([
  'toggleControlPanel'
 ]);
 
+// v-modelの双方向バインディングのための計算プロパティ
+const themeValue = computed({
+ get() {
+  return props.theme;
+ },
+ set(value: string) {
+  emit('update:theme', value);
+ }
+});
+
 const localClicksRequired = ref(props.clicksRequired);
+
+// テーマのリスト
+const themes = [
+ 'light',
+ 'dark',
+ 'cupcake',
+ 'bumblebee',
+ 'emerald',
+ 'corporate',
+ 'synthwave',
+ 'retro',
+ 'cyberpunk',
+ 'valentine',
+ 'halloween',
+ 'garden',
+ 'forest',
+ 'aqua',
+ 'lofi',
+ 'pastel',
+ 'fantasy',
+ 'wireframe',
+ 'black',
+ 'luxury',
+ 'dracula',
+ 'cmyk',
+ 'autumn',
+ 'business',
+ 'acid',
+ 'lemonade',
+ 'night',
+ 'coffee',
+ 'winter',
+ 'dim',
+ 'nord',
+ 'sunset',
+ 'caramellatte',
+ 'abyss',
+ 'silk'
+];
 
 watch(
  () => props.clicksRequired,
@@ -93,11 +131,9 @@ watch(
  }
 );
 
-const setDifficulty = (level: number) => {
+// 難易度を設定してカードを生成する
+const generateWithDifficulty = (level: number) => {
  emit('update:difficultyLevel', level);
-};
-
-const updateClicksRequired = () => {
- emit('update:clicksRequired', localClicksRequired.value);
+ emit('generate');
 };
 </script>

@@ -6,22 +6,17 @@
  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
  <title>My App</title>
  <!-- app.css -->
- <link href="./app.css" rel="stylesheet" type="text/css" />
+ <link href="./assets/app.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
  <div id="App"></div>
 
  <!-- 設定ファイル（ESモジュール指定） -->
- <script type="module" src="./src/config.js"></script>
+ <script type="module" src="./assets/config.js"></script>
 
  <!-- エントリーポイント -->
- <script type="module">
-  import "./src/main.ts";
-
-  // JavaScriptでテーマを設定する場合は以下のようにします
-  document.documentElement.setAttribute("data-theme", "halloween");
- </script>
+ <script type="module" src="./src/main.js"></script>
 </body>
 
 </html>

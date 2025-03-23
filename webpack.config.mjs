@@ -5,6 +5,8 @@ import { VueLoaderPlugin } from 'vue-loader';
 import TerserPlugin from 'terser-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
 
 // 現在のファイルのディレクトリパスを取得
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -58,14 +60,7 @@ export function createConfig(childDir, isOneSDK = true) {
     },
     {
      test: /\.css$/, // CSSの処理
-     use: [
-      MiniCssExtractPlugin.loader,
-      'css-loader',
-      {
-       loader: 'postcss-loader',
-       options: { postcssOptions: { plugins: ['tailwindcss', 'autoprefixer'] } }
-      }
-     ]
+     use: ['style-loader', 'css-loader', 'postcss-loader']
     },
     {
      test: /\.(png|jpe?g|gif|svg)$/,
