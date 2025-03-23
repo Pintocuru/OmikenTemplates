@@ -6,7 +6,7 @@
    :key="index"
    @click="handleCellClick(index)"
    @contextmenu.prevent="decrementCell(index)"
-   class="btn flex flex-col items-center justify-center p-2 text-center text-sm rounded-lg transition-all transform hover:scale-105 cursor-pointer relative"
+   class="btn flex flex-col items-center justify-center p-2 text-center text-sm rounded-lg transition-all transform hover:scale-150 cursor-pointer relative"
    :class="[
     completedCells[index]
      ? 'btn-primary border-2 border-secondary'
@@ -14,14 +14,19 @@
     highlightedCells.includes(index) ? 'bg-secondary text-white' : '',
     getCellSize(cardSize)
    ]"
+   :style="{ zIndex: isHovered[index] ? 9999 : 'auto' }"
+   @mouseenter="isHovered[index] = true"
+   @mouseleave="isHovered[index] = false"
   >
-   <div class="text-xs font-bold">{{ formatCellText(cell.text, itemTargets[index]) }}</div>
+   <div class="text-md font-bold">{{ formatCellText(cell.text, itemTargets[index]) }}</div>
 
    <!-- 数値（クリック時拡大アニメーション） -->
-   <div class="mt-1 text-xs font-bold">
+   <div class="mt-1 text-xl font-bold">
     <span
      class="count-value transition-transform duration-200"
-     :class="{ 'scale-150 text-xl font-extrabold text-primary animate-pulse': isAnimating[index] }"
+     :class="{
+      'scale-150 text-xl font-extrabold text-secondary animate-pulse': isAnimating[index]
+     }"
     >
      {{ cellProgress[index] }}
     </span>
@@ -45,7 +50,7 @@
 
 <script setup lang="ts">
 import { BingoItem } from '../scripts/types';
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
  cardSize: 3 | 4 | 5;
@@ -60,6 +65,7 @@ const emit = defineEmits(['cell-click', 'cell-right-click']);
 
 // アニメーション制御用の状態
 const isAnimating = ref(Array(props.bingoItems.length).fill(false));
+const isHovered = ref(Array(props.bingoItems.length).fill(false));
 
 // セルサイズを動的に計算
 const getCellSize = (size: number) => {
@@ -159,18 +165,5 @@ const formatCellText = (text: string, target: number) => {
   transform: scale(1);
   color: white;
  }
-}
-
-/* カードサイズごとのフォントサイズ調整 */
-.grid-cols-3 .cell-text {
- font-size: 0.875rem;
-}
-
-.grid-cols-4 .cell-text {
- font-size: 0.75rem;
-}
-
-.grid-cols-5 .cell-text {
- font-size: 0.675rem;
 }
 </style>

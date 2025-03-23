@@ -13,7 +13,6 @@
   <ControlPanel
    v-model:theme="theme"
    v-model:difficultyLevel="difficultyLevel"
-   v-model:clicksRequired="clicksRequired"
    @generate="generateBingoCard"
    @reset="resetBingo"
    @toggleControlPanel="toggleControlPanel"
@@ -51,7 +50,6 @@ const {
  cardSize,
  theme,
  difficultyLevel,
- clicksRequired,
  bingoItems,
  cellProgress,
  itemTargets,

@@ -8,7 +8,6 @@ export function useBingoCard() {
  // 状態管理
  const cardSize: Ref<3 | 4 | 5> = ref(3);
  const difficultyLevel: Ref<number> = ref(3);
- const clicksRequired: Ref<number> = ref(3);
  const theme = ref('light'); // テーマの管理
 
  // 配列サイズをcardSizeに基づいて動的に計算
@@ -72,7 +71,6 @@ export function useBingoCard() {
   const newSize = totalCells.value;
   bingoItems.value = Array(newSize).fill('');
   cellProgress.value = Array(newSize).fill(0);
-  itemTargets.value = Array(newSize).fill(clicksRequired.value);
  };
 
  // カードサイズ変更時のハンドラー
@@ -106,16 +104,12 @@ export function useBingoCard() {
 
   // 各セルの目標値を設定
   itemTargets.value = selectedBingoItems.map((item) => {
-   if (item.value === null) return 1; // 固定項目は1回で達成
-
-   // 新しい構造に対応: valueが配列の場合
-   if (Array.isArray(item.value) && item.value.length > 0) {
-    // 難易度に基づいてvalueの配列からインデックスを選択
-    const index = Math.min(difficultyLevel.value - 1, item.value.length - 1);
-    return item.value[index];
+   // 難易度に基づいてvalueの配列からインデックスを選択
+   if (Array.isArray(item.values) && item.values.length > 0) {
+    const index = Math.min(difficultyLevel.value - 1, item.values.length - 1);
+    return item.values[index];
    }
-
-   return clicksRequired.value; // デフォルト値
+   return 1; // 固定項目は1回で達成
   });
  };
 
@@ -139,19 +133,59 @@ export function useBingoCard() {
   cellProgress.value[index]++;
  };
  const decrementCell = (index: number): void => {
-  if (cellProgress.value[index] > 0) cellProgress.value[index]--;
+  if (cellProgress.value[index] > 0) {
+   cellProgress.value[index]--;
+  } else {
+   // セルの値が0以下の場合、そのセルの内容を変更する
+   // 現在のレベルに基づいてアイテムを取得
+   let availableItems: BingoItem[] = [];
+   for (let i = 1; i <= difficultyLevel.value; i++) {
+    if (items[i] && items[i].length > 0) {
+     availableItems = availableItems.concat(items[i]);
+    }
+   }
+
+   // 現在セルにあるアイテムを除外
+   const currentItem = bingoItems.value[index];
+   availableItems = availableItems.filter(
+    (item) => item.text !== (currentItem ? currentItem.text : '')
+   );
+
+   // ランダムに新しいアイテムを選択
+   if (availableItems.length > 0) {
+    const randomIndex = Math.floor(Math.random() * availableItems.length);
+    const newItem = availableItems[randomIndex];
+
+    // アイテムを更新
+    bingoItems.value[index] = newItem;
+
+    // 目標値も更新
+    if (Array.isArray(newItem.values) && newItem.values.length > 0) {
+     const valueIndex = Math.min(difficultyLevel.value - 1, newItem.values.length - 1);
+     itemTargets.value[index] = newItem.values[valueIndex];
+    } else {
+     itemTargets.value[index] = 1;
+    }
+
+    // 進捗をリセット
+    cellProgress.value[index] = 0;
+   }
+  }
  };
 
  // テーマ変更の監視
- watch(theme, (newTheme) => {
-  document.documentElement.setAttribute('data-theme', newTheme);
- });
+ watch(
+  theme,
+  (newTheme) => {
+   document.documentElement.setAttribute('data-theme', newTheme);
+  },
+  { immediate: true }
+ );
 
  return {
   cardSize,
   theme,
   difficultyLevel,
-  clicksRequired,
   bingoItems,
   cellProgress,
   itemTargets,

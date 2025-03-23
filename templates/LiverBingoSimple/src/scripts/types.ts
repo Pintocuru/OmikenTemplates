@@ -4,7 +4,7 @@
 export interface BingoItem {
  text: string; // お題
  weight?: number; // 出現率
- value?: [number, number, number, number, number] | number; // levelごとの規定数
+ values?: [number, number, number, number, number] | number; // levelごとの規定数
  unit?: number; // 単位
  difficulty?: number; // 規定のlevel以上で出現するもの
  /**

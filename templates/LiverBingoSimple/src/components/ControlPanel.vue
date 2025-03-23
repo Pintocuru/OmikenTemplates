@@ -61,13 +61,11 @@ import { X } from 'lucide-vue-next';
 const props = defineProps<{
  theme: string;
  difficultyLevel: number;
- clicksRequired: number;
 }>();
 
 const emit = defineEmits([
  'update:theme',
  'update:difficultyLevel',
- 'update:clicksRequired',
  'generate',
  'reset',
  'toggleControlPanel'
@@ -82,8 +80,6 @@ const themeValue = computed({
   emit('update:theme', value);
  }
 });
-
-const localClicksRequired = ref(props.clicksRequired);
 
 // テーマのリスト
 const themes = [
@@ -123,13 +119,6 @@ const themes = [
  'abyss',
  'silk'
 ];
-
-watch(
- () => props.clicksRequired,
- (newVal) => {
-  localClicksRequired.value = newVal;
- }
-);
 
 // 難易度を設定してカードを生成する
 const generateWithDifficulty = (level: number) => {
