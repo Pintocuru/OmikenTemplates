@@ -1,12 +1,12 @@
 <!-- BingoCard.vue -->
 <template>
- <div :class="['grid gap-1 mb-6', `grid-cols-${cardSize} grid-rows-${cardSize}`]">
+ <div :class="['grid gap-1', `grid-cols-${cardSize} grid-rows-${cardSize}`]">
   <div
    v-for="(cell, index) in bingoItems"
    :key="index"
    @click="handleCellClick(index)"
    @contextmenu.prevent="decrementCell(index)"
-   class="btn flex flex-col items-center justify-center p-2 text-center text-sm rounded-lg transition-all transform hover:scale-150 cursor-pointer relative"
+   class="btn flex flex-col items-center justify-center p-0 text-center text-sm rounded-lg transition-all transform hover:scale-150 cursor-pointer relative"
    :class="[
     completedCells[index]
      ? 'btn-primary border-2 border-secondary'
@@ -18,10 +18,10 @@
    @mouseenter="isHovered[index] = true"
    @mouseleave="isHovered[index] = false"
   >
-   <div class="text-md font-bold">{{ formatCellText(cell.text, itemTargets[index]) }}</div>
+   <div class="text-md">{{ formatCellText(cell.text, itemTargets[index]) }}</div>
 
    <!-- 数値（クリック時拡大アニメーション） -->
-   <div class="mt-1 text-xl font-bold">
+   <div class="mt-0 text-xl">
     <span
      class="count-value transition-transform duration-200"
      :class="{
@@ -35,7 +35,7 @@
 
    <!-- 進捗バー -->
    <progress
-    class="progress progress-success w-full mt-1"
+    class="progress progress-success w-full px-2"
     :value="cellProgress[index]"
     :max="itemTargets[index]"
    ></progress>

@@ -1,11 +1,14 @@
 <!-- App.vue -->
 <template>
- <div class="flex flex-col items-center min-h-screen py-8">
+ <div class="flex flex-col items-center min-h-screen">
   <!-- ビンゴタイトルバー（設定ボタン付き） -->
-  <div class="navbar bg-primary text-primary-content rounded mb-4">
-   <div class="flex-1 text-xl font-bold">ライバービンゴ</div>
-   <button @click="toggleControlPanel" class="btn btn-secondary">
-    <span class="material-icons">settings</span>
+  <div class="bg-primary text-primary-content rounded flex items-center px-4 mb-1">
+   <div class="text-center flex-1 text-3xl font-bungee">ライバービンゴ</div>
+   <button
+    @click="toggleControlPanel"
+    class="btn btn-outline btn-sm text-primary-content border-primary ml-2 p-2 rounded-full flex items-center justify-center"
+   >
+    <LucideSettings class="w-5 h-5" />
    </button>
   </div>
 
@@ -44,6 +47,7 @@ import BingoCard from './components/BingoCard.vue';
 import BingoNotification from './components/BingoNotification.vue';
 import { useBingoCard } from './scripts/useBingoCard';
 import { useBingoCelebration } from './scripts/useBingoCelebration';
+import { LucideSettings } from 'lucide-vue-next';
 
 // コンポーザブルから機能を取得
 const {
@@ -98,3 +102,13 @@ onMounted(() => {
  generateBingoCard();
 });
 </script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rampart+One&display=swap');
+
+.font-bungee {
+ font-family: 'Rampart One', sans-serif;
+ font-weight: 400;
+ font-style: normal;
+}
+</style>
