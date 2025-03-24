@@ -5,14 +5,19 @@ export function useBingoItems() {
  // 難易度別
  const rawItems: BingoItem[] = [
   // 配信状況(シンプル版では自己申告も含まれる)
-  { text: '初コメ', mode: 'syoken', values: [1, 3, 10, 25, 50], weight: 10 },
-  { text: '初コメ', mode: 'syoken', values: [2, 7, 20, 50, 100], weight: 7 },
-  { text: '初コメ', mode: 'syoken', values: [5, 15, 30, 80, 200], weight: 3 },
-  { text: 'スパチャ金額', values: [1, 2, 5, 10, 50], unit: 100, weight: 7 },
-  { text: 'スパチャ回数', values: [1, 2, 3, 5, 25], weight: 7 },
-  { text: 'メンバーシップ加入', values: [1, 2, 3, 5, 20], weight: 7 },
-  { text: 'メンバーシップ加入', values: [2, 3, 5, 10, 50], weight: 4 },
-  { text: 'メンバーシップ加入', values: [3, 5, 8, 15, 100], weight: 1 },
+  { text: '初コメ(初級)', values: [1, 3, 10, 25, 50], weight: 10 },
+  { text: '初コメ(中級)', values: [2, 7, 20, 50, 100], weight: 7 },
+  { text: '初コメ(上級)', values: [5, 15, 30, 80, 200], weight: 3 },
+  { text: '初コメ(超級)', values: [10, 30, 70, 200, 500], weight: 1 },
+  { text: 'スパチャ金額', values: [1, 1, 2, 5, 20], unit: 100, weight: 10 },
+  { text: 'スパチャ金額', values: [2, 2, 5, 20, 50], unit: 100, weight: 7 },
+  { text: 'スパチャ金額', values: [5, 5, 10, 50, 100], unit: 100, weight: 3 },
+  { text: 'スパチャ人数', values: [1, 1, 3, 5, 10], weight: 10 },
+  { text: 'スパチャ人数', values: [2, 3, 5, 10, 25], weight: 7 },
+  { text: 'スパチャ人数', values: [3, 5, 7, 20, 50], weight: 3 },
+  { text: 'メンバーシップ加入', values: [1, 2, 3, 5, 10], weight: 7 },
+  { text: 'メンバーシップ加入', values: [2, 3, 5, 10, 25], weight: 4 },
+  { text: 'メンバーシップ加入', values: [3, 5, 7, 20, 50], weight: 1 },
   { text: '同時視聴者数', values: [3, 5, 20, 50, 200], weight: 10 },
   { text: '同時視聴者数', values: [5, 10, 50, 100, 500], weight: 7 },
   { text: '同時視聴者数', values: [10, 20, 100, 150, 1000], weight: 3 },
@@ -20,6 +25,16 @@ export function useBingoItems() {
   { text: '高評価', values: [5, 20, 40, 70, 200], weight: 7 },
   { text: '高評価', values: [10, 30, 80, 100, 500], weight: 3 },
   { text: '配信がホットトピックに載る', weight: 5 },
+
+  // コメント内容
+  { text: '「かわいい」コメント人数', values: [5, 10, 30, 50, 100], weight: 4 },
+  { text: '「好き」コメント人数', values: [5, 10, 30, 50, 100], weight: 4 },
+  { text: '「すごい」コメント人数', values: [5, 10, 30, 50, 100], weight: 4 },
+  { text: '「草」「w」コメント人数', values: [5, 10, 30, 50, 100], weight: 4 },
+  { text: '「助かる」コメント人数', values: [5, 10, 30, 50, 100], weight: 4 },
+  { text: 'ファンマを含むコメント人数', values: [5, 10, 30, 50, 100], weight: 4 },
+  { text: '絵文字を含むコメント人数', values: [5, 10, 30, 50, 100], weight: 4 },
+  { text: 'スタンプの使用人数', values: [5, 10, 30, 50, 100], weight: 4 },
 
   // コメント(特殊)
   { text: '同じ絵文字が X回連続で使われる', values: [3, 5, 5, 5, 20], weight: 5 },
@@ -65,15 +80,6 @@ export function useBingoItems() {
   { text: 'モデレーターがコメント対応する', weight: 1 },
   { text: 'ファンアートがSNSで投稿される', values: [1, 1, 2, 3, 10], weight: 3 }
  ];
-
- // コメント内容(シンプル版では未使用)
- //{ text: '「かわいい」コメント', values: [5, 8, 12, 15, 20], weight: 5 },
- //{ text: '「草」や「w」のコメント', values: [10, 15, 20, 25, 30], weight: 4 },
- //{ text: '「好き」のコメント', values: [5, 8, 10, 12, 15], weight: 3 },
- //{ text: '「助かる」のコメント', values: [3, 6, 8, 10, 12], weight: 4 },
- //{ text: '絵文字を含むコメント', values: [5, 10, 15, 20, 25], weight: 4 },
- //{ text: 'スタンプの使用', values: [3, 6, 9, 12, 15], weight: 4 },
- //{ text: '「すごい」コメント', values: [8, 12, 15, 18, 20], weight: 3 },
 
  // 難易度でアイテムをグループ化
  const items: BingoItem[][] = [

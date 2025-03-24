@@ -1,12 +1,18 @@
 <!-- BingoCard.vue -->
 <template>
- <div :class="['grid gap-1', `grid-cols-${cardSize} grid-rows-${cardSize}`]">
+ <div
+  class="grid gap-1"
+  :style="{
+   gridTemplateColumns: `repeat(${cardSize}, minmax(0, 1fr))`,
+   gridTemplateRows: `repeat(${cardSize}, minmax(0, 1fr))`
+  }"
+ >
   <div
    v-for="(cell, index) in bingoItems"
    :key="index"
    @click="handleCellClick(index)"
    @contextmenu.prevent="decrementCell(index)"
-   class="btn flex flex-col items-center justify-center p-0 text-center text-sm rounded-lg transition-all transform hover:scale-150 cursor-pointer relative"
+   class="btn flex flex-col items-center justify-center p-1 text-center text-base rounded-lg transition-all transform hover:scale-150 cursor-pointer relative"
    :class="[
     completedCells[index]
      ? 'btn-primary border-2 border-secondary'
@@ -21,11 +27,11 @@
    <div class="text-md">{{ formatCellText(cell.text, itemTargets[index]) }}</div>
 
    <!-- 数値（クリック時拡大アニメーション） -->
-   <div class="mt-0 text-xl">
+   <div class="mt-0 text-2xl">
     <span
      class="count-value transition-transform duration-200"
      :class="{
-      'scale-150 text-xl font-extrabold text-secondary animate-pulse': isAnimating[index]
+      'scale-150 font-extrabold text-secondary animate-pulse': isAnimating[index]
      }"
     >
      {{ cellProgress[index] }}
@@ -35,7 +41,7 @@
 
    <!-- 進捗バー -->
    <progress
-    class="progress progress-success w-full px-2"
+    class="progress progress-success w-full absolute bottom-0 left-0 bg-opacity-80"
     :value="cellProgress[index]"
     :max="itemTargets[index]"
    ></progress>
@@ -49,8 +55,8 @@
 </template>
 
 <script setup lang="ts">
-import { BingoItem } from '../scripts/types';
 import { ref, watch } from 'vue';
+import { BingoItem } from '@/scripts/types';
 
 const props = defineProps<{
  cardSize: 3 | 4 | 5;

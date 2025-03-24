@@ -37,11 +37,16 @@
      <!-- テーマ選択 -->
      <div>
       <label class="block text-sm font-medium mb-1">テーマ: {{ theme }}</label>
-      <select class="select select-bordered w-full" v-model="themeValue">
-       <option v-for="themeOption in themes" :key="themeOption" :value="themeOption">
-        {{ themeOption }}
-       </option>
-      </select>
+      <details class="dropdown">
+       <summary class="btn m-1">{{ themeValue || 'テーマを選択' }}</summary>
+       <ul
+        class="menu dropdown-content bg-primary text-primary-content rounded-box z-1 w-52 p-2 shadow-sm max-h-60 overflow-y-auto grid grid-cols-3 gap-2"
+       >
+        <li v-for="themeOption in themes" :key="themeOption" class="col-span-1">
+         <a @click.prevent="themeValue = themeOption">{{ themeOption }}</a>
+        </li>
+       </ul>
+      </details>
      </div>
 
      <!-- リセットボタン -->
@@ -55,7 +60,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { computed } from 'vue';
+import { themes } from '@/scripts/types';
 import { X } from 'lucide-vue-next';
 
 const props = defineProps<{
@@ -80,45 +86,6 @@ const themeValue = computed({
   emit('update:theme', value);
  }
 });
-
-// テーマのリスト
-const themes = [
- 'light',
- 'dark',
- 'cupcake',
- 'bumblebee',
- 'emerald',
- 'corporate',
- 'synthwave',
- 'retro',
- 'cyberpunk',
- 'valentine',
- 'halloween',
- 'garden',
- 'forest',
- 'aqua',
- 'lofi',
- 'pastel',
- 'fantasy',
- 'wireframe',
- 'black',
- 'luxury',
- 'dracula',
- 'cmyk',
- 'autumn',
- 'business',
- 'acid',
- 'lemonade',
- 'night',
- 'coffee',
- 'winter',
- 'dim',
- 'nord',
- 'sunset',
- 'caramellatte',
- 'abyss',
- 'silk'
-];
 
 // 難易度を設定してカードを生成する
 const generateWithDifficulty = (level: number) => {

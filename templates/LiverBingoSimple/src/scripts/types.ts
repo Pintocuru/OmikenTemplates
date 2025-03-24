@@ -23,18 +23,64 @@ export interface BingoItem {
  mode?: string; // わんコメで反応させる種類 syoken,count(合計keywords数),consecutive(連続target数)
  keywords?: string[]; // わんコメで反応させるワード
 }
-
-// 紙吹雪スタイルの型
-export interface ConfettiStyle {
- left: string;
- width: string;
- height: string;
- backgroundColor: string;
- animationDuration: string;
- animationDelay: string;
+export interface BingoCard {
+ cardSize: 3 | 4 | 5; // カードサイズ
+ theme?: ThemeType; // daisyUiによるテーマ
 }
 
-// 紙吹雪の型
-export interface Confetti {
- style: ConfettiStyle;
+// テーマのリスト
+export const themes = [
+ 'light',
+ 'dark',
+ 'cupcake',
+ 'bumblebee',
+ 'emerald',
+ 'corporate',
+ 'synthwave',
+ 'retro',
+ 'cyberpunk',
+ 'valentine',
+ 'halloween',
+ 'garden',
+ 'forest',
+ 'aqua',
+ 'lofi',
+ 'pastel',
+ 'fantasy',
+ 'wireframe',
+ 'black',
+ 'luxury',
+ 'dracula',
+ 'cmyk',
+ 'autumn',
+ 'business',
+ 'acid',
+ 'lemonade',
+ 'night',
+ 'coffee',
+ 'winter',
+ 'dim',
+ 'nord',
+ 'sunset',
+ 'caramellatte',
+ 'abyss',
+ 'silk'
+] as const;
+export type ThemeType = (typeof themes)[number];
+
+// ---
+
+// 追加configの型定義
+export interface BingoConfig {
+ bingoItems: BingoItem[];
+ bingoCard: BingoCard;
+}
+
+// ---
+
+// グローバル変数の型定義
+declare global {
+ interface Window {
+  BINGO_CONFIG?: BingoConfig;
+ }
 }

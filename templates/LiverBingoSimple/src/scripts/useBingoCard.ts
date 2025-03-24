@@ -1,81 +1,51 @@
-import { ref, computed, Ref, ComputedRef, watch } from 'vue';
-import { useBingoItems } from './useBingoItems';
-import { BingoItem } from './types';
+// src/scripts/useBingoCard.ts (リファクタリング版)
+import { ref, computed, Ref, ComputedRef, watch, onMounted } from 'vue';
+import { useBingoState } from '@/scripts/useBingoState';
+import { useWinPatterns } from '@/scripts/useWinPatterns';
+import { useControlPanel } from '@/scripts/useControlPanel';
+import { BingoItem } from '@/scripts/types';
+
+// config
+const rawItems: BingoItem[] = window.BINGO_CONFIG?.bingoItems || [];
+
+// ---
 
 export function useBingoCard() {
- const { items } = useBingoItems();
-
- // 状態管理
- const cardSize: Ref<3 | 4 | 5> = ref(3);
- const difficultyLevel: Ref<number> = ref(3);
- const theme = ref('light'); // テーマの管理
-
- // 配列サイズをcardSizeに基づいて動的に計算
- const totalCells = computed(() => cardSize.value * cardSize.value);
+ const { cardSize, difficultyLevel, theme, totalCells, setCardSize } = useBingoState();
+ const { winPatterns, checkBingo, completedLines, highlightedCells } = useWinPatterns(cardSize);
+ const { isControlPanelVisible, toggleControlPanel } = useControlPanel();
 
  // 動的サイズの配列を初期化
  const bingoItems: Ref<BingoItem[]> = ref(Array(totalCells.value).fill(''));
  const cellProgress: Ref<number[]> = ref(Array(totalCells.value).fill(0));
  const itemTargets: Ref<number[]> = ref(Array(totalCells.value).fill(3));
 
- // 勝利パターンを動的に生成する関数
- const generateWinPatterns = (): number[][] => {
-  const patterns: number[][] = [];
-  const size = cardSize.value;
-
-  // 横のパターン
-  for (let row = 0; row < size; row++) {
-   const pattern: number[] = [];
-   for (let col = 0; col < size; col++) {
-    pattern.push(row * size + col);
-   }
-   patterns.push(pattern);
-  }
-
-  // 縦のパターン
-  for (let col = 0; col < size; col++) {
-   const pattern: number[] = [];
-   for (let row = 0; row < size; row++) {
-    pattern.push(row * size + col);
-   }
-   patterns.push(pattern);
-  }
-
-  // 左上から右下への対角線
-  const diag1: number[] = [];
-  for (let i = 0; i < size; i++) {
-   diag1.push(i * size + i);
-  }
-  patterns.push(diag1);
-
-  // 右上から左下への対角線
-  const diag2: number[] = [];
-  for (let i = 0; i < size; i++) {
-   diag2.push(i * size + (size - 1 - i));
-  }
-  patterns.push(diag2);
-
-  return patterns;
- };
-
- // 勝利パターンを動的に更新
- const winPatterns = computed(() => generateWinPatterns());
-
  // 完了セルの計算
  const completedCells: ComputedRef<boolean[]> = computed(() => {
   return cellProgress.value.map((progress, index) => progress >= itemTargets.value[index]);
  });
+
+ // 難易度でアイテムをグループ化
+ const items: BingoItem[][] = [
+  [], // ダミー（難易度は1から始まるため）
+  rawItems.filter((item) => (item.difficulty ?? 1) >= 1), // Level1
+  rawItems.filter((item) => (item.difficulty ?? 1) >= 2), // Level2
+  rawItems.filter((item) => (item.difficulty ?? 1) >= 3), // Level3
+  rawItems.filter((item) => (item.difficulty ?? 1) >= 4), // Level4
+  rawItems // Level5
+ ];
 
  // カードサイズが変更されたときに配列を更新
  const updateArraySizes = () => {
   const newSize = totalCells.value;
   bingoItems.value = Array(newSize).fill('');
   cellProgress.value = Array(newSize).fill(0);
+  itemTargets.value = Array(newSize).fill(3);
  };
 
- // カードサイズ変更時のハンドラー
- const setCardSize = (size: 3 | 4 | 5) => {
-  cardSize.value = size;
+ // カードサイズ変更時の拡張ハンドラー
+ const updateCardSize = (size: 3 | 4 | 5) => {
+  setCardSize(size);
   updateArraySizes();
  };
 
@@ -132,6 +102,7 @@ export function useBingoCard() {
  const incrementCell = (index: number): void => {
   cellProgress.value[index]++;
  };
+
  const decrementCell = (index: number): void => {
   if (cellProgress.value[index] > 0) {
    cellProgress.value[index]--;
@@ -173,16 +144,42 @@ export function useBingoCard() {
   }
  };
 
- // テーマ変更の監視
+ // セルがクリックされたときのハンドラー
+ const handleCellClick = (index: number) => {
+  incrementCell(index);
+  checkBingo(completedCells.value, winPatterns.value);
+ };
+
+ // ビンゴをリセット
+ const resetBingo = () => {
+  resetCard();
+  checkBingo(completedCells.value, winPatterns.value);
+ };
+
+ // セルの状態変更を監視して、ビンゴチェックを行う
  watch(
-  theme,
-  (newTheme) => {
-   document.documentElement.setAttribute('data-theme', newTheme);
+  completedCells,
+  () => {
+   checkBingo(completedCells.value, winPatterns.value);
   },
-  { immediate: true }
+  { deep: true }
  );
 
+ // cardSizeが変わったときに配列を更新
+ watch(cardSize, () => {
+  updateArraySizes();
+ });
+
+ // ライフサイクルフック
+ onMounted(() => {
+  generateBingoCard();
+ });
+
  return {
+  isControlPanelVisible,
+  toggleControlPanel,
+  handleCellClick,
+  resetBingo,
   cardSize,
   theme,
   difficultyLevel,
@@ -195,6 +192,8 @@ export function useBingoCard() {
   resetCard,
   incrementCell,
   decrementCell,
-  setCardSize
+  setCardSize: updateCardSize,
+  completedLines,
+  highlightedCells
  };
 }
