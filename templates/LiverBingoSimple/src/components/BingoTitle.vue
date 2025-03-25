@@ -1,7 +1,11 @@
 <!-- src/components/BingoNotification.vue -->
 <template>
- <div class="bg-primary text-primary-content rounded flex items-center px-4 mb-1 relative">
+ <div
+  class="bg-primary text-primary-content rounded flex items-center px-4 mb-1 relative"
+  :class="{ 'bg-secondary': showBingoEffect }"
+ >
   <div
+   @contextmenu.prevent="emit('generate')"
    class="text-center flex-1 text-3xl font-bungee transition-all duration-500"
    :class="{ 'scale-up': showBingoEffect }"
   >
@@ -27,7 +31,7 @@ const props = defineProps({
  }
 });
 
-const emit = defineEmits(['toggle-control-panel']);
+const emit = defineEmits(['generate', 'toggle-control-panel']);
 
 const showBingoEffect = ref(false);
 

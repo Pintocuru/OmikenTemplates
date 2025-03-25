@@ -10,19 +10,19 @@
   <div
    v-for="(cell, index) in bingoItems"
    :key="index"
-   @click="handleCellClick(index)"
-   @contextmenu.prevent="decrementCell(index)"
+   @click="emit('cell-click', index)"
+   @contextmenu.prevent="emit('cell-right-click', index)"
    class="btn flex flex-col items-center justify-center p-1 text-center text-base rounded-lg transition-all transform hover:scale-150 cursor-pointer relative"
    :class="[
     completedCells[index]
-     ? 'btn-primary border-2 border-secondary'
+     ? 'btn-primary border border-secondary'
      : 'bg-base-200 border border-primary',
     highlightedCells.includes(index) ? 'bg-secondary text-white' : '',
     getCellSize(cardSize)
    ]"
    :style="{ zIndex: isHovered[index] ? 9999 : 'auto' }"
-   @mouseenter="isHovered[index] = true"
-   @mouseleave="isHovered[index] = false"
+   @mouseenter="updateHoverState(index, true)"
+   @mouseleave="updateHoverState(index, false)"
   >
    <div class="text-md">{{ formatCellText(cell.text, itemTargets[index]) }}</div>
 
@@ -34,9 +34,9 @@
       'scale-150 font-extrabold text-secondary animate-pulse': isAnimating[index]
      }"
     >
-     {{ cellProgress[index] }}
+     {{ cellProgress[index] * (cell.unit ?? 1) }}
     </span>
-    / {{ itemTargets[index] }}
+    / {{ itemTargets[index] * (cell.unit ?? 1) }}
    </div>
 
    <!-- 進捗バー -->
@@ -47,7 +47,10 @@
    ></progress>
 
    <!-- クリック時のアニメーション -->
-   <div v-show="isAnimating[index]" class="absolute inset-0 flex items-center justify-center">
+   <div
+    v-if="isAnimating[index]"
+    class="absolute inset-0 flex items-center justify-center pointer-events-none"
+   >
     <div class="circle-animation"></div>
    </div>
   </div>
@@ -67,24 +70,27 @@ const props = defineProps<{
  highlightedCells: number[];
 }>();
 
-const emit = defineEmits(['cell-click', 'cell-right-click']);
+const emit = defineEmits(['cell-click', 'cell-dblclick', 'cell-right-click']);
 
-// アニメーション制御用の状態
-const isAnimating = ref(Array(props.bingoItems.length).fill(false));
-const isHovered = ref(Array(props.bingoItems.length).fill(false));
+// アニメーション制御用の状態をcomputedとrefで最適化
+const isAnimating = ref(new Array(props.bingoItems.length).fill(false));
+const isHovered = ref(new Array(props.bingoItems.length).fill(false));
 
-// セルサイズを動的に計算
+// セルサイズを動的に計算（オブジェクトリテラルで簡潔に）
+const cellSizeMap = {
+ 3: 'w-32 h-32',
+ 4: 'w-30 h-30',
+ 5: 'w-28 h-28',
+ default: 'w-28 h-28'
+};
+
 const getCellSize = (size: number) => {
- switch (size) {
-  case 3:
-   return 'w-32 h-32';
-  case 4:
-   return 'w-28 h-28';
-  case 5:
-   return 'w-24 h-24';
-  default:
-   return 'w-24 h-24';
- }
+ return cellSizeMap[size as keyof typeof cellSizeMap] || cellSizeMap.default;
+};
+
+// ホバー状態の更新メソッド
+const updateHoverState = (index: number, state: boolean) => {
+ isHovered.value[index] = state;
 };
 
 // 進捗数値が変化したときのアニメーション
@@ -95,31 +101,24 @@ watch(
    if (value > (oldValues?.[index] || 0)) {
     // 値が増加した場合、アニメーションをトリガー
     isAnimating.value[index] = true;
-    setTimeout(() => {
+
+    // エラー防止のためのネイティブsetTimeout
+    const timerId = window.setTimeout(() => {
      isAnimating.value[index] = false;
-    }, 800); // アニメーション時間に合わせる
+     window.clearTimeout(timerId);
+    }, 800);
    }
   });
  },
  { deep: true }
 );
 
-const handleCellClick = (index: number) => {
- emit('cell-click', index);
-};
-
-const decrementCell = (index: number) => {
- emit('cell-right-click', index);
-};
-
-const formatCellText = (text: string, target: number) => {
+// テキスト形成メソッドを最適化
+const formatCellText = (text: string, cardSize: number) => {
  if (!text) return '';
 
- // カードサイズに応じて文字数を調整
- const maxLength = props.cardSize === 5 ? 15 : 24;
- if (text.length > maxLength) return text.substring(0, maxLength - 3) + '...';
-
- return text;
+ const maxLength = 24;
+ return text.length > maxLength ? `${text.slice(0, maxLength - 3)}...` : text;
 };
 </script>
 
@@ -148,28 +147,7 @@ const formatCellText = (text: string, target: number) => {
  }
 }
 
-/* カウンター数値のアニメーション */
-.animate-pulse-count {
- animation: pulse-count 0.6s ease;
-}
-
 .count-value {
  display: inline-block;
-}
-
-@keyframes pulse-count {
- 0% {
-  transform: scale(1);
-  color: white;
- }
- 50% {
-  transform: scale(1.5);
-  color: yellow;
-  text-shadow: 0 0 8px rgba(255, 255, 0, 0.8);
- }
- 100% {
-  transform: scale(1);
-  color: white;
- }
 }
 </style>

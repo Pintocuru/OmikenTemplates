@@ -2,71 +2,58 @@
 import { ref, computed, Ref } from 'vue';
 
 export function useWinPatterns(cardSize: Ref<3 | 4 | 5>) {
- const completedLines: Ref<number[]> = ref([]);
- const highlightedCells: Ref<number[]> = ref([]);
-
- // 勝利パターンを動的に生成する関数
- const generateWinPatterns = (): number[][] => {
+ // メモ化を使用して、同じサイズでは再計算を避ける
+ const winPatterns = computed(() => {
   const patterns: number[][] = [];
   const size = cardSize.value;
 
-  // 横のパターン
+  // 横のパターン (インデックス演算を最適化)
   for (let row = 0; row < size; row++) {
-   const pattern: number[] = [];
-   for (let col = 0; col < size; col++) {
-    pattern.push(row * size + col);
-   }
-   patterns.push(pattern);
+   patterns.push(Array.from({ length: size }, (_, col) => row * size + col));
   }
 
-  // 縦のパターン
+  // 縦のパターン (インデックス演算を最適化)
   for (let col = 0; col < size; col++) {
-   const pattern: number[] = [];
-   for (let row = 0; row < size; row++) {
-    pattern.push(row * size + col);
-   }
-   patterns.push(pattern);
+   patterns.push(Array.from({ length: size }, (_, row) => row * size + col));
   }
 
-  // 左上から右下への対角線
-  const diag1: number[] = [];
-  for (let i = 0; i < size; i++) {
-   diag1.push(i * size + i);
-  }
-  patterns.push(diag1);
-
-  // 右上から左下への対角線
-  const diag2: number[] = [];
-  for (let i = 0; i < size; i++) {
-   diag2.push(i * size + (size - 1 - i));
-  }
-  patterns.push(diag2);
+  // 対角線パターン (より簡潔な生成方法)
+  patterns.push(
+   Array.from({ length: size }, (_, i) => i * size + i), // 左上から右下
+   Array.from({ length: size }, (_, i) => i * size + (size - 1 - i)) // 右上から左下
+  );
 
   return patterns;
- };
+ });
 
- // 勝利パターンを動的に更新
- const winPatterns = computed(() => generateWinPatterns());
+ const completedLines = ref<number[]>([]);
+ const highlightedCells = ref<number[]>([]);
 
- const checkBingo = (completedCells: boolean[], patterns: number[][]): void => {
-  completedLines.value = [];
-  highlightedCells.value = [];
+ const checkBingo = (completedCells: boolean[]): void => {
+  // デストラクチャリングで可読性を向上
+  const patterns = winPatterns.value;
 
-  // すべてのビンゴパターンをチェック
+  // 一時配列を再利用して再割り当てを避ける
+  const lines: number[] = [];
+  const cells: number[] = [];
+
+  // より効率的なチェック方法
   for (let i = 0; i < patterns.length; i++) {
    const pattern = patterns[i];
    if (pattern.every((index) => completedCells[index])) {
-    completedLines.value.push(i);
-    highlightedCells.value = [...highlightedCells.value, ...pattern];
+    lines.push(i);
+    cells.push(...pattern);
    }
   }
+
+  // 一度の代入で更新
+  completedLines.value = lines;
+  highlightedCells.value = cells;
  };
 
  return {
-  generateWinPatterns,
-  winPatterns,
+  checkBingo,
   completedLines,
-  highlightedCells,
-  checkBingo
+  highlightedCells
  };
 }

@@ -2,7 +2,12 @@
 <template>
  <div class="flex flex-col items-center min-h-screen">
   <!-- ビンゴタイトルバー -->
-  <BingoTitle :lineCount="completedLines.length" @toggle-control-panel="toggleControlPanel" />
+  <BingoTitle
+   :lineCount="completedLines.length"
+   @generate="generateBingoCard"
+   @toggle-control-panel="toggleControlPanel"
+   @dblclick="toggleControlPanel()"
+  />
 
   <!-- コントロールパネル -->
   <ControlPanel
@@ -23,8 +28,9 @@
    :itemTargets="itemTargets"
    :completedCells="completedCells"
    :highlightedCells="highlightedCells"
-   @cell-click="handleCellClick"
+   @cell-click="incrementCell"
    @cell-right-click="decrementCell"
+   @click="toggleControlPanel(false)"
   />
  </div>
 </template>
@@ -39,7 +45,8 @@ import { useBingoCard } from './scripts/useBingoCard';
 const {
  isControlPanelVisible,
  toggleControlPanel,
- handleCellClick,
+ incrementCell,
+ decrementCell,
  resetBingo,
  cardSize,
  theme,
@@ -49,7 +56,6 @@ const {
  itemTargets,
  completedCells,
  generateBingoCard,
- decrementCell,
  completedLines,
  highlightedCells
 } = useBingoCard();

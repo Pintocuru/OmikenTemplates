@@ -4,9 +4,8 @@
 export interface BingoItem {
  text: string; // お題
  weight?: number; // 出現率
- values?: [number, number, number, number, number] | number; // levelごとの規定数
+ values?: [number, number, number] | number; // levelごとの規定数
  unit?: number; // 単位
- difficulty?: number; // 規定のlevel以上で出現するもの
  /**
   * わんコメで反応させる種類
   * syoken: 初コメしたユーザー数
@@ -25,7 +24,8 @@ export interface BingoItem {
 }
 export interface BingoCard {
  cardSize: 3 | 4 | 5; // カードサイズ
- theme?: ThemeType; // daisyUiによるテーマ
+ theme: ThemeType; // daisyUiによるテーマ
+ level: 1 | 2 | 3; // 難易度
 }
 
 // テーマのリスト
