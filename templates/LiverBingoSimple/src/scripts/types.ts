@@ -2,10 +2,10 @@
 
 // 難易度別アイテムの型
 export interface BingoItem {
- text: string; // お題
- weight?: number; // 出現率
- values?: [number, number, number] | number; // levelごとの規定数
- unit?: number; // 単位
+ title: string; // お題
+ weight: number; // 出現率
+ target: number; // 達成目標
+ unit: 1 | 10 | 100 | 1000; // 単位
  /**
   * わんコメで反応させる種類
   * syoken: 初コメしたユーザー数
@@ -22,10 +22,10 @@ export interface BingoItem {
  mode?: string; // わんコメで反応させる種類 syoken,count(合計keywords数),consecutive(連続target数)
  keywords?: string[]; // わんコメで反応させるワード
 }
+
 export interface BingoCard {
  cardSize: 3 | 4 | 5; // カードサイズ
  theme: ThemeType; // daisyUiによるテーマ
- level: 1 | 2 | 3; // 難易度
 }
 
 // テーマのリスト
@@ -72,7 +72,8 @@ export type ThemeType = (typeof themes)[number];
 
 // 追加configの型定義
 export interface BingoConfig {
- bingoItems: BingoItem[];
+ bingoSeeds: BingoItem[];
+ bingoRandomSeeds: BingoItem[];
  bingoCard: BingoCard;
 }
 

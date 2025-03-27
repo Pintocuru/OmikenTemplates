@@ -24,7 +24,7 @@
    @mouseenter="updateHoverState(index, true)"
    @mouseleave="updateHoverState(index, false)"
   >
-   <div class="text-md">{{ formatCellText(cell.text, itemTargets[index]) }}</div>
+   <div class="text-md">{{ formatCellText(cell.title, itemTargets[index]) }}</div>
 
    <!-- 数値（クリック時拡大アニメーション） -->
    <div class="mt-0 text-2xl">
