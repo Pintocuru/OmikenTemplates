@@ -4,8 +4,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
-import tailwindPostcss from '@tailwindcss/postcss';
-import autoprefixer from 'autoprefixer';
 
 // ---
 
@@ -15,11 +13,24 @@ export default () => {
  const baseConfig = createConfig(dirname, false);
  const commonResolve = createCommonResolve();
 
+ const entries = {
+  main: path.resolve(dirname, `./src/main.ts`),
+  configMaker: path.resolve(dirname, `./src/configMaker.ts`)
+ };
+
  const htmlPlugins = [
+  // 本体
   new HtmlWebpackPlugin({
    template: path.resolve(dirname, `./src/index.ejs`),
    filename: `index.html`,
    chunks: ['main'],
+   inject: 'body'
+  }),
+  // configMaker
+  new HtmlWebpackPlugin({
+   template: path.resolve(dirname, `./src/configMaker.ejs`),
+   filename: `configMaker.html`,
+   chunks: ['configMaker'],
    inject: 'body'
   })
  ];
@@ -60,8 +71,9 @@ export default () => {
 
  return {
   ...baseConfig,
+  entry: entries,
   output: {
-   filename: `scripts/script.js`,
+   filename: `scripts/[name].js`,
    path: path.resolve(dirname, `dist`),
    clean: true
   },

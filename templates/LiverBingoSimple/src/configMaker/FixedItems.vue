@@ -19,7 +19,7 @@
     <div class="badge badge-primary badge-sm absolute -top-2 -left-2">
      {{ index }}
     </div>
-    <div class="flex flex-col md:flex-row gap-2">
+    <div class="flex flex-col sm:flex-row gap-2">
      <!-- ビンゴマスのミニグリッド -->
      <div class="max-w-sm mx-auto">
       <div class="border rounded-box overflow-hidden shadow-sm">
