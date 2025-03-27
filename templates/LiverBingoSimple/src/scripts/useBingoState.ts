@@ -1,17 +1,18 @@
 // src/scripts/useBingoState.ts
-import { ref, computed, Ref, watch, onMounted } from 'vue';
-import { BingoCard, ThemeType } from '@/scripts/types';
+import { ref, Ref, watch, onMounted, computed } from 'vue';
+import { ThemeType } from '@/scripts/types';
+import { validateBingoConfig } from '@/scripts/schema';
 
 // config
-const bingoCard: BingoCard = window.BINGO_CONFIG?.bingoCard || {
- cardSize: 3,
- theme: 'light'
-};
+const config = validateBingoConfig(window.BINGO_CONFIG);
 
 export function useBingoState() {
  // 状態管理
- const cardSize: Ref<3 | 4 | 5> = ref(bingoCard.cardSize);
- const theme: Ref<ThemeType> = ref(bingoCard.theme || 'light');
+ const cardSize: Ref<3 | 4 | 5> = ref(config.bingoCard.cardSize);
+ const theme: Ref<ThemeType> = ref(config.bingoCard.theme || 'light');
+
+ // 総マス数を計算
+ const totalCells = computed(() => cardSize.value * cardSize.value);
 
  // テーマ変更の監視
  watch(
@@ -30,6 +31,7 @@ export function useBingoState() {
 
  return {
   cardSize,
+  totalCells,
   theme
  };
 }

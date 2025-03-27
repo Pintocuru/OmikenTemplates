@@ -5,7 +5,7 @@
 
   <!-- アクションボタン -->
   <div class="mb-4 flex justify-end">
-   <button @click="generateConfig" class="btn btn-primary">config.js を生成</button>
+   <button @click="configStore.generateConfig" class="btn btn-primary">config.js を生成</button>
   </div>
 
   <div class="space-y-4">
@@ -15,12 +15,7 @@
      基本設定 (Basic Settings)
     </div>
     <div class="collapse-content">
-     <BasicSettings
-      :cardSize="cardSize"
-      :theme="theme"
-      @update:cardSize="cardSize = $event"
-      @update:theme="theme = $event"
-     />
+     <BasicSettings />
     </div>
    </div>
 
@@ -57,5 +52,6 @@ import BasicSettings from '@/configMaker/BasicSettings.vue';
 import FixedItems from '@/configMaker/FixedItems.vue';
 import RandomItems from '@/configMaker/RandomItems.vue';
 
-const { bingoSeeds, bingoRandomSeeds, cardSize, theme, generateConfig } = useConfigMaker();
+// pinia
+const configStore = useConfigMaker();
 </script>

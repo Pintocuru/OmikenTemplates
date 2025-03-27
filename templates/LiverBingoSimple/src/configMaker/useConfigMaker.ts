@@ -3,19 +3,19 @@ import { ref, watch } from 'vue';
 import { BingoConfig, BingoItem } from '@/scripts/types';
 import { useBingoState } from '@/scripts/useBingoState';
 import { defineStore } from 'pinia';
+import { BingoItemSchema, validateBingoConfig } from '@/scripts/schema';
 
 // config
-const configBingoSeeds: BingoItem[] = window.BINGO_CONFIG?.bingoSeeds || [];
-const configBingoRandomSeeds: BingoItem[] = window.BINGO_CONFIG?.bingoRandomSeeds || [];
+const config = validateBingoConfig(window.BINGO_CONFIG);
 
 // ---
 
 export const useConfigMaker = defineStore('config', () => {
- const { cardSize, theme } = useBingoState();
+ const { cardSize, theme, totalCells } = useBingoState();
 
  // シード管理
- const bingoSeeds = ref<BingoItem[]>(configBingoSeeds);
- const bingoRandomSeeds = ref<BingoItem[]>(configBingoRandomSeeds);
+ const bingoSeeds = ref<BingoItem[]>(config.bingoSeeds);
+ const bingoRandomSeeds = ref<BingoItem[]>(config.bingoRandomSeeds);
 
  // カードサイズ変更時に固定項目数を調整
  watch(cardSize, (newSize) => {
@@ -24,12 +24,7 @@ export const useConfigMaker = defineStore('config', () => {
    // 不足分を追加
    const addCount = newLength - bingoSeeds.value.length;
    for (let i = 0; i < addCount; i++) {
-    bingoSeeds.value.push({
-     title: '',
-     target: 1,
-     weight: 1,
-     unit: 1
-    });
+    bingoSeeds.value.push(BingoItemSchema.parse({}));
    }
   } else if (bingoSeeds.value.length > newLength) {
    // 超過分を削除（空の項目から優先的に削除）
@@ -78,6 +73,7 @@ export const useConfigMaker = defineStore('config', () => {
   bingoSeeds,
   bingoRandomSeeds,
   cardSize,
+  totalCells,
   theme,
   generateConfig
  };

@@ -6,7 +6,7 @@
    <label class="block mb-1 font-medium">カードサイズ</label>
    <div class="grid grid-cols-3 gap-4">
     <label v-for="size in [3, 4, 5]" :key="size" class="flex items-center gap-2 cursor-pointer">
-     <input type="radio" :value="size" v-model="localCardSize" class="radio radio-primary" />
+     <input type="radio" :value="size" v-model="cardSize" class="radio radio-primary" />
      {{ size }}x{{ size }}
     </label>
    </div>
@@ -16,7 +16,7 @@
   <div>
    <label class="block mb-1 font-medium">テーマ</label>
    <select
-    v-model="localTheme"
+    v-model="theme"
     class="w-full p-2 border rounded focus:ring-2 focus:ring-primary bg-white text-black"
    >
     <option v-for="t in themes" :key="t" :value="t">{{ t }}</option>
@@ -27,23 +27,20 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { themes, ThemeType } from '@/scripts/types';
+import { themes } from '@/scripts/types';
+import { useConfigMaker } from '@/configMaker/useConfigMaker';
 
-const props = defineProps<{
- cardSize: number;
- theme: ThemeType;
-}>();
-
-const emit = defineEmits(['update:cardSize', 'update:theme', 'update:difficultyLevel']);
+// Pinia ストアを使用
+const configStore = useConfigMaker();
 
 // computed を使って双方向バインド
-const localCardSize = computed({
- get: () => props.cardSize,
- set: (value) => emit('update:cardSize', value)
+const cardSize = computed({
+ get: () => configStore.cardSize,
+ set: (value) => (configStore.cardSize = value)
 });
 
-const localTheme = computed({
- get: () => props.theme,
- set: (value) => emit('update:theme', value)
+const theme = computed({
+ get: () => configStore.theme,
+ set: (value) => (configStore.theme = value)
 });
 </script>

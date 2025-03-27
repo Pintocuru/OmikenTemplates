@@ -12,7 +12,6 @@
   <!-- コントロールパネル -->
   <ControlPanel
    v-model:theme="theme"
-   v-model:difficultyLevel="difficultyLevel"
    @generate="generateBingoCard"
    @reset="resetBingo"
    @toggleControlPanel="toggleControlPanel"
@@ -50,7 +49,6 @@ const {
  resetBingo,
  cardSize,
  theme,
- difficultyLevel,
  bingoItems,
  cellProgress,
  itemTargets,

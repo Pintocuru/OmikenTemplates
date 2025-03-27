@@ -18,22 +18,6 @@
 
    <!-- 設定パネル -->
    <div class="card bg-base-100 shadow-md p-4">
-    <div class="space-y-4">
-     <!-- 難易度選択 -->
-     <label class="block text-sm font-medium mb-1"> 難易度: {{ difficultyLevel }} </label>
-     <div class="flex gap-2">
-      <button
-       v-for="level in 3"
-       :key="level"
-       @click="generateWithDifficulty(level)"
-       class="btn"
-       :class="difficultyLevel === level ? 'btn-primary' : 'btn-outline'"
-      >
-       {{ level }}
-      </button>
-     </div>
-    </div>
-
     <!-- テーマ選択 -->
     <div>
      <span class="block text-sm font-medium mt-3 mb-1">テーマ:</span>
@@ -70,7 +54,6 @@ import { X } from 'lucide-vue-next';
 
 const props = defineProps<{
  theme: string;
- difficultyLevel: number;
 }>();
 
 const emit = defineEmits([

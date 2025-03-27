@@ -1,4 +1,4 @@
-// types.ts
+// src/scripts/types.ts
 
 // 難易度別アイテムの型
 export interface BingoItem {
