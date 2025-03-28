@@ -5,8 +5,6 @@ import { VueLoaderPlugin } from 'vue-loader';
 import TerserPlugin from 'terser-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
-import tailwindcss from 'tailwindcss';
-import autoprefixer from 'autoprefixer';
 
 // 現在のファイルのディレクトリパスを取得
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -47,32 +45,39 @@ export function createConfig(childDir, isOneSDK = true) {
   resolve: createCommonResolve(),
   module: {
    rules: [
+    // Vue
     {
-     test: /\.vue$/, // Vueファイルの処理
+     test: /\.vue$/,
      loader: 'vue-loader',
      options: { reactivityTransform: true }
     },
+    // TypeScript
     {
-     test: /\.ts$/, // TypeScriptの処理
+     test: /\.ts$/,
      loader: 'ts-loader',
      exclude: /node_modules/,
      options: { transpileOnly: true, appendTsSuffixTo: [/\.vue$/] }
     },
+    // CSS(Tailwind CSS & DaisyUi)
     {
-     test: /\.css$/, // CSSの処理
-     use: ['style-loader', 'css-loader', 'postcss-loader']
+     test: /\.css$/,
+     use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader']
     },
+    // 画像ファイル
     {
      test: /\.(png|jpe?g|gif|svg)$/,
-     use: [
-      {
-       loader: 'file-loader',
-       options: {
-        name: '[name].[ext]',
-        outputPath: 'script/'
-       }
-      }
-     ]
+     type: 'asset/resource',
+     generator: {
+      filename: 'assets/images/[name][ext]'
+     }
+    },
+    // mp3
+    {
+     test: /\.(mp3)$/,
+     type: 'asset/resource',
+     generator: {
+      filename: 'assets/audio/[name][ext]'
+     }
     }
    ]
   },

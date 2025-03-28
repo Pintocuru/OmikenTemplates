@@ -2,12 +2,10 @@
  "name": "omiken-templates",
  "version": "0.0.14",
  "description": "わんコメで使える、ジェネレーター開発キット",
- "scripts": {
-  "buildVendor": "webpack --config webpack.vendor.config.mjs"
- },
  "author": "Pintocuru",
  "license": "Apache-2.0",
  "type": "module",
+ "sideEffects": false,
  "keywords": [
   "わんコメ",
   "onecomme"

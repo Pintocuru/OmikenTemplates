@@ -3,7 +3,7 @@
  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
   <!-- カードサイズ -->
   <div>
-   <label class="block mb-1 font-medium">カードサイズ</label>
+   <label class="block mb-1 font-medium">🃏カードサイズ</label>
    <div class="grid grid-cols-3 gap-4">
     <label v-for="size in [3, 4, 5]" :key="size" class="flex items-center gap-2 cursor-pointer">
      <input type="radio" :value="size" v-model="cardSize" class="radio radio-primary" />
@@ -14,7 +14,7 @@
 
   <!-- テーマ -->
   <div>
-   <label class="block mb-1 font-medium">テーマ</label>
+   <label class="block mb-1 font-medium">🎨テーマ</label>
    <select
     v-model="theme"
     class="w-full p-2 border rounded focus:ring-2 focus:ring-primary bg-white text-black"

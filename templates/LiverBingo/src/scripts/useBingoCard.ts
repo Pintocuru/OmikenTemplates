@@ -6,8 +6,7 @@ import { useControlPanel } from '@/scripts/useControlPanel';
 import { BingoItem } from '@/scripts/types';
 
 // config
-const bingoSeeds: BingoItem[] = window.BINGO_CONFIG?.bingoSeeds || [];
-const bingoRandomSeeds: BingoItem[] = window.BINGO_CONFIG?.bingoRandomSeeds || [];
+const { bingoSeeds = [], bingoRandomSeeds = [] } = window.BINGO_CONFIG || {};
 
 // ---
 
@@ -31,41 +30,29 @@ export function useBingoCard() {
   return availableItems.find((i) => (r -= i.weight ?? 1) <= 0) || availableItems[0];
  };
 
- // 難易度に基づく目標値の計算
- const calculateItemTarget = (item: BingoItem) => {
-  return item.target;
- };
-
  // ビンゴカードを生成
  const generateBingoCard = () => {
   resetBingo();
-  const availableItems = [...bingoRandomSeeds];
-  const selectedItems: BingoItem[] = [];
   const usedTexts = new Set<string>();
-
-  while (selectedItems.length < totalCells.value && availableItems.length > 0) {
-   const item = selectBingoItem();
-   if (!usedTexts.has(item.title)) {
-    selectedItems.push(item);
-    usedTexts.add(item.title);
-    availableItems.splice(availableItems.indexOf(item), 1);
-   }
-  }
+  const selectedItems: BingoItem[] = [];
 
   while (selectedItems.length < totalCells.value) {
-   const remainingItems = bingoRandomSeeds.filter((i) => !usedTexts.has(i.title));
-   if (remainingItems.length === 0) break;
-   const item = remainingItems[Math.floor(Math.random() * remainingItems.length)];
+   const availableItems = bingoRandomSeeds.filter((item) => !usedTexts.has(item.title));
+   const item = availableItems.length
+    ? selectBingoItem()
+    : bingoRandomSeeds[Math.floor(Math.random() * bingoRandomSeeds.length)];
+
    selectedItems.push(item);
    usedTexts.add(item.title);
   }
 
+  // Shuffle the selected items
   for (let i = selectedItems.length - 1; i > 0; i--) {
    const j = Math.floor(Math.random() * (i + 1));
    [selectedItems[i], selectedItems[j]] = [selectedItems[j], selectedItems[i]];
   }
 
-  // 5x5のカードであれば真ん中をFreeにする
+  // Handle FREE cell for 5x5 grid
   if (totalCells.value === 25) {
    selectedItems[12] = { title: '🌟FREE!🌟', weight: 0, target: 1, unit: 1 };
    itemTargets.value[12] = 1;
@@ -73,15 +60,15 @@ export function useBingoCard() {
   }
 
   bingoItems.value = selectedItems;
-  itemTargets.value = selectedItems.map(calculateItemTarget);
+  itemTargets.value = selectedItems.map((item) => item.target);
 
-  // bingoSeeds で上書き
-  for (let i = 0; i < bingoSeeds.length; i++) {
-   if (bingoSeeds[i].title !== '') {
-    selectedItems[i] = bingoSeeds[i];
-    itemTargets.value[i] = calculateItemTarget(bingoSeeds[i]);
+  // Override with predefined seeds
+  bingoSeeds.forEach((seed, index) => {
+   if (seed.title) {
+    selectedItems[index] = seed;
+    itemTargets.value[index] = seed.target;
    }
-  }
+  });
  };
 
  // パネルのポイントをプラス
@@ -100,7 +87,7 @@ export function useBingoCard() {
    const currentItem = bingoItems.value[index];
    const newItem = selectBingoItem(currentItem);
    bingoItems.value[index] = newItem;
-   itemTargets.value[index] = calculateItemTarget(newItem);
+   itemTargets.value[index] = newItem.target;
    cellProgress.value[index] = 0;
   }
  };

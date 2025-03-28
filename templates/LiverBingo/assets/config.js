@@ -1,7 +1,7 @@
 const BINGO_CONFIG = {
   "bingoCard": {
     "cardSize": 3,
-    "theme": "dark"
+    "theme": "light"
   },
   "bingoSeeds": [
     {
@@ -127,28 +127,28 @@ const BINGO_CONFIG = {
     },
     {
       "id": "a8ee6d35-f0ed-48e9-9b51-995c440745b9",
-      "title": "💰ギフト(初級)",
+      "title": "💰ギフト金額(初級)",
       "weight": 20,
       "target": 1,
       "unit": 100
     },
     {
       "id": "5d6731a0-a662-4eb4-b226-f2a1a86cac7f",
-      "title": "💰ギフト(中級)",
+      "title": "💰ギフト金額(中級)",
       "weight": 10,
       "target": 2,
       "unit": 100
     },
     {
       "id": "9b062b38-7e79-44cf-9414-217d7227111b",
-      "title": "💰ギフト(上級)",
+      "title": "💰ギフト金額(上級)",
       "weight": 5,
       "target": 5,
       "unit": 100
     },
     {
       "id": "611e5b5a-9a93-4e1b-b231-62e966069b42",
-      "title": "💰ギフト(超級)",
+      "title": "💰ギフト金額(超級)",
       "weight": 1,
       "target": 10,
       "unit": 100

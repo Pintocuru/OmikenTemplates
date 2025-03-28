@@ -82,9 +82,7 @@ export default () => {
    alias: {
     ...commonResolve.alias,
     '@': path.resolve(dirname, 'src'),
-    '@components': path.resolve(dirname, 'src/components'),
-    '@scripts': path.resolve(dirname, 'src/scripts'),
-    '@styles': path.resolve(dirname, 'src/styles')
+    '@assets': path.resolve(dirname, 'assets')
    }
   },
   module: {
