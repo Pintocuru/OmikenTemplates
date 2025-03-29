@@ -1,4 +1,4 @@
-// src/shims-vue.d.ts
+// src/scripts/types.d.ts
 
 // vueの使用を宣言する
 declare module '*.vue' {

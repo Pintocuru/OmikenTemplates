@@ -76,8 +76,8 @@
 </template>
 
 <script setup lang="ts">
-import { WordCounterConfig } from '@/scripts/types';
-import { useWordComponent } from '@/scripts/useWordComponent';
+import { WordCounterConfig } from '@scripts/types';
+import { useWordComponent } from '@scripts/useWordComponent';
 import { toRef, ref, watch } from 'vue';
 import { SecondNameMode } from './secondNameMode';
 

@@ -6,7 +6,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 // コンポーネント名を配列として定義
-const components = [
+const packages = [
  { appDir: 'VictoryCrown', appName: 'VictoryCrown' },
  { appDir: 'VictoryCrown', appName: 'SplashNice' },
  { appDir: 'KillingSpree', appName: 'KillingSpree' },
@@ -17,7 +17,7 @@ const components = [
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export default components.map(({ appDir, appName }) => {
+export default packages.map(({ appDir, appName }) => {
  const distDir = appName;
  const baseConfig = createConfig(dirname, false);
  const commonResolve = createCommonResolve();
@@ -25,7 +25,7 @@ export default components.map(({ appDir, appName }) => {
  const entries = {
   main: path.resolve(dirname, `./src/apps/AnyGenerator/main.ts`),
   controller: path.resolve(dirname, `./src/apps/controller/main.ts`),
-  [appName]: path.resolve(dirname, `./src/components/${appDir}/${appName}.ts`)
+  [appName]: path.resolve(dirname, `./src/packages/${appDir}/${appName}.ts`)
  };
 
  const htmlPlugins = [
@@ -46,19 +46,19 @@ export default components.map(({ appDir, appName }) => {
 
  const copyPatterns = [
   {
-   from: path.resolve(dirname, `./src/components/${appDir}/config_${appName}.js`),
+   from: path.resolve(dirname, `./src/packages/${appDir}/config_${appName}.js`),
    to: path.resolve(dirname, `dist/${distDir}/config.js`)
   },
   {
-   from: path.resolve(dirname, `./src/components/${appDir}/${appName}.txt`),
+   from: path.resolve(dirname, `./src/packages/${appDir}/${appName}.txt`),
    to: path.resolve(dirname, `dist/${distDir}/readme.txt`)
   },
   {
-   from: path.resolve(dirname, `./src/components/${appDir}/${appName}.json`),
+   from: path.resolve(dirname, `./src/packages/${appDir}/${appName}.json`),
    to: path.resolve(dirname, `dist/${distDir}/template.json`)
   },
   {
-   from: path.resolve(dirname, `./src/components/${appDir}/${appName}.png`),
+   from: path.resolve(dirname, `./src/packages/${appDir}/${appName}.png`),
    to: path.resolve(dirname, `dist/${distDir}/thumb.png`)
   }
  ];
@@ -76,9 +76,9 @@ export default components.map(({ appDir, appName }) => {
    alias: {
     ...commonResolve.alias,
     '@': path.resolve(dirname, 'src'),
-    '@components': path.resolve(dirname, 'src/components'),
+    '@packages': path.resolve(dirname, 'src/packages'),
     '@scripts': path.resolve(dirname, 'src/scripts'),
-    '@styles': path.resolve(dirname, 'src/styles')
+    '@assets': path.resolve(dirname, 'assets')
    }
   },
   externals: {

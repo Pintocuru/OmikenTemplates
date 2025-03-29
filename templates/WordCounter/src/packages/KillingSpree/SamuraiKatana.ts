@@ -1,4 +1,4 @@
-import AnyGenerator from '@/components/VictoryCrown/VictoryCrown.vue';
+import AnyGenerator from '@/packages/KillingSpree/SamuraiKatana.vue';
 
 window.AppComponent = window.AppComponent || {};
 window.AppComponent.component = AnyGenerator;

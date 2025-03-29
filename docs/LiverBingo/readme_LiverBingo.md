@@ -14,8 +14,6 @@ OBS で使える、ライバー・配信者向けビンゴカードです。
 
 ![ライバービンゴの使用シーン](images/1-1.jpg)
 
-動作例: [YouTube動画を見る](https://www.youtube.com/watch?v=Z6ZN8FEDzp8)
-
 ### 🎬 雑談配信に！OBS で操作できるビンゴカード
 
 - 朝活・昼活・夕活等の雑談配信

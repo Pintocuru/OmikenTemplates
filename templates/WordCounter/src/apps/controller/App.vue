@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLocalStorage } from '@/scripts/useLocalStorage';
+import { useLocalStorage } from '@scripts/useLocalStorage';
 import { PlusCircle, MinusCircle, RefreshCw } from 'lucide-vue-next';
 
 // コンポーザブル

@@ -57,8 +57,8 @@
 
 <script setup lang="ts">
 import { toRef } from 'vue';
-import { useWordComponent } from '@/scripts/useWordComponent';
-import { WordCounterConfig } from '@/scripts/types';
+import { useWordComponent } from '@scripts/useWordComponent';
+import { WordCounterConfig } from '@scripts/types';
 import { Crown } from 'lucide-vue-next';
 
 const generatorTest: WordCounterConfig['generator'] = {

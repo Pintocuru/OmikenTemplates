@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import AnyGenerator from './ColorChanging.vue';
-import { useWordCounter } from '@/scripts/useWordCounter';
+import { useWordCounter } from '@scripts/useWordCounter';
 
 // useWordCounter
 const { count, increment, decrement } = useWordCounter();

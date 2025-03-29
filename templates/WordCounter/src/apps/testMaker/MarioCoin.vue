@@ -59,8 +59,8 @@
 
 <script setup lang="ts">
 import { toRef } from 'vue';
-import { WordCounterConfig } from '@/scripts/types';
-import { useWordComponent } from '@/scripts/useWordComponent';
+import { WordCounterConfig } from '@scripts/types';
+import { useWordComponent } from '@scripts/useWordComponent';
 
 const generatorTest: WordCounterConfig['generator'] = {
  IS_LOOP: true,

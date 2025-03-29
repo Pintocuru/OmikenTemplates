@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue';
-import { useWordCounter } from '@/scripts/useWordCounter';
+import { useWordCounter } from '@scripts/useWordCounter';
 
 // windowに設置したコンポーネントを読む
 const AnyGenerator = defineAsyncComponent(() => Promise.resolve(window.AppComponent.component));
