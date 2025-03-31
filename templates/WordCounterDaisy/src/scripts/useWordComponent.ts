@@ -2,31 +2,11 @@
 import { computed, Ref, ref, watch } from 'vue';
 import { GeneratorConfig } from './types';
 
-const defaultConfig: GeneratorConfig = {
- TARGET: 15,
- IS_LOOP: false,
- TEXTS_FIRST: undefined,
- STYLES_FIRST: undefined,
- TEXTS: [],
- TEXTS_AFTER: [],
- STYLES: [],
- EASTER_MODE: undefined,
- EASTER_DATA: undefined
-};
-
 export function useWordComponent(
  count: Ref<number>,
  msAnimation = 1000,
- generatorTest?: GeneratorConfig,
- EASTER_DATA?: GeneratorConfig['EASTER_DATA']
+ generator: GeneratorConfig
 ) {
- // 設定のマージ
- const generator = {
-  ...defaultConfig,
-  ...(generatorTest || window.WORD_CONFIG?.generator || {}),
-  EASTER_DATA
- };
-
  // 状態管理
  const isAnimating = ref(false);
  const afterTextIndex = ref(0);

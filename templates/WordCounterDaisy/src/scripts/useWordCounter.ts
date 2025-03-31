@@ -7,10 +7,8 @@ import { postWordParty } from '@common/api/PostOneComme';
 
 export function useWordCounter(counterSet: CounterSet) {
  // デフォルト値を使用した設定の抽出と初期化
- const wordConfig = counterSet.wordConfig;
- const TARGET = wordConfig.generator?.TARGET || 15;
- const counterConfig: CounterConfig = wordConfig.counter;
- const userVisitsConfig = counterSet.userVisitsConfig;
+ const counterConfig: CounterConfig = counterSet.counter;
+ const userVisitsConfig = counterSet.userVisits;
 
  // コメントからvisitデータを生成する
  const { fetchComments } = GetUserVisits(userVisitsConfig);
@@ -25,7 +23,7 @@ export function useWordCounter(counterSet: CounterSet) {
  });
 
  // カウントモードの判定
- const isDownMode = computed(() => counterConfig.COUNT_MODE.endsWith('Down'));
+ const isDownMode = computed(() => counterConfig.TARGET_DOWN > 0);
 
  // コメント処理ハンドラ
  const processComment = createProcessComment(state);
@@ -34,10 +32,9 @@ export function useWordCounter(counterSet: CounterSet) {
  const getBaseCount = () => {
   const countModeMap = {
    user: state.userCount,
-   userDown: state.userCount,
    comment: state.commentCount,
-   commentDown: state.commentCount,
-   syoken: state.syokenCount
+   syoken: state.syokenCount,
+   total: 0 // totalは外部での計算なため必ず0
   };
   return countModeMap[counterConfig.COUNT_MODE] || 0;
  };
@@ -46,7 +43,7 @@ export function useWordCounter(counterSet: CounterSet) {
  const count = computed(() => {
   const baseCount = getBaseCount();
   const value = isDownMode.value
-   ? TARGET - (baseCount + state.manualAdjustment)
+   ? counterConfig.TARGET_DOWN - (baseCount + state.manualAdjustment)
    : baseCount + state.manualAdjustment;
 
   return Math.max(value * counterConfig.MULTIPLIER, 0);
@@ -80,7 +77,7 @@ export function useWordCounter(counterSet: CounterSet) {
   }
 
   // 目標達成時のイベント
-  const isSuccess = isDownMode.value ? newCount === 0 : newCount === TARGET;
+  const isSuccess = isDownMode.value ? newCount === 0 : newCount === counterConfig.TARGET_DOWN;
   if (isSuccess && counterConfig.PARTY_SUCCESS) {
    postWordParty(counterConfig.PARTY_SUCCESS, -2);
   }
@@ -91,6 +88,9 @@ export function useWordCounter(counterSet: CounterSet) {
 
  // 初期化処理
  onMounted(async () => {
+  // 初期テーマを手動で設定
+  document.documentElement.setAttribute('data-theme', counterSet.generator.theme);
+
   try {
    // コメント取得と処理の初期化
    state.isInitFlag = await fetchComments(processComment);

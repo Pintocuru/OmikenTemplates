@@ -56,26 +56,17 @@ export class UserCommentsProcess {
  // プラットフォームのフィルタリングService
  isServiceAllowed(comment: Comment): boolean {
   const { ENABLED_SERVICES } = this.config;
+
   // コメントテスターのコメントは external 扱いにする
   if (comment.id === 'COMMENT_TESTER') comment.service = 'external';
 
-  // 'platforms' なら ['!external', '!system'] にする
-  const servicesToCheck = ENABLED_SERVICES.includes('platforms')
-   ? ['!external', '!system']
-   : ENABLED_SERVICES;
-
-  // `!` で始まるものを `ServiceType` に変換
-  const disallowedIds: ServiceType[] = servicesToCheck
-   .filter((id): id is `!${ServiceType}` => typeof id === 'string' && id.startsWith('!'))
-   .map((id) => id.substring(1) as ServiceType);
-
-  // `!` がついていないものを `ServiceType` として扱う
-  const allowedIds: ServiceType[] = servicesToCheck.filter(
-   (id): id is ServiceType => typeof id === 'string' && !id.startsWith('!')
-  );
-
-  const { service } = comment;
-  return (!allowedIds.length || allowedIds.includes(service)) && !disallowedIds.includes(service);
+  if (ENABLED_SERVICES === 'platforms') {
+   // 'platforms' の場合、external および system を許可しない
+   return comment.service !== 'external' && comment.service !== 'system';
+  } else {
+   // ENABLED_SERVICES が ServiceType の場合、そのサービスのみ許可
+   return comment.service === ENABLED_SERVICES;
+  }
  }
 
  // 個別のコメントに対するユーザーIDフィルタリング

@@ -1,80 +1,153 @@
-// src/configMaker/configMaker.ts
-import { ref, watch } from 'vue';
-import { BingoConfig, BingoItem } from '@/scripts/types';
-import { useBingoState } from '@/scripts/useBingoState';
+// src/apps/configMaker/stores/configMaker.ts
 import { defineStore } from 'pinia';
-import { BingoItemSchema, validateBingoConfig } from '@/scripts/schema';
+import { ref, computed, watch } from 'vue';
+import { CounterSet } from '@scripts/types';
+import { validateConfig } from '@/scripts/schema';
+import { counterSetOperations } from './counterSetOperations';
 
-// config
-const config = validateBingoConfig(window.BINGO_CONFIG);
+// 定数
+const CONFIG_FILE_NAME = 'config.js';
+const CONFIG_MIME_TYPE = 'application/javascript';
 
-// ---
+// 初期設定の検証
+const initialConfig = validateConfig(window.counterSets);
 
-export const useConfigMaker = defineStore('config', () => {
- const { cardSize, theme, totalCells } = useBingoState();
+export const useConfigMaker = defineStore('configMaker', () => {
+ // State
+ const counterSets = ref<CounterSet[]>(initialConfig);
+ const activeSetIndex = ref(0);
+ const showPreview = ref(false);
 
- // シード管理
- const bingoSeeds = ref<BingoItem[]>(config.bingoSeeds);
- const bingoRandomSeeds = ref<BingoItem[]>(config.bingoRandomSeeds);
+ // Computed
+ const activeSet = computed(() => counterSets.value[activeSetIndex.value] || null);
 
- // カードサイズ変更時に固定項目数を調整
- watch(cardSize, (newSize) => {
-  const newLength = newSize * newSize;
-  if (bingoSeeds.value.length < newLength) {
-   // 不足分を追加
-   const addCount = newLength - bingoSeeds.value.length;
-   for (let i = 0; i < addCount; i++) {
-    bingoSeeds.value.push(BingoItemSchema.parse({}));
-   }
-  } else if (bingoSeeds.value.length > newLength) {
-   // 超過分を削除（空の項目から優先的に削除）
-   const removeCount = bingoSeeds.value.length - newLength;
-   const emptyIndices = bingoSeeds.value
-    .map((seed, index) => (seed.title === '' ? index : -1))
-    .filter((i) => i !== -1)
-    .slice(0, removeCount);
+ // Derived computed properties for UI states
+ const canMoveUp = computed(() => activeSetIndex.value > 0);
+ const canMoveDown = computed(() => activeSetIndex.value < counterSets.value.length - 1);
+ const canDelete = computed(() => counterSets.value.length > 1);
 
-   if (emptyIndices.length === removeCount) {
-    // 空の項目だけで削除可能
-    bingoSeeds.value = bingoSeeds.value.filter((_, index) => !emptyIndices.includes(index));
-   } else {
-    // 空の項目が足りない場合は末尾から削除
-    bingoSeeds.value = bingoSeeds.value.slice(0, newLength);
-   }
+ // Actions
+ const setActiveSet = (index: number) => {
+  if (index >= 0 && index < counterSets.value.length) {
+   activeSetIndex.value = index;
   }
- });
-
- // config.jsの生成
- const generateConfig = () => {
-  const config: BingoConfig = {
-   bingoCard: {
-    cardSize: cardSize.value,
-    theme: theme.value
-   },
-   bingoSeeds: bingoSeeds.value,
-   bingoRandomSeeds: bingoRandomSeeds.value
-  };
-
-  const blob = new Blob(
-   [
-    `const BINGO_CONFIG = ${JSON.stringify(config, null, 2)};\n if (typeof window !== 'undefined') window.BINGO_CONFIG = BINGO_CONFIG;`
-   ],
-   { type: 'application/javascript' }
-  );
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'config.js';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
  };
 
+ const addCounterSet = () => {
+  const { newSets, newIndex } = counterSetOperations.addCounterSet(counterSets.value);
+  counterSets.value = newSets;
+  activeSetIndex.value = newIndex;
+ };
+
+ const deleteSet = (index: number) => {
+  if (!canDelete.value) return;
+
+  const { newSets, newActiveIndex } = counterSetOperations.deleteSet(
+   counterSets.value,
+   index,
+   activeSetIndex.value
+  );
+  counterSets.value = newSets;
+  activeSetIndex.value = newActiveIndex;
+ };
+
+ const duplicateSet = (index: number) => {
+  const { newSets, newIndex } = counterSetOperations.duplicateSet(counterSets.value, index);
+  counterSets.value = newSets;
+  activeSetIndex.value = newIndex;
+ };
+
+ const moveSetUp = (index: number) => {
+  if (!canMoveUp.value) return;
+
+  const { newSets, newIndex } = counterSetOperations.moveSetUp(counterSets.value, index);
+  counterSets.value = newSets;
+  activeSetIndex.value = newIndex;
+ };
+
+ const moveSetDown = (index: number) => {
+  if (!canMoveDown.value) return;
+
+  const { newSets, newIndex } = counterSetOperations.moveSetDown(counterSets.value, index);
+  counterSets.value = newSets;
+  activeSetIndex.value = newIndex;
+ };
+
+ const togglePreview = () => {
+  showPreview.value = !showPreview.value;
+ };
+
+ // JavaScript設定ファイルの内容を生成
+ const buildConfigFileContent = (): string => {
+  const configObject = counterSets.value;
+  return (
+   `const config = ${JSON.stringify(configObject, null, 2)};\n` +
+   `if (typeof window !== 'undefined') window.counterSets = config;`
+  );
+ };
+
+ // 現在の設定をファイルとしてダウンロード
+ const generateConfig = async (): Promise<boolean> => {
+  try {
+   const content = buildConfigFileContent();
+   const blob = new Blob([content], { type: CONFIG_MIME_TYPE });
+   const url = URL.createObjectURL(blob);
+
+   const link = document.createElement('a');
+   link.href = url;
+   link.download = CONFIG_FILE_NAME;
+   link.style.display = 'none';
+
+   document.body.appendChild(link);
+   link.click();
+
+   // Clean up
+   document.body.removeChild(link);
+   URL.revokeObjectURL(url);
+
+   return true;
+  } catch (error) {
+   console.error('Error generating config file:', error);
+   return false;
+  }
+ };
+
+ // アクティブなセットのテーマを取得
+ const activeTheme = computed(() => {
+  return activeSet.value?.generator.theme || 'light';
+ });
+
+ // テーマ変更の監視
+ watch(
+  activeTheme,
+  (newTheme) => {
+   // data-themeの変更
+   document.documentElement.setAttribute('data-theme', newTheme);
+  },
+  { immediate: true }
+ );
+
  return {
-  bingoSeeds,
-  bingoRandomSeeds,
-  cardSize,
-  totalCells,
-  theme,
+  // State
+  counterSets,
+  activeSetIndex,
+  activeSet,
+  showPreview,
+
+  // Computed
+  canMoveUp,
+  canMoveDown,
+  canDelete,
+  activeTheme,
+
+  // Actions
+  setActiveSet,
+  addCounterSet,
+  deleteSet,
+  duplicateSet,
+  moveSetUp,
+  moveSetDown,
+  togglePreview,
   generateConfig
  };
 });

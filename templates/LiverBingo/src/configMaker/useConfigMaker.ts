@@ -81,11 +81,7 @@ export const useConfigMaker = defineStore('config', () => {
   };
  };
 
- /**
-  * JavaScript設定ファイルの内容を生成
-  * @param config ビンゴ設定オブジェクト
-  * @returns ファイルの内容を表す文字列
-  */
+ // JavaScript設定ファイルの内容を生成
  const buildConfigFileContent = (config: BingoConfig): string => {
   return (
    `const BINGO_CONFIG = ${JSON.stringify(config, null, 2)};\n` +
@@ -93,9 +89,7 @@ export const useConfigMaker = defineStore('config', () => {
   );
  };
 
- /**
-  * 現在の設定をファイルとしてダウンロード
-  */
+ // 現在の設定をファイルとしてダウンロード
  const generateConfig = async () => {
   try {
    const config = buildConfigObject();

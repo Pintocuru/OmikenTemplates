@@ -25,58 +25,79 @@ declare global {
 
 export type CounterSet = {
  id: string;
- userVisitsConfig: ConfigUserType;
- wordConfig: WordCounterConfig;
-};
-
-export interface WordCounterConfig {
+ userVisits: ConfigUserType;
  generator: GeneratorConfig;
  counter: CounterConfig;
-}
+};
 
 export interface GeneratorConfig {
- TARGET: number; // 目標となる数値
- IS_LOOP: boolean; // 目標達成後、色を変化させるか
- TEXTS_FIRST?: string | null; // countが初期値のテキスト
- STYLES_FIRST?: Styles | null; // countが初期値のカラー(TailwindCSS使用)
- TEXTS: string[] | null; // 数値が増えるたびに変化するテキスト
- TEXTS_AFTER: string[] | null; // 目標達成後、変化するテキスト(ランダム)
- STYLES: Styles[]; // 数値が増えるたびに変化するカラー(TailwindCSS使用)
- EASTER_MODE?: boolean; // Splatoonの二つ名モード(隠し)trueで上記を無視して稼働
- EASTER_DATA?: (pulseIntensity: number) => string; // Splatoonの二つ名モード(隠し)trueで上記を無視して稼働
+ title: string; // 項目名
+ theme: ThemeType; // テーマ
+ colorMode: ColorMode; // 色モード
+ scale: number; // 倍率
 }
 
-type Styles = {
- textColor: string;
- colorClass: string;
-};
+// テーマのリスト
+export const themes = [
+ 'light',
+ 'dark',
+ 'cupcake',
+ 'bumblebee',
+ 'emerald',
+ 'corporate',
+ 'synthwave',
+ 'retro',
+ 'cyberpunk',
+ 'valentine',
+ 'halloween',
+ 'garden',
+ 'forest',
+ 'aqua',
+ 'lofi',
+ 'pastel',
+ 'fantasy',
+ 'wireframe',
+ 'black',
+ 'luxury',
+ 'dracula',
+ 'cmyk',
+ 'autumn',
+ 'business',
+ 'acid',
+ 'lemonade',
+ 'night',
+ 'coffee',
+ 'winter',
+ 'dim',
+ 'nord',
+ 'sunset',
+ 'caramellatte',
+ 'abyss',
+ 'silk'
+] as const;
+export type ThemeType = (typeof themes)[number];
+
+export const colors = [
+ 'primary',
+ 'secondary',
+ 'accent',
+ 'neutral',
+ 'info',
+ 'success',
+ 'warning',
+ 'error'
+] as const;
+export type ColorMode = (typeof colors)[number];
 
 export interface CounterConfig {
  COUNT_MODE:
   | 'comment' // コメント数をカウント
   | 'user' // ユーザー数をカウント
-  | 'syoken'; // ユーザー数の初見さんをカウント
- IS_DOWN: boolean; // カウントダウンモード
+  | 'syoken' // ユーザー数の初見さんをカウント
+  | 'total'; // カウンターすべての合計値
+ TARGET_DOWN: number; // 1以上ある場合、カウントダウンモードになる
  MULTIPLIER: number; // 振る舞いに掛け算を適用する場合の乗数
  PARTY: Record<number, string>; // WordPartyの発火タイミング
  PARTY_EVENT: string; // カウント増加時に発火するWordParty
  PARTY_SUCCESS: string; // TARGET_COUNT達成時に発火するWordParty
 }
-
-// ---
-
-// 恐らく使わない
-
-// コントローラーの型定義
-export interface ControllerStorageData {
- action: ControllerAction;
- data: ControllerActionData; // useWordCounterでは不使用
-}
-// コントローラーのアクション定義
-export type ControllerAction =
- | 'countUp' // カウントアップ
- | 'countDown' // カウントダウン
- | 'resetCounter'; // リセット
-
-// アクションのデータ定義 // useWordCounterでは不使用
-export type ControllerActionData = {};

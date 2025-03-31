@@ -3,8 +3,8 @@
  "version": "0.1.0",
  "description": "わんコメでコメントをカウントするジェネレーター",
  "scripts": {
-  "dev:word": "vite",
-  "build:word": "webpack"
+  "dev:wordDaisy": "vite",
+  "build:wordDaisy": "webpack"
  },
  "author": "Pintocuru",
  "license": "Apache-2.0",

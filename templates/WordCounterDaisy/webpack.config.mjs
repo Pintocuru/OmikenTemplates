@@ -5,70 +5,76 @@ import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
-// コンポーネント名を配列として定義
-const packages = [
- { appDir: 'VictoryCrown', appName: 'VictoryCrown' },
- { appDir: 'VictoryCrown', appName: 'SplashNice' },
- { appDir: 'KillingSpree', appName: 'KillingSpree' },
- { appDir: 'KillingSpree', appName: 'SamuraiKatana' }
-];
-
 // ---
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export default packages.map(({ appDir, appName }) => {
- const distDir = appName;
+export default () => {
  const baseConfig = createConfig(dirname, false);
  const commonResolve = createCommonResolve();
 
  const entries = {
-  main: path.resolve(dirname, `./src/apps/AnyGenerator/main.ts`),
-  controller: path.resolve(dirname, `./src/apps/controller/main.ts`),
-  [appName]: path.resolve(dirname, `./src/packages/${appDir}/${appName}.ts`)
+  main: path.resolve(dirname, `./src/main.ts`),
+  configMaker: path.resolve(dirname, `./src/configMaker.ts`)
  };
 
  const htmlPlugins = [
+  // 本体
   new HtmlWebpackPlugin({
-   template: path.resolve(dirname, `./src/apps/controller/index.ejs`),
-   filename: `controller.html`,
-   chunks: ['controller'],
+   template: path.resolve(dirname, `./src/index.ejs`),
+   filename: `index.html`,
+   chunks: ['main'],
    inject: 'body'
   }),
+  // configMaker
   new HtmlWebpackPlugin({
-   template: path.resolve(dirname, `./src/apps/AnyGenerator/index.ejs`),
-   filename: `index.html`,
-   chunks: ['main', appName],
-   inject: 'body',
-   templateParameters: { appName }
+   template: path.resolve(dirname, `./src/configMaker.ejs`),
+   filename: `configMaker.html`,
+   chunks: ['configMaker'],
+   inject: 'body'
   })
  ];
 
  const copyPatterns = [
   {
-   from: path.resolve(dirname, `./src/packages/${appDir}/config_${appName}.js`),
-   to: path.resolve(dirname, `dist/${distDir}/config.js`)
+   from: path.resolve(dirname, `./assets/app.css`),
+   to: path.resolve(dirname, `dist/scripts/app.css`)
   },
   {
-   from: path.resolve(dirname, `./src/packages/${appDir}/${appName}.txt`),
-   to: path.resolve(dirname, `dist/${distDir}/readme.txt`)
+   from: path.resolve(dirname, `./assets/config.js`),
+   to: path.resolve(dirname, `dist/config.js`)
   },
   {
-   from: path.resolve(dirname, `./src/packages/${appDir}/${appName}.json`),
-   to: path.resolve(dirname, `dist/${distDir}/template.json`)
+   from: path.resolve(dirname, `./assets/readme.txt`),
+   to: path.resolve(dirname, `dist/readme.txt`)
   },
   {
-   from: path.resolve(dirname, `./src/packages/${appDir}/${appName}.png`),
-   to: path.resolve(dirname, `dist/${distDir}/thumb.png`)
+   from: path.resolve(dirname, `./assets/template.json`),
+   to: path.resolve(dirname, `dist/template.json`)
+  },
+  {
+   from: path.resolve(dirname, `./assets/thumb.png`),
+   to: path.resolve(dirname, `dist/thumb.png`)
   }
  ];
+
+ // CSS ローダーの設定をカスタマイズ
+ const cssLoaderRule = {
+  test: /\.css$/,
+  use: ['style-loader', 'css-loader', 'postcss-loader']
+ };
+
+ // baseConfig から rules を取得し、CSS ルールを置き換える
+ const rules = baseConfig.module.rules.map((rule) =>
+  rule.test.toString() === /\.css$/.toString() ? cssLoaderRule : rule
+ );
 
  return {
   ...baseConfig,
   entry: entries,
   output: {
-   filename: `script/[name].js`,
-   path: path.resolve(dirname, `dist/${distDir}`),
+   filename: `scripts/[name].js`,
+   path: path.resolve(dirname, `dist`),
    clean: true
   },
   resolve: {
@@ -76,10 +82,12 @@ export default packages.map(({ appDir, appName }) => {
    alias: {
     ...commonResolve.alias,
     '@': path.resolve(dirname, 'src'),
-    '@packages': path.resolve(dirname, 'src/packages'),
-    '@scripts': path.resolve(dirname, 'src/scripts'),
     '@assets': path.resolve(dirname, 'assets')
    }
+  },
+  module: {
+   ...baseConfig.module,
+   rules: rules
   },
   externals: {
    vue: 'Vue'
@@ -90,4 +98,4 @@ export default packages.map(({ appDir, appName }) => {
    new CopyWebpackPlugin({ patterns: copyPatterns })
   ]
  };
-});
+};
