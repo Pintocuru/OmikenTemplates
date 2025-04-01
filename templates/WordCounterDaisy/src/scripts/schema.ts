@@ -2,6 +2,7 @@
 import { z } from 'zod';
 
 // Theme constants
+// TODO: commonにDaisyUi用の定義を新規作成する
 export const themes = [
  'light',
  'dark',
@@ -41,20 +42,7 @@ export const themes = [
 ] as const;
 export type ThemeType = (typeof themes)[number];
 
-// Color constants
-export const colors = [
- 'primary',
- 'secondary',
- 'accent',
- 'neutral',
- 'info',
- 'success',
- 'warning',
- 'error'
-] as const;
-export type ColorMode = (typeof colors)[number];
-
-// ! OneSDKから取得できなかったため手書き
+// service から system を除いたもの
 export const serviceTypeValues = [
  'youtube',
  'twicas',
@@ -73,8 +61,8 @@ export const serviceTypeValues = [
  'external',
  'system'
 ] as const;
-
 export type ServiceType = (typeof serviceTypeValues)[number];
+
 const configUserTypeSchema = z.object({
  IS_DIFF_MODE: z.boolean().default(false),
  ENABLED_SERVICES: z
@@ -92,19 +80,12 @@ const configUserTypeSchema = z.object({
  IS_GIFT: z.boolean().default(false),
  KEYWORDS: z.array(z.string()).default([])
 });
-export type ConfigUserType = z.infer<typeof configUserTypeSchema>;
-
-// Schema for generator configuration
-const generatorConfigSchema = z.object({
- title: z.string().min(1, 'タイトルは必須です'),
- theme: z.enum(themes).default('light'),
- colorMode: z.enum(colors).default('primary'),
- scale: z.number().positive().min(0.1).max(5).default(1.0)
-});
 
 // Schema for counter configuration
 const counterConfigSchema = z.object({
- COUNT_MODE: z.enum(['comment', 'user', 'syoken', 'total']).default('comment'),
+ title: z.string().min(1, 'カウンター'),
+ // TODO: 新規でmeta:「upVote、viewer」追加、Totalはトップで新規追加するのでここでは消す
+ COUNT_MODE: z.enum(['comment', 'user', 'syoken']).default('comment'),
  TARGET_DOWN: z.number().int().min(0).default(0),
  MULTIPLIER: z.number().positive().default(1),
  PARTY: z.record(z.string(), z.string()).default({}),
@@ -112,19 +93,34 @@ const counterConfigSchema = z.object({
  PARTY_SUCCESS: z.string().default('')
 });
 
-// Schema for a single counter set
+// Schema統合
 export const counterSetSchema = z.object({
  id: z.string().min(1),
  userVisits: configUserTypeSchema,
- generator: generatorConfigSchema,
  counter: counterConfigSchema
 });
-
-// Schema for array of counter sets
 export const counterSetsSchema = z.array(counterSetSchema).nonempty();
 
-// Export the Counter Set type
+// ---
+
+// componentConfig
+
+export const componentConfigSchema = z.object({
+ // TODO: やっぱりテーマカラーは統一したい
+ theme: z.enum(themes).default('light'),
+ isTotalCounter: z.boolean().default(false), // 合計したカウンターを用意するか
+ isHorizontalLayout: z.boolean().default(true) // 並び替えモード：true=横一列, false=縦一列
+ // title　合計値カウンターのタイトル(今日のランチ代とか)
+ // unit: 合計値カウンターの単位(円とか)
+});
+
+// ---
+
+// 型定義
+export type ComponentConfig = z.infer<typeof componentConfigSchema>;
 export type CounterSet = z.infer<typeof counterSetSchema>;
+export type ConfigUserType = z.infer<typeof configUserTypeSchema>;
+export type CounterConfig = z.infer<typeof counterConfigSchema>;
 
 /**
  * Creates a default counter set with sensible defaults
@@ -135,19 +131,15 @@ export function createDefaultCounterSet(): CounterSet {
   id: `counter-${Date.now()}`,
   userVisits: {
    IS_DIFF_MODE: false,
-   ENABLED_SERVICES: 'platforms',
+   ENABLED_SERVICES: 'all',
    ALLOWED_IDS: [],
    ACCESS_LEVEL: 1,
    IS_GIFT: false,
    KEYWORDS: []
   },
-  generator: {
-   title: '新しいカウンター',
-   theme: 'light',
-   colorMode: 'primary',
-   scale: 1.0
-  },
   counter: {
+   title: 'カウンター',
+   // unit: カウンターの単位(ptとか)
    COUNT_MODE: 'comment',
    TARGET_DOWN: 0,
    MULTIPLIER: 1,
@@ -175,3 +167,24 @@ export function validateConfig(config: unknown): CounterSet[] {
   return [createDefaultCounterSet()];
  }
 }
+
+/*
+
+
+// Color constants
+// TODO:colors廃止。primaryのみに。
+export const colors = [
+ 'primary',
+ 'secondary',
+ 'accent',
+ 'neutral',
+ 'info',
+ 'success',
+ 'warning',
+ 'error'
+] as const;
+export type ColorMode = (typeof colors)[number];
+
+
+
+*/

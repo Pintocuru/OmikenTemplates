@@ -3,11 +3,16 @@ import { ConfigUserType } from '@public/common/commonTypes';
 
 // stateの型定義
 export type WordCounterState = {
- isInitFlag: boolean; // わんコメ初期化フラグ
+ isInitFlag: boolean; // わんコメ初期化フラグ]
+ isLive: boolean; // metaからライブ中かを取得
+ manualAdjustment: number; // 手動で加算・減算した数値
  commentCount: number; // fetchCommentsで取得した基本コメント数
  userCount: number; // fetchCommentsで取得した基本ユーザー数
  syokenCount: number; // fetchCommentsで取得した基本ユーザー数のうち、初見さん
- manualAdjustment: number; // 手動で加算・減算した数値
+ upVoteCount: number; // metaで取得した高評価数
+ viewerCount: number; // metaで取得した視聴者数
+ peakUpVoteCount: number; // 過去最高の高評価数
+ peakViewerCount: number; // 最大視聴者数
 };
 
 // ---
@@ -19,9 +24,17 @@ declare global {
    component: any;
    initApp: any;
   };
+  componentConfig: ComponentConfig;
   counterSets: CounterSet[];
  }
 }
+
+// TODO 以降、スキーマで代用。削除しておく。
+
+export type ComponentConfig = {
+ isTotalCounter: boolean; // 合計したカウンターを用意するか
+ isHorizontalLayout: boolean; // 並び替えモード：true=横一列, false=縦一列
+};
 
 export type CounterSet = {
  id: string;

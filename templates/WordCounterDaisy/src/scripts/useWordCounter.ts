@@ -1,25 +1,36 @@
 // src/apps/scripts/useWordCounter.ts
 import { computed, onMounted, reactive, watch, toRefs } from 'vue';
-import { CounterConfig, CounterSet, WordCounterState } from './types';
+import { WordCounterState } from './types';
+import { ComponentConfig, CounterConfig, CounterSet } from './schema';
 import { createProcessComment } from './createProcessComment';
 import { GetUserVisits } from '@common/subscribe/GetUserVisits';
+import { GetMetas } from '@common/subscribe/GetMetas';
 import { postWordParty } from '@common/api/PostOneComme';
+import { ServiceMeta } from '@onecomme.com/onesdk/types/Service';
+import { createHandleMetaUpdate } from './createHandleMetaUpdate';
 
-export function useWordCounter(counterSet: CounterSet) {
+export function useWordCounter(componentConfig: ComponentConfig, counterSet: CounterSet) {
  // デフォルト値を使用した設定の抽出と初期化
  const counterConfig: CounterConfig = counterSet.counter;
  const userVisitsConfig = counterSet.userVisits;
 
  // コメントからvisitデータを生成する
  const { fetchComments } = GetUserVisits(userVisitsConfig);
+ // わんコメの枠の一番上のデータを取得 TODO: あとで枠指定するかも
+ const { fetchMeta } = GetMetas();
 
  // リアクティブなstate
  const state = reactive<WordCounterState>({
   isInitFlag: false, // 初期化状態を false に設定（初期化後に true に変更）
-  commentCount: 0,
-  userCount: 0,
-  syokenCount: 0,
-  manualAdjustment: 0
+  isLive: false,
+  manualAdjustment: 0, // 手動で加算・減算した数値
+  commentCount: 0, // fetchCommentsで取得した基本コメント数
+  userCount: 0, // fetchCommentsで取得した基本ユーザー数
+  syokenCount: 0, // fetchCommentsで取得した基本ユーザー数のうち、初見さん
+  upVoteCount: 0,
+  viewerCount: 0,
+  peakUpVoteCount: 0, // 過去最高の高評価数
+  peakViewerCount: 0 // 最大視聴者数
  });
 
  // カウントモードの判定
@@ -27,14 +38,14 @@ export function useWordCounter(counterSet: CounterSet) {
 
  // コメント処理ハンドラ
  const processComment = createProcessComment(state);
+ const handleMetaUpdate = createHandleMetaUpdate(state);
 
  // カウントモードに応じた基準値を取得
  const getBaseCount = () => {
-  const countModeMap = {
+  const countModeMap: Record<CounterConfig['COUNT_MODE'], number> = {
    user: state.userCount,
    comment: state.commentCount,
-   syoken: state.syokenCount,
-   total: 0 // totalは外部での計算なため必ず0
+   syoken: state.syokenCount
   };
   return countModeMap[counterConfig.COUNT_MODE] || 0;
  };
@@ -88,12 +99,15 @@ export function useWordCounter(counterSet: CounterSet) {
 
  // 初期化処理
  onMounted(async () => {
-  // 初期テーマを手動で設定
-  document.documentElement.setAttribute('data-theme', counterSet.generator.theme);
+  // 初期テーマ設定
+  document.documentElement.setAttribute('data-theme', componentConfig.theme);
 
   try {
    // コメント取得と処理の初期化
    state.isInitFlag = await fetchComments(processComment);
+
+   // metaタグからデータを取得
+   await fetchMeta(handleMetaUpdate);
   } catch (error) {
    console.error('WordCounter initialization error:', error);
    state.isInitFlag = false;

@@ -37,7 +37,16 @@
      :key="color"
      class="badge cursor-pointer"
      @click="generator.colorMode = color"
-     :class="{ 'badge-primary': generator.colorMode === color }"
+     :class="{
+      'badge-primary': generator.colorMode === color && color === 'primary',
+      'badge-secondary': generator.colorMode === color && color === 'secondary',
+      'badge-accent': generator.colorMode === color && color === 'accent',
+      'badge-neutral': generator.colorMode === color && color === 'neutral',
+      'badge-info': generator.colorMode === color && color === 'info',
+      'badge-success': generator.colorMode === color && color === 'success',
+      'badge-warning': generator.colorMode === color && color === 'warning',
+      'badge-error': generator.colorMode === color && color === 'error'
+     }"
     >
      {{ color }}
     </div>
