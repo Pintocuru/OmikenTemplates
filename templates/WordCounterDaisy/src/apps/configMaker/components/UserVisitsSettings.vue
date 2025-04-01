@@ -17,6 +17,13 @@
    <div class="flex flex-wrap gap-2 mb-2">
     <div
      class="badge cursor-pointer"
+     @click="setService('all')"
+     :class="{ 'badge-primary': userVisits.ENABLED_SERVICES === 'all' }"
+    >
+     all
+    </div>
+    <div
+     class="badge cursor-pointer"
      @click="setService('platforms')"
      :class="{ 'badge-primary': userVisits.ENABLED_SERVICES === 'platforms' }"
     >
@@ -142,8 +149,7 @@
 
 <script setup lang="ts">
 import { defineProps, ref } from 'vue';
-import { ConfigUserType } from '@public/common/commonTypes';
-import { serviceTypeValues, ServiceType } from '@scripts/schema';
+import { ConfigUserType, serviceTypeValues, ServiceType } from '@scripts/schema';
 
 const props = defineProps<{
  userVisits: ConfigUserType;
@@ -154,7 +160,7 @@ const newAllowedId = ref('');
 const newKeyword = ref('');
 
 // サービス関連の処理
-const setService = (service: 'platforms' | ServiceType) => {
+const setService = (service: ConfigUserType['ENABLED_SERVICES']) => {
  props.userVisits.ENABLED_SERVICES = service;
 };
 

@@ -78,8 +78,8 @@ export type ServiceType = (typeof serviceTypeValues)[number];
 const configUserTypeSchema = z.object({
  IS_DIFF_MODE: z.boolean().default(false),
  ENABLED_SERVICES: z
-  .union([z.literal('platforms'), z.enum(serviceTypeValues)])
-  .default('platforms'),
+  .union([z.literal('all'), z.literal('platforms'), z.enum(serviceTypeValues)])
+  .default('all'),
  ALLOWED_IDS: z.array(z.string()).default([]),
  ACCESS_LEVEL: z
   .number()

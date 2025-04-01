@@ -55,18 +55,21 @@ export class UserCommentsProcess {
 
  // プラットフォームのフィルタリングService
  isServiceAllowed(comment: Comment): boolean {
-  const { ENABLED_SERVICES } = this.config;
+  const service = this.config.ENABLED_SERVICES;
 
-  // コメントテスターのコメントは external 扱いにする
+  // 'all' の場合、すべて許可
+  if (service === 'all') return true;
+
+  // コメントテスターのコメントは 'external' 扱いにする
   if (comment.id === 'COMMENT_TESTER') comment.service = 'external';
 
-  if (ENABLED_SERVICES === 'platforms') {
-   // 'platforms' の場合、external および system を許可しない
-   return comment.service !== 'external' && comment.service !== 'system';
-  } else {
-   // ENABLED_SERVICES が ServiceType の場合、そのサービスのみ許可
-   return comment.service === ENABLED_SERVICES;
+  // 'platforms' の場合、'external' および 'system' を除外
+  if (service === 'platforms') {
+   return !['external', 'system'].includes(comment.service);
   }
+
+  // ENABLED_SERVICES が特定のサービス名の場合、そのサービスのみ許可
+  return comment.service === service;
  }
 
  // 個別のコメントに対するユーザーIDフィルタリング

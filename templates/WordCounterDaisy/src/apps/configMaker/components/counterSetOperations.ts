@@ -1,5 +1,4 @@
-import { CounterSet } from '@scripts/types';
-import { createDefaultCounterSet } from '@/scripts/schema';
+import { CounterSet, createDefaultCounterSet } from '@/scripts/schema';
 
 /**
  * カウンターセット配列を操作するためのユーティリティ関数群
@@ -20,23 +19,19 @@ export const counterSetOperations = {
  /**
   * 指定されたインデックスのカウンターセットを削除する
   */
- deleteSet(
-  counterSets: CounterSet[],
-  index: number,
-  currentActiveIndex: number
- ): { newSets: CounterSet[]; newActiveIndex: number } {
-  if (counterSets.length <= 1) return { newSets: counterSets, newActiveIndex: currentActiveIndex };
+ deleteSet(counterSets: CounterSet[], index: number): { newSets: CounterSet[]; newIndex: number } {
+  if (counterSets.length <= 1) {
+   // 最後のセットは削除不可
+   return { newSets: counterSets, newIndex: index };
+  }
 
   const newSets = [...counterSets];
   newSets.splice(index, 1);
 
-  // アクティブインデックスの調整
-  let newActiveIndex = currentActiveIndex;
-  if (currentActiveIndex >= newSets.length) {
-   newActiveIndex = newSets.length - 1;
-  }
+  // 新しいアクティブインデックスを決定
+  const newIndex = Math.min(index, newSets.length - 1);
 
-  return { newSets, newActiveIndex };
+  return { newSets, newIndex };
  },
 
  /**
