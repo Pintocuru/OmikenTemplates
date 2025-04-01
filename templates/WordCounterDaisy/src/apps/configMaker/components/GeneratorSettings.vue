@@ -1,11 +1,9 @@
 <!-- src/apps/configMaker/components/GeneratorSettings.vue -->
 <template>
- <div class="space-y-4">
+ <div class="space-y-6">
   <!-- タイトル設定 -->
-  <div class="form-control">
-   <label class="label">
-    <span class="label-text">タイトル</span>
-   </label>
+  <div class="card shadow-md p-2">
+   <label class="label font-medium pb-1"> タイトル </label>
    <input
     type="text"
     v-model="generator.title"
@@ -15,73 +13,66 @@
   </div>
 
   <!-- テーマ選択 -->
-  <div class="form-control">
-   <label class="label">
-    <span class="label-text">テーマ</span>
-   </label>
-   <select v-model="generator.theme" class="select select-bordered w-full bg-white text-gray-800">
-    <option v-for="theme in themes" :key="theme" :value="theme">
+  <div class="card shadow-md p-2">
+   <label class="label font-medium pb-1"> テーマ </label>
+   <div class="grid grid-cols-7 gap-2">
+    <div
+     v-for="theme in themes"
+     :key="theme"
+     class="badge cursor-pointer"
+     @click="generator.theme = theme"
+     :class="{ 'badge-primary': generator.theme === theme }"
+    >
      {{ theme }}
-    </option>
-   </select>
+    </div>
+   </div>
   </div>
 
   <!-- カラーモード選択 -->
-  <div class="form-control">
-   <label class="label">
-    <span class="label-text">カラーモード</span>
-   </label>
-   <select
-    v-model="generator.colorMode"
-    class="select select-bordered w-full bg-white text-gray-800"
-   >
-    <option v-for="color in colors" :key="color" :value="color">
+  <div class="card shadow-md p-2">
+   <label class="label font-medium pb-1"> カラーモード </label>
+   <div class="grid grid-cols-4 gap-2">
+    <div
+     v-for="color in colors"
+     :key="color"
+     class="badge cursor-pointer"
+     @click="generator.colorMode = color"
+     :class="{ 'badge-primary': generator.colorMode === color }"
+    >
      {{ color }}
-    </option>
-   </select>
-   <div class="mt-2">
-    <div class="flex flex-wrap gap-2">
-     <div
-      v-for="color in colors"
-      :key="color"
-      :class="`badge badge-${color} badge-lg cursor-pointer`"
-      @click="generator.colorMode = color"
-     >
-      {{ color }}
-     </div>
     </div>
    </div>
   </div>
 
   <!-- スケール設定 -->
-  <div class="form-control">
-   <label class="label">
-    <span class="label-text">表示スケール</span>
-    <span class="label-text-alt">{{ generator.scale }}</span>
+  <div class="card shadow-md p-2">
+   <label class="label font-medium pb-1">
+    表示スケール
+    <span class="label-text-alt">{{ formattedScale }}</span>
    </label>
-   <input
-    type="range"
-    min="0.5"
-    max="2"
-    step="0.1"
-    v-model.number="generator.scale"
-    class="range range-primary"
-   />
-   <div class="flex justify-between text-xs px-2">
-    <span>0.5x</span>
-    <span>1x</span>
-    <span>2x</span>
+   <div class="mt-2">
+    <input
+     type="range"
+     min="0.5"
+     max="2"
+     step="0.1"
+     v-model.number="generator.scale"
+     class="range range-primary mt-2"
+    />
    </div>
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
+import { computed, defineProps } from 'vue';
 import { themes, colors } from '@scripts/types';
-import type { GeneratorConfig } from '@scripts/types';
+import { GeneratorConfig } from '@scripts/types';
 
-const props = defineProps<{
- generator: GeneratorConfig;
-}>();
+const props = defineProps<{ generator: GeneratorConfig }>();
+
+// 1.0, 2.0 を表示させるための計算プロパティ
+const formattedScale = computed(() => {
+ return props.generator.scale.toFixed(1);
+});
 </script>

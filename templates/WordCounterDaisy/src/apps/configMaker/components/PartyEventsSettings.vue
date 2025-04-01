@@ -1,17 +1,15 @@
 <!-- src/apps/configMaker/components/PartyEventsSettings.vue -->
 <template>
- <div class="space-y-4">
+ <div class="space-y-6">
   <!-- イベント発火タイミング設定 -->
-  <div class="form-control">
-   <label class="label">
-    <span class="label-text">WordParty発火タイミング</span>
-   </label>
+  <div class="card shadow-md p-2">
+   <label class="label font-medium pb-1">WordParty発火タイミング </label>
    <div class="overflow-x-auto">
     <table class="table table-compact w-full">
      <thead>
       <tr>
        <th>カウント数</th>
-       <th>表示メッセージ</th>
+       <th>発火ワード</th>
        <th>操作</th>
       </tr>
      </thead>
@@ -22,6 +20,7 @@
          type="number"
          :value="countNum"
          class="input input-bordered input-sm w-24"
+         min="0"
          @change="updatePartyKey($event, countNum, message)"
         />
        </td>
@@ -50,7 +49,7 @@
         <input
          type="text"
          v-model="newPartyMessage"
-         placeholder="表示メッセージ"
+         placeholder="発火ワード"
          class="input input-bordered input-sm w-full"
         />
        </td>
@@ -64,44 +63,36 @@
   </div>
 
   <!-- カウント増加時イベント設定 -->
-  <div class="form-control">
-   <label class="label">
-    <span class="label-text">カウント増加時のWordParty</span>
-   </label>
-   <input
-    type="text"
-    v-model="counter.PARTY_EVENT"
-    placeholder="イベントメッセージ"
-    class="input input-bordered w-full"
-   />
-   <label class="label">
-    <span class="label-text-alt">カウントが増加するたびに表示されるメッセージ</span>
-   </label>
-  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+   <div class="card shadow-md p-2">
+    <label class="label font-medium pb-1">カウント増加時のWordParty </label>
+    <input
+     type="text"
+     v-model="counter.PARTY_EVENT"
+     placeholder="発火ワード"
+     class="input input-bordered w-full"
+    />
+    <label class="label"> カウントが増加するたびに発火されるWordParty </label>
+   </div>
 
-  <!-- 達成時イベント設定 -->
-  <div class="form-control">
-   <label class="label">
-    <span class="label-text">目標達成時のWordParty</span>
-   </label>
-   <input
-    type="text"
-    v-model="counter.PARTY_SUCCESS"
-    placeholder="達成メッセージ"
-    class="input input-bordered w-full"
-   />
-   <label class="label">
-    <span class="label-text-alt"
-     >カウントダウンモードの場合、0に到達した時に表示されるメッセージ</span
-    >
-   </label>
+   <!-- 達成時イベント設定 -->
+   <div class="card shadow-md p-2">
+    <label class="label font-medium pb-1">目標達成時のWordParty </label>
+    <input
+     type="text"
+     v-model="counter.PARTY_SUCCESS"
+     placeholder="発火ワード"
+     class="input input-bordered w-full"
+    />
+    <label class="label"> カウントダウンモードの場合、0に到達した時に発火されるWordParty</label>
+   </div>
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps, ref, computed } from 'vue';
-import type { CounterConfig } from '@scripts/types';
+import { CounterConfig } from '@scripts/types';
 
 const props = defineProps<{
  counter: CounterConfig;

@@ -10,77 +10,15 @@
    </div>
   </div>
 
-  <!-- TODO 配列操作部分は別途コンポーネントを分離したい -->
   <!-- カウンターセット一覧と管理 -->
-  <div class="mb-6">
-   <div class="flex justify-between items-center mb-4">
-    <h3 class="text-xl font-bold">カウンターセット一覧</h3>
-    <button @click="configStore.addCounterSet" class="btn btn-sm btn-success">
-     <span class="mr-1">+</span> 新規セット追加
-    </button>
-   </div>
-
-   <!-- カウンターセットのタブナビゲーション -->
-   <div class="tabs tabs-boxed mb-4">
-    <a
-     v-for="(set, index) in configStore.counterSets"
-     :key="set.id"
-     :class="['tab', { 'tab-active': configStore.activeSetIndex === index }]"
-     @click="configStore.setActiveSet(index)"
-    >
-     {{ set.generator.title || `Set ${index + 1}` }}
-    </a>
-   </div>
-
-   <!-- 選択中セットの操作ボタン -->
-   <div class="flex justify-end space-x-2 mb-4" v-if="configStore.counterSets.length > 0">
-    <button
-     @click="configStore.moveSetUp(configStore.activeSetIndex)"
-     class="btn btn-sm btn-outline"
-     :disabled="configStore.activeSetIndex === 0"
-    >
-     ↑ 上へ
-    </button>
-    <button
-     @click="configStore.moveSetDown(configStore.activeSetIndex)"
-     class="btn btn-sm btn-outline"
-     :disabled="configStore.activeSetIndex === configStore.counterSets.length - 1"
-    >
-     ↓ 下へ
-    </button>
-    <button
-     @click="configStore.duplicateSet(configStore.activeSetIndex)"
-     class="btn btn-sm btn-outline btn-info"
-    >
-     複製
-    </button>
-    <button
-     @click="configStore.deleteSet(configStore.activeSetIndex)"
-     class="btn btn-sm btn-outline btn-error"
-     :disabled="configStore.counterSets.length <= 1"
-    >
-     削除
-    </button>
-   </div>
-  </div>
+  <CounterSetManager />
 
   <!-- アクティブなカウンターセットの設定フォーム -->
   <div class="space-y-4" v-if="configStore.activeSet">
-   <!-- 基本情報 (Information) -->
-   <div class="collapse collapse-arrow bg-base-200">
-    <input type="checkbox" class="peer" checked />
-    <div class="collapse-title text-lg font-semibold text-base-content">基本情報 (Information)</div>
-    <div class="collapse-content">
-     <CounterSetInfo :counterSet="configStore.activeSet" />
-    </div>
-   </div>
-
    <!-- 表示設定 (Generator Config) -->
    <div class="collapse collapse-arrow bg-base-200">
-    <input type="checkbox" class="peer" />
-    <div class="collapse-title text-lg font-semibold text-base-content">
-     表示設定 (Generator Config)
-    </div>
+    <input type="checkbox" class="peer" checked />
+    <div class="collapse-title text-lg font-semibold">表示設定 (Generator Config)</div>
     <div class="collapse-content">
      <GeneratorSettings :generator="configStore.activeSet.generator" />
     </div>
@@ -89,31 +27,20 @@
    <!-- カウンター設定 -->
    <div class="collapse collapse-arrow bg-base-200">
     <input type="checkbox" class="peer" />
-    <div class="collapse-title text-lg font-semibold text-base-content">
-     カウンター設定 (Counter Config)
-    </div>
+    <div class="collapse-title text-lg font-semibold">カウンター設定 (Counter Config)</div>
     <div class="collapse-content">
      <CounterSettings :counter="configStore.activeSet.counter" />
-    </div>
-   </div>
 
-   <!-- ユーザー訪問設定 -->
-   <div class="collapse collapse-arrow bg-base-200">
-    <input type="checkbox" class="peer" />
-    <div class="collapse-title text-lg font-semibold text-base-content">
-     ユーザー訪問設定 (User Visits Config)
-    </div>
-    <div class="collapse-content">
+     <!-- TODO v-ifを使い、「コメント数・ユーザー数」の場合はUserVisitsSettingsを表示する -->
+     <!-- TODO 高評価数・視聴者数・配信開始時からの経過時間なら別のコンポーネント -->
      <UserVisitsSettings :userVisits="configStore.activeSet.userVisits" />
     </div>
    </div>
 
-   <!-- パーティーイベント設定 -->
+   <!-- WordParty設定 -->
    <div class="collapse collapse-arrow bg-base-200">
     <input type="checkbox" class="peer" />
-    <div class="collapse-title text-lg font-semibold text-base-content">
-     パーティーイベント設定 (Party Events)
-    </div>
+    <div class="collapse-title text-lg font-semibold">WordParty設定 (WordParty Events)</div>
     <div class="collapse-content">
      <PartyEventsSettings :counter="configStore.activeSet.counter" />
     </div>
@@ -130,12 +57,12 @@
 
 <script setup lang="ts">
 import { useConfigMaker } from './components/useConfigMaker';
-import CounterSetInfo from './components/CounterSetInfo.vue';
 import GeneratorSettings from './components/GeneratorSettings.vue';
 import CounterSettings from './components/CounterSettings.vue';
 import UserVisitsSettings from './components/UserVisitsSettings.vue';
 import PartyEventsSettings from './components/PartyEventsSettings.vue';
 import ConfigPreview from './components/ConfigPreview.vue';
+import CounterSetManager from './components/CounterSetManager.vue';
 
 const configStore = useConfigMaker();
 </script>

@@ -1,54 +1,61 @@
 <!-- src/apps/configMaker/components/UserVisitsSettings.vue -->
 <template>
- <div class="space-y-4">
-  <!-- 差分モード設定 -->
-  <div class="form-control">
+ <div class="space-y-6">
+  <!-- 差分モードと有効サービス設定 -->
+  <div class="card shadow-md p-2 pt-6">
+   <label class="label font-medium pb-1">リロード時や再起動時の挙動</label>
    <label class="label cursor-pointer justify-start gap-4">
     <input type="checkbox" v-model="userVisits.IS_DIFF_MODE" class="toggle toggle-primary" />
-    <span class="label-text">リロード時、新しいデータだけを読み込む</span>
+    <span class="label-text">リロード時、0からスタート</span>
    </label>
   </div>
 
-  <!-- 有効サービス設定 -->
-  <div class="form-control">
-   <label class="label">
-    <span class="label-text">有効サービス</span>
-   </label>
+  <div class="card shadow-md p-2">
+   <!-- 有効サービス設定 -->
+   <label class="label font-medium pb-1">対象プラットフォーム </label>
+
    <div class="flex flex-wrap gap-2 mb-2">
     <div
-     class="badge badge-outline cursor-pointer"
+     class="badge cursor-pointer"
      @click="setService('platforms')"
      :class="{ 'badge-primary': userVisits.ENABLED_SERVICES === 'platforms' }"
     >
      platforms
     </div>
-    <!-- サービス選択肢 -->
+
     <div
      v-for="service in serviceTypeValues"
      :key="service"
-     class="badge badge-outline cursor-pointer"
+     class="badge cursor-pointer"
      @click="setService(service)"
      :class="{ 'badge-primary': userVisits.ENABLED_SERVICES === service }"
     >
      {{ service }}
     </div>
    </div>
+   <div class="text-sm text-base-content/70 pt-3">
+    <div>platforms: 配信プラットフォームすべてを対象とします</div>
+    <div>external: コメントテスターを含む、配信プラットフォームでないコメントを対象とします</div>
+   </div>
   </div>
 
   <!-- 許可ID設定 -->
-  <div class="form-control">
-   <label class="label">
-    <span class="label-text">許可ユーザーID</span>
-   </label>
+  <div class="card shadow-md p-2">
+   <label class="label font-medium pb-1">カウントするユーザーID </label>
    <div class="flex gap-2 items-center">
     <input
      type="text"
      v-model="newAllowedId"
      placeholder="ユーザーID"
      class="input input-bordered input-sm flex-grow"
-     @keyup.enter="addAllowedId"
+     @keyup.enter="addItem(newAllowedId, userVisits.ALLOWED_IDS, () => (newAllowedId = ''))"
     />
-    <button class="btn btn-sm btn-primary" @click="addAllowedId">追加</button>
+    <button
+     class="btn btn-sm btn-primary"
+     @click="addItem(newAllowedId, userVisits.ALLOWED_IDS, () => (newAllowedId = ''))"
+    >
+     追加
+    </button>
    </div>
    <div class="flex flex-wrap gap-2 mt-2">
     <div
@@ -57,71 +64,78 @@
      class="badge badge-primary gap-2"
     >
      {{ id }}
-     <span class="cursor-pointer" @click="removeAllowedId(index)">✕</span>
+     <span class="cursor-pointer" @click="removeItem(userVisits.ALLOWED_IDS, index)">✕</span>
     </div>
    </div>
-   <label class="label">
-    <span class="label-text-alt">ID前に「!」をつけるとネガティブリスト（除外）になります</span>
-   </label>
+   <label class="label">ID前に「!」をつけるとネガティブリスト（除外）になります </label>
   </div>
 
   <!-- アクセスレベル設定 -->
-  <div class="form-control">
-   <label class="label">
-    <span class="label-text">アクセスレベル</span>
-   </label>
-   <select
-    v-model="userVisits.ACCESS_LEVEL"
-    class="select select-bordered w-full bg-white text-gray-800"
-   >
-    <option :value="1">1: だれでも</option>
-    <option :value="2">2: メンバー</option>
-    <option :value="3">3: モデレーター</option>
-    <option :value="4">4: 管理者</option>
-   </select>
+  <div class="card shadow-md p-2">
+   <label class="label font-medium pb-1">対象アクセスレベル </label>
+   <div class="flex flex-wrap gap-4">
+    <template v-for="level in [1, 2, 3, 4]" :key="level">
+     <label
+      class="flex items-center gap-2"
+      :class="{ 'text-primary': userVisits.ACCESS_LEVEL === level }"
+     >
+      <input
+       type="radio"
+       :value="level"
+       v-model="userVisits.ACCESS_LEVEL"
+       class="radio radio-bordered"
+      />
+      <span>{{ level }}: {{ getAccessLevelLabel(level) }}</span>
+     </label>
+    </template>
+   </div>
   </div>
 
-  <!-- ギフト設定 -->
-  <div class="form-control">
+  <!-- コンテンツフィルター設定 -->
+  <div class="card shadow-md p-2">
+   <!-- ギフト設定 -->
+   <label class="label font-medium pb-1">ギフト回数をカウントするか </label>
    <label class="label cursor-pointer justify-start gap-4">
     <input type="checkbox" v-model="userVisits.IS_GIFT" class="toggle toggle-primary" />
-    <span class="label-text">ギフトで有効にする</span>
+    <span class="label-text"
+     >ギフト数をカウントする (ON にすると、キーワードでのカウントができなくなります)</span
+    >
    </label>
   </div>
-
-  <!-- キーワード設定 -->
-  <div class="form-control" :class="{ 'opacity-50': userVisits.IS_GIFT }">
-   <label class="label">
-    <span class="label-text">キーワード（正規表現）</span>
-   </label>
-   <div class="flex gap-2 items-center">
-    <input
-     type="text"
-     v-model="newKeyword"
-     placeholder="キーワード"
-     class="input input-bordered input-sm flex-grow"
-     :disabled="userVisits.IS_GIFT"
-     @keyup.enter="addKeyword"
-    />
-    <button class="btn btn-sm btn-primary" @click="addKeyword" :disabled="userVisits.IS_GIFT">
-     追加
-    </button>
-   </div>
-   <div class="flex flex-wrap gap-2 mt-2">
-    <div
-     v-for="(keyword, index) in userVisits.KEYWORDS"
-     :key="index"
-     class="badge badge-primary gap-2"
-    >
-     {{ keyword }}
-     <span class="cursor-pointer" @click="removeKeyword(index)">✕</span>
+  <div class="card shadow-md p-2">
+   <!-- キーワード設定 -->
+   <div class="form-control" :class="{ 'opacity-50': userVisits.IS_GIFT }">
+    <label class="label">
+     <span class="label-text font-medium">キーワード（正規表現）</span>
+    </label>
+    <div class="flex gap-2 items-center">
+     <input
+      type="text"
+      v-model="newKeyword"
+      placeholder="キーワード"
+      class="input input-bordered input-sm flex-grow"
+      :disabled="userVisits.IS_GIFT"
+      @keyup.enter="addItem(newKeyword, userVisits.KEYWORDS, () => (newKeyword = ''))"
+     />
+     <button
+      class="btn btn-sm btn-primary"
+      @click="addItem(newKeyword, userVisits.KEYWORDS, () => (newKeyword = ''))"
+      :disabled="userVisits.IS_GIFT"
+     >
+      追加
+     </button>
+    </div>
+    <div class="flex flex-wrap gap-2 mt-2">
+     <div
+      v-for="(keyword, index) in userVisits.KEYWORDS"
+      :key="index"
+      class="badge badge-primary gap-2"
+     >
+      {{ keyword }}
+      <span class="cursor-pointer" @click="removeItem(userVisits.KEYWORDS, index)">✕</span>
+     </div>
     </div>
    </div>
-   <label class="label">
-    <span class="label-text-alt"
-     >ギフトが無効の場合、これらのキーワードを含むコメントで判定します</span
-    >
-   </label>
   </div>
  </div>
 </template>
@@ -144,27 +158,27 @@ const setService = (service: 'platforms' | ServiceType) => {
  props.userVisits.ENABLED_SERVICES = service;
 };
 
-// 許可ID関連の処理
-const addAllowedId = () => {
- if (newAllowedId.value && !props.userVisits.ALLOWED_IDS.includes(newAllowedId.value)) {
-  props.userVisits.ALLOWED_IDS.push(newAllowedId.value);
-  newAllowedId.value = '';
+// アイテム追加の汎用関数
+const addItem = (value: string, array: string[], resetCallback: () => void) => {
+ if (value && !array.includes(value)) {
+  array.push(value);
+  resetCallback();
  }
 };
 
-const removeAllowedId = (index: number) => {
- props.userVisits.ALLOWED_IDS.splice(index, 1);
+// アイテム削除の汎用関数
+const removeItem = (array: string[], index: number) => {
+ array.splice(index, 1);
 };
 
-// キーワード関連の処理
-const addKeyword = () => {
- if (newKeyword.value && !props.userVisits.KEYWORDS.includes(newKeyword.value)) {
-  props.userVisits.KEYWORDS.push(newKeyword.value);
-  newKeyword.value = '';
- }
-};
-
-const removeKeyword = (index: number) => {
- props.userVisits.KEYWORDS.splice(index, 1);
+// アクセスレベルのラベル取得
+const getAccessLevelLabel = (level: number): string => {
+ const labels = {
+  1: 'だれでも',
+  2: 'メンバー',
+  3: 'モデレーター',
+  4: '管理者'
+ };
+ return labels[level as keyof typeof labels] || '';
 };
 </script>
