@@ -82,10 +82,18 @@ const configUserTypeSchema = z.object({
 });
 
 // Schema for counter configuration
+const COUNT_MODE = [
+ 'comment', // コメント
+ 'user', // ユーザー
+ 'syoken', // ユーザー数のうち、初見さん
+ 'upVote', // 高評価数
+ 'viewer' // 視聴者数
+] as const;
+
 const counterConfigSchema = z.object({
  title: z.string().min(1, 'カウンター'),
  // TODO: 新規でmeta:「upVote、viewer」追加、Totalはトップで新規追加するのでここでは消す
- COUNT_MODE: z.enum(['comment', 'user', 'syoken']).default('comment'),
+ COUNT_MODE: z.enum(COUNT_MODE).default('comment'),
  TARGET_DOWN: z.number().int().min(0).default(0),
  MULTIPLIER: z.number().positive().default(1),
  PARTY: z.record(z.string(), z.string()).default({}),

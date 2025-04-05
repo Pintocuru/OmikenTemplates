@@ -1,5 +1,4 @@
 // common/subscribe/GetUserVisits.ts
-import { ref } from 'vue';
 import { ConfigUserType } from '../commonTypes';
 import { GetUserComments } from './GetUserComments';
 import { ServiceAPI } from '../api/ServiceAPI';
@@ -27,7 +26,8 @@ export interface UserVisitType {
 export function GetUserVisits(config: ConfigUserType) {
  const processor = new UserVisitsProcessor();
  const { fetchComments: userFetch } = GetUserComments(config, true);
- const userVisits = ref<Record<string, ServiceVisitType>>({});
+ // Removed Vue ref, now using plain object
+ let userVisitsData: Record<string, ServiceVisitType> = {};
 
  const fetchComments = async (
   callback?: (userVisits: Record<string, ServiceVisitType>) => void
@@ -35,17 +35,19 @@ export function GetUserVisits(config: ConfigUserType) {
   const result = await userFetch((comments) => {
    if (!comments.length) return;
    // 処理して結果を取得
-   userVisits.value = processor.mergeComments(comments);
+   userVisitsData = processor.mergeComments(comments);
    // 外部から処理を追加するcallback
-   if (callback) callback(userVisits.value);
+   if (callback) callback(userVisitsData);
   });
   // わんコメ接続時のみポーリングを開始
   if (result) processor.startServicePolling();
   return result;
  };
 
+ const getUserVisits = () => userVisitsData;
+
  return {
-  userVisits, // ユーザーのコメント数やギフト回数
+  getUserVisits, // Getter function to access the current data
   fetchComments // 初期化
  };
 }
@@ -54,7 +56,7 @@ export function GetUserVisits(config: ConfigUserType) {
 class UserVisitsProcessor {
  // 内部状態
  private result: Record<string, ServiceVisitType> = {};
- frames: Service[] | null = null;
+ private frames: Service[] | null = null;
  private apiPoller: ServiceAPI | null = null;
 
  constructor() {
@@ -62,18 +64,17 @@ class UserVisitsProcessor {
  }
 
  // 10秒ごとに枠情報を自動更新
- startServicePolling() {
-  if (this.apiPoller) {
-   this.apiPoller.startPolling((services) => {
-    if (services) this.frames = services;
-   }, 10000);
-  }
+ startServicePolling(): void {
+  if (!this.apiPoller) return;
+
+  this.apiPoller.startPolling((services) => {
+   if (services) this.frames = services;
+  }, 10000);
  }
 
  // コメントを処理して結果を返す
  processComments(comments: Comment[]): Record<string, ServiceVisitType> {
-  const newVisits = this.createVisitsFromComments(comments);
-  return newVisits;
+  return this.createVisitsFromComments(comments);
  }
 
  // 既存の結果に新しいコメントを追加
@@ -97,9 +98,9 @@ class UserVisitsProcessor {
  private createVisitsFromComments(comments: Comment[]): Record<string, ServiceVisitType> {
   const newVisits: Record<string, ServiceVisitType> = {};
 
-  comments.forEach((comment) => {
+  for (const comment of comments) {
    const { data, meta } = comment;
-   if (!data || !meta) return;
+   if (!data || !meta) continue;
 
    // サービスとライブIDの処理
    this.initializeServiceData(newVisits, comment);
@@ -109,34 +110,42 @@ class UserVisitsProcessor {
 
    // ユーザー情報の処理
    this.processUserData(newVisits, comment);
-  });
+  }
 
   return newVisits;
  }
 
- // 新しいデータを既存の結果とマージ（内部メソッド）
+ // 既存の訪問データと新しい訪問データをマージ
  private mergeVisits(newVisits: Record<string, ServiceVisitType>): void {
-  Object.keys(newVisits).forEach((serviceKey) => {
+  for (const serviceKey of Object.keys(newVisits)) {
    if (!this.result[serviceKey]) {
     this.result[serviceKey] = newVisits[serviceKey];
-   } else {
-    // 既存のデータに加算
-    const existingUsers = this.result[serviceKey].user;
-    const newUsers = newVisits[serviceKey].user;
-
-    Object.keys(newUsers).forEach((userId) => {
-     if (!existingUsers[userId]) {
-      existingUsers[userId] = newUsers[userId];
-     } else {
-      // price は加算
-      existingUsers[userId].count = newUsers[userId].count;
-      existingUsers[userId].price += newUsers[userId].price;
-     }
-    });
-    // totalCount を加算
-    this.result[serviceKey].totalCount += newVisits[serviceKey].totalCount;
+    continue;
    }
-  });
+
+   // 配信枠が変わった場合は完全リセット
+   if (this.result[serviceKey].liveId !== newVisits[serviceKey].liveId) {
+    this.result[serviceKey] = newVisits[serviceKey];
+    continue;
+   }
+
+   // ユーザーデータのマージ
+   const existingUsers = this.result[serviceKey].user;
+   const newUsers = newVisits[serviceKey].user;
+
+   for (const userId of Object.keys(newUsers)) {
+    if (!existingUsers[userId]) {
+     existingUsers[userId] = newUsers[userId];
+    } else {
+     existingUsers[userId].count = newUsers[userId].count;
+     existingUsers[userId].price += newUsers[userId].price;
+    }
+   }
+
+   // totalCountは新しい値で上書き（加算しない）
+   this.result[serviceKey].totalCount = newVisits[serviceKey].totalCount;
+   this.result[serviceKey].syokenCount = newVisits[serviceKey].syokenCount;
+  }
  }
 
  // サービスデータの初期化（内部メソッド）
@@ -169,7 +178,7 @@ class UserVisitsProcessor {
  // フレームデータの関連付け（内部メソッド）
  private attachFrameData(result: Record<string, ServiceVisitType>, serviceKey: string): void {
   if (result[serviceKey].frameData === null && this.frames) {
-   this.frames.forEach((frame) => {
+   for (const frame of this.frames) {
     const detectedService = detectServiceFromUrl(frame.url);
     if (
      detectedService &&
@@ -177,8 +186,9 @@ class UserVisitsProcessor {
      frame.meta?.isLive
     ) {
      result[serviceKey].frameData = frame;
+     break;
     }
-   });
+   }
   }
  }
 
@@ -190,7 +200,7 @@ class UserVisitsProcessor {
   // commentからデータを取得
   const { service: serviceKey } = comment;
   const { userId, isRepeater, profileImage } = data;
-  const { no = 0, lc = 0, interval = 0 } = meta;
+  const { interval = 0 } = meta;
 
   // ユーザーの初期化
   if (!result[serviceKey].user[userId]) {
@@ -206,8 +216,11 @@ class UserVisitsProcessor {
 
   // 初回コメントの処理
   if (!isRepeater) {
-   userInfo.isSyoken = interval === 0;
-   if (interval === 0) result[serviceKey].syokenCount = +1;
+   const isSyoken = interval === 0;
+   userInfo.isSyoken = isSyoken;
+   if (isSyoken) {
+    result[serviceKey].syokenCount += 1;
+   }
   }
 
   // インクリメント
@@ -238,7 +251,8 @@ export function detectServiceFromUrl(url: string): ServiceType | undefined {
   // 相対パスやスキームがない場合は適切に処理
   const parsedUrl = new URL(lowerUrl.startsWith('http') ? lowerUrl : `https://${lowerUrl}`);
   const hostname = parsedUrl.hostname;
-  // ホスト名とパスに基づいてサービスを判定
+
+  // ホスト名に基づいてサービスを判定
   if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) return 'youtube';
   if (hostname.includes('twitch.tv')) return 'twitch';
   if (hostname.includes('twitcasting.tv')) return 'twicas';
@@ -249,12 +263,11 @@ export function detectServiceFromUrl(url: string): ServiceType | undefined {
    return 'niconama';
   if (hostname.includes('v-tips.jp')) return 'vtips';
   if (hostname.includes('kick.com')) return 'kick';
-  if (hostname.includes('tiktok.com') && hostname.includes('/live')) return 'tiktok';
+  if (hostname.includes('tiktok.com') && parsedUrl.pathname.includes('/live')) return 'tiktok';
   if (hostname.includes('mirrativ.com')) return 'mirrativ';
  } catch (error) {
   return undefined;
  }
 
- // 該当するサービスがない場合は undefined を返す
  return undefined;
 }

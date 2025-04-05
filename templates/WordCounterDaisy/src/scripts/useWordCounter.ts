@@ -6,7 +6,6 @@ import { createProcessComment } from './createProcessComment';
 import { GetUserVisits } from '@common/subscribe/GetUserVisits';
 import { GetMetas } from '@common/subscribe/GetMetas';
 import { postWordParty } from '@common/api/PostOneComme';
-import { ServiceMeta } from '@onecomme.com/onesdk/types/Service';
 import { createHandleMetaUpdate } from './createHandleMetaUpdate';
 
 export function useWordCounter(componentConfig: ComponentConfig, counterSet: CounterSet) {
@@ -45,7 +44,9 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
   const countModeMap: Record<CounterConfig['COUNT_MODE'], number> = {
    user: state.userCount,
    comment: state.commentCount,
-   syoken: state.syokenCount
+   syoken: state.syokenCount,
+   upVote: state.upVoteCount,
+   viewer: state.viewerCount
   };
   return countModeMap[counterConfig.COUNT_MODE] || 0;
  };
@@ -56,8 +57,9 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
   const value = isDownMode.value
    ? counterConfig.TARGET_DOWN - (baseCount + state.manualAdjustment)
    : baseCount + state.manualAdjustment;
+  console.log(baseCount);
 
-  return Math.max(value * counterConfig.MULTIPLIER, 0);
+  return Math.max(value, 0);
  });
 
  // アクション処理
@@ -117,9 +119,9 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
  return {
   ...toRefs(state),
   count,
+  counterConfig,
   increment,
   decrement,
-  resetManualAdjustment,
-  isDownMode // 追加：モード情報をエクスポート
+  resetManualAdjustment
  };
 }

@@ -2,38 +2,36 @@
  <div class="flex items-center justify-center">
   <div
    class="relative flex flex-row items-center justify-center rounded-2xl overflow-hidden border-4"
-   :class="`border-${generator.colorMode}`"
+   :class="`border-primary`"
   >
    <!-- タイトル部分 -->
-   <div
-    class="py-2 px-4 font-bold text-2xl"
-    :class="`bg-${generator.colorMode} text-${generator.colorMode}-content`"
-   >
-    {{ generator.title }}
+   <div class="py-2 px-4 font-bold text-2xl" :class="`bg-primary text-primary-content`">
+    {{ counterConfig.title }}
    </div>
 
    <!-- カウンター部分 -->
    <div class="flex items-center justify-center rounded-md bg-base-100 px-2 py-1 mx-2">
     <TransitionGroup name="count">
-     <div
-      :key="count"
-      class="font-bold text-4xl counter-value"
-      :class="`text-${generator.colorMode}`"
-     >
+     <div :key="count" class="text-primary font-bold text-4xl counter-value">
       {{ count }}
      </div>
     </TransitionGroup>
+    <span
+     v-if="counterConfig.MULTIPLIER !== 1"
+     class="text-primary font-bold text-base counter-value"
+     >x {{ counterConfig.MULTIPLIER }}</span
+    >
    </div>
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
-import { GeneratorConfig } from '@scripts/types';
+import { CounterConfig } from '@/scripts/schema';
 
 const props = defineProps<{
  count: number;
- generator: GeneratorConfig;
+ counterConfig: CounterConfig;
 }>();
 </script>
 
