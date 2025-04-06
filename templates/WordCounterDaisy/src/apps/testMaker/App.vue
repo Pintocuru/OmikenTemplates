@@ -1,6 +1,9 @@
 <!-- src/apps/maker/App.vue -->
 <template>
  <div class="flex flex-col items-center justify-center h-screen">
+  <!-- Total counter component -->
+  <TotalCounter v-if="componentConfig.isTotalCounter" :counters="counters" class="mb-4" />
+
   <div
    :class="[
     componentConfig.isHorizontalLayout ? 'flex flex-row space-x-4' : 'flex flex-col space-y-4'
@@ -10,6 +13,7 @@
     v-for="(counter, index) in counters"
     :key="index"
     :count="counter.count.value"
+    :countMax="counter.countMax.value"
     :counterConfig="counter.counterConfig"
     @click.prevent="counter.increment"
     @contextmenu.prevent="counter.decrement"
@@ -21,12 +25,13 @@
 <script setup lang="ts">
 import { ComponentConfig, CounterSet } from '@/scripts/schema';
 import AnyGenerator from './BasicCounter.vue';
+import TotalCounter from './TotalCounter.vue';
 import { useWordCounter } from '@scripts/useWordCounter';
 
 // testData
 const componentConfig: ComponentConfig = {
  theme: 'dark',
- isTotalCounter: false,
+ isTotalCounter: true, // Enable the total counter
  isHorizontalLayout: true
 };
 

@@ -51,15 +51,20 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
   return countModeMap[counterConfig.COUNT_MODE] || 0;
  };
 
- // カウント計算（メモ化）
+ // カウント計算
  const count = computed(() => {
   const baseCount = getBaseCount();
   const value = isDownMode.value
    ? counterConfig.TARGET_DOWN - (baseCount + state.manualAdjustment)
    : baseCount + state.manualAdjustment;
-  console.log(baseCount);
-
   return Math.max(value, 0);
+ });
+
+ // 変動する値(upVote/viewer)の場合、最大値を渡す
+ const countMax = computed(() => {
+  if (counterConfig.COUNT_MODE === 'upVote') return state.peakUpVoteCount + state.manualAdjustment;
+  if (counterConfig.COUNT_MODE === 'viewer') return state.peakViewerCount + state.manualAdjustment;
+  return null;
  });
 
  // アクション処理
@@ -105,11 +110,14 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
   document.documentElement.setAttribute('data-theme', componentConfig.theme);
 
   try {
-   // コメント取得と処理の初期化
-   state.isInitFlag = await fetchComments(processComment);
+   const [commentsInitialized, _] = await Promise.all([
+    // コメント取得と処理の初期化
+    fetchComments(processComment),
+    // metaタグからデータを取得
+    fetchMeta(handleMetaUpdate)
+   ]);
 
-   // metaタグからデータを取得
-   await fetchMeta(handleMetaUpdate);
+   state.isInitFlag = commentsInitialized;
   } catch (error) {
    console.error('WordCounter initialization error:', error);
    state.isInitFlag = false;
@@ -117,8 +125,8 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
  });
 
  return {
-  ...toRefs(state),
   count,
+  countMax,
   counterConfig,
   increment,
   decrement,

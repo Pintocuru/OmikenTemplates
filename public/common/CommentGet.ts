@@ -13,7 +13,6 @@ import { fetchData } from './ApiHandler';
 import {
  charaComment,
  filterAccess,
- filterMatch,
  filterUserId,
  getIdParams,
  isValidComment,
