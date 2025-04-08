@@ -1,12 +1,6 @@
 <!-- src/apps/maker/TotalCounter.vue -->
 <template>
- <AnyGenerator
-  :count="totalCount"
-  :countMax="null"
-  :counterConfig="totalCounterConfig"
-  @click.prevent="noop"
-  @contextmenu.prevent="noop"
- />
+ <AnyGenerator :count="totalCount" :countMax="null" :counterConfig="totalCounterConfig" />
 </template>
 
 <script setup lang="ts">
@@ -24,9 +18,6 @@ const props = defineProps<{
  counters: Counter[];
 }>();
 
-// No-operation function for click handlers
-const noop = () => {};
-
 // Create a counter config for the total counter
 const totalCounterConfig = ref<CounterConfig>({
  title: '合計',
@@ -41,11 +32,18 @@ const totalCounterConfig = ref<CounterConfig>({
 // Calculate the total count based on all counters
 const totalCount = computed(() => {
  return props.counters.reduce((total, counter) => {
-  // Use countMax if available, otherwise use count
-  const baseValue = counter.countMax.value !== null ? counter.countMax.value : counter.count.value;
+  const { count, countMax, counterConfig } = counter;
 
-  // Apply the multiplier from the counter's config
-  const multipliedValue = baseValue * counter.counterConfig.MULTIPLIER;
+  const isCountdownMode = counterConfig.TARGET_DOWN > 0;
+
+  // 実際の加算対象となる値
+  const baseValue = isCountdownMode
+   ? counterConfig.TARGET_DOWN - count.value
+   : countMax.value !== null
+     ? countMax.value
+     : count.value;
+
+  const multipliedValue = baseValue * counterConfig.MULTIPLIER;
 
   return total + multipliedValue;
  }, 0);

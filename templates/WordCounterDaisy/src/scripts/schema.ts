@@ -83,6 +83,7 @@ const configUserTypeSchema = z.object({
 
 // Schema for counter configuration
 const COUNT_MODE = [
+ 'none', // 手動でのカウント
  'comment', // コメント
  'user', // ユーザー
  'syoken', // ユーザー数のうち、初見さん
@@ -92,6 +93,7 @@ const COUNT_MODE = [
 
 const counterConfigSchema = z.object({
  title: z.string().min(1, 'カウンター'),
+ // TODO unit: 合計値カウンターの単位(円とか)
  // TODO: 新規でmeta:「upVote、viewer」追加、Totalはトップで新規追加するのでここでは消す
  COUNT_MODE: z.enum(COUNT_MODE).default('comment'),
  TARGET_DOWN: z.number().int().min(0).default(0),
@@ -118,8 +120,6 @@ export const componentConfigSchema = z.object({
  theme: z.enum(themes).default('light'),
  isTotalCounter: z.boolean().default(false), // 合計したカウンターを用意するか
  isHorizontalLayout: z.boolean().default(true) // 並び替えモード：true=横一列, false=縦一列
- // title　合計値カウンターのタイトル(今日のランチ代とか)
- // unit: 合計値カウンターの単位(円とか)
 });
 
 // ---

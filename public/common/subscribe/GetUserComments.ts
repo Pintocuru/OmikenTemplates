@@ -4,7 +4,6 @@ import { ConfigUserType } from '../commonTypes';
 import { GetComments } from './GetComments';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import emojiRegex from 'emoji-regex';
-import { ServiceType } from '@onecomme.com/onesdk/types/Service';
 
 export function GetUserComments(config: ConfigUserType, isFirstComment: boolean = false) {
  const processor = new UserCommentsProcess(config);
@@ -61,7 +60,7 @@ export class UserCommentsProcess {
   if (service === 'all') return true;
 
   // コメントテスターのコメントは 'external' 扱いにする
-  if (comment.id === 'COMMENT_TESTER') comment.service = 'external';
+  if (comment.id === 'COMMENT_TESTER') return comment.service === 'external';
 
   // 'platforms' の場合、'external' および 'system' を除外
   if (service === 'platforms') {
@@ -117,15 +116,15 @@ export class UserCommentsProcess {
 
  // 正規表現マッチング
  private matchPattern(text: string, pattern: string): boolean {
-  // 空パターンはfalse
   if (pattern === '') return false;
   try {
-   // 絵文字専用パターン
-   if (text.includes(pattern)) return emojiRegex().test(text);
-   // 正規表現パターン
+   // 絵文字だけのパターンなら emojiRegex で判定
+   if (/^\p{Emoji}+$/u.test(pattern)) {
+    return emojiRegex().test(text);
+   }
+   // 通常の正規表現マッチ
    return new RegExp(pattern).test(text);
   } catch (err) {
-   // 無効な正規表現の場合はログに出力してfalseを返す
    console.error(`Invalid regex pattern: ${pattern}`, err);
    return false;
   }

@@ -30,14 +30,14 @@ export function GetUserVisits(config: ConfigUserType) {
  let userVisitsData: Record<string, ServiceVisitType> = {};
 
  const fetchComments = async (
-  callback?: (userVisits: Record<string, ServiceVisitType>) => void
+  callback: (userVisits: Record<string, ServiceVisitType>) => void
  ): Promise<boolean> => {
   const result = await userFetch((comments) => {
    if (!comments.length) return;
    // 処理して結果を取得
    userVisitsData = processor.mergeComments(comments);
    // 外部から処理を追加するcallback
-   if (callback) callback(userVisitsData);
+   callback(userVisitsData);
   });
   // わんコメ接続時のみポーリングを開始
   if (result) processor.startServicePolling();
@@ -165,10 +165,11 @@ class UserVisitsProcessor {
   }
 
   // liveId が異なったら配信枠が変わったのでリセット
-  if (result[serviceKey].liveId !== liveId) {
-   result[serviceKey].liveId = liveId;
-   result[serviceKey].totalCount = 0;
-   result[serviceKey].user = {};
+  if (liveId !== 'external' && liveId !== 'system') {
+   if (result[serviceKey].liveId !== liveId) {
+    result[serviceKey].liveId = liveId;
+    result[serviceKey].user = {};
+   }
   }
 
   // totalCountをインクリメント
@@ -219,7 +220,7 @@ class UserVisitsProcessor {
    const isSyoken = interval === 0;
    userInfo.isSyoken = isSyoken;
    if (isSyoken) {
-    result[serviceKey].syokenCount += 1;
+    result[serviceKey].syokenCount++;
    }
   }
 

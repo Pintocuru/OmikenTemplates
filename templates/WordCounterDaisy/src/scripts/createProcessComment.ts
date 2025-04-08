@@ -4,8 +4,6 @@ import { ServiceVisitType } from '@common/subscribe/GetUserVisits';
 
 export function createProcessComment(state: WordCounterState) {
  return (visits: Record<string, ServiceVisitType>) => {
-  // if (!state.isInitFlag) return;
-
   // 合計値を計算
   const { currentCommentCount, currentUserCount, currentSyokenCount } = Object.values(
    visits
