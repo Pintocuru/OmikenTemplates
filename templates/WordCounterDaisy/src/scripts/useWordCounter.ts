@@ -17,7 +17,7 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
  // わんコメの枠の一番上のデータを取得
  const { fetchMeta } = GetMetas();
  // カウントダウンモード
- const isCountdownMode = counterConfig.TARGET_DOWN > 0;
+ const isCountdownMode = counterConfig.targetCountdown > 0;
 
  const state = reactive<WordCounterState>({
   isInitFlag: false,
@@ -36,7 +36,7 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
  const handleMetaUpdate = createHandleMetaUpdate(state);
 
  const getBaseCount = () => {
-  const countModeMap: Record<CounterConfig['COUNT_MODE'], number> = {
+  const countModeMap: Record<CounterConfig['countMode'], number> = {
    none: 0,
    user: state.userCount,
    comment: state.commentCount,
@@ -44,7 +44,7 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
    upVote: state.upVoteCount,
    viewer: state.viewerCount
   };
-  return countModeMap[counterConfig.COUNT_MODE] || 0;
+  return countModeMap[counterConfig.countMode] || 0;
  };
 
  // 実際のカウントの元となる値
@@ -53,20 +53,20 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
  // 表示用カウント計算
  const count = computed(() => {
   if (isCountdownMode) {
-   return Math.max(counterConfig.TARGET_DOWN - actualCount.value, 0);
+   return Math.max(counterConfig.targetCountdown - actualCount.value, 0);
   }
   return actualCount.value;
  });
 
  // 変動する値(upVote/viewer)の場合、最大値を渡す
  const countMax = computed(() => {
-  if (counterConfig.COUNT_MODE === 'upVote') {
+  if (counterConfig.countMode === 'upVote') {
    const value = state.peakUpVoteCount + state.manualAdjustment;
-   return isCountdownMode ? Math.max(counterConfig.TARGET_DOWN - value, 0) : value;
+   return isCountdownMode ? Math.max(counterConfig.targetCountdown - value, 0) : value;
   }
-  if (counterConfig.COUNT_MODE === 'viewer') {
+  if (counterConfig.countMode === 'viewer') {
    const value = state.peakViewerCount + state.manualAdjustment;
-   return isCountdownMode ? Math.max(counterConfig.TARGET_DOWN - value, 0) : value;
+   return isCountdownMode ? Math.max(counterConfig.targetCountdown - value, 0) : value;
   }
   return null;
  });
@@ -109,7 +109,7 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
 
   const isSuccess = isCountdownMode
    ? newCount === 0
-   : actualCount.value >= counterConfig.TARGET_DOWN;
+   : actualCount.value >= counterConfig.targetCountdown;
 
   if (isSuccess && counterConfig.PARTY_SUCCESS) {
    postWordParty(counterConfig.PARTY_SUCCESS, -2);
@@ -119,7 +119,7 @@ export function useWordCounter(componentConfig: ComponentConfig, counterSet: Cou
  watch(count, handleWordParty);
 
  onMounted(async () => {
-  document.documentElement.setAttribute('data-theme', componentConfig.theme);
+  document.documentElement.setAttribute('data-theme', 'dark');
 
   try {
    const [commentsInitialized, _] = await Promise.all([

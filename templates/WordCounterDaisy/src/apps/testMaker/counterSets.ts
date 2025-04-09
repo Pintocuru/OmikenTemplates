@@ -15,9 +15,10 @@ export const counterSets: CounterSet[] = [
   },
   counter: {
    title: 'コメント数',
-   COUNT_MODE: 'comment',
-   TARGET_DOWN: 0,
-   MULTIPLIER: 1,
+   unit: 'コメ',
+   countMode: 'comment',
+   targetCountdown: 0,
+   multiplier: 1,
    PARTY: {},
    PARTY_EVENT: '',
    PARTY_SUCCESS: ''
@@ -35,9 +36,10 @@ export const counterSets: CounterSet[] = [
   },
   counter: {
    title: '「おはよう」',
-   COUNT_MODE: 'comment',
-   TARGET_DOWN: 0,
-   MULTIPLIER: 1,
+   countMode: 'comment',
+   unit: 'おは!',
+   targetCountdown: 0,
+   multiplier: 1,
    PARTY: {},
    PARTY_EVENT: '',
    PARTY_SUCCESS: ''
@@ -55,9 +57,10 @@ export const counterSets: CounterSet[] = [
   },
   counter: {
    title: '初見',
-   COUNT_MODE: 'syoken',
-   TARGET_DOWN: 0,
-   MULTIPLIER: 1,
+   unit: '人',
+   countMode: 'syoken',
+   targetCountdown: 0,
+   multiplier: 1,
    PARTY: {},
    PARTY_EVENT: '',
    PARTY_SUCCESS: ''
@@ -75,9 +78,10 @@ export const counterSets: CounterSet[] = [
   },
   counter: {
    title: '閲覧数',
-   COUNT_MODE: 'viewer',
-   TARGET_DOWN: 0,
-   MULTIPLIER: 10,
+   unit: '',
+   countMode: 'viewer',
+   targetCountdown: 0,
+   multiplier: 10,
    PARTY: {},
    PARTY_EVENT: '',
    PARTY_SUCCESS: ''
@@ -95,9 +99,10 @@ export const counterSets: CounterSet[] = [
   },
   counter: {
    title: 'いいね！',
-   COUNT_MODE: 'upVote',
-   TARGET_DOWN: 0,
-   MULTIPLIER: 10,
+   unit: '',
+   countMode: 'upVote',
+   targetCountdown: 0,
+   multiplier: 10,
    PARTY: {},
    PARTY_EVENT: '',
    PARTY_SUCCESS: ''

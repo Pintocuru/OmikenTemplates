@@ -2,8 +2,12 @@
 <template>
  <div class="flex flex-col items-center justify-center h-screen">
   <!-- Total counter component -->
-  <TotalCounter v-if="componentConfig.isTotalCounter" :counters="counters" class="mb-4" />
-
+  <TotalCounter
+   v-if="componentConfig.totalCounterSet"
+   :counters="counters"
+   :totalCounterConfig="componentConfig.totalCounterSet"
+  />
+  <hr class="mb-4" />
   <div
    :class="[
     componentConfig.isHorizontalLayout ? 'flex flex-row space-x-4' : 'flex flex-col space-y-4'
@@ -23,19 +27,16 @@
 </template>
 
 <script setup lang="ts">
-import { ComponentConfig } from '@/scripts/schema';
+import { componentConfigSchema, counterSetSchema } from '@/scripts/schema';
 import AnyGenerator from './BasicCounter.vue';
 import TotalCounter from './TotalCounter.vue';
 import { useWordCounter } from '@scripts/useWordCounter';
-// TODO window のconfigから取得できるようにする
-import { counterSets } from './counterSets';
 
-// testData
-const componentConfig: ComponentConfig = {
- theme: 'light',
- isTotalCounter: true, // Enable the total counter
- isHorizontalLayout: true
-};
+// アプリケーション設定
+const {
+ componentConfig = componentConfigSchema.parse(undefined),
+ counterSets = [counterSetSchema.parse(undefined)]
+} = window || {};
 
 // 各カウンターセットに対してuseWordCounterを呼び出す
 const counters = counterSets.map((counterSet) => useWordCounter(componentConfig, counterSet));

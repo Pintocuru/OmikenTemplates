@@ -1,47 +1,6 @@
 // src/scripts/schema.ts
 import { z } from 'zod';
 
-// Theme constants
-// TODO: commonにDaisyUi用の定義を新規作成する
-export const themes = [
- 'light',
- 'dark',
- 'cupcake',
- 'bumblebee',
- 'emerald',
- 'corporate',
- 'synthwave',
- 'retro',
- 'cyberpunk',
- 'valentine',
- 'halloween',
- 'garden',
- 'forest',
- 'aqua',
- 'lofi',
- 'pastel',
- 'fantasy',
- 'wireframe',
- 'black',
- 'luxury',
- 'dracula',
- 'cmyk',
- 'autumn',
- 'business',
- 'acid',
- 'lemonade',
- 'night',
- 'coffee',
- 'winter',
- 'dim',
- 'nord',
- 'sunset',
- 'caramellatte',
- 'abyss',
- 'silk'
-] as const;
-export type ThemeType = (typeof themes)[number];
-
 // service から system を除いたもの
 export const serviceTypeValues = [
  'youtube',
@@ -58,15 +17,16 @@ export const serviceTypeValues = [
  'streamlabs',
  'kick',
  'vtips',
- 'external',
- 'system'
+ 'external'
 ] as const;
 export type ServiceType = (typeof serviceTypeValues)[number];
+
+// ---
 
 const configUserTypeSchema = z.object({
  IS_DIFF_MODE: z.boolean().default(false),
  ENABLED_SERVICES: z
-  .union([z.literal('all'), z.literal('platforms'), z.enum(serviceTypeValues)])
+  .union([z.enum(serviceTypeValues), z.literal('all'), z.literal('platforms')])
   .default('all'),
  ALLOWED_IDS: z.array(z.string()).default([]),
  ACCESS_LEVEL: z
@@ -81,8 +41,10 @@ const configUserTypeSchema = z.object({
  KEYWORDS: z.array(z.string()).default([])
 });
 
+// ---
+
 // Schema for counter configuration
-const COUNT_MODE = [
+const countMode = [
  'none', // 手動でのカウント
  'comment', // コメント
  'user', // ユーザー
@@ -93,15 +55,16 @@ const COUNT_MODE = [
 
 const counterConfigSchema = z.object({
  title: z.string().min(1, 'カウンター'),
- // TODO unit: 合計値カウンターの単位(円とか)
- // TODO: 新規でmeta:「upVote、viewer」追加、Totalはトップで新規追加するのでここでは消す
- COUNT_MODE: z.enum(COUNT_MODE).default('comment'),
- TARGET_DOWN: z.number().int().min(0).default(0),
- MULTIPLIER: z.number().positive().default(1),
+ unit: z.string().default(''),
+ countMode: z.enum(countMode).default('comment'),
+ targetCountdown: z.number().int().min(0).default(0),
+ multiplier: z.number().positive().default(1),
  PARTY: z.record(z.string(), z.string()).default({}),
  PARTY_EVENT: z.string().default(''),
  PARTY_SUCCESS: z.string().default('')
 });
+
+// ---
 
 // Schema統合
 export const counterSetSchema = z.object({
@@ -113,12 +76,25 @@ export const counterSetsSchema = z.array(counterSetSchema).nonempty();
 
 // ---
 
-// componentConfig
+// Schema for counter configuration
+export const TAILWIND_COLORS = [
+ 'blue',
+ 'green',
+ 'red',
+ 'purple',
+ 'indigo',
+ 'pink',
+ 'yellow',
+ 'orange',
+ 'teal',
+ 'cyan'
+] as const;
+export type ColorType = (typeof TAILWIND_COLORS)[number];
 
+// componentConfig
 export const componentConfigSchema = z.object({
- // TODO: やっぱりテーマカラーは統一したい
- theme: z.enum(themes).default('light'),
- isTotalCounter: z.boolean().default(false), // 合計したカウンターを用意するか
+ color: z.enum(TAILWIND_COLORS).default('blue'),
+ totalCounterSet: counterConfigSchema.nullable().default(null), // 合計値カウンターの設定
  isHorizontalLayout: z.boolean().default(true) // 並び替えモード：true=横一列, false=縦一列
 });
 
@@ -130,10 +106,18 @@ export type CounterSet = z.infer<typeof counterSetSchema>;
 export type ConfigUserType = z.infer<typeof configUserTypeSchema>;
 export type CounterConfig = z.infer<typeof counterConfigSchema>;
 
-/**
- * Creates a default counter set with sensible defaults
- * @returns A new counter set with default values
- */
+// ---
+
+// componentConfig Default
+export function createDefaultComponentConfig(): ComponentConfig {
+ return {
+  color: 'blue',
+  totalCounterSet: null,
+  isHorizontalLayout: true
+ };
+}
+
+// CounterSet Default
 export function createDefaultCounterSet(): CounterSet {
  return {
   id: `counter-${Date.now()}`,
@@ -146,11 +130,11 @@ export function createDefaultCounterSet(): CounterSet {
    KEYWORDS: []
   },
   counter: {
-   title: 'カウンター',
-   // unit: カウンターの単位(ptとか)
-   COUNT_MODE: 'comment',
-   TARGET_DOWN: 0,
-   MULTIPLIER: 1,
+   title: 'カウンター?',
+   unit: 'pt',
+   countMode: 'comment',
+   targetCountdown: 0,
+   multiplier: 1,
    PARTY: {},
    PARTY_EVENT: '',
    PARTY_SUCCESS: ''
@@ -158,15 +142,9 @@ export function createDefaultCounterSet(): CounterSet {
  };
 }
 
-/**
- * Validates the configuration and returns a safe default if invalid
- * @param config Configuration to validate
- * @returns Validated configuration or default if invalid
- */
+// CounterSets バリデーション
 export function validateConfig(config: unknown): CounterSet[] {
- if (config == null) {
-  return [createDefaultCounterSet()];
- }
+ if (config == null) return [createDefaultCounterSet()];
 
  try {
   return counterSetsSchema.parse(config);
@@ -175,24 +153,3 @@ export function validateConfig(config: unknown): CounterSet[] {
   return [createDefaultCounterSet()];
  }
 }
-
-/*
-
-
-// Color constants
-// TODO:colors廃止。primaryのみに。
-export const colors = [
- 'primary',
- 'secondary',
- 'accent',
- 'neutral',
- 'info',
- 'success',
- 'warning',
- 'error'
-] as const;
-export type ColorMode = (typeof colors)[number];
-
-
-
-*/

@@ -9,9 +9,9 @@
      v-for="(label, mode) in countModes"
      :key="mode"
      class="flex items-center space-x-2"
-     :class="{ 'text-primary': counter.COUNT_MODE === mode }"
+     :class="{ 'text-primary': counter.countMode === mode }"
     >
-     <input type="radio" :value="mode" v-model="counter.COUNT_MODE" class="radio radio-bordered" />
+     <input type="radio" :value="mode" v-model="counter.countMode" class="radio radio-bordered" />
      <span class="text-sm">{{ label }}</span>
     </label>
    </div>
@@ -24,7 +24,7 @@
     <label class="label font-medium pb-1"> カウントダウン目標値 </label>
     <input
      type="number"
-     v-model.number="counter.TARGET_DOWN"
+     v-model.number="counter.targetCountdown"
      placeholder="0"
      min="0"
      class="input input-bordered w-full"
@@ -37,7 +37,7 @@
     <label class="label font-medium pb-1"> カウント乗数 </label>
     <input
      type="number"
-     v-model.number="counter.MULTIPLIER"
+     v-model.number="counter.multiplier"
      placeholder="1"
      min="1"
      step="1"

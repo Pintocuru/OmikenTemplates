@@ -12,15 +12,15 @@
    />
   </div>
 
-  <!-- テーマ選択 -->
+  <!-- カラーモード選択 -->
   <div class="card shadow-md p-2">
-   <label class="label font-medium pb-1"> テーマ </label>
+   <label class="label font-medium pb-1"> カラーモード </label>
    <div class="grid grid-cols-7 gap-2">
     <div
      v-for="theme in themes"
      :key="theme"
      class="badge cursor-pointer"
-     @click="generator.theme = theme"
+     @click="generator.color = theme"
      :class="{ 'badge-primary': generator.theme === theme }"
     >
      {{ theme }}
@@ -75,10 +75,10 @@
 
 <script setup lang="ts">
 import { computed, defineProps } from 'vue';
-import { themes, colors } from '@scripts/types';
-import { GeneratorConfig } from '@scripts/types';
 
-const props = defineProps<{ generator: GeneratorConfig }>();
+const props = defineProps<{
+ generator: GeneratorConfig;
+}>();
 
 // 1.0, 2.0 を表示させるための計算プロパティ
 const formattedScale = computed(() => {

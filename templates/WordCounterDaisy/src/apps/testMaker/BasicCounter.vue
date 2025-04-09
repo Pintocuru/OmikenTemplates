@@ -2,38 +2,49 @@
 <template>
  <div class="flex items-center justify-center">
   <div
-   class="relative flex flex-col min-w-[140px] rounded-2xl overflow-hidden border-4"
-   :class="`border-primary`"
+   class="relative flex flex-col min-w-36 rounded-xl overflow-hidden border-4"
+   :class="`border-${colorScheme}-600`"
   >
    <!-- Title -->
    <div
-    class="w-full text-center py-2 px-4 font-bold text-2xl"
-    :class="`bg-primary text-primary-content`"
+    class="w-full text-center py-3 px-4 font-bold text-2xl text-white"
+    :class="`bg-${colorScheme}-600`"
    >
     {{ counterConfig.title }}
    </div>
 
    <!-- Body -->
-   <div class="w-full flex items-center bg-base-100 px-4 py-3">
+   <div class="w-full flex items-center bg-white px-4 py-4">
     <div class="relative w-full flex flex-col items-center justify-center">
      <!-- Counter -->
-     <div class="relative h-[60px] w-full flex items-center justify-center">
-      <div class="flex items-baseline space-x-1">
+     <div class="relative h-16 w-full flex items-center justify-center">
+      <div class="flex items-baseline space-x-2">
        <TransitionGroup name="count" tag="span" class="inline-flex">
-        <span :key="count" class="text-primary font-bold text-4xl font-[Mochiy_Pop_One]">
+        <span
+         :key="count"
+         :class="`text-${colorScheme}-600 font-bold text-5xl leading-tight counter-font`"
+        >
          {{ count }}
         </span>
        </TransitionGroup>
-       <span v-if="typeof countMax === 'number'" class="text-primary pt-2"> / {{ countMax }} </span>
+       <span v-if="counterConfig.unit" :class="`text-${colorScheme}-600 text-xl pt-1 font-medium`">
+        {{ counterConfig.unit }}
+       </span>
+       <span
+        v-if="typeof countMax === 'number'"
+        :class="`text-${colorScheme}-600 text-xl pt-1 font-medium`"
+       >
+        / {{ countMax }}
+       </span>
       </div>
      </div>
 
      <!-- Multiplier -->
      <div
-      v-if="counterConfig.MULTIPLIER !== 1"
-      class="absolute -right-4 -top-2 z-10 bg-primary text-primary-content px-2 py-1 rounded-full text-xs font-bold shadow-md"
+      v-if="counterConfig.multiplier !== 1"
+      :class="`absolute -right-3 -top-2 z-10 px-3 py-1 rounded-full text-sm font-bold shadow-md bg-${colorScheme}-600 text-white`"
      >
-      x{{ counterConfig.MULTIPLIER }}
+      x{{ counterConfig.multiplier }}
      </div>
     </div>
    </div>
@@ -42,17 +53,26 @@
 </template>
 
 <script setup lang="ts">
-import { CounterConfig } from '@/scripts/schema';
+import { ColorType, CounterConfig } from '@/scripts/schema';
+import { computed } from 'vue';
 
 const props = defineProps<{
  count: number;
  countMax: number | null;
  counterConfig: CounterConfig;
+ colorScheme?: ColorType;
 }>();
+
+// デフォルトのカラースキーム
+const colorScheme = computed(() => props.colorScheme || 'blue');
 </script>
 
-<style scoped>
+<style>
 @import url('https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&display=swap');
+
+.counter-font {
+ font-family: 'Mochiy Pop One', sans-serif;
+}
 
 .count-enter-active,
 .count-leave-active {
