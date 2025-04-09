@@ -5,9 +5,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
    <!-- カラー選択 -->
    <div class="form-control w-full">
-    <label class="label">
-     <span class="label-text">メインカラー</span>
-    </label>
+    <label class="block mb-1 font-medium">メインカラー</label>
     <select v-model="componentConfig.color" class="select select-bordered w-full">
      <option v-for="color in TAILWIND_COLORS" :key="color" :value="color">
       {{ color }}
@@ -17,9 +15,7 @@
 
    <!-- レイアウト設定 -->
    <div class="form-control w-full">
-    <label class="label">
-     <span class="label-text">レイアウト</span>
-    </label>
+    <label class="block mb-1 font-medium">レイアウト</label>
     <div class="flex items-center gap-4">
      <label class="flex items-center cursor-pointer">
       <input
@@ -46,7 +42,7 @@
   <!-- 合計カウンター設定 -->
   <div class="mt-4">
    <div class="form-control">
-    <label class="label cursor-pointer justify-start gap-4">
+    <label class="label font-medium cursor-pointer justify-start gap-4">
      <span class="label-text">合計カウンターを表示</span>
      <input
       type="checkbox"
@@ -81,7 +77,7 @@
        type="text"
        v-model="totalCounter.unit"
        class="input input-bordered w-full"
-       placeholder="pt"
+       placeholder="単位名(空白も可)"
        @input="updateTotalCounter"
       />
      </div>

@@ -35,8 +35,8 @@ export const useConfigMaker = defineStore('configMaker', () => {
    `const componentConfig = ${JSON.stringify(config, null, 2)};\n` +
    `const counterSets = ${JSON.stringify(sets, null, 2)};\n` +
    `if (typeof window !== 'undefined') {\n` +
-   `  window.componentConfig = componentConfig;\n` +
-   `  window.counterSets = counterSets;\n` +
+   `window.componentConfig = componentConfig;\n` +
+   `window.counterSets = counterSets;\n` +
    `}`
   );
  };

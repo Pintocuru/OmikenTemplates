@@ -201,7 +201,7 @@ class UserVisitsProcessor {
   // commentからデータを取得
   const { service: serviceKey } = comment;
   const { userId, isRepeater, profileImage } = data;
-  const { interval = 0 } = meta;
+  const { interval } = meta;
 
   // ユーザーの初期化
   if (!result[serviceKey].user[userId]) {
@@ -219,9 +219,7 @@ class UserVisitsProcessor {
   if (!isRepeater) {
    const isSyoken = interval === 0;
    userInfo.isSyoken = isSyoken;
-   if (isSyoken) {
-    result[serviceKey].syokenCount++;
-   }
+   if (isSyoken) result[serviceKey].syokenCount++;
   }
 
   // インクリメント

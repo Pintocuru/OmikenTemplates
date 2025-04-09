@@ -3,7 +3,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import OneSDK from '@onecomme.com/onesdk';
 import { PingOneSDK } from '@public/common/api/PingOneSDK';
-import '@assets/app.css';
+import '@assets/app2.css';
 
 // createApp
 const app = createApp(App);

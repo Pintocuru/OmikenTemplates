@@ -52,6 +52,7 @@ const countMode = [
  'upVote', // 高評価数
  'viewer' // 視聴者数
 ] as const;
+export type CountType = (typeof TAILWIND_COLORS)[number];
 
 const counterConfigSchema = z.object({
  title: z.string().min(1, 'カウンター'),

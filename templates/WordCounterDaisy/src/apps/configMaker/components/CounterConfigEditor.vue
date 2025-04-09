@@ -1,56 +1,57 @@
+<!-- src/apps/configMaker/components/CounterConfigEditor.vue -->
 <template>
- <div class="space-y-4">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-   <div class="form-control w-full">
-    <label class="label">
-     <span class="label-text">カウンター名</span>
+ <div class="p-4 space-y-4">
+  <div class="mb-4">
+   <label class="block mb-2 font-medium">カウントモード</label>
+   <div class="flex flex-wrap gap-2">
+    <label
+     v-for="mode in countModes"
+     :key="mode.value"
+     class="flex items-center gap-2 hover:bg-base-300 p-2 rounded"
+    >
+     <input
+      type="radio"
+      name="countMode"
+      class="radio radio-xs"
+      :value="mode.value"
+      v-model="localCounter.countMode"
+     />
+     <span>{{ mode.label }}</span>
     </label>
-    <input
-     type="text"
-     v-model="localCounter.title"
-     class="input input-bordered w-full"
-     placeholder="カウンター"
-     @input="updateCounter"
-    />
+   </div>
+   <p v-if="selectedMode" class="mt-2 text-sm p-2 bg-base-300 rounded">
+    {{ selectedMode.description }}
+   </p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+   <div class="form-control">
+    <label class="block mb-1 font-medium">カウント目標値</label>
+    <div class="flex items-center">
+     <input
+      type="number"
+      v-model.number="localCounter.targetCountdown"
+      class="input input-bordered w-full"
+      min="0"
+      @input="updateCounter"
+     />
+     <span class="text-xs ml-2 text-gray-500">0でカウントアップ</span>
+    </div>
    </div>
 
-   <div class="form-control w-full">
-    <label class="label">
-     <span class="label-text">単位</span>
-    </label>
+   <div class="form-control">
+    <label class="block mb-1 font-medium">単位名</label>
     <input
      type="text"
      v-model="localCounter.unit"
      class="input input-bordered w-full"
-     placeholder="pt"
+     placeholder="単位名(空白も可)"
      @input="updateCounter"
     />
    </div>
-  </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-   <div class="form-control w-full">
-    <label class="label">
-     <span class="label-text">カウントモード</span>
-    </label>
-    <select
-     v-model="localCounter.countMode"
-     class="select select-bordered w-full"
-     @change="updateCounter"
-    >
-     <option value="none">手動カウント</option>
-     <option value="comment">コメント数</option>
-     <option value="user">ユーザー数</option>
-     <option value="syoken">初見さん</option>
-     <option value="upVote">高評価数</option>
-     <option value="viewer">視聴者数</option>
-    </select>
-   </div>
-
-   <div class="form-control w-full">
-    <label class="label">
-     <span class="label-text">倍率</span>
-    </label>
+   <div class="form-control">
+    <label class="block mb-1 font-medium">倍率(合計カウンター使用時のみ適用)</label>
     <input
      type="number"
      v-model.number="localCounter.multiplier"
@@ -62,82 +63,69 @@
    </div>
   </div>
 
-  <div class="form-control w-full">
-   <label class="label">
-    <span class="label-text">カウントダウン目標値</span>
-    <span class="label-text-alt">0の場合はカウントアップ</span>
-   </label>
-   <input
-    type="number"
-    v-model.number="localCounter.targetCountdown"
-    class="input input-bordered w-full"
-    min="0"
-    @input="updateCounter"
-   />
-  </div>
-
   <!-- WordParty設定 -->
-  <div class="mt-4">
-   <h3 class="font-medium mb-2">WordParty設定</h3>
+  <div class="bg-base-200 p-3 rounded-lg">
+   <h3 class="font-medium mb-2 text-lg">WordParty設定</h3>
 
-   <div class="form-control mb-4">
-    <label class="label">
-     <span class="label-text">WordPartyを発火させるワード</span>
-    </label>
-    <input
-     type="text"
-     v-model="localCounter.PARTY_EVENT"
-     class="input input-bordered w-full"
-     placeholder="例: 「おめでとう」「party」など"
-     @input="updateCounter"
-    />
+   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+    <div class="form-control">
+     <label class="block mb-1 font-medium">カウント毎に発火するWordParty</label>
+     <input
+      type="text"
+      v-model="localCounter.PARTY_EVENT"
+      class="input input-bordered w-full"
+      placeholder="発火ワード"
+      @input="updateCounter"
+     />
+    </div>
+
+    <div class="form-control">
+     <label class="block mb-1 font-medium">目標達成時に発火するWordParty</label>
+     <input
+      type="text"
+      v-model="localCounter.PARTY_SUCCESS"
+      class="input input-bordered w-full"
+      placeholder="発火ワード"
+      @input="updateCounter"
+     />
+    </div>
    </div>
 
-   <div class="form-control mb-4">
-    <label class="label">
-     <span class="label-text">WordParty 成功メッセージ</span>
-    </label>
-    <textarea
-     v-model="localCounter.PARTY_SUCCESS"
-     class="textarea textarea-bordered w-full h-24"
-     placeholder="例: おめでとう！パーティの発生です！"
-     @input="updateCounter"
-    ></textarea>
-   </div>
+   <div class="form-control mt-4">
+    <label class="block mb-1 font-medium">特定カウント時に発火するWordParty</label>
 
-   <!-- WordParty キーと値のペア -->
-   <div class="form-control">
-    <label class="label">
-     <span class="label-text">WordParty キーワードと応答</span>
-    </label>
-
-    <div class="space-y-2 mb-4">
-     <div v-for="(value, key) in localCounter.PARTY" :key="key" class="flex gap-2">
-      <input type="text" :value="key" class="input input-bordered flex-1" disabled />
+    <div class="space-y-2 mb-3">
+     <div
+      v-for="(value, key) in localCounter.PARTY"
+      :key="key"
+      class="flex gap-2 items-center bg-base-300 p-2 rounded shadow-sm"
+     >
+      <span class="text-sm font-medium w-20">{{ key }}:</span>
       <input
        type="text"
        :value="value"
-       class="input input-bordered flex-1"
+       class="input input-bordered input-sm flex-1"
        @input="(e) => updatePartyValue(key, (e.target as HTMLInputElement).value)"
       />
-      <button @click="removePartyKey(key)" class="btn btn-error btn-sm">削除</button>
+      <button @click="removePartyKey(key)" class="btn btn-error btn-xs">削除</button>
      </div>
     </div>
 
-    <div class="flex gap-2">
+    <div class="flex gap-2 items-center bg-base-300 p-2 rounded shadow-sm">
      <input
-      type="text"
+      type="number"
+      :min="0"
       v-model="newPartyKey"
-      class="input input-bordered flex-1"
-      placeholder="キーワード"
+      class="input input-bordered input-sm flex-1"
+      placeholder="カウント値"
      />
      <input
       type="text"
       v-model="newPartyValue"
-      class="input input-bordered flex-1"
-      placeholder="応答メッセージ"
+      class="input input-bordered input-sm flex-1"
+      placeholder="発火ワード"
      />
-     <button @click="addPartyKey" class="btn btn-primary btn-sm">追加</button>
+     <button @click="addPartyKey" class="btn btn-primary btn-xs">追加</button>
     </div>
    </div>
   </div>
@@ -145,8 +133,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import type { CounterConfig } from '@scripts/schema';
+import { ref, watch, computed } from 'vue';
+import type { CounterConfig, CountType } from '@scripts/schema';
 
 const props = defineProps<{
  modelValue: CounterConfig;
@@ -155,6 +143,45 @@ const props = defineProps<{
 const emit = defineEmits<{
  (e: 'update:modelValue', value: CounterConfig): void;
 }>();
+
+// カウントモードの定義
+const countModes = [
+ {
+  value: 'none',
+  label: '手動カウント',
+  description: '手動でカウンターを増減させるモード。'
+ },
+ {
+  value: 'comment',
+  label: 'コメント数',
+  description: '「対象コメント設定」でフィルタリングしたコメント数をカウント。'
+ },
+ {
+  value: 'user',
+  label: 'ユーザー数',
+  description: '「対象コメント設定」でフィルタリングしたコメントを発言したユーザー数をカウント。'
+ },
+ {
+  value: 'syoken',
+  label: '初見さん',
+  description: '配信で初めてコメントをしたユーザー数をカウント。'
+ },
+ {
+  value: 'upVote',
+  label: '高評価数',
+  description: '配信の高評価数をカウント。合計カウンター有効時は、最大値を参照します。'
+ },
+ {
+  value: 'viewer',
+  label: '視聴者数',
+  description: '配信の視聴者数をカウント。合計カウンター有効時は、最大値を参照します。'
+ }
+];
+
+// 選択されているモードの詳細情報を取得
+const selectedMode = computed(() => {
+ return countModes.find((mode) => mode.value === localCounter.value.countMode);
+});
 
 // ローカルの状態
 const localCounter = ref<CounterConfig>({ ...props.modelValue });
@@ -171,6 +198,12 @@ watch(
  },
  { deep: true }
 );
+
+// カウントモード選択
+const selectCountMode = (mode: CountType) => {
+ localCounter.value.countMode = mode;
+ updateCounter();
+};
 
 // カウンター設定の更新
 const updateCounter = () => {

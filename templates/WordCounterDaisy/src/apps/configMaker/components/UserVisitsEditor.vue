@@ -1,105 +1,136 @@
 <template>
- <div class="space-y-4">
-  <!-- 差分モード設定 -->
-  <div class="form-control">
-   <label class="cursor-pointer label justify-start gap-4">
-    <input type="checkbox" v-model="modelValue.IS_DIFF_MODE" class="toggle toggle-primary" />
-    <span class="label-text">差分モード（新規訪問時のみカウント）</span>
-   </label>
-  </div>
+ <div class="p-4 bg-base-100 rounded-lg shadow-sm">
+  <div class="space-y-3">
+   <!-- 主要設定セクション -->
+   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <!-- 左カラム -->
+    <div class="space-y-3">
+     <!-- 差分モード設定 -->
+     <div class="card bg-base-200 p-2 compact">
+      <label class="cursor-pointer label justify-start gap-2">
+       <input type="checkbox" v-model="modelValue.IS_DIFF_MODE" class="toggle toggle-primary" />
+       <span class="label-text">差分モード（新規訪問時のみカウント）</span>
+      </label>
+     </div>
 
-  <!-- 有効サービス設定 -->
-  <div class="form-control w-full">
-   <label class="label">
-    <span class="label-text">有効なサービス</span>
-   </label>
-   <select v-model="modelValue.ENABLED_SERVICES" class="select select-bordered w-full">
-    <option value="all">すべて</option>
-    <option value="platforms">プラットフォームのみ</option>
-    <optgroup label="個別サービス">
-     <option v-for="service in serviceTypes" :key="service" :value="service">
-      {{ serviceLabels[service] || service }}
-     </option>
-    </optgroup>
-   </select>
-  </div>
+     <!-- 有効サービス設定 -->
+     <div class="form-control">
+      <label class="block mb-1 font-medium">有効なサービス</label>
+      <select v-model="modelValue.ENABLED_SERVICES" class="select select-bordered w-full">
+       <option value="all">すべて(外部・コメントテスター含む)</option>
+       <option value="platforms">配信プラットフォーム</option>
+       <optgroup label="個別サービス">
+        <option v-for="service in serviceTypes" :key="service" :value="service">
+         {{ serviceLabels[service] || service }}
+        </option>
+       </optgroup>
+      </select>
+     </div>
 
-  <!-- 許可するID -->
-  <div class="form-control w-full">
-   <label class="label">
-    <span class="label-text">許可するID（空欄ですべて許可）</span>
-   </label>
-   <div class="flex flex-wrap gap-2 mb-2">
-    <div
-     v-for="(id, index) in modelValue.ALLOWED_IDS"
-     :key="index"
-     class="badge badge-primary gap-2"
-    >
-     {{ id }}
-     <button @click="removeAllowedId(index)" class="btn btn-xs btn-ghost btn-circle">✕</button>
+     <!-- ギフト設定 -->
+     <div class="card bg-base-200 p-2 compact">
+      <label class="cursor-pointer label justify-start gap-2">
+       <input type="checkbox" v-model="modelValue.IS_GIFT" class="toggle toggle-primary" />
+       <span class="label-text">ギフト機能を有効にする</span>
+      </label>
+     </div>
+    </div>
+
+    <!-- 右カラム：アクセスレベル -->
+    <div class="grid grid-cols-1 gap-1">
+     <label
+      v-for="level in accessLevels"
+      :key="level.value"
+      class="flex items-center gap-2 hover:bg-base-300 p-1 rounded"
+     >
+      <input
+       type="radio"
+       name="access-level"
+       class="radio"
+       :checked="modelValue.ACCESS_LEVEL === level.value"
+       @change="modelValue.ACCESS_LEVEL = level.value"
+      />{{ level.label }}
+     </label>
     </div>
    </div>
-   <div class="join w-full">
-    <input
-     type="text"
-     v-model="newAllowedId"
-     placeholder="IDを入力"
-     class="input input-bordered join-item w-full"
-     @keyup.enter="addAllowedId"
-    />
-    <button @click="addAllowedId" class="btn join-item">追加</button>
-   </div>
-  </div>
 
-  <!-- アクセスレベル -->
-  <div class="form-control w-full">
-   <label class="label">
-    <span class="label-text">アクセスレベル</span>
-   </label>
-   <div class="btn-group">
-    <button
-     v-for="level in [1, 2, 3, 4]"
-     :key="level"
-     @click="modelValue.ACCESS_LEVEL = level"
-     :class="['btn', modelValue.ACCESS_LEVEL === level ? 'btn-active' : '']"
-    >
-     {{ level }}
-    </button>
-   </div>
-  </div>
+   <!-- 許可するID -->
+   <div class="form-control bg-base-200 p-3 rounded-lg">
+    <label class="label py-0 pb-1">
+     <span class="label-text font-medium">許可するUserId</span>
+     <span class="label-text-alt text-sm text-gray-500">空欄ですべて許可、!付きでネガティブ</span>
+    </label>
 
-  <!-- ギフト設定 -->
-  <div class="form-control">
-   <label class="cursor-pointer label justify-start gap-4">
-    <input type="checkbox" v-model="modelValue.IS_GIFT" class="toggle toggle-primary" />
-    <span class="label-text">ギフト機能を有効にする</span>
-   </label>
-  </div>
+    <div class="flex flex-wrap gap-1 mb-2">
+     <div
+      v-for="(id, index) in modelValue.ALLOWED_IDS"
+      :key="index"
+      class="badge badge-primary badge-sm gap-1"
+     >
+      {{ id }}
+      <button
+       @click="removeAllowedId(index)"
+       class="btn btn-xs btn-ghost btn-circle h-4 w-4 min-h-0 p-0"
+      >
+       ✕
+      </button>
+     </div>
+    </div>
 
-  <!-- キーワード設定 -->
-  <div class="form-control w-full">
-   <label class="label">
-    <span class="label-text">キーワード（特定のキーワードを含むコメントのみカウント）</span>
-   </label>
-   <div class="flex flex-wrap gap-2 mb-2">
-    <div
-     v-for="(keyword, index) in modelValue.KEYWORDS"
-     :key="index"
-     class="badge badge-secondary gap-2"
-    >
-     {{ keyword }}
-     <button @click="removeKeyword(index)" class="btn btn-xs btn-ghost btn-circle">✕</button>
+    <div class="join w-full">
+     <input
+      type="text"
+      v-model="newAllowedId"
+      placeholder="IDを入力"
+      class="input input-bordered join-item w-full"
+      @keyup.enter="addAllowedId"
+     />
+     <button @click="addAllowedId" class="btn btn-primary join-item ml-4 px-4">追加</button>
     </div>
    </div>
-   <div class="join w-full">
-    <input
-     type="text"
-     v-model="newKeyword"
-     placeholder="キーワードを入力"
-     class="input input-bordered join-item w-full"
-     @keyup.enter="addKeyword"
-    />
-    <button @click="addKeyword" class="btn join-item">追加</button>
+
+   <!-- キーワード設定 -->
+   <div class="form-control bg-base-200 p-3 rounded-lg">
+    <label class="label py-0 pb-1">
+     <span class="label-text font-medium">キーワード</span>
+     <span class="label-text-alt text-sm text-gray-500"
+      >特定のキーワードを含むコメントのみカウント（正規表現）</span
+     >
+    </label>
+
+    <div class="flex flex-wrap gap-1 mb-2">
+     <div
+      v-for="(keyword, index) in modelValue.KEYWORDS"
+      :key="index"
+      class="badge badge-secondary badge-sm gap-1"
+     >
+      {{ keyword }}
+      <button
+       @click="removeKeyword(index)"
+       class="btn btn-xs btn-ghost btn-circle h-4 w-4 min-h-0 p-0"
+      >
+       ✕
+      </button>
+     </div>
+    </div>
+
+    <div class="join w-full">
+     <input
+      type="text"
+      v-model="newKeyword"
+      placeholder="キーワードを入力"
+      class="input input-bordered join-item w-full"
+      @keyup.enter="addKeyword"
+      :disabled="modelValue.IS_GIFT"
+     />
+     <button
+      @click="addKeyword"
+      class="btn btn-primary join-item ml-4 px-4"
+      :disabled="modelValue.IS_GIFT"
+     >
+      追加
+     </button>
+    </div>
    </div>
   </div>
  </div>
@@ -133,7 +164,7 @@ const serviceLabels: Record<string, string> = {
  streamlabs: 'Streamlabs',
  kick: 'Kick',
  vtips: 'VTips',
- external: '外部連携'
+ external: '外部(BOT・コメントテスター等)'
 };
 
 const serviceTypes = serviceTypeValues;
@@ -150,6 +181,13 @@ const addAllowedId = () => {
   newAllowedId.value = '';
  }
 };
+
+const accessLevels: { value: 1 | 2 | 3 | 4; label: string }[] = [
+ { value: 1, label: 'だれでも' },
+ { value: 2, label: 'メンバー' },
+ { value: 3, label: 'モデレーター' },
+ { value: 4, label: '管理者' }
+];
 
 const removeAllowedId = (index: number) => {
  props.modelValue.ALLOWED_IDS.splice(index, 1);

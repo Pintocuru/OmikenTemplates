@@ -1,3 +1,4 @@
+<!-- src/apps/configMaker/components/CounterSetsEditor.vue -->
 <template>
  <div class="bg-base-200 p-4 rounded-lg">
   <div class="flex justify-between items-center mb-4">
@@ -7,24 +8,24 @@
    </button>
   </div>
 
-  <div class="tabs tabs-boxed mb-4">
-   <a
-    v-for="(set, index) in localCounterSets"
-    :key="set.id"
-    :class="['tab tab-sm', activeTabIndex === index ? 'tab-active' : '']"
-    @click="activeTabIndex = index"
-   >
-    {{ set.id }}
-   </a>
+  <div class="mb-4">
+   <div class="flex gap-4">
+    <button
+     v-for="(set, index) in localCounterSets"
+     :key="`random-${index}`"
+     :class="['btn btn-lg ', activeTabIndex === index ? 'btn-primary' : 'btn-outline']"
+     @click="activeTabIndex = index"
+    >
+     {{ index + 1 }}: {{ set.counter.title }}
+    </button>
+   </div>
   </div>
 
   <div v-if="activeSet" class="space-y-6">
    <div class="form-control w-full">
-    <label class="label">
-     <span class="label-text">カウンターセットID</span>
-    </label>
+    <label class="block mb-1 font-medium">カウンター名</label>
     <div class="flex gap-2">
-     <input type="text" v-model="activeSet.id" class="input input-bordered w-full" />
+     <input type="text" v-model="activeSet.counter.title" class="input input-bordered w-full" />
      <button v-if="localCounterSets.length > 1" @click="removeCurrentSet" class="btn btn-error">
       削除
      </button>
@@ -41,7 +42,7 @@
 
    <div class="collapse collapse-arrow bg-base-100">
     <input type="checkbox" class="peer" />
-    <div class="collapse-title text-lg font-semibold">ユーザー訪問設定</div>
+    <div class="collapse-title text-lg font-semibold">対象コメント設定</div>
     <div class="collapse-content">
      <UserVisitsEditor v-model="activeSet.userVisits" />
     </div>
