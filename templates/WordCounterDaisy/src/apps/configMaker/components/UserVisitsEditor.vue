@@ -1,5 +1,6 @@
 <template>
- <div class="p-4 bg-base-100 rounded-lg shadow-sm">
+ <div class="collapse-title text-lg font-semibold">対象コメント設定</div>
+ <div class="collapse-content">
   <div class="space-y-3">
    <!-- 主要設定セクション -->
    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -20,7 +21,7 @@
        <option value="all">すべて(外部・コメントテスター含む)</option>
        <option value="platforms">配信プラットフォーム</option>
        <optgroup label="個別サービス">
-        <option v-for="service in serviceTypes" :key="service" :value="service">
+        <option v-for="service in serviceTypeValues" :key="service" :value="service">
          {{ serviceLabels[service] || service }}
         </option>
        </optgroup>
@@ -94,7 +95,7 @@
     <label class="label py-0 pb-1">
      <span class="label-text font-medium">キーワード</span>
      <span class="label-text-alt text-sm text-gray-500"
-      >特定のキーワードを含むコメントのみカウント（正規表現）</span
+      >特定のキーワードを含むコメントのみカウント（正規表現）、空白ですべてのコメントをカウント</span
      >
     </label>
 
@@ -164,10 +165,8 @@ const serviceLabels: Record<string, string> = {
  streamlabs: 'Streamlabs',
  kick: 'Kick',
  vtips: 'VTips',
- external: '外部(BOT・コメントテスター等)'
+ external: '外部(コメントテスター等)'
 };
-
-const serviceTypes = serviceTypeValues;
 
 // 許可IDの追加・削除
 const newAllowedId = ref('');
@@ -183,10 +182,10 @@ const addAllowedId = () => {
 };
 
 const accessLevels: { value: 1 | 2 | 3 | 4; label: string }[] = [
- { value: 1, label: 'だれでも' },
- { value: 2, label: 'メンバー' },
- { value: 3, label: 'モデレーター' },
- { value: 4, label: '管理者' }
+ { value: 1, label: 'すべてのリスナー' },
+ { value: 2, label: 'メンバー・モデレーター・配信者' },
+ { value: 3, label: 'モデレーター・配信者' },
+ { value: 4, label: '配信者のみ' }
 ];
 
 const removeAllowedId = (index: number) => {

@@ -3,7 +3,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import OneSDK from '@onecomme.com/onesdk';
 import { PingOneSDK } from '@public/common/api/PingOneSDK';
-import '@public/tailwind.css';
+import '@assets/app2.css';
 
 // 動的にコンポーネントを取得するためのグローバル変数
 window.AppComponent = {

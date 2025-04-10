@@ -10,9 +10,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import AnyGenerator from './BasicCounter.vue';
+import { defineAsyncComponent, computed } from 'vue';
 import { ColorType, CounterConfig } from '@/scripts/schema';
+
+// windowに設置したコンポーネントを読む
+const AnyGenerator = defineAsyncComponent(() => Promise.resolve(window.AppComponent.component));
 
 interface Counter {
  count: { value: number };

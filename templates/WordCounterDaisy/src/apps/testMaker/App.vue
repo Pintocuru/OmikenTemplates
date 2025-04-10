@@ -6,6 +6,7 @@
    v-if="componentConfig.totalCounterSet"
    :counters="counters"
    :totalCounterConfig="componentConfig.totalCounterSet"
+   :colorScheme="componentConfig.color"
   />
   <hr class="mb-4" />
   <div
@@ -19,6 +20,7 @@
     :count="counter.count.value"
     :countMax="counter.countMax.value"
     :counterConfig="counter.counterConfig"
+    :colorScheme="componentConfig.color"
     @click.prevent="counter.increment"
     @contextmenu.prevent="counter.decrement"
    />

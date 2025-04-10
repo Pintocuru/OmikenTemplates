@@ -1,12 +1,12 @@
 <template>
- <div class="bg-base-200 p-4 rounded-lg">
+ <div class="card bg-base-200 p-4">
   <h2 class="text-xl font-semibold mb-4">コンポーネント設定</h2>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
    <!-- カラー選択 -->
    <div class="form-control w-full">
     <label class="block mb-1 font-medium">メインカラー</label>
-    <select v-model="componentConfig.color" class="select select-bordered w-full">
+    <select v-model="configStore.componentConfig.color" class="select select-bordered w-full">
      <option v-for="color in TAILWIND_COLORS" :key="color" :value="color">
       {{ color }}
      </option>
@@ -22,7 +22,7 @@
        type="radio"
        class="radio radio-primary"
        :value="true"
-       v-model="componentConfig.isHorizontalLayout"
+       v-model="configStore.componentConfig.isHorizontalLayout"
       />
       <span class="ml-2">横並び</span>
      </label>
@@ -31,7 +31,7 @@
        type="radio"
        class="radio radio-primary"
        :value="false"
-       v-model="componentConfig.isHorizontalLayout"
+       v-model="configStore.componentConfig.isHorizontalLayout"
       />
       <span class="ml-2">縦並び</span>
      </label>
@@ -92,35 +92,44 @@ import { ref, computed } from 'vue';
 import { CounterConfig, TAILWIND_COLORS } from '@scripts/schema';
 import { useConfigMaker } from './useConfigMaker';
 
-// pinia
-const { componentConfig } = useConfigMaker();
+// ストア全体を参照
+const configStore = useConfigMaker();
 
-// 合計カウンター設定（初期値）
+// 合計カウンター設定
 const totalCounter = ref<CounterConfig>({
- title: componentConfig.totalCounterSet?.title || '合計',
- unit: componentConfig.totalCounterSet?.unit || 'pt',
- countMode: componentConfig.totalCounterSet?.countMode || 'none',
- targetCountdown: componentConfig.totalCounterSet?.targetCountdown || 0,
- multiplier: componentConfig.totalCounterSet?.multiplier || 1,
- PARTY: componentConfig.totalCounterSet?.PARTY || {},
- PARTY_EVENT: componentConfig.totalCounterSet?.PARTY_EVENT || '',
- PARTY_SUCCESS: componentConfig.totalCounterSet?.PARTY_SUCCESS || ''
+ title: '合計',
+ unit: 'pt',
+ countMode: 'none',
+ targetCountdown: 0,
+ multiplier: 1,
+ PARTY: {},
+ PARTY_EVENT: '',
+ PARTY_SUCCESS: ''
 });
+
+// 初期値の設定
+if (configStore.componentConfig.totalCounterSet) {
+ totalCounter.value = { ...configStore.componentConfig.totalCounterSet };
+}
 
 // 合計カウンターの表示切替
 const showTotalCounter = computed({
- get: () => !!componentConfig.totalCounterSet,
+ get: () => !!configStore.componentConfig.totalCounterSet,
  set: (value) => {
-  componentConfig.totalCounterSet = value ? { ...totalCounter.value } : null;
+  if (value) {
+   configStore.componentConfig.totalCounterSet = { ...totalCounter.value };
+  } else {
+   configStore.componentConfig.totalCounterSet = null;
+  }
  }
 });
 
 // 合計カウンターを更新
 const updateTotalCounter = () => {
  if (showTotalCounter.value) {
-  componentConfig.totalCounterSet = { ...totalCounter.value };
+  configStore.componentConfig.totalCounterSet = { ...totalCounter.value };
  } else {
-  componentConfig.totalCounterSet = null;
+  configStore.componentConfig.totalCounterSet = null;
  }
 };
 </script>

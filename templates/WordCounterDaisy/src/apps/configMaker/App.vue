@@ -1,18 +1,17 @@
 <!-- src/apps/configMaker/App.vue -->
 <template>
- <div class="p-4 max-w-4xl mx-auto bg-base-100 shadow-lg rounded-lg">
+ <div class="p-4 max-w-4xl mx-auto">
   <h1 class="text-2xl font-bold mb-6 text-center text-primary">Counter Config Generator</h1>
 
-  <!-- アクションボタン -->
-  <div class="mb-4 flex justify-between">
-   <div class="space-x-2">
-    <button @click="configStore.generateConfig" class="btn btn-primary">設定をJSON出力</button>
-   </div>
+  <!-- アクションボタンとプリセット -->
+  <div class="mb-4">
+   <!-- プリセットコンポーネント -->
+   <ConfigPresets />
   </div>
 
   <!-- ComponentConfig 編集セクション -->
   <div class="mb-6">
-   <ComponentConfigEditor />
+   <ComponentConfigEditor class="mb-6" />
   </div>
 
   <!-- CounterSets 編集セクション -->
@@ -25,6 +24,7 @@
 <script setup lang="ts">
 import ComponentConfigEditor from './components/ComponentConfigEditor.vue';
 import CounterSetsEditor from './components/CounterSetsEditor.vue';
+import ConfigPresets from './components/ConfigPresets.vue'; // 新しいコンポーネントをインポート
 import { useConfigMaker } from './components/useConfigMaker';
 
 // pinia

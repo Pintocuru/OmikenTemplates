@@ -131,8 +131,8 @@ export function createDefaultCounterSet(): CounterSet {
    KEYWORDS: []
   },
   counter: {
-   title: 'カウンター?',
-   unit: 'pt',
+   title: '新規カウンター',
+   unit: '',
    countMode: 'comment',
    targetCountdown: 0,
    multiplier: 1,

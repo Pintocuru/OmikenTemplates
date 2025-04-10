@@ -1,4 +1,4 @@
-import AnyGenerator from '@/packages/KillingSpree/SamuraiKatana.vue';
+import AnyGenerator from '@/packages/basic/basicCounter.vue';
 
 window.AppComponent = window.AppComponent || {};
 window.AppComponent.component = AnyGenerator;

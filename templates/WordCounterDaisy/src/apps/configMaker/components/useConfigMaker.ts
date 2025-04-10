@@ -72,10 +72,30 @@ export const useConfigMaker = defineStore('configMaker', () => {
   }
  };
 
+ // プリセットを適用する関数
+ const applyPreset = (config: ComponentConfig, sets: CounterSet[]) => {
+  try {
+   // Zodを使用して検証
+   const validConfig = componentConfigSchema.parse(config);
+   const validSets = counterSetsSchema.parse(sets);
+
+   // 検証が成功したら適用
+   componentConfig.value = validConfig;
+   counterSets.value = validSets;
+   activeSetId.value = validSets[0]?.id || '';
+
+   return true;
+  } catch (error) {
+   console.error('プリセットの適用中にエラーが発生しました:', error);
+   return false;
+  }
+ };
+
  return {
   componentConfig,
   counterSets,
   activeSetId,
-  generateConfig
+  generateConfig,
+  applyPreset
  };
 });

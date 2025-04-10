@@ -1,6 +1,6 @@
 <!-- src/apps/configMaker/components/CounterSetsEditor.vue -->
 <template>
- <div class="bg-base-200 p-4 rounded-lg">
+ <div class="card bg-base-200 p-4">
   <div class="flex justify-between items-center mb-4">
    <h2 class="text-xl font-semibold">カウンターセット設定</h2>
    <button @click="addCounterSet" class="btn btn-sm btn-primary">
@@ -11,8 +11,8 @@
   <div class="mb-4">
    <div class="flex gap-4">
     <button
-     v-for="(set, index) in localCounterSets"
-     :key="`random-${index}`"
+     v-for="(set, index) in configStore.counterSets"
+     :key="`counter-set-${index}`"
      :class="['btn btn-lg ', activeTabIndex === index ? 'btn-primary' : 'btn-outline']"
      @click="activeTabIndex = index"
     >
@@ -26,30 +26,36 @@
     <label class="block mb-1 font-medium">カウンター名</label>
     <div class="flex gap-2">
      <input type="text" v-model="activeSet.counter.title" class="input input-bordered w-full" />
-     <button v-if="localCounterSets.length > 1" @click="removeCurrentSet" class="btn btn-error">
+     <button
+      v-if="configStore.counterSets.length > 1"
+      @click="removeCurrentSet"
+      class="btn btn-error"
+     >
       削除
      </button>
     </div>
    </div>
 
-   <div class="collapse collapse-arrow bg-base-100">
+   <!-- カウンター設定 -->
+   <div class="collapse collapse-arrow bg-base-300">
     <input type="checkbox" class="peer" checked />
-    <div class="collapse-title text-lg font-semibold">カウンター設定</div>
-    <div class="collapse-content">
-     <CounterConfigEditor v-model="activeSet.counter" />
-    </div>
+    <CounterConfigEditor v-model="activeSet.counter" />
    </div>
 
-   <div class="collapse collapse-arrow bg-base-100">
+   <div class="collapse collapse-arrow bg-base-300">
     <input type="checkbox" class="peer" />
-    <div class="collapse-title text-lg font-semibold">対象コメント設定</div>
-    <div class="collapse-content">
-     <UserVisitsEditor v-model="activeSet.userVisits" />
-    </div>
+    <UserVisitsEditor v-model="activeSet.userVisits" />
+   </div>
+
+   <div class="collapse collapse-arrow bg-base-300">
+    <input type="checkbox" class="peer" />
+    <PartyEventsSettings v-model="activeSet.counter" />
    </div>
   </div>
 
-  <div v-else class="alert alert-error">カウンターセットが選択されていません</div>
+  <div v-else class="alert alert-error">
+   カウンターセットが選択されていません (上記のタブを選択してください)
+  </div>
  </div>
 </template>
 
@@ -58,31 +64,30 @@ import { ref, computed } from 'vue';
 import { useConfigMaker } from './useConfigMaker';
 import CounterConfigEditor from './CounterConfigEditor.vue';
 import UserVisitsEditor from './UserVisitsEditor.vue';
-import { CounterSet, createDefaultCounterSet } from '@/scripts/schema';
+import PartyEventsSettings from './PartyEventsSettings.vue';
+
+import { createDefaultCounterSet } from '@/scripts/schema';
 
 const configStore = useConfigMaker();
-const localCounterSets = configStore.counterSets;
-
 const activeTabIndex = ref(0);
 
 const activeSet = computed(() => {
- return activeTabIndex.value >= 0 && activeTabIndex.value < localCounterSets.length
-  ? localCounterSets[activeTabIndex.value]
+ return activeTabIndex.value >= 0 && activeTabIndex.value < configStore.counterSets.length
+  ? configStore.counterSets[activeTabIndex.value]
   : null;
 });
 
 const addCounterSet = () => {
- const newSet: CounterSet = createDefaultCounterSet();
-
- localCounterSets.push(newSet);
- activeTabIndex.value = localCounterSets.length - 1;
+ const newSet = createDefaultCounterSet();
+ configStore.counterSets.push(newSet);
+ activeTabIndex.value = configStore.counterSets.length - 1;
 };
 
 const removeCurrentSet = () => {
- if (localCounterSets.length <= 1) return;
- localCounterSets.splice(activeTabIndex.value, 1);
- if (activeTabIndex.value >= localCounterSets.length) {
-  activeTabIndex.value = localCounterSets.length - 1;
+ if (configStore.counterSets.length <= 1) return;
+ configStore.counterSets.splice(activeTabIndex.value, 1);
+ if (activeTabIndex.value >= configStore.counterSets.length) {
+  activeTabIndex.value = configStore.counterSets.length - 1;
  }
 };
 </script>
