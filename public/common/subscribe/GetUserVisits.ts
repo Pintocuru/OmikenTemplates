@@ -2,7 +2,7 @@
 import { ConfigUserType } from '../commonTypes';
 import { GetUserComments } from './GetUserComments';
 import { ServiceAPI } from '../api/ServiceAPI';
-import { Comment, CommentData } from '@onecomme.com/onesdk/types/Comment';
+import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { Service, ServiceType } from '@onecomme.com/onesdk/types/Service';
 
 // サービスごとの結果の型定義
@@ -12,6 +12,7 @@ export interface ServiceVisitType {
  frameData: Service | null; // 現在の配信枠情報
  totalCount: number; // フィルタされた配信枠のコメント数
  syokenCount: number; // 初見さん(初コメ)の数
+ totalPrice: number; // 配信枠でのコメント総額
  user: Record<string, UserVisitType>;
 }
 
@@ -145,6 +146,7 @@ class UserVisitsProcessor {
    // totalCountは新しい値で上書き（加算しない）
    this.result[serviceKey].totalCount = newVisits[serviceKey].totalCount;
    this.result[serviceKey].syokenCount = newVisits[serviceKey].syokenCount;
+   this.result[serviceKey].totalPrice = newVisits[serviceKey].totalPrice;
   }
  }
 
@@ -160,6 +162,7 @@ class UserVisitsProcessor {
     frameData: null,
     totalCount: 0,
     syokenCount: 0,
+    totalPrice: 0,
     user: {}
    };
   }
@@ -226,16 +229,17 @@ class UserVisitsProcessor {
   userInfo.count++;
 
   // ギフト金額/回数の更新
-  this.updateGiftInfo(userInfo, data);
- }
-
- // ギフト情報の更新（内部メソッド）
- private updateGiftInfo(userInfo: UserVisitType, data: CommentData): void {
   if ('price' in data) {
-   const commentPrice = data.price ?? 0;
+   const commentPrice =
+    'unit' in data && data.unit === '$'
+     ? (data.price ?? 0) * 100 // ドルでの計算(1ドル100円)
+     : (data?.price ?? 0); // 円での計算
    userInfo.price += commentPrice;
+   result[serviceKey].totalPrice += commentPrice;
   } else if (data.hasGift) {
+   // TODO 「メンバー加入」は一律+1なので、別途ステータスが必要かも
    userInfo.price++;
+   result[serviceKey].totalPrice++;
   }
  }
 }
