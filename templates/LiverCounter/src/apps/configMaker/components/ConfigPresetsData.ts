@@ -12,6 +12,80 @@ export type ConfigPreset = {
 // プリセットデータ
 export const presets: ConfigPreset[] = [
  {
+  id: 'test3',
+  name: '初コメカウンター',
+  config: {
+   color: 'blue',
+   totalCounterSet: null,
+   isHorizontalLayout: true
+  },
+  counterSets: [
+   {
+    id: 'test1',
+    userVisits: {
+     IS_DIFF_MODE: false,
+     ENABLED_SERVICES: 'platforms',
+     ALLOWED_IDS: [],
+     ACCESS_LEVEL: 1,
+     IS_GIFT: false,
+     KEYWORDS: []
+    },
+    counter: {
+     title: '初コメ',
+     unit: '人',
+     countMode: 'syoken',
+     targetCountdown: 0,
+     multiplier: 1,
+     PARTY: {},
+     PARTY_EVENT: '!syoken',
+     PARTY_SUCCESS: ''
+    }
+   },
+   {
+    id: 'counter-1744322058413',
+    userVisits: {
+     IS_DIFF_MODE: false,
+     ENABLED_SERVICES: 'platforms',
+     ALLOWED_IDS: [],
+     ACCESS_LEVEL: 1,
+     IS_GIFT: false,
+     KEYWORDS: []
+    },
+    counter: {
+     title: 'リスナー',
+     unit: '人',
+     countMode: 'user',
+     targetCountdown: 0,
+     multiplier: 1,
+     PARTY: {},
+     PARTY_EVENT: '',
+     PARTY_SUCCESS: ''
+    }
+   },
+   {
+    id: 'counter-1744322144895',
+    userVisits: {
+     IS_DIFF_MODE: false,
+     ENABLED_SERVICES: 'platforms',
+     ALLOWED_IDS: [],
+     ACCESS_LEVEL: 1,
+     IS_GIFT: false,
+     KEYWORDS: []
+    },
+    counter: {
+     title: 'コメント',
+     unit: 'コメ',
+     countMode: 'comment',
+     targetCountdown: 0,
+     multiplier: 1,
+     PARTY: {},
+     PARTY_EVENT: '',
+     PARTY_SUCCESS: ''
+    }
+   }
+  ]
+ },
+ {
   id: 'test1',
   name: '視聴者数・高評価',
   config: {
@@ -96,80 +170,7 @@ export const presets: ConfigPreset[] = [
    }
   ]
  },
- {
-  id: 'test3',
-  name: '初コメカウンター',
-  config: {
-   color: 'blue',
-   totalCounterSet: null,
-   isHorizontalLayout: false
-  },
-  counterSets: [
-   {
-    id: 'test1',
-    userVisits: {
-     IS_DIFF_MODE: false,
-     ENABLED_SERVICES: 'platforms',
-     ALLOWED_IDS: [],
-     ACCESS_LEVEL: 1,
-     IS_GIFT: false,
-     KEYWORDS: []
-    },
-    counter: {
-     title: '初コメ',
-     unit: '',
-     countMode: 'syoken',
-     targetCountdown: 0,
-     multiplier: 1,
-     PARTY: {},
-     PARTY_EVENT: '!syoken',
-     PARTY_SUCCESS: ''
-    }
-   },
-   {
-    id: 'counter-1744322058413',
-    userVisits: {
-     IS_DIFF_MODE: false,
-     ENABLED_SERVICES: 'platforms',
-     ALLOWED_IDS: [],
-     ACCESS_LEVEL: 1,
-     IS_GIFT: false,
-     KEYWORDS: []
-    },
-    counter: {
-     title: 'リスナー',
-     unit: '',
-     countMode: 'user',
-     targetCountdown: 0,
-     multiplier: 1,
-     PARTY: {},
-     PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
-    }
-   },
-   {
-    id: 'counter-1744322144895',
-    userVisits: {
-     IS_DIFF_MODE: false,
-     ENABLED_SERVICES: 'all',
-     ALLOWED_IDS: [],
-     ACCESS_LEVEL: 1,
-     IS_GIFT: false,
-     KEYWORDS: []
-    },
-    counter: {
-     title: 'コメント数',
-     unit: '',
-     countMode: 'comment',
-     targetCountdown: 0,
-     multiplier: 1,
-     PARTY: {},
-     PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
-    }
-   }
-  ]
- },
+
  {
   id: 'test4',
   name: '今日のランチ代',
@@ -366,11 +367,11 @@ export const presets: ConfigPreset[] = [
     id: 'counter-1744351060756',
     userVisits: {
      IS_DIFF_MODE: false,
-     ENABLED_SERVICES: 'platforms',
+     ENABLED_SERVICES: 'all',
      ALLOWED_IDS: [],
      ACCESS_LEVEL: 1,
      IS_GIFT: false,
-     KEYWORDS: ['アル']
+     KEYWORDS: ['ある', 'アル']
     },
     counter: {
      title: '猫使アル',
@@ -387,11 +388,11 @@ export const presets: ConfigPreset[] = [
     id: 'counter-1744369186724',
     userVisits: {
      IS_DIFF_MODE: false,
-     ENABLED_SERVICES: 'platforms',
+     ENABLED_SERVICES: 'all',
      ALLOWED_IDS: [],
      ACCESS_LEVEL: 1,
      IS_GIFT: false,
-     KEYWORDS: ['ビィ']
+     KEYWORDS: ['びぃ', 'びい', 'ビィ']
     },
     counter: {
      title: '猫使ビィ',
