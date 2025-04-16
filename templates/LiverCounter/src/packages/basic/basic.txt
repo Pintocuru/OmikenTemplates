@@ -1,14 +1,14 @@
-# ライバーカウンター LiverCounter Basic
+# ライバーカウンター LiverCounter basic
 
-最終更新日：2025/03/13
+最終更新日：2025/04/16
 
 OBS で使用できる、ライバー・配信者向けのカウンターです。
 ダウンロードして頂きありがとうございます。
 
 ## 通常版:
-- Basic:test
+- Basic:10色で使いやすいカウンターです
 
-導入方法・使用方法については[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/docs/WordCounter/readme_WordCounter.md)をご覧ください
+導入方法・使用方法については[こちら](https://github.com/Pintocuru/OmikenTemplates/blob/main/docs/LiverCounter/readme_LiverCounter.md)をご覧ください
 
 ---
 

@@ -1,4 +1,4 @@
-import AnyGenerator from '@/packages/basic2/miniCounter.vue';
+import AnyGenerator from '@/packages/capsule/capsule.vue';
 
 window.AppComponent = window.AppComponent || {};
 window.AppComponent.component = AnyGenerator;

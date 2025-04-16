@@ -1,4 +1,4 @@
-<!-- basicCounter.vue -->
+<!-- basic.vue -->
 <template>
  <div class="flex items-center justify-center">
   <div

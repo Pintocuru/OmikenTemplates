@@ -7,8 +7,8 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 // コンポーネント名を配列として定義
 const packages = [
- { appDir: 'basic', appName: 'basicCounter' },
- { appDir: 'basic2', appName: 'miniCounter' }
+ { appDir: 'basic', appName: 'basic' },
+ { appDir: 'capsule', appName: 'capsule' }
 ];
 
 // ---

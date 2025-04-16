@@ -1,7 +1,7 @@
 {
  "name": "word-counter-daisy",
  "version": "0.1.0",
- "description": "わんコメでコメントをカウントするジェネレーター",
+ "description": "自動でカウントする、多機能カウンター",
  "scripts": {
   "dev:wordDaisy": "vite",
   "build:wordDaisy": "webpack"
