@@ -22,9 +22,7 @@ export function useSound() {
  const playSound = (soundName: keyof typeof sounds) => {
   const sound = sounds[soundName];
   sound.currentTime = 0;
-  sound.play().catch((e) => {
-   console.warn(`Sound "${soundName}" failed to play:`, e);
-  });
+  sound.play();
  };
 
  return {

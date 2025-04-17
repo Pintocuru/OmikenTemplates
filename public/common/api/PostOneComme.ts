@@ -17,8 +17,8 @@ export async function sendComment(
 
 // テストコメントを使ったシステムメッセージ
 export async function postSystemMessage(
- content: string,
- name: string = 'error',
+ comment: string,
+ username: string = 'error',
  delaySeconds: number = 0
 ): Promise<void> {
  const request: SendTestCommentType = {
@@ -31,8 +31,8 @@ export async function postSystemMessage(
   repeater: false,
   subscribe: false,
   speech: true,
-  username: name,
-  comment: content
+  username,
+  comment
  };
 
  return delayFetchPost(
@@ -76,9 +76,7 @@ function delayFetchPost(
     try {
      const response = await fetch(url, {
       method: 'POST',
-      headers: {
-       'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
      });
 

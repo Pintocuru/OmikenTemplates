@@ -14,16 +14,16 @@ export default () => {
  const commonResolve = createCommonResolve();
 
  const entries = {
-  BingoCard: path.resolve(dirname, `./src/BingoCard.ts`),
+  main: path.resolve(dirname, `./src/main.ts`),
   configMaker: path.resolve(dirname, `./src/configMaker.ts`)
  };
 
  const htmlPlugins = [
-  // 本体:BingoCard
+  // 本体
   new HtmlWebpackPlugin({
-   template: path.resolve(dirname, `./src/BingoCard.ejs`),
+   template: path.resolve(dirname, `./src/index.ejs`),
    filename: `index.html`,
-   chunks: ['BingoCard'],
+   chunks: ['main'],
    inject: 'body'
   }),
   // configMaker

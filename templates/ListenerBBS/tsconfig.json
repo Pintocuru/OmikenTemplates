@@ -1,0 +1,30 @@
+{
+ "extends": "../../tsconfig.json", // 親の設定をマージ
+ "compilerOptions": {
+  "baseUrl": ".", // モジュールのベースURL
+  "outDir": "./dist", // 出力先ディレクトリ
+  "paths": {
+   "@type": [
+    "../../public/type.ts"
+   ],
+   "@common/*": [
+    "../../public/common/*"
+   ],
+   "@public/*": [
+    "../../public/*"
+   ],
+   "@/*": [
+    "./src/*"
+   ],
+   "@assets/*": [
+    "./assets/*"
+   ],
+  }
+ },
+ // コンパイル対象ファイル
+ "include": [
+  "src/**/*.ts",
+  "src/**/*.d.ts",
+  "src/**/*.vue"
+ ],
+}

@@ -1,5 +1,4 @@
 // src/scripts/types.ts
-import { ThemeType } from '@common/DaisyUi/DaisyUiTheme';
 
 // 難易度別アイテムの型
 export interface BingoItem {
@@ -28,6 +27,46 @@ export interface BingoCard {
  cardSize: 3 | 4 | 5; // カードサイズ
  theme: ThemeType; // daisyUiによるテーマ
 }
+
+// テーマのリスト
+export const themes = [
+ 'light',
+ 'dark',
+ 'cupcake',
+ 'bumblebee',
+ 'emerald',
+ 'corporate',
+ 'synthwave',
+ 'retro',
+ 'cyberpunk',
+ 'valentine',
+ 'halloween',
+ 'garden',
+ 'forest',
+ 'aqua',
+ 'lofi',
+ 'pastel',
+ 'fantasy',
+ 'wireframe',
+ 'black',
+ 'luxury',
+ 'dracula',
+ 'cmyk',
+ 'autumn',
+ 'business',
+ 'acid',
+ 'lemonade',
+ 'night',
+ 'coffee',
+ 'winter',
+ 'dim',
+ 'nord',
+ 'sunset',
+ 'caramellatte',
+ 'abyss',
+ 'silk'
+] as const;
+export type ThemeType = (typeof themes)[number];
 
 // ---
 

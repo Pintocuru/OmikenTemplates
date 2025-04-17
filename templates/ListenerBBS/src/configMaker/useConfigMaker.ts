@@ -1,7 +1,7 @@
 // src/configMaker/configMaker.ts
 import { ref, watch, computed } from 'vue';
 import { BingoConfig, BingoItem } from '@/scripts/types';
-import { useBingoState } from '@/BingoCard/useBingoState';
+import { useBingoState } from '@/scripts/useBingoState';
 import { defineStore } from 'pinia';
 import { BingoItemSchema, validateBingoConfig } from '@/scripts/schema';
 

@@ -1,0 +1,13 @@
+{
+ "name": "listener-bbs",
+ "version": "0.1.0",
+ "description": "リスナーのコメント数を表示できるジェネレーター",
+ "scripts": {
+  "dev:listenerBBS": "vite",
+  "build:listenerBBS": "webpack"
+ },
+ "author": "Pintocuru",
+ "license": "Apache-2.0",
+ "main": "src/main.js",
+ "type": "module"
+}

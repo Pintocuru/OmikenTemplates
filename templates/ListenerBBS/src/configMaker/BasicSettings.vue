@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { themes } from '@common/DaisyUi/DaisyUiTheme';
+import { themes } from '@/scripts/types';
 import { useConfigMaker } from '@/configMaker/useConfigMaker';
 
 // Pinia ストアを使用
