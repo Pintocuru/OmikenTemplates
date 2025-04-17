@@ -1,8 +1,9 @@
-// src/scripts/useWinPatterns.ts
-import { ref, computed, Ref } from 'vue';
+// src/BingoCard/useWinPatterns.ts
+import { ref, computed, Ref, watch } from 'vue';
 import { useSound } from '@/scripts/useSound';
+import { CardSize } from '@/scripts/schema';
 
-export function useWinPatterns(cardSize: Ref<3 | 4 | 5>) {
+export function useWinPatterns(cardSize: Ref<CardSize>) {
  const sounds = useSound();
  const completedLines = ref<number[]>([]);
  const highlightedCells = ref<number[]>([]);
@@ -25,7 +26,12 @@ export function useWinPatterns(cardSize: Ref<3 | 4 | 5>) {
   ];
  });
 
- const checkBingo = (completedCells: boolean[]): void => {
+ const checkWinPatterns = (
+  completedCells: boolean[]
+ ): {
+  lines: number[];
+  cells: number[];
+ } => {
   const patterns = winPatterns.value;
   const lines: number[] = [];
   const cells: number[] = [];
@@ -37,6 +43,12 @@ export function useWinPatterns(cardSize: Ref<3 | 4 | 5>) {
     cells.push(...pattern);
    }
   }
+
+  return { lines, cells };
+ };
+
+ const updateCompletedLines = (completedCells: boolean[]) => {
+  const { lines, cells } = checkWinPatterns(completedCells);
 
   completedLines.value = lines;
   highlightedCells.value = cells;
@@ -54,8 +66,9 @@ export function useWinPatterns(cardSize: Ref<3 | 4 | 5>) {
  };
 
  return {
-  checkBingo,
+  updateCompletedLines,
   completedLines,
-  highlightedCells
+  highlightedCells,
+  winPatterns
  };
 }

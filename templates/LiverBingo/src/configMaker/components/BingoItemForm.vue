@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { BingoItem } from '@/scripts/types';
+import { BingoItem } from '@/scripts/schema';
 
 const props = defineProps<{
  seed: BingoItem;

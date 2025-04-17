@@ -2,6 +2,10 @@
 import { z } from 'zod';
 import { themes } from '@common/DaisyUi/DaisyUiTheme';
 
+// CardSize 型定義（3〜10まで）
+export const CardSizeValues = [3, 4, 5, 6, 7, 8, 9, 10] as const;
+export type CardSize = (typeof CardSizeValues)[number];
+
 // BingoItem スキーマ
 export const BingoItemSchema = z.object({
  id: z.string().default(() => crypto.randomUUID()), // ユニークIDをデフォルトで生成
@@ -13,7 +17,18 @@ export const BingoItemSchema = z.object({
 
 // BingoCard スキーマ
 export const BingoCardSchema = z.object({
- cardSize: z.union([z.literal(3), z.literal(4), z.literal(5)]).default(3),
+ cardSize: z
+  .union([
+   z.literal(3),
+   z.literal(4),
+   z.literal(5),
+   z.literal(6),
+   z.literal(7),
+   z.literal(8),
+   z.literal(9),
+   z.literal(10)
+  ])
+  .default(3),
  theme: z.enum(themes).default('light')
 });
 

@@ -57,11 +57,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { BingoItem } from '@/scripts/types';
+import { BingoItem, BingoItemSchema } from '@/scripts/schema';
 import { useConfigMaker } from '@/configMaker/useConfigMaker';
-import BingoItemForm from '@/configMaker/BingoItemForm.vue';
+import BingoItemForm from '@/configMaker/components/BingoItemForm.vue';
 import { MoreVertical } from 'lucide-vue-next';
-import { BingoItemSchema } from '@/scripts/schema';
 
 // pinia
 const configStore = useConfigMaker();

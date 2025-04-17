@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import BingoItemForm from '@/configMaker/BingoItemForm.vue';
+import BingoItemForm from '@/configMaker/components/BingoItemForm.vue';
 import { useConfigMaker } from '@/configMaker/useConfigMaker';
 import { BingoItemSchema } from '@/scripts/schema';
 

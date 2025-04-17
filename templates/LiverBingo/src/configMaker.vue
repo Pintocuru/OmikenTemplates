@@ -48,9 +48,9 @@
 
 <script setup lang="ts">
 import { useConfigMaker } from '@/configMaker/useConfigMaker';
-import BasicSettings from '@/configMaker/BasicSettings.vue';
-import FixedItems from '@/configMaker/FixedItems.vue';
-import RandomItems from '@/configMaker/RandomItems.vue';
+import BasicSettings from '@/configMaker/components/BasicSettings.vue';
+import FixedItems from '@/configMaker/components/FixedItems.vue';
+import RandomItems from '@/configMaker/components/RandomItems.vue';
 
 // pinia
 const configStore = useConfigMaker();

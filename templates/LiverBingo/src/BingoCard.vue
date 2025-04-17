@@ -1,4 +1,4 @@
-<!-- BingoCard.vue -->
+<!-- src/BingoCard.vue -->
 <template>
  <div class="flex flex-col items-center min-h-screen">
   <!-- ビンゴタイトルバー -->
@@ -6,6 +6,7 @@
    v-model:theme="theme"
    :lineCount="completedLines.length"
    @generate="generateBingoCard"
+   @random-select="handleRandomSelect"
   />
 
   <!-- ビンゴカードのマス -->
@@ -16,9 +17,10 @@
    :itemTargets="itemTargets"
    :completedCells="completedCells"
    :highlightedCells="highlightedCells"
+   :highlightedRandomCell="highlightedRandomCell"
+   :isAnimating="isAnimating"
    @cell-click="incrementCell"
    @cell-right-click="decrementCell"
-   @click="toggleControlPanel(false)"
   />
  </div>
 </template>
@@ -30,9 +32,9 @@ import { useBingoCard } from './BingoCard/useBingoCard';
 
 // コンポーザブルから機能を取得
 const {
- toggleControlPanel,
  incrementCell,
  decrementCell,
+ handleRandomSelect,
  cardSize,
  theme,
  bingoItems,
@@ -41,7 +43,9 @@ const {
  completedCells,
  generateBingoCard,
  completedLines,
- highlightedCells
+ highlightedCells,
+ highlightedRandomCell,
+ isAnimating
 } = useBingoCard();
 </script>
 

@@ -1,9 +1,17 @@
-<!-- src/components/BingoNotification.vue -->
+<!-- src/BingoCard/components/BingoTitle.vue -->
 <template>
  <div
   class="flex items-center justify-between bg-primary text-primary-content px-4 py-1 mb-1 rounded-lg transition-colors duration-500"
   :class="{ 'bg-secondary': showBingoEffect }"
  >
+  <!-- ランダム選択ボタンを追加 -->
+  <button
+   @click="$emit('random-select')"
+   class="btn btn-secondary hover:scale-105 transition-transform"
+  >
+   [R]
+  </button>
+
   <div
    @contextmenu.prevent="
     emit('generate');
@@ -54,7 +62,7 @@ const props = defineProps<{
  theme: string;
  lineCount: number;
 }>();
-const emit = defineEmits(['update:theme', 'generate']);
+const emit = defineEmits(['update:theme', 'generate', 'random-select']);
 
 // コンポーザブル
 const sounds = useSound();

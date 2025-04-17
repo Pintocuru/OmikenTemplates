@@ -1,14 +1,14 @@
-// src/scripts/useBingoState.ts
+// src/BingoCard/useBingoState.ts
 import { ref, Ref, watch, onMounted, computed } from 'vue';
 import { ThemeType } from '@common/DaisyUi/DaisyUiTheme';
-import { validateBingoConfig } from '@/scripts/schema';
+import { CardSize, validateBingoConfig } from '@/scripts/schema';
 
 // config
 const config = validateBingoConfig(window.BINGO_CONFIG);
 
 export function useBingoState() {
  // 状態管理
- const cardSize: Ref<3 | 4 | 5> = ref(config.bingoCard.cardSize);
+ const cardSize: Ref<CardSize> = ref(config.bingoCard.cardSize);
  const theme: Ref<ThemeType> = ref(config.bingoCard.theme || 'light');
 
  // 総マス数を計算

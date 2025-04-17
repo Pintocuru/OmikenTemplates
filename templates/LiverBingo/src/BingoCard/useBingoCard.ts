@@ -1,173 +1,78 @@
-// src/scripts/useBingoCard.ts
-import { ref, computed, onMounted } from 'vue';
+// src/BingoCard/useBingoCard.ts
+import { onMounted } from 'vue';
 import { useBingoState } from '@/BingoCard/useBingoState';
 import { useWinPatterns } from '@/BingoCard/useWinPatterns';
-import { useControlPanel } from '@/BingoCard/useControlPanel';
-import { BingoItem } from '@/scripts/types';
-
-// アプリケーション設定
-const { bingoSeeds = [], bingoRandomSeeds = [] } = window.BINGO_CONFIG || {};
+import { useBingoItems } from '@/BingoCard/useBingoItems';
+import { useBingoCells } from '@/BingoCard/useBingoCells';
+import { useRandomSelection } from '@/BingoCard/useRandomSelection';
 
 export function useBingoCard() {
+ // 基本ビンゴの状態
  const { cardSize, theme, totalCells } = useBingoState();
- const { checkBingo, completedLines, highlightedCells } = useWinPatterns(cardSize);
- const { isControlPanelVisible, toggleControlPanel } = useControlPanel();
 
- // 状態管理用変数
- const bingoItems = ref<BingoItem[]>(
-  Array(totalCells.value).fill({ title: '未設定', weight: 0, target: 3, unit: 1 })
+ // 勝利パターン検出
+ const { updateCompletedLines, completedLines, highlightedCells } = useWinPatterns(cardSize);
+
+ // ビンゴアイテム管理
+ const { bingoItems, itemTargets, selectBingoItem, generateBingoCard, updateItem } =
+  useBingoItems(totalCells);
+
+ // セル操作 - 依存関係を明示的に注入
+ const { cellProgress, completedCells, incrementCell, decrementCell, resetBingo } = useBingoCells(
+  totalCells,
+  itemTargets,
+  updateCompletedLines
  );
- const cellProgress = ref<number[]>(Array(totalCells.value).fill(0));
- const itemTargets = ref<number[]>(Array(totalCells.value).fill(3));
 
- // 完了したセルの計算
- const completedCells = computed(() =>
-  cellProgress.value.map((progress, index) => progress >= itemTargets.value[index])
- );
+ // ランダム選択
+ const { highlightedRandomCell, isAnimating, selectRandomCell, triggerAnimation } =
+  useRandomSelection(totalCells);
 
- /**
-  * 重み付けを考慮してランダムにビンゴアイテムを選択する
-  * @param excludeItem 除外するアイテム（重複防止用）
-  * @returns 選択されたビンゴアイテム
-  */
- const selectBingoItem = (excludeItem?: BingoItem): BingoItem => {
-  // 利用可能なアイテムをフィルタリング
-  const availableItems = excludeItem
-   ? bingoRandomSeeds.filter((item) => item.title !== excludeItem.title)
-   : bingoRandomSeeds;
+ // エンハンスドインターフェース - 個別コンポーザブルの処理を組み合わせる
 
-  if (availableItems.length === 0) {
-   return bingoRandomSeeds[Math.floor(Math.random() * bingoRandomSeeds.length)];
-  }
-
-  // 重み付け合計を計算
-  const totalWeight = availableItems.reduce((sum, item) => sum + (item.weight ?? 1), 0);
-
-  // 重み付けに基づいてランダム選択
-  let randomValue = Math.random() * totalWeight;
-  let selectedItem = availableItems[0];
-
-  for (const item of availableItems) {
-   randomValue -= item.weight ?? 1;
-   if (randomValue <= 0) {
-    selectedItem = item;
-    break;
-   }
-  }
-
-  return selectedItem;
+ // セルの進捗処理
+ const handleIncrementCell = (index: number) => {
+  incrementCell(index);
+  triggerAnimation(index);
  };
 
- /**
-  * ビンゴカードを生成する
-  */
- const generateBingoCard = () => {
-  resetBingo();
-  const usedTitles = new Set<string>();
-  const selectedItems: BingoItem[] = [];
+ // セルのポイント減少、0であればセル変更
+ const handleDecrementCell = (index: number) => {
+  // currentProgressが0かどうかチェック
+  const currentProgress = cellProgress.value[index];
 
-  // 必要なセル数分のアイテムを選択
-  while (selectedItems.length < totalCells.value) {
-   // 未使用のアイテムがあれば優先的に選択
-   const availableItems = bingoRandomSeeds.filter((item) => !usedTitles.has(item.title));
-   const selectedItem =
-    availableItems.length > 0
-     ? selectBingoItem()
-     : bingoRandomSeeds[Math.floor(Math.random() * bingoRandomSeeds.length)];
-
-   selectedItems.push(selectedItem);
-   usedTitles.add(selectedItem.title);
-  }
-
-  // アイテムをシャッフル
-  shuffleArray(selectedItems);
-
-  // 5x5グリッドの場合は中央をFREEセルに
-  if (totalCells.value === 25) {
-   const freeItem: BingoItem = { title: '🌟FREE!🌟', weight: 0, target: 1, unit: 1 };
-   selectedItems[12] = freeItem;
-   itemTargets.value[12] = 1;
-   cellProgress.value[12] = 1;
-  }
-
-  // 状態を更新
-  bingoItems.value = selectedItems;
-  itemTargets.value = selectedItems.map((item) => item.target ?? 3);
-
-  // 事前定義されたシードで上書き
-  bingoSeeds.forEach((seed, index) => {
-   if (index < totalCells.value && seed.title) {
-    bingoItems.value[index] = seed;
-    itemTargets.value[index] = seed.target ?? 3;
-   }
-  });
- };
-
- /**
-  * 配列をシャッフルする（Fisher-Yatesアルゴリズム）
-  */
- const shuffleArray = <T>(array: T[]): void => {
-  for (let i = array.length - 1; i > 0; i--) {
-   const j = Math.floor(Math.random() * (i + 1));
-   [array[i], array[j]] = [array[j], array[i]];
-  }
- };
-
- /**
-  * セルの進捗を増加させる
-  */
- const incrementCell = (index: number): void => {
-  cellProgress.value[index]++;
-  checkBingo(completedCells.value);
- };
-
- /**
-  * セルの進捗を減少させる、または新しいアイテムに変更する
-  */
- const decrementCell = (index: number): void => {
-  if (cellProgress.value[index] > 0) {
-   cellProgress.value[index]--;
-   checkBingo(completedCells.value);
+  if (currentProgress > 0) {
+   // 0より大きい場合は単純に減少
+   decrementCell(index);
   } else {
-   // 0未満の場合はアイテムを変更
+   // 0以下の場合はアイテムを変更
    const currentItem = bingoItems.value[index];
    const newItem = selectBingoItem(currentItem);
-   bingoItems.value[index] = newItem;
-   itemTargets.value[index] = newItem.target ?? 3;
-   cellProgress.value[index] = 0;
+   updateItem(index, newItem);
   }
  };
 
- /**
-  * ビンゴの状態をリセットする
-  */
- const resetBingo = () => {
-  cellProgress.value = Array(totalCells.value).fill(0);
-  checkBingo(completedCells.value);
+ // ランダム選択を処理
+ const handleRandomSelect = () => {
+  selectRandomCell(completedCells.value);
  };
 
- /**
-  * カードサイズを更新する
-  */
- const updateCardSize = (size: 3 | 4 | 5) => {
-  cardSize.value = size;
-  generateBingoCard(); // サイズ変更時は再生成
+ // カード生成とリセットを一括処理
+ const initBingoCard = () => {
+  resetBingo();
+  generateBingoCard();
  };
 
  // コンポーネントマウント時にビンゴカードを生成
- onMounted(generateBingoCard);
+ onMounted(initBingoCard);
 
  return {
-  // UI状態
-  isControlPanelVisible,
-  toggleControlPanel,
-
   // アクション
-  incrementCell,
-  decrementCell,
+  incrementCell: handleIncrementCell,
+  decrementCell: handleDecrementCell,
   resetBingo,
-  generateBingoCard,
-  updateCardSize,
+  generateBingoCard: initBingoCard,
+  handleRandomSelect,
 
   // 状態
   cardSize,
@@ -177,6 +82,8 @@ export function useBingoCard() {
   itemTargets,
   completedCells,
   completedLines,
-  highlightedCells
+  highlightedCells,
+  highlightedRandomCell,
+  isAnimating
  };
 }
