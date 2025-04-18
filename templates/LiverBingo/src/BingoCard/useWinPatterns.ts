@@ -1,5 +1,5 @@
 // src/BingoCard/useWinPatterns.ts
-import { ref, computed, Ref, watch } from 'vue';
+import { ref, computed, Ref } from 'vue';
 import { useSound } from '@/scripts/useSound';
 import { CardSize } from '@/scripts/schema';
 

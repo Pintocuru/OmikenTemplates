@@ -6,6 +6,8 @@ import { useBingoItems } from '@/BingoCard/useBingoItems';
 import { useBingoCells } from '@/BingoCard/useBingoCells';
 import { useRandomSelection } from '@/BingoCard/useRandomSelection';
 
+// config のバリデーション
+
 export function useBingoCard() {
  // 基本ビンゴの状態
  const { cardSize, theme, totalCells } = useBingoState();
@@ -25,19 +27,21 @@ export function useBingoCard() {
  );
 
  // ランダム選択
- const { highlightedRandomCell, isAnimating, selectRandomCell, triggerAnimation } =
+ const { highlightedRandomCell, isAnimating, selectRandomCell, triggerAnimation, clearRandomCell } =
   useRandomSelection(totalCells);
 
  // エンハンスドインターフェース - 個別コンポーザブルの処理を組み合わせる
 
  // セルの進捗処理
  const handleIncrementCell = (index: number) => {
+  clearRandomCell(); // ハイライトを消去
   incrementCell(index);
   triggerAnimation(index);
  };
 
  // セルのポイント減少、0であればセル変更
  const handleDecrementCell = (index: number) => {
+  clearRandomCell(); // ハイライトを消去
   // currentProgressが0かどうかチェック
   const currentProgress = cellProgress.value[index];
 
@@ -59,6 +63,7 @@ export function useBingoCard() {
 
  // カード生成とリセットを一括処理
  const initBingoCard = () => {
+  clearRandomCell(); // ハイライトを消去
   resetBingo();
   generateBingoCard();
  };
@@ -73,6 +78,7 @@ export function useBingoCard() {
   resetBingo,
   generateBingoCard: initBingoCard,
   handleRandomSelect,
+  clearRandomCell,
 
   // 状態
   cardSize,

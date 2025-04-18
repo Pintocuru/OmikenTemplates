@@ -39,10 +39,16 @@ export function useRandomSelection(totalCells: Ref<number>) {
   }
  };
 
+ // ランダムセルをクリア
+ const clearRandomCell = () => {
+  highlightedRandomCell.value = null;
+ };
+
  return {
   highlightedRandomCell,
   isAnimating,
   selectRandomCell,
-  triggerAnimation
+  triggerAnimation,
+  clearRandomCell
  };
 }
