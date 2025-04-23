@@ -46,7 +46,7 @@ export function useBingoCard() {
   const currentProgress = cellProgress.value[index];
 
   if (currentProgress > 0) {
-   // 0より大きい場合は単純に減少
+   // 0より大きい場合は減少
    decrementCell(index);
   } else {
    // 0以下の場合はアイテムを変更

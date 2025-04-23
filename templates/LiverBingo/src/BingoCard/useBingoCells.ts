@@ -1,6 +1,5 @@
 // src/BingoCard/useBingoCells.ts
 import { ref, computed, watch, Ref } from 'vue';
-import { BingoItem } from '@/scripts/schema';
 
 export function useBingoCells(
  totalCells: Ref<number>,
