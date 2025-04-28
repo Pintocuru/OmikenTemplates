@@ -45,16 +45,14 @@ const configUserTypeSchema = z.object({
 
 // Schema for counter configuration
 export const TAILWIND_COLORS = [
+ 'default',
  'blue',
  'green',
  'red',
  'purple',
- 'indigo',
- 'pink',
  'yellow',
- 'orange',
- 'teal',
- 'cyan'
+ 'pink',
+ 'gray'
 ] as const;
 export type ColorType = (typeof TAILWIND_COLORS)[number];
 
@@ -71,7 +69,7 @@ const countMode = [
 export type CountType = (typeof countMode)[number];
 
 // コンポーネントの種類
-const componentMap = ['basic', 'capsule'] as const;
+export const componentMap = ['basic', 'capsule'] as const;
 export type ComponentType = (typeof componentMap)[number];
 
 const counterConfigSchema = z.object({

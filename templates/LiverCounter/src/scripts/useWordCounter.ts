@@ -1,137 +1,55 @@
 // src/apps/scripts/useWordCounter.ts
-import { computed, onMounted, reactive, watch } from 'vue';
-import { WordCounterState } from './types';
-import { CounterConfig, CounterSet, CountType } from './schema';
-import { createProcessComment } from './createProcessComment';
+import { onMounted, watch } from 'vue';
+import { CounterSet } from './schema';
 import { GetUserVisits } from '@common/subscribe/GetUserVisits';
 import { GetMetas } from '@common/subscribe/GetMetas';
-import { postWordParty } from '@common/api/PostOneComme';
-import { createHandleMetaUpdate } from './createHandleMetaUpdate';
+
+import { createCounterService } from './counterService';
+import { createCommentProcessor } from './commentProcessor';
+import { createMetaProcessor } from './metaProcessor';
+import { createPartyService } from './partyService';
 
 export function useWordCounter(counterSet: CounterSet) {
- const counterConfig: CounterConfig = counterSet.counter;
- const userVisitsConfig = counterSet.userVisits;
-
- // コメントからvisitデータを生成する
- const { fetchComments } = GetUserVisits(userVisitsConfig);
- // わんコメの枠の一番上のデータを取得
- const { fetchMeta } = GetMetas();
- // カウントダウンモード
+ const { counter: counterConfig, userVisits: userVisitsConfig } = counterSet;
  const isCountdownMode = counterConfig.targetCountdown > 0;
 
- const state = reactive<WordCounterState>({
-  isInitFlag: false,
-  manualAdjustment: 0,
-  // comment
-  commentCount: 0,
-  userCount: 0,
-  syokenCount: 0,
-  totalGift: 0,
-  // meta
-  isLive: false,
-  upVoteCount: 0,
-  viewerCount: 0,
-  peakUpVoteCount: 0,
-  peakViewerCount: 0
+ // サービスの初期化
+ const { state, createCalculatedCount, createCounterControls } = createCounterService();
+ const processComment = createCommentProcessor(state);
+ const processMetaUpdate = createMetaProcessor(state);
+
+ // API接続
+ const { fetchComments } = GetUserVisits(userVisitsConfig);
+ const { fetchMeta } = GetMetas();
+
+ // カウント計算
+ const { displayCount, actualCount, maxCount } = createCalculatedCount(
+  counterConfig.countMode,
+  isCountdownMode,
+  counterConfig.targetCountdown
+ );
+
+ // カウンター操作
+ const { increment, decrement, reset } = createCounterControls(
+  isCountdownMode,
+  () => displayCount.value,
+  () => actualCount.value
+ );
+
+ // イベント処理
+ const handleWordParty = createPartyService(counterConfig, isCountdownMode);
+
+ // カウント変更を監視してイベントを発火
+ watch(displayCount, (newCount, oldCount) => {
+  handleWordParty(newCount, oldCount, state.isInitFlag, () => actualCount.value);
  });
 
- const processComment = createProcessComment(state);
- const handleMetaUpdate = createHandleMetaUpdate(state);
-
- const getBaseCount = () => {
-  const countModeMap: Record<CountType, number> = {
-   none: 0,
-   user: state.userCount,
-   comment: state.commentCount,
-   syoken: state.syokenCount,
-   upVote: state.upVoteCount,
-   viewer: state.viewerCount,
-   gift: state.totalGift
-  };
-  return countModeMap[counterConfig.countMode] || 0;
- };
-
- // 実際のカウントの元となる値
- const actualCount = computed(() => getBaseCount() + state.manualAdjustment);
-
- // 表示用カウント計算
- const count = computed(() => {
-  if (isCountdownMode) {
-   return Math.max(counterConfig.targetCountdown - actualCount.value, 0);
-  }
-  return actualCount.value;
- });
-
- // 変動する値(upVote/viewer)の場合、最大値を渡す
- const countMax = computed(() => {
-  if (counterConfig.countMode === 'upVote') {
-   const value = state.peakUpVoteCount + state.manualAdjustment;
-   return isCountdownMode ? Math.max(counterConfig.targetCountdown - value, 0) : value;
-  }
-  if (counterConfig.countMode === 'viewer') {
-   const value = state.peakViewerCount + state.manualAdjustment;
-   return isCountdownMode ? Math.max(counterConfig.targetCountdown - value, 0) : value;
-  }
-  return null;
- });
-
- const increment = () => {
-  if (isCountdownMode) {
-   if (count.value > 0) state.manualAdjustment++;
-  } else {
-   state.manualAdjustment++;
-  }
- };
-
- const decrement = () => {
-  if (isCountdownMode) {
-   if (actualCount.value > 0) state.manualAdjustment--;
-  } else {
-   if (count.value > 0) state.manualAdjustment--;
-  }
- };
-
- const resetManualAdjustment = () => (state.manualAdjustment = 0);
-
- // WordParty処理
- const handleWordParty = (newCount: number, oldCount: number) => {
-  if (!state.isInitFlag) return;
-
-  const isCountIncreasing = newCount > oldCount;
-  const isCountDecreasing = newCount < oldCount;
-  const shouldFireEvent =
-   (!isCountdownMode && isCountIncreasing) || (isCountdownMode && isCountDecreasing);
-
-  if (shouldFireEvent && counterConfig.PARTY_EVENT) {
-   postWordParty(counterConfig.PARTY_EVENT, -2);
-  }
-
-  const partyMessage = counterConfig.PARTY[newCount];
-  if (partyMessage) {
-   postWordParty(partyMessage, -2);
-  }
-
-  const isSuccess = isCountdownMode
-   ? newCount === 0
-   : actualCount.value >= counterConfig.targetCountdown;
-
-  if (isSuccess && counterConfig.PARTY_SUCCESS) {
-   postWordParty(counterConfig.PARTY_SUCCESS, -2);
-  }
- };
-
- watch(count, handleWordParty);
-
+ // 初期化
  onMounted(async () => {
   document.documentElement.setAttribute('data-theme', 'dark');
 
   try {
-   const [commentsInitialized, _] = await Promise.all([
-    fetchComments(processComment), // コメント取得と処理の初期化
-    fetchMeta(handleMetaUpdate) // metaタグからデータを取得
-   ]);
-
-   state.isInitFlag = commentsInitialized;
+   await Promise.all([fetchComments(processComment), fetchMeta(processMetaUpdate)]);
   } catch (error) {
    console.error('WordCounter initialization error:', error);
    state.isInitFlag = false;
@@ -139,13 +57,13 @@ export function useWordCounter(counterSet: CounterSet) {
  });
 
  return {
-  count,
-  countMax,
+  count: displayCount,
+  countMax: maxCount,
   counterConfig,
   isCountdownMode,
   increment,
   decrement,
-  resetManualAdjustment,
+  resetManualAdjustment: reset,
   actualCount
  };
 }

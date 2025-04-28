@@ -1,14 +1,26 @@
-<!-- src/apps/configMaker/components/PartyEventsSettings.vue -->
+<!-- src/apps/configMaker/components/BotEventsSettings.vue -->
 <template>
  <div class="collapse bg-base-200">
-  <div class="collapse-title text-lg font-semibold">WordParty設定</div>
+  <div class="collapse-title text-lg font-semibold">Botメッセージ設定</div>
+
+  <!-- カウント増加時イベント設定 -->
+
+  <div class="card shadow-md p-2 bg-base-200">
+   <label class="block mb-1 font-medium">Botメッセージの表示名</label>
+   <input
+    type="text"
+    v-model="modelValue.BOT_NAME"
+    placeholder="Botメッセージの表示名"
+    class="input input-bordered w-full"
+   />
+  </div>
   <!-- カウント増加時イベント設定 -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
    <div class="card shadow-md p-2 bg-base-200">
-    <label class="block mb-1 font-medium">カウント毎に発火するWordParty</label>
+    <label class="block mb-1 font-medium">カウント毎に発火するBotメッセージ</label>
     <input
      type="text"
-     v-model="modelValue.PARTY_EVENT"
+     v-model="modelValue.BOT_EVENT"
      placeholder="発火ワード"
      class="input input-bordered w-full"
     />
@@ -17,23 +29,23 @@
 
    <!-- 達成時イベント設定 -->
    <div class="card shadow-md p-2">
-    <label class="block mb-1 font-medium">目標達成時のWordParty</label>
+    <label class="block mb-1 font-medium">目標達成時のBotメッセージ</label>
     <input
      type="text"
-     v-model="modelValue.PARTY_SUCCESS"
+     v-model="modelValue.BOT_SUCCESS"
      placeholder="発火ワード"
      class="input input-bordered w-full"
     />
-    <label class="label"> カウントダウンモードの場合、0に到達した時に発火されるWordParty</label>
+    <label class="label"> カウントダウンモードの場合、0に到達した時に発火されるBotメッセージ</label>
    </div>
   </div>
 
   <!-- イベント発火タイミング設定 -->
   <div class="card shadow-md p-2 bg-base-200">
-   <label class="block mb-1 font-medium">特定カウント時に発火するWordParty</label>
+   <label class="block mb-1 font-medium">特定カウント時に発火するBotメッセージ</label>
    <div class="space-y-2 mb-3">
     <div
-     v-for="(message, countNum) in modelValue.PARTY"
+     v-for="(message, countNum) in modelValue.BOT"
      :key="countNum"
      class="flex gap-2 items-center p-2 rounded shadow-sm"
     >
@@ -89,10 +101,10 @@ const newPartyMessage = ref('');
 // パーティイベントの追加
 const addParty = () => {
  if (newPartyCount.value && newPartyMessage.value) {
-  if (!props.modelValue.PARTY) {
-   props.modelValue.PARTY = {};
+  if (!props.modelValue.BOT) {
+   props.modelValue.BOT = {};
   }
-  props.modelValue.PARTY[newPartyCount.value] = newPartyMessage.value;
+  props.modelValue.BOT[newPartyCount.value] = newPartyMessage.value;
   newPartyCount.value = 0;
   newPartyMessage.value = '';
  }
@@ -103,20 +115,20 @@ const updatePartyKey = (event: Event, oldCount: string, message: string) => {
  const newCount = parseInt((event.target as HTMLInputElement).value);
  if (!isNaN(newCount) && newCount.toString() !== oldCount) {
   removeParty(oldCount);
-  props.modelValue.PARTY[newCount] = message;
+  props.modelValue.BOT[newCount] = message;
  }
 };
 
 // パーティイベントの値（メッセージ）を更新
 const updatePartyValue = (event: Event, count: string) => {
  const newMessage = (event.target as HTMLInputElement).value;
- props.modelValue.PARTY[count] = newMessage;
+ props.modelValue.BOT[count] = newMessage;
 };
 
 // パーティイベントの削除
 const removeParty = (count: string) => {
- if (props.modelValue.PARTY && count in props.modelValue.PARTY) {
-  delete props.modelValue.PARTY[count];
+ if (props.modelValue.BOT && count in props.modelValue.BOT) {
+  delete props.modelValue.BOT[count];
  }
 };
 </script>

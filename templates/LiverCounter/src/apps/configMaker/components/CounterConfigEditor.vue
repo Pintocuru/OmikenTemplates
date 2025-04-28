@@ -3,6 +3,7 @@
  <div class="collapse-title text-lg font-semibold">カウンター設定</div>
  <div class="collapse-content">
   <div class="space-y-2">
+   <!-- カウントモード -->
    <div class="card bg-base-200 p-2">
     <label class="block mb-2 font-medium">カウントモード</label>
     <div class="flex flex-wrap gap-1">
@@ -26,6 +27,49 @@
     </p>
    </div>
 
+   <!-- カウンタースタイル -->
+   <div class="card bg-base-200 p-2">
+    <label class="block mb-2 font-medium">カウンタースタイル</label>
+    <div class="flex flex-wrap gap-1">
+     <label
+      v-for="mode in componentMap"
+      :key="mode"
+      class="flex items-center gap-2 hover:bg-primary p-2 rounded"
+     >
+      <input
+       type="radio"
+       name="component"
+       class="radio radio-xs"
+       :value="mode"
+       v-model="counter.component"
+      />
+      <span>{{ mode }}</span>
+     </label>
+    </div>
+   </div>
+
+   <!-- カウンターカラー -->
+   <div class="card bg-base-200 p-2">
+    <label class="block mb-2 font-medium">カウンターカラー</label>
+    <div class="flex flex-wrap gap-1">
+     <label
+      v-for="mode in TAILWIND_COLORS"
+      :key="mode"
+      class="flex items-center gap-2 hover:bg-primary p-2 rounded"
+     >
+      <input
+       type="radio"
+       name="typeColor"
+       class="radio radio-xs"
+       :value="mode"
+       v-model="counter.typeColor"
+      />
+      <span>{{ mode }}</span>
+     </label>
+    </div>
+   </div>
+
+   <!-- カウント目標値 -->
    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
     <div class="form-control">
      <label class="block mb-1 font-medium">カウント目標値</label>
@@ -40,6 +84,7 @@
      </div>
     </div>
 
+    <!-- 単位名 -->
     <div class="form-control">
      <label class="block mb-1 font-medium">単位名</label>
      <input
@@ -50,6 +95,7 @@
      />
     </div>
 
+    <!-- 倍率 -->
     <div class="form-control">
      <label class="block mb-1 font-medium">倍率(合計カウンター使用時のみ適用)</label>
      <input
@@ -67,7 +113,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { CounterConfig } from '@scripts/schema';
+import { CounterConfig, componentMap, TAILWIND_COLORS } from '@scripts/schema';
 
 const props = defineProps<{
  modelValue: CounterConfig;

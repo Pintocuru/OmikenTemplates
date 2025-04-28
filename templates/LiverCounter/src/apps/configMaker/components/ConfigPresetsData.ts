@@ -17,7 +17,6 @@ export const presets: ConfigPreset[] = [
   id: 'test3',
   name: '初コメカウンター',
   config: {
-   color: 'blue',
    totalCounterSet: null,
    isHorizontalLayout: true
   },
@@ -33,6 +32,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: '初コメ',
      unit: '人',
      countMode: 'syoken',
@@ -40,7 +40,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '!syoken',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -54,6 +58,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: 'リスナー',
      unit: '人',
      countMode: 'user',
@@ -61,7 +66,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -75,6 +84,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: 'コメント',
      unit: 'コメ',
      countMode: 'comment',
@@ -82,7 +92,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    }
   ]
@@ -91,7 +105,6 @@ export const presets: ConfigPreset[] = [
   id: 'test1',
   name: '視聴者数・高評価',
   config: {
-   color: 'blue',
    totalCounterSet: null,
    isHorizontalLayout: true
   },
@@ -107,6 +120,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: '👀',
      unit: '',
      countMode: 'viewer',
@@ -114,7 +128,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -128,6 +146,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: '👍️',
      unit: '',
      countMode: 'upVote',
@@ -135,7 +154,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    }
   ]
@@ -144,7 +167,6 @@ export const presets: ConfigPreset[] = [
   id: 'test2',
   name: 'おはようカウンター',
   config: {
-   color: 'blue',
    totalCounterSet: null,
    isHorizontalLayout: true
   },
@@ -160,6 +182,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['おは(よ|よう|よー|よ！|みこ)']
     },
     counter: {
+     component: 'basic',
      title: 'おはようカウンター',
      unit: 'おは!',
      countMode: 'comment',
@@ -167,7 +190,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    }
   ]
@@ -177,8 +204,8 @@ export const presets: ConfigPreset[] = [
   id: 'test4',
   name: '今日のランチ代',
   config: {
-   color: 'blue',
    totalCounterSet: {
+    component: 'basic',
     title: '今日のランチ代',
     unit: '円',
     countMode: 'none',
@@ -186,7 +213,11 @@ export const presets: ConfigPreset[] = [
     multiplier: 1,
     PARTY: {},
     PARTY_EVENT: '',
-    PARTY_SUCCESS: ''
+    PARTY_SUCCESS: '',
+    BOT_NAME: 'info',
+    BOT: {},
+    BOT_EVENT: '',
+    BOT_SUCCESS: ''
    },
    isHorizontalLayout: true
   },
@@ -202,6 +233,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: '初コメ',
      unit: '',
      countMode: 'syoken',
@@ -209,7 +241,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 100,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -223,6 +259,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['おは', 'こん']
     },
     counter: {
+     component: 'basic',
      title: 'あいさつ',
      unit: '',
      countMode: 'user',
@@ -230,7 +267,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 5,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -244,6 +285,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: 'コメント',
      unit: '',
      countMode: 'comment',
@@ -251,7 +293,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 0.1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -265,6 +311,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: '同接数',
      unit: '',
      countMode: 'viewer',
@@ -272,7 +319,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -286,6 +337,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: '高評価',
      unit: '',
      countMode: 'upVote',
@@ -293,7 +345,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -307,6 +363,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: 'ギフト',
      unit: '',
      countMode: 'gift',
@@ -314,7 +371,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    }
   ]
@@ -323,7 +384,6 @@ export const presets: ConfigPreset[] = [
   id: 'test5',
   name: 'コメント耐久',
   config: {
-   color: 'blue',
    totalCounterSet: null,
    isHorizontalLayout: true
   },
@@ -339,6 +399,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
+     component: 'basic',
      title: '残りコメント数',
      unit: 'コメ',
      countMode: 'comment',
@@ -351,7 +412,11 @@ export const presets: ConfigPreset[] = [
       '100': '!残り100'
      },
      PARTY_EVENT: '',
-     PARTY_SUCCESS: '!目標達成'
+     PARTY_SUCCESS: '!目標達成',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    }
   ]
@@ -360,7 +425,6 @@ export const presets: ConfigPreset[] = [
   id: 'test6',
   name: 'アル&ビィ投票',
   config: {
-   color: 'green',
    totalCounterSet: null,
    isHorizontalLayout: true
   },
@@ -376,6 +440,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['ある', 'アル']
     },
     counter: {
+     component: 'basic',
      title: '猫使アル',
      unit: '',
      countMode: 'user',
@@ -383,7 +448,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: '!目標達成'
+     PARTY_SUCCESS: '!目標達成',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -397,6 +466,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['びぃ', 'びい', 'ビィ']
     },
     counter: {
+     component: 'basic',
      title: '猫使ビィ',
      unit: '',
      countMode: 'user',
@@ -404,7 +474,11 @@ export const presets: ConfigPreset[] = [
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
-     PARTY_SUCCESS: ''
+     PARTY_SUCCESS: '',
+     BOT_NAME: 'info',
+     BOT: {},
+     BOT_EVENT: '',
+     BOT_SUCCESS: ''
     }
    }
   ]

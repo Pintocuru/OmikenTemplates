@@ -64,10 +64,14 @@
     </div>
    </transition>
 
-   <!-- WordParty設定 -->
+   <!-- WordParty/BOT設定 -->
    <div class="collapse collapse-arrow bg-base-300">
     <input type="checkbox" class="peer" />
-    <PartyEventsSettings v-model="activeSet.counter" />
+    <div class="collapse-title text-lg font-semibold">WordParty/BOT設定</div>
+    <div class="collapse-content flex flex-col gap-4">
+     <PartyEventsSettings v-model="activeSet.counter" />
+     <BotEventsSettings v-model="activeSet.counter" />
+    </div>
    </div>
   </div>
 
@@ -84,6 +88,7 @@ import SampleComponent from './SampleComponent.vue';
 import CounterConfigEditor from './CounterConfigEditor.vue';
 import UserVisitsEditor from './UserVisitsEditor.vue';
 import PartyEventsSettings from './PartyEventsSettings.vue';
+import BotEventsSettings from './BotEventsSettings.vue';
 import CounterSetTabs from './CounterSetTabs.vue';
 
 import { createDefaultCounterSet } from '@/scripts/schema';
