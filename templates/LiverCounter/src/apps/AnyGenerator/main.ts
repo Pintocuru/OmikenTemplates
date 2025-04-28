@@ -6,10 +6,7 @@ import { PingOneSDK } from '@public/common/api/PingOneSDK';
 import '@assets/app2.css';
 
 // 動的にコンポーネントを取得するためのグローバル変数
-window.AppComponent = {
- component: null,
- initApp: null
-};
+window.initApp = null;
 
 // createApp
 const app = createApp(App);
@@ -30,4 +27,4 @@ async function initApp() {
 }
 
 // 関数をセット
-window.AppComponent.initApp = initApp;
+window.initApp = initApp;

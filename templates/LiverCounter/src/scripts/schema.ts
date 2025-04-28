@@ -44,41 +44,6 @@ const configUserTypeSchema = z.object({
 // ---
 
 // Schema for counter configuration
-const countMode = [
- 'none', // 手動でのカウント
- 'comment', // コメント
- 'user', // ユーザー
- 'syoken', // ユーザー数のうち、初見さん
- 'upVote', // 高評価数
- 'viewer', // 視聴者数
- 'gift' // ギフト金額
-] as const;
-export type CountType = (typeof countMode)[number];
-
-const counterConfigSchema = z.object({
- title: z.string().min(1, 'カウンター'),
- unit: z.string().default(''),
- countMode: z.enum(countMode).default('comment'),
- targetCountdown: z.number().int().min(0).default(0),
- multiplier: z.number().positive().default(1),
- PARTY: z.record(z.string(), z.string()).default({}),
- PARTY_EVENT: z.string().default(''),
- PARTY_SUCCESS: z.string().default('')
-});
-
-// ---
-
-// Schema統合
-export const counterSetSchema = z.object({
- id: z.string().min(1),
- userVisits: configUserTypeSchema,
- counter: counterConfigSchema
-});
-export const counterSetsSchema = z.array(counterSetSchema).nonempty();
-
-// ---
-
-// Schema for counter configuration
 export const TAILWIND_COLORS = [
  'blue',
  'green',
@@ -93,9 +58,53 @@ export const TAILWIND_COLORS = [
 ] as const;
 export type ColorType = (typeof TAILWIND_COLORS)[number];
 
+// Schema for counter configuration
+const countMode = [
+ 'none', // 手動でのカウント
+ 'comment', // コメント
+ 'user', // ユーザー
+ 'syoken', // ユーザー数のうち、初見さん
+ 'upVote', // 高評価数
+ 'viewer', // 視聴者数
+ 'gift' // ギフト金額
+] as const;
+export type CountType = (typeof countMode)[number];
+
+// コンポーネントの種類
+const componentMap = ['basic', 'capsule'] as const;
+export type ComponentType = (typeof componentMap)[number];
+
+const counterConfigSchema = z.object({
+ component: z.enum(componentMap).default('basic'), // コンポーネントの種類
+ typeColor: z.enum(TAILWIND_COLORS).optional(), // カラーモード(optional)
+ title: z.string().default(''), // カウンター名
+ unit: z.string().default(''), // 単位(pt、円など)
+ countMode: z.enum(countMode).default('comment'), // カウントモード
+ targetCountdown: z.number().int().min(0).default(0), // 1以上でカウントダウンモード
+ multiplier: z.number().positive().default(1), // 倍率(totalCounterSetがある時に使用)
+ PARTY: z.record(z.string(), z.string()).default({}), // 特定のカウントでWordParty発火
+ PARTY_EVENT: z.string().default(''), // カウントアップ時にWordParty発火
+ PARTY_SUCCESS: z.string().default(''), // カウントダウンモード時、カウントが0でWordParty発火
+ BOT_NAME: z.string().default('info'), // BOTの表示名
+ BOT: z.record(z.string(), z.string()).default({}), // 特定のカウントでBOTコメント
+ BOT_EVENT: z.string().default(''), // カウントアップ時にBOTコメント
+ BOT_SUCCESS: z.string().default('') // カウントダウンモード時、カウントが0でBOTコメント
+});
+
+// ---
+
+// Schema統合
+export const counterSetSchema = z.object({
+ id: z.string().min(1),
+ userVisits: configUserTypeSchema,
+ counter: counterConfigSchema
+});
+export const counterSetsSchema = z.array(counterSetSchema).nonempty();
+
+// ---
+
 // componentConfig
 export const componentConfigSchema = z.object({
- color: z.enum(TAILWIND_COLORS).default('blue'),
  totalCounterSet: counterConfigSchema.nullable().default(null), // 合計値カウンターの設定
  isHorizontalLayout: z.boolean().default(true) // 並び替えモード：true=横一列, false=縦一列
 });
@@ -113,7 +122,6 @@ export type CounterConfig = z.infer<typeof counterConfigSchema>;
 // componentConfig Default
 export function createDefaultComponentConfig(): ComponentConfig {
  return {
-  color: 'blue',
   totalCounterSet: null,
   isHorizontalLayout: true
  };
@@ -132,6 +140,8 @@ export function createDefaultCounterSet(): CounterSet {
    KEYWORDS: []
   },
   counter: {
+   component: 'basic',
+   typeColor: 'blue',
    title: '新規カウンター',
    unit: '',
    countMode: 'comment',
@@ -139,7 +149,11 @@ export function createDefaultCounterSet(): CounterSet {
    multiplier: 1,
    PARTY: {},
    PARTY_EVENT: '',
-   PARTY_SUCCESS: ''
+   PARTY_SUCCESS: '',
+   BOT_NAME: '',
+   BOT: {},
+   BOT_EVENT: '',
+   BOT_SUCCESS: ''
   }
  };
 }

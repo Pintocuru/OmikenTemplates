@@ -72,7 +72,7 @@ export class PostMessage {
      const request = this.createCommentRequest(post, chara, DefaultFrameId);
      sendComment(request, delaySeconds);
     } else {
-     // キャラ情報がない、または枠情報がないなら、テストコメントで投稿
+     // キャラ情報がない、または枠情報がないなら、コメントテスターで投稿
      postSystemMessage(content, SETTINGS.BOT_DEFAULT_NAME, delaySeconds);
     }
    },

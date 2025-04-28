@@ -3,16 +3,6 @@
   <h2 class="text-xl font-semibold mb-4">コンポーネント設定</h2>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-   <!-- カラー選択 -->
-   <div class="form-control w-full">
-    <label class="block mb-1 font-medium">メインカラー</label>
-    <select v-model="configStore.componentConfig.color" class="select select-bordered w-full">
-     <option v-for="color in TAILWIND_COLORS" :key="color" :value="color">
-      {{ color }}
-     </option>
-    </select>
-   </div>
-
    <!-- レイアウト設定 -->
    <div class="form-control w-full">
     <label class="block mb-1 font-medium">レイアウト</label>
@@ -41,6 +31,8 @@
 
   <!-- 合計カウンター設定 -->
   <div class="mt-4">
+   <!-- TODO:component、typeColorの設定もいれる -->
+   <!-- TODO:合計カウンターのサンプルも見せたいなと -->
    <div class="form-control">
     <label class="label font-medium cursor-pointer justify-start gap-4">
      <span class="label-text">合計カウンターを表示</span>
@@ -89,23 +81,14 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { CounterConfig, TAILWIND_COLORS } from '@scripts/schema';
+import { CounterConfig, TAILWIND_COLORS, createDefaultCounterSet } from '@scripts/schema';
 import { useConfigMaker } from './useConfigMaker';
 
 // ストア全体を参照
 const configStore = useConfigMaker();
 
 // 合計カウンター設定
-const totalCounter = ref<CounterConfig>({
- title: '合計',
- unit: 'pt',
- countMode: 'none',
- targetCountdown: 0,
- multiplier: 1,
- PARTY: {},
- PARTY_EVENT: '',
- PARTY_SUCCESS: ''
-});
+const totalCounter = ref<CounterConfig>(createDefaultCounterSet().counter);
 
 // 初期値の設定
 if (configStore.componentConfig.totalCounterSet) {

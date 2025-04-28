@@ -8,6 +8,9 @@
    </button>
   </div>
 
+  <!-- サンプルコンポーネントの表示 -->
+  <SampleComponent :counterSets="configStore.counterSets" :activeTabIndex="activeTabIndex" />
+
   <!-- タブナビゲーション部分をコンポーネント化 -->
   <CounterSetTabs
    :counterSets="configStore.counterSets"
@@ -77,6 +80,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useConfigMaker } from './useConfigMaker';
+import SampleComponent from './SampleComponent.vue';
 import CounterConfigEditor from './CounterConfigEditor.vue';
 import UserVisitsEditor from './UserVisitsEditor.vue';
 import PartyEventsSettings from './PartyEventsSettings.vue';

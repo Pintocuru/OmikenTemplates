@@ -1,6 +1,8 @@
 // src/apps/configMaker/components/ConfigPresetsData.ts に追加
 import { ComponentConfig, CounterSet } from '@/scripts/schema';
 
+// TODO:データ変更のため修正をする
+
 // プリセット型の定義
 export type ConfigPreset = {
  id: string;

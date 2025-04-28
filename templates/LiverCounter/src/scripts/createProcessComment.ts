@@ -1,4 +1,4 @@
-// createProcessComment.ts
+// src/scripts/createProcessComment.ts
 import { WordCounterState } from './types';
 import { ServiceVisitType } from '@common/subscribe/GetUserVisits';
 

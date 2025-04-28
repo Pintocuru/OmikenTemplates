@@ -1,14 +1,14 @@
 // src/apps/scripts/useWordCounter.ts
 import { computed, onMounted, reactive, watch } from 'vue';
 import { WordCounterState } from './types';
-import { ComponentConfig, CounterConfig, CounterSet, CountType } from './schema';
+import { CounterConfig, CounterSet, CountType } from './schema';
 import { createProcessComment } from './createProcessComment';
 import { GetUserVisits } from '@common/subscribe/GetUserVisits';
 import { GetMetas } from '@common/subscribe/GetMetas';
 import { postWordParty } from '@common/api/PostOneComme';
 import { createHandleMetaUpdate } from './createHandleMetaUpdate';
 
-export function useWordCounter(componentConfig: ComponentConfig, counterSet: CounterSet) {
+export function useWordCounter(counterSet: CounterSet) {
  const counterConfig: CounterConfig = counterSet.counter;
  const userVisitsConfig = counterSet.userVisits;
 

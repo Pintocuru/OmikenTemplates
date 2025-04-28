@@ -1,5 +1,5 @@
 // src/types.ts
-import { ComponentConfig, CounterSet } from './schema';
+import { ComponentConfig, ComponentType, CounterSet } from './schema';
 
 // stateの型定義
 export type WordCounterState = {
@@ -21,10 +21,8 @@ export type WordCounterState = {
 // グローバル変数の型定義
 declare global {
  interface Window {
-  AppComponent: {
-   component: any;
-   initApp: any;
-  };
+  components: Record<ComponentType, any>;
+  initApp: any;
   componentConfig: ComponentConfig;
   counterSets: CounterSet[];
  }

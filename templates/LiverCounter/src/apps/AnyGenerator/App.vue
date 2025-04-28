@@ -6,7 +6,6 @@
    v-if="componentConfig.totalCounterSet"
    :counters="counters"
    :totalCounterConfig="componentConfig.totalCounterSet"
-   :colorScheme="componentConfig.color"
   />
   <hr class="mb-4" />
   <div
@@ -14,13 +13,13 @@
     componentConfig.isHorizontalLayout ? 'flex flex-row space-x-4' : 'flex flex-col space-y-4'
    ]"
   >
-   <AnyGenerator
+   <component
+    :is="getComponent(counter.counterConfig.component)"
     v-for="(counter, index) in counters"
     :key="index"
     :count="counter.count.value"
     :countMax="counter.countMax.value"
     :counterConfig="counter.counterConfig"
-    :colorScheme="componentConfig.color"
     @click.prevent="counter.increment"
     @contextmenu.prevent="counter.decrement"
    />
@@ -29,13 +28,10 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue';
 import { componentConfigSchema, counterSetSchema } from '@/scripts/schema';
 import TotalCounter from './TotalCounter.vue';
 import { useWordCounter } from '@scripts/useWordCounter';
-
-// windowに設置したコンポーネントを読む
-const AnyGenerator = defineAsyncComponent(() => Promise.resolve(window.AppComponent.component));
+import { getComponent } from '@scripts/CreateComponentMapping';
 
 // アプリケーション設定
 const {
@@ -44,5 +40,5 @@ const {
 } = window || {};
 
 // 各カウンターセットに対してuseWordCounterを呼び出す
-const counters = counterSets.map((counterSet) => useWordCounter(componentConfig, counterSet));
+const counters = counterSets.map((counterSet) => useWordCounter(counterSet));
 </script>

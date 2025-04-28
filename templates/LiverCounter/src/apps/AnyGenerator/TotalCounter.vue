@@ -5,7 +5,6 @@
   :count="totalCount"
   :countMax="null"
   :counterConfig="totalCounterConfig"
-  :colorScheme="colorScheme"
  />
 </template>
 
@@ -25,7 +24,6 @@ interface Counter {
 const props = defineProps<{
  counters: Counter[];
  totalCounterConfig: CounterConfig | null;
- colorScheme: ColorType;
 }>();
 
 // Calculate the total count based on all counters
