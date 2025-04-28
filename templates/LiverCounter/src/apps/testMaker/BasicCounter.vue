@@ -1,50 +1,44 @@
-<!-- basicCounter.vue -->
+<!-- basic.vue -->
 <template>
  <div class="flex items-center justify-center">
   <div
-   class="relative flex min-w-36 rounded-xl overflow-hidden border-2"
-   :class="getColorClass('border')"
+   class="relative flex flex-col min-w-36 rounded-xl overflow-hidden border-4 counter-component"
+   :style="colorVars"
   >
-   <div class="flex w-full items-center bg-white">
-    <!-- Title -->
-    <div
-     class="py-2 px-3 font-bold text-lg text-white h-full flex items-center"
-     :class="getColorClass('bg')"
-    >
-     {{ counterConfig.title }}
-    </div>
+   <!-- Title -->
+   <div
+    v-if="counterConfig.title"
+    class="w-full text-center py-3 px-4 font-bold text-2xl text-white counter-title"
+   >
+    {{ counterConfig.title }}
+   </div>
 
-    <!-- Counter -->
-    <div class="px-3 py-2 flex items-center">
-     <div class="flex items-baseline space-x-1">
-      <TransitionGroup name="count" tag="span" class="inline-flex">
-       <span :key="count" class="font-bold text-2xl counter-font" :class="getColorClass('text')">
-        {{ count }}
+   <!-- Body -->
+   <div class="w-full flex items-center bg-white px-4 py-4">
+    <div class="relative w-full flex flex-col items-center justify-center">
+     <!-- Counter -->
+     <div class="relative h-16 w-full flex items-center justify-center">
+      <div class="flex items-baseline space-x-2">
+       <TransitionGroup name="count" tag="span" class="inline-flex">
+        <span :key="count" class="font-bold text-5xl leading-tight counter-font counter-value">
+         {{ count }}
+        </span>
+       </TransitionGroup>
+
+       <span v-if="counterConfig.unit" class="text-xl pt-1 font-medium counter-text">
+        {{ counterConfig.unit }}
        </span>
-      </TransitionGroup>
 
-      <span
-       v-if="counterConfig.unit"
-       class="text-sm pt-1 font-medium"
-       :class="getColorClass('text')"
-      >
-       {{ counterConfig.unit }}
-      </span>
-
-      <span
-       v-if="typeof countMax === 'number'"
-       class="text-sm pt-1 font-medium"
-       :class="getColorClass('text')"
-      >
-       / {{ countMax }}
-      </span>
+       <span v-if="typeof countMax === 'number'" class="text-xl pt-1 font-medium counter-text">
+        / {{ countMax }}
+       </span>
+      </div>
      </div>
 
      <!-- Multiplier -->
      <div
       v-if="counterConfig.multiplier !== 1"
-      class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold shadow-md text-white"
-      :class="getColorClass('bg')"
+      class="absolute -right-3 -top-2 z-10 px-3 py-1 rounded-full text-sm font-bold shadow-md text-white counter-badge"
      >
       x{{ counterConfig.multiplier }}
      </div>
@@ -56,23 +50,33 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ColorType } from '@/scripts/schema';
+import { CounterConfig } from '@/scripts/schema';
 
 const props = defineProps<{
  count: number;
  countMax: number | null;
- counterConfig: { title: string; unit?: string; multiplier?: number };
- colorScheme: ColorType;
+ counterConfig: CounterConfig;
 }>();
 
-// デフォルトのカラースキーム
-const colorScheme = computed(() => props.colorScheme);
+// カラースキームに基づいたCSS変数を計算
+const colorVars = computed(() => {
+ const colorMap = {
+  default: '#2563eb', // blue-600
+  blue: '#2563eb',
+  green: '#16a34a',
+  red: '#dc2626',
+  purple: '#9333ea',
+  yellow: '#ca8a04',
+  pink: '#db2777',
+  gray: '#333'
+ };
 
-// 色クラスを取得する関数
-function getColorClass(type: 'text' | 'bg' | 'border') {
- const color = colorScheme.value;
- return `${type}-${color}-600`;
-}
+ const selectedColor = colorMap[props.counterConfig.typeColor ?? 'default'];
+
+ return {
+  '--counter-color': selectedColor
+ };
+});
 </script>
 
 <style>
@@ -82,6 +86,21 @@ function getColorClass(type: 'text' | 'bg' | 'border') {
  font-family: 'Mochiy Pop One', sans-serif;
 }
 
+/* カラースキームに関連するスタイル */
+.counter-component {
+ border-color: var(--counter-color);
+}
+
+.counter-title,
+.counter-badge {
+ background-color: var(--counter-color);
+}
+
+.counter-value,
+.counter-text {
+ color: var(--counter-color);
+}
+
 .count-enter-active,
 .count-leave-active {
  transition: all 0.4s ease-in-out;
@@ -89,12 +108,12 @@ function getColorClass(type: 'text' | 'bg' | 'border') {
 
 .count-enter-from {
  opacity: 0;
- transform: translateY(-10px) scale(0.8);
+ transform: translateY(-20px) scale(0.8);
 }
 
 .count-leave-to {
  opacity: 0;
- transform: translateY(10px) scale(0.8);
+ transform: translateY(20px) scale(0.8);
 }
 
 .count-leave-active {

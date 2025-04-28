@@ -1,12 +1,24 @@
-<!-- src/apps/maker/App.vue -->
+<!-- src/App.vue -->
 <template>
- <div class="flex flex-col items-center justify-center h-screen">
+ <div class="relative flex flex-col items-center justify-center h-screen">
+  <!-- 接続モードバッジ -->
+  <div
+   v-if="connectionStatus"
+   class="absolute top-4 left-4 transition-opacity duration-1000"
+   :class="[
+    showBadge ? 'opacity-100' : 'opacity-0',
+    'bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-sm shadow-md'
+   ]"
+  >
+   <span v-if="connectionStatus === 'standalone'">🚫 わんコメなしモード</span>
+   <span v-else-if="connectionStatus === 'onecomme'">🐶 わんコメありモード</span>
+  </div>
+
   <!-- Total counter component -->
   <TotalCounter
    v-if="componentConfig.totalCounterSet"
    :counters="counters"
    :totalCounterConfig="componentConfig.totalCounterSet"
-   :colorScheme="componentConfig.color"
   />
   <hr class="mb-4" />
   <div
@@ -14,13 +26,13 @@
     componentConfig.isHorizontalLayout ? 'flex flex-row space-x-4' : 'flex flex-col space-y-4'
    ]"
   >
-   <AnyGenerator
+   <component
+    :is="getComponent(counter.counterConfig.component)"
     v-for="(counter, index) in counters"
     :key="index"
     :count="counter.count.value"
     :countMax="counter.countMax.value"
     :counterConfig="counter.counterConfig"
-    :colorScheme="componentConfig.color"
     @click.prevent="counter.increment"
     @contextmenu.prevent="counter.decrement"
    />
@@ -29,10 +41,26 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
 import { componentConfigSchema, counterSetSchema } from '@/scripts/schema';
-import AnyGenerator from './BasicCounter.vue';
 import TotalCounter from './TotalCounter.vue';
 import { useWordCounter } from '@scripts/useWordCounter';
+import { getComponent } from '@scripts/CreateComponentMapping';
+import { PingOneSDK } from '@common/api/PingOneSDK';
+
+// わんコメ接続状態
+const connectionStatus = ref<'onecomme' | 'standalone' | null>(null);
+const showBadge = ref(false);
+
+onMounted(async () => {
+ const result = await PingOneSDK();
+ connectionStatus.value = result ? 'onecomme' : 'standalone';
+
+ showBadge.value = true;
+ setTimeout(() => {
+  showBadge.value = false;
+ }, 10000); // 10秒間だけ表示
+});
 
 // アプリケーション設定
 const {
@@ -41,5 +69,5 @@ const {
 } = window || {};
 
 // 各カウンターセットに対してuseWordCounterを呼び出す
-const counters = counterSets.map((counterSet) => useWordCounter(componentConfig, counterSet));
+const counters = counterSets.map((counterSet) => useWordCounter(counterSet));
 </script>

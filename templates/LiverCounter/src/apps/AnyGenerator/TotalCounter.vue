@@ -1,19 +1,17 @@
 <!-- src/apps/maker/TotalCounter.vue -->
 <template>
- <AnyGenerator
+ <component
   v-if="totalCounterConfig"
+  :is="getComponent(totalCounterConfig.component)"
   :count="totalCount"
-  :countMax="null"
   :counterConfig="totalCounterConfig"
  />
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, computed } from 'vue';
-import { ColorType, CounterConfig } from '@/scripts/schema';
-
-// windowに設置したコンポーネントを読む
-const AnyGenerator = defineAsyncComponent(() => Promise.resolve(window.AppComponent.component));
+import { computed } from 'vue';
+import { getComponent } from '@scripts/CreateComponentMapping';
+import { CounterConfig } from '@/scripts/schema';
 
 interface Counter {
  count: { value: number };

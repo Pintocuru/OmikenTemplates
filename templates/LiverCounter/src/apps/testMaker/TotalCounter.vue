@@ -1,18 +1,17 @@
 <!-- src/apps/maker/TotalCounter.vue -->
 <template>
- <AnyGenerator
+ <component
   v-if="totalCounterConfig"
+  :is="getComponent(totalCounterConfig.component)"
   :count="totalCount"
-  :countMax="null"
   :counterConfig="totalCounterConfig"
-  :colorScheme="colorScheme"
  />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import AnyGenerator from './BasicCounter.vue';
-import { ColorType, CounterConfig } from '@/scripts/schema';
+import { getComponent } from '@scripts/CreateComponentMapping';
+import { CounterConfig } from '@/scripts/schema';
 
 interface Counter {
  count: { value: number };
@@ -23,7 +22,6 @@ interface Counter {
 const props = defineProps<{
  counters: Counter[];
  totalCounterConfig: CounterConfig | null;
- colorScheme: ColorType;
 }>();
 
 // Calculate the total count based on all counters

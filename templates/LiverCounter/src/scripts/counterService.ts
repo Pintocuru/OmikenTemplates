@@ -49,7 +49,7 @@ export function createCounterService() {
   });
 
   // 最大値の計算 (upVote/viewerモードの場合)
-  const maxCount = computed(() => {
+  const countMax = computed(() => {
    if (countMode === 'upVote') {
     const value = state.peakUpVoteCount + state.manualAdjustment;
     return isCountdown ? Math.max(target - value, 0) : value;
@@ -61,7 +61,7 @@ export function createCounterService() {
    return null;
   });
 
-  return { actualCount, displayCount, maxCount };
+  return { actualCount, displayCount, countMax };
  };
 
  const createCounterControls = (

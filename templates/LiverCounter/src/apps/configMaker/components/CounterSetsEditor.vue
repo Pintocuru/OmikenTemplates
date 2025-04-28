@@ -9,7 +9,11 @@
   </div>
 
   <!-- サンプルコンポーネントの表示 -->
-  <SampleComponent :counterSets="configStore.counterSets" :activeTabIndex="activeTabIndex" />
+  <SampleComponent
+   class="flex justify-between items-center mb-4"
+   :counterSets="configStore.counterSets"
+   :activeTabIndex="activeTabIndex"
+  />
 
   <!-- タブナビゲーション部分をコンポーネント化 -->
   <CounterSetTabs

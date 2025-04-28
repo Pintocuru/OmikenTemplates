@@ -23,7 +23,7 @@ export function useWordCounter(counterSet: CounterSet) {
  const { fetchMeta } = GetMetas();
 
  // カウント計算
- const { displayCount, actualCount, maxCount } = createCalculatedCount(
+ const { displayCount, actualCount, countMax } = createCalculatedCount(
   counterConfig.countMode,
   isCountdownMode,
   counterConfig.targetCountdown
@@ -58,7 +58,7 @@ export function useWordCounter(counterSet: CounterSet) {
 
  return {
   count: displayCount,
-  countMax: maxCount,
+  countMax,
   counterConfig,
   isCountdownMode,
   increment,
