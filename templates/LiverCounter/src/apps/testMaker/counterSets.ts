@@ -4,69 +4,6 @@ import { CounterSet } from '@/scripts/schema';
 // 複数のカウンターセットがある前提
 export const counterSets: CounterSet[] = [
  {
-  id: 'test3',
-  userVisits: {
-   IS_DIFF_MODE: false,
-   ENABLED_SERVICES: 'platforms',
-   ALLOWED_IDS: [],
-   ACCESS_LEVEL: 1,
-   IS_GIFT: false,
-   KEYWORDS: []
-  },
-  counter: {
-   title: 'コメント数',
-   unit: 'コメ',
-   countMode: 'comment',
-   targetCountdown: 0,
-   multiplier: 1,
-   PARTY: {},
-   PARTY_EVENT: '',
-   PARTY_SUCCESS: ''
-  }
- },
- {
-  id: 'test3',
-  userVisits: {
-   IS_DIFF_MODE: false,
-   ENABLED_SERVICES: 'platforms',
-   ALLOWED_IDS: [],
-   ACCESS_LEVEL: 1,
-   IS_GIFT: false,
-   KEYWORDS: ['おはよう', 'おはぴん', 'こんにち']
-  },
-  counter: {
-   title: '「おはよう」',
-   countMode: 'comment',
-   unit: 'おは!',
-   targetCountdown: 0,
-   multiplier: 1,
-   PARTY: {},
-   PARTY_EVENT: '',
-   PARTY_SUCCESS: ''
-  }
- },
- {
-  id: 'test3',
-  userVisits: {
-   IS_DIFF_MODE: false,
-   ENABLED_SERVICES: 'all',
-   ALLOWED_IDS: [],
-   ACCESS_LEVEL: 1,
-   IS_GIFT: false,
-   KEYWORDS: []
-  },
-  counter: {
-   title: '初見',
-   unit: '人',
-   countMode: 'syoken',
-   targetCountdown: 0,
-   multiplier: 1,
-   PARTY: {},
-   PARTY_EVENT: '',
-   PARTY_SUCCESS: ''
-  }
- },
- {
   id: 'test1',
   userVisits: {
    IS_DIFF_MODE: false,
@@ -77,35 +14,71 @@ export const counterSets: CounterSet[] = [
    KEYWORDS: []
   },
   counter: {
-   title: '閲覧数',
-   unit: '',
-   countMode: 'viewer',
+   component: 'basic',
+   title: '初コメ',
+   unit: '人',
+   countMode: 'syoken',
    targetCountdown: 0,
-   multiplier: 10,
+   multiplier: 1,
    PARTY: {},
-   PARTY_EVENT: '',
-   PARTY_SUCCESS: ''
+   PARTY_EVENT: '!syoken',
+   PARTY_SUCCESS: '',
+   BOT_NAME: 'info',
+   BOT: {},
+   BOT_EVENT: '',
+   BOT_SUCCESS: ''
   }
  },
  {
-  id: 'test2',
+  id: 'counter-1744322058413',
   userVisits: {
-   IS_DIFF_MODE: true,
-   ENABLED_SERVICES: 'all',
+   IS_DIFF_MODE: false,
+   ENABLED_SERVICES: 'platforms',
    ALLOWED_IDS: [],
    ACCESS_LEVEL: 1,
    IS_GIFT: false,
    KEYWORDS: []
   },
   counter: {
-   title: 'いいね！',
-   unit: '',
-   countMode: 'upVote',
+   component: 'basic',
+   title: 'リスナー',
+   unit: '人',
+   countMode: 'user',
    targetCountdown: 0,
-   multiplier: 10,
+   multiplier: 1,
    PARTY: {},
    PARTY_EVENT: '',
-   PARTY_SUCCESS: ''
+   PARTY_SUCCESS: '',
+   BOT_NAME: 'info',
+   BOT: {},
+   BOT_EVENT: '',
+   BOT_SUCCESS: ''
+  }
+ },
+ {
+  id: 'counter-1744322144895',
+  userVisits: {
+   IS_DIFF_MODE: false,
+   ENABLED_SERVICES: 'platforms',
+   ALLOWED_IDS: [],
+   ACCESS_LEVEL: 1,
+   IS_GIFT: false,
+   KEYWORDS: []
+  },
+  counter: {
+   component: 'basic',
+   title: 'コメント',
+   unit: 'コメ',
+   countMode: 'comment',
+   targetCountdown: 0,
+   multiplier: 1,
+   PARTY: {},
+   PARTY_EVENT: '',
+   PARTY_SUCCESS: '',
+   BOT_NAME: 'info',
+   BOT: {},
+   BOT_EVENT: '',
+   BOT_SUCCESS: ''
   }
  }
 ];

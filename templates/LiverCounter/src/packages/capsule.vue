@@ -1,44 +1,38 @@
-<!-- basic.vue -->
+<!-- capsule.vue -->
 <template>
  <div class="flex items-center justify-center">
   <div
-   class="relative flex flex-col min-w-36 rounded-xl overflow-hidden border-4 counter-component"
+   class="relative flex min-w-36 rounded-xl overflow-hidden border-2 counter-component"
    :style="colorVars"
   >
-   <!-- Title -->
-   <div
-    v-if="counterConfig.title"
-    class="w-full text-center py-3 px-4 font-bold text-2xl text-white counter-title"
-   >
-    {{ counterConfig.title }}
-   </div>
+   <div class="flex w-full items-center bg-white">
+    <!-- Title -->
+    <div class="py-2 px-3 font-bold text-lg text-white h-full flex items-center counter-title">
+     {{ counterConfig.title }}
+    </div>
 
-   <!-- Body -->
-   <div class="w-full flex items-center bg-white px-4 py-4">
-    <div class="relative w-full flex flex-col items-center justify-center">
-     <!-- Counter -->
-     <div class="relative h-16 w-full flex items-center justify-center">
-      <div class="flex items-baseline space-x-2">
-       <TransitionGroup name="count" tag="span" class="inline-flex">
-        <span :key="count" class="font-bold text-5xl leading-tight counter-font counter-value">
-         {{ count }}
-        </span>
-       </TransitionGroup>
-
-       <span v-if="counterConfig.unit" class="text-xl pt-1 font-medium counter-text">
-        {{ counterConfig.unit }}
+    <!-- Counter -->
+    <div class="px-3 py-2 flex items-center">
+     <div class="flex items-baseline space-x-1">
+      <TransitionGroup name="count" tag="span" class="inline-flex">
+       <span :key="count" class="font-bold text-2xl counter-font counter-value">
+        {{ count }}
        </span>
+      </TransitionGroup>
 
-       <span v-if="typeof countMax === 'number'" class="text-xl pt-1 font-medium counter-text">
-        / {{ countMax }}
-       </span>
-      </div>
+      <span v-if="counterConfig.unit" class="text-sm pt-1 font-medium counter-text">
+       {{ counterConfig.unit }}
+      </span>
+
+      <span v-if="typeof countMax === 'number'" class="text-sm pt-1 font-medium counter-text">
+       / {{ countMax }}
+      </span>
      </div>
 
      <!-- Multiplier -->
      <div
       v-if="counterConfig.multiplier !== 1"
-      class="absolute -right-3 -top-2 z-10 px-3 py-1 rounded-full text-sm font-bold shadow-md text-white counter-badge"
+      class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold shadow-md text-white counter-badge"
      >
       x{{ counterConfig.multiplier }}
      </div>
@@ -79,7 +73,7 @@ const colorVars = computed(() => {
 });
 </script>
 
-<style>
+<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&display=swap');
 
 .counter-font {
@@ -108,12 +102,12 @@ const colorVars = computed(() => {
 
 .count-enter-from {
  opacity: 0;
- transform: translateY(-20px) scale(0.8);
+ transform: translateY(-10px) scale(0.8);
 }
 
 .count-leave-to {
  opacity: 0;
- transform: translateY(20px) scale(0.8);
+ transform: translateY(10px) scale(0.8);
 }
 
 .count-leave-active {

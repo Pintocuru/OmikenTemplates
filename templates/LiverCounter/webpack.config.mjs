@@ -25,25 +25,20 @@ export default () => {
   configMaker: path.resolve(dirname, `./src/apps/configMaker/main.ts`)
  };
 
- // packagesの内容をentriesに追加
- packages.forEach(({ appDir, appName }) => {
-  entries[appName] = path.resolve(dirname, `./src/packages/${appDir}/${appName}.ts`);
- });
-
  // HTMLプラグインの設定
  const htmlPlugins = [
   // 本体:main
   new HtmlWebpackPlugin({
    template: path.resolve(dirname, `./src/apps/AnyGenerator/index.ejs`),
    filename: `index.html`,
-   chunks: ['main', ...packages.map(({ appName }) => appName)],
+   chunks: ['main'],
    inject: 'body'
   }),
   // configMaker
   new HtmlWebpackPlugin({
    template: path.resolve(dirname, `./src/apps/configMaker/index.ejs`),
    filename: `configMaker.html`,
-   chunks: ['configMaker', ...packages.map(({ appName }) => appName)],
+   chunks: ['configMaker'],
    inject: 'body'
   })
  ];

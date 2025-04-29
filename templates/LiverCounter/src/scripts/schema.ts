@@ -69,7 +69,7 @@ const countMode = [
 export type CountType = (typeof countMode)[number];
 
 // コンポーネントの種類
-export const componentMap = ['basic', 'capsule'] as const;
+export const componentMap = ['basic', 'mini', 'capsule', 'BoardCounter'] as const;
 export type ComponentType = (typeof componentMap)[number];
 
 const counterConfigSchema = z.object({
