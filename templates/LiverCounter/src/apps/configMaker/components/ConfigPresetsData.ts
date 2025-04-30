@@ -1,8 +1,6 @@
 // src/apps/configMaker/components/ConfigPresetsData.ts に追加
 import { ComponentConfig, CounterSet } from '@/scripts/schema';
 
-// TODO:データ変更のため修正をする
-
 // プリセット型の定義
 export type ConfigPreset = {
  id: string;
@@ -32,7 +30,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
+     typeColor: 'default',
      title: '初コメ',
      unit: '人',
      countMode: 'syoken',
@@ -58,7 +57,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
+     typeColor: 'default',
      title: 'リスナー',
      unit: '人',
      countMode: 'user',
@@ -84,7 +84,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
+     typeColor: 'default',
      title: 'コメント',
      unit: 'コメ',
      countMode: 'comment',
@@ -120,7 +121,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
+     typeColor: 'default',
      title: '👀',
      unit: '',
      countMode: 'viewer',
@@ -146,7 +148,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
+     typeColor: 'default',
      title: '👍️',
      unit: '',
      countMode: 'upVote',
@@ -182,7 +185,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['おは(よ|よう|よー|よ！|みこ)']
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
+     typeColor: 'default',
      title: 'おはようカウンター',
      unit: 'おは!',
      countMode: 'comment',
@@ -199,13 +203,13 @@ export const presets: ConfigPreset[] = [
    }
   ]
  },
-
  {
   id: 'test4',
   name: '今日のランチ代',
   config: {
    totalCounterSet: {
-    component: 'basic',
+    component: 'BasicSquare',
+    typeColor: 'default',
     title: '今日のランチ代',
     unit: '円',
     countMode: 'none',
@@ -214,7 +218,7 @@ export const presets: ConfigPreset[] = [
     PARTY: {},
     PARTY_EVENT: '',
     PARTY_SUCCESS: '',
-    BOT_NAME: 'info',
+    BOT_NAME: '',
     BOT: {},
     BOT_EVENT: '',
     BOT_SUCCESS: ''
@@ -233,7 +237,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
      title: '初コメ',
      unit: '',
      countMode: 'syoken',
@@ -245,7 +249,8 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: ''
+     BOT_SUCCESS: '',
+     typeColor: 'red'
     }
    },
    {
@@ -259,7 +264,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['おは', 'こん']
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
      title: 'あいさつ',
      unit: '',
      countMode: 'user',
@@ -271,7 +276,8 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: ''
+     BOT_SUCCESS: '',
+     typeColor: 'yellow'
     }
    },
    {
@@ -285,7 +291,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
      title: 'コメント',
      unit: '',
      countMode: 'comment',
@@ -297,7 +303,8 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: ''
+     BOT_SUCCESS: '',
+     typeColor: 'green'
     }
    },
    {
@@ -311,7 +318,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
      title: '同接数',
      unit: '',
      countMode: 'viewer',
@@ -323,7 +330,8 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: ''
+     BOT_SUCCESS: '',
+     typeColor: 'blue'
     }
    },
    {
@@ -337,7 +345,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
      title: '高評価',
      unit: '',
      countMode: 'upVote',
@@ -349,7 +357,8 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: ''
+     BOT_SUCCESS: '',
+     typeColor: 'purple'
     }
    },
    {
@@ -363,7 +372,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
      title: 'ギフト',
      unit: '',
      countMode: 'gift',
@@ -375,7 +384,8 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: ''
+     BOT_SUCCESS: '',
+     typeColor: 'pink'
     }
    }
   ]
@@ -399,7 +409,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
+     typeColor: 'default',
      title: '残りコメント数',
      unit: 'コメ',
      countMode: 'comment',
@@ -440,7 +451,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['ある', 'アル']
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
+     typeColor: 'default',
      title: '猫使アル',
      unit: '',
      countMode: 'user',
@@ -466,7 +478,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['びぃ', 'びい', 'ビィ']
     },
     counter: {
-     component: 'basic',
+     component: 'BasicSquare',
+     typeColor: 'default',
      title: '猫使ビィ',
      unit: '',
      countMode: 'user',

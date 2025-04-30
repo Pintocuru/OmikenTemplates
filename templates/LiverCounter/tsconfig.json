@@ -4,9 +4,6 @@
   "baseUrl": ".", // モジュールのベースURL
   "outDir": "./dist", // 出力先ディレクトリ
   "paths": {
-   "@type": [
-    "../../public/type.ts"
-   ],
    "@public/*": [
     "../../public/*"
    ],
@@ -16,14 +13,14 @@
    "@/*": [
     "./src/*"
    ],
+   "@assets/*": [
+    "./assets/*"
+   ],
    "@packages/*": [
     "./src/packages/*"
    ],
    "@scripts/*": [
     "./src/scripts/*"
-   ],
-   "@assets/*": [
-    "./assets/*"
    ],
   }
  },

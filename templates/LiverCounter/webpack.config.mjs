@@ -90,7 +90,9 @@ export default () => {
    alias: {
     ...commonResolve.alias,
     '@': path.resolve(dirname, 'src'),
-    '@assets': path.resolve(dirname, 'assets')
+    '@assets': path.resolve(dirname, 'assets'),
+    '@packages': path.resolve(dirname, 'src/packages'),
+    '@scripts': path.resolve(dirname, 'src/scripts')
    }
   },
   module: {

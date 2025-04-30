@@ -1,8 +1,18 @@
 <!-- src/App.vue -->
 <template>
- <div class="flex flex-col items-center justify-center h-screen">
-  <!-- 接続確認アイコン -->
-  <div v-if="showConnectionIcon" class="absolute top-2 right-2 text-gray-400 text-xl">🔌</div>
+ <div class="relative flex flex-col items-center justify-center h-screen">
+  <!-- 接続モードバッジ -->
+  <div
+   v-if="connectionStatus"
+   class="absolute top-4 left-4 transition-opacity duration-1000"
+   :class="[
+    showBadge ? 'opacity-100' : 'opacity-0',
+    'bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-sm shadow-md'
+   ]"
+  >
+   <span v-if="connectionStatus === 'standalone'">🚫 わんコメなしモード</span>
+   <span v-else-if="connectionStatus === 'onecomme'">🐶 わんコメありモード</span>
+  </div>
 
   <!-- Total counter component -->
   <TotalCounter
@@ -38,19 +48,18 @@ import { useWordCounter } from '@scripts/useWordCounter';
 import { getComponent } from '@scripts/CreateComponentMapping';
 import { PingOneSDK } from '@common/api/PingOneSDK';
 
-// わんコメ起動フラグ
-const isInitApp = ref(false);
-const showConnectionIcon = ref(false);
+// わんコメ接続状態
+const connectionStatus = ref<'onecomme' | 'standalone' | null>(null);
+const showBadge = ref(false);
 
 onMounted(async () => {
- isInitApp.value = await PingOneSDK();
+ const result = await PingOneSDK();
+ connectionStatus.value = result ? 'onecomme' : 'standalone';
 
- if (!isInitApp.value) {
-  showConnectionIcon.value = true;
-  setTimeout(() => {
-   showConnectionIcon.value = false;
-  }, 10000); // 10秒後に非表示
- }
+ showBadge.value = true;
+ setTimeout(() => {
+  showBadge.value = false;
+ }, 10000); // 10秒間だけ表示
 });
 
 // アプリケーション設定

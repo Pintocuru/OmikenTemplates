@@ -14,7 +14,8 @@ export const counterSets: CounterSet[] = [
    KEYWORDS: []
   },
   counter: {
-   component: 'basic',
+   component: 'BasicSquare',
+   typeColor: 'default',
    title: '初コメ',
    unit: '人',
    countMode: 'syoken',
@@ -40,7 +41,8 @@ export const counterSets: CounterSet[] = [
    KEYWORDS: []
   },
   counter: {
-   component: 'basic',
+   component: 'BasicSquare',
+   typeColor: 'default',
    title: 'リスナー',
    unit: '人',
    countMode: 'user',
@@ -66,7 +68,8 @@ export const counterSets: CounterSet[] = [
    KEYWORDS: []
   },
   counter: {
-   component: 'basic',
+   component: 'BasicSquare',
+   typeColor: 'default',
    title: 'コメント',
    unit: 'コメ',
    countMode: 'comment',

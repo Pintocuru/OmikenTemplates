@@ -69,12 +69,21 @@ const countMode = [
 export type CountType = (typeof countMode)[number];
 
 // コンポーネントの種類
-export const componentMap = ['basic', 'mini', 'capsule', 'BoardCounter'] as const;
+export const componentMap = [
+ 'test',
+ 'BasicSquare',
+ 'BasicCircle',
+ 'capsule',
+ 'instaUpVote',
+ 'CyberNeon',
+ 'minimal',
+ 'holographic'
+] as const;
 export type ComponentType = (typeof componentMap)[number];
 
 const counterConfigSchema = z.object({
- component: z.enum(componentMap).default('basic'), // コンポーネントの種類
- typeColor: z.enum(TAILWIND_COLORS).optional(), // カラーモード(optional)
+ component: z.enum(componentMap).default('BasicSquare').catch('BasicSquare'), // コンポーネントの種類
+ typeColor: z.enum(TAILWIND_COLORS).default('default'), // カラーモード(optional)
  title: z.string().default(''), // カウンター名
  unit: z.string().default(''), // 単位(pt、円など)
  countMode: z.enum(countMode).default('comment'), // カウントモード
@@ -138,8 +147,8 @@ export function createDefaultCounterSet(): CounterSet {
    KEYWORDS: []
   },
   counter: {
-   component: 'basic',
-   typeColor: 'blue',
+   component: 'BasicSquare',
+   typeColor: 'default',
    title: '新規カウンター',
    unit: '',
    countMode: 'comment',
