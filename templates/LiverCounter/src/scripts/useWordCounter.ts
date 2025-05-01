@@ -11,7 +11,6 @@ import { createPartyService } from './partyService';
 
 export function useWordCounter(counterSet: CounterSet) {
  const { counter: counterConfig, userVisits: userVisitsConfig } = counterSet;
- const isCountdownMode = counterConfig.targetCountdown > 0;
 
  // コンポーザブル:サービスの初期化
  const { state, createCalculatedCount, createCounterControls } = createCounterService();
@@ -23,25 +22,20 @@ export function useWordCounter(counterSet: CounterSet) {
  const { fetchMeta } = GetMetas();
 
  // カウント計算
- const { displayCount, actualCount, countMax } = createCalculatedCount(
+ const { count, countMax } = createCalculatedCount(
   counterConfig.countMode,
-  isCountdownMode,
   counterConfig.targetCountdown
  );
 
  // カウンター操作
- const { increment, decrement, reset } = createCounterControls(
-  isCountdownMode,
-  () => displayCount.value,
-  () => actualCount.value
- );
+ const { increment, decrement, reset } = createCounterControls(() => count.value);
 
  // コンポーザブル:イベント処理
- const handleWordParty = createPartyService(counterConfig, isCountdownMode);
+ const handleWordParty = createPartyService(counterConfig);
 
  // カウント変更を監視してイベントを発火
- watch(displayCount, (newCount, oldCount) => {
-  handleWordParty(newCount, oldCount, state.isInitFlag, () => actualCount.value);
+ watch(count, (newCount, oldCount) => {
+  handleWordParty(newCount, oldCount, state.isInitFlag, () => count.value);
  });
 
  // 初期化関数を定義
@@ -55,14 +49,13 @@ export function useWordCounter(counterSet: CounterSet) {
  };
 
  return {
-  count: displayCount,
+  state,
+  count,
   countMax,
   counterConfig,
-  isCountdownMode,
   increment,
   decrement,
   resetManualAdjustment: reset,
-  actualCount,
   initialize
  };
 }

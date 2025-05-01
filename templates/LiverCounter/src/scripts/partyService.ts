@@ -2,14 +2,10 @@
 import { CounterConfig } from './schema';
 import { postWordParty, postSystemMessage } from '@common/api/PostOneComme';
 
-export function createPartyService(counterConfig: CounterConfig, isCountdown: boolean) {
+export function createPartyService(counterConfig: CounterConfig) {
  // イベント条件に応じてWordParty/Botメッセージを発火
- const triggerParty = (eventMessage: string | undefined) => {
-  if (eventMessage) postWordParty(eventMessage, -2);
- };
- const triggerBot = (eventMessage: string | undefined) => {
-  if (eventMessage) postSystemMessage(eventMessage, counterConfig.BOT_NAME);
- };
+ const triggerParty = (msg?: string) => msg && postWordParty(msg, -2);
+ const triggerBot = (msg?: string) => msg && postSystemMessage(msg, counterConfig.BOT_NAME);
 
  // カウントの変化に基づいてパーティーイベントを処理
  return (
@@ -22,11 +18,9 @@ export function createPartyService(counterConfig: CounterConfig, isCountdown: bo
 
   // カウントの変化方向を確認
   const isCountIncreasing = newCount > oldCount;
-  const isCountDecreasing = newCount < oldCount;
 
   // イベント発火条件
-  const shouldFireEvent = (!isCountdown && isCountIncreasing) || (isCountdown && isCountDecreasing);
-  if (shouldFireEvent) {
+  if (isCountIncreasing) {
    triggerParty(counterConfig.PARTY_EVENT);
    triggerBot(counterConfig.BOT_EVENT);
   }
@@ -36,11 +30,7 @@ export function createPartyService(counterConfig: CounterConfig, isCountdown: bo
   triggerBot(counterConfig.BOT[newCount]);
 
   // 目標達成時の成功イベント
-  const isSuccess = isCountdown
-   ? newCount === 0
-   : getActualCount() >= counterConfig.targetCountdown;
-
-  if (isSuccess) {
+  if (getActualCount() >= counterConfig.targetCountdown) {
    triggerParty(counterConfig.PARTY_SUCCESS);
    triggerBot(counterConfig.BOT_SUCCESS);
   }

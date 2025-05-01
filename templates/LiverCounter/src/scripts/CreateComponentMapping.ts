@@ -7,18 +7,20 @@ import instaUpVote from '@packages/instaUpVote.vue';
 import CyberNeon from '@packages/CyberNeon.vue';
 import minimal from '@packages/minimal.vue';
 import holographic from '@packages/holographic.vue';
-import test from '@packages/test.vue';
+import ProgressLight from '@packages/ProgressLight.vue';
+import ProgressDark from '@packages/ProgressDark.vue';
 
 // 直接読み込んだコンポーネントのマッピング
 const componentMapping: Record<ComponentType, any> = {
- test,
  BasicSquare,
  BasicCircle,
  capsule,
  instaUpVote,
  CyberNeon,
  minimal,
- holographic
+ holographic,
+ ProgressLight,
+ ProgressDark
 };
 
 // コンポーネントタイプに基づいてコンポーネントを取得する関数

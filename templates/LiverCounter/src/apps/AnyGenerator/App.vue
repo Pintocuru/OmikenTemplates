@@ -33,6 +33,7 @@
     :count="counter.count.value"
     :countMax="counter.countMax.value"
     :counterConfig="counter.counterConfig"
+    :state="counter.state"
     @click.prevent="counter.increment"
     @contextmenu.prevent="counter.decrement"
    />

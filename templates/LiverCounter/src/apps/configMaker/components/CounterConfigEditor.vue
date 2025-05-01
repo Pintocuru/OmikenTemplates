@@ -80,7 +80,6 @@
        class="input input-bordered w-full"
        min="0"
       />
-      <span class="text-xs ml-2 text-gray-500">0でカウントアップ</span>
      </div>
     </div>
 

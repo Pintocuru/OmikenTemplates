@@ -17,14 +17,15 @@ export function createCounterService() {
 
   // Stream metrics
   isLive: false,
+  startTime: Date.now(),
   upVoteCount: 0,
   viewerCount: 0,
   peakUpVoteCount: 0,
   peakViewerCount: 0
  });
 
- const getBaseCountForMode = (countMode: CountType): number => {
-  const countModeMap: Record<CountType, number> = {
+ const getBaseCountForMode = (mode: CountType): number =>
+  ({
    none: 0,
    user: state.userCount,
    comment: state.commentCount,
@@ -32,69 +33,34 @@ export function createCounterService() {
    upVote: state.upVoteCount,
    viewer: state.viewerCount,
    gift: state.totalGift
-  };
-  return countModeMap[countMode] || 0;
- };
+  })[mode] || 0;
 
- const createCalculatedCount = (countMode: CountType, isCountdown: boolean, target: number) => {
-  // 実際のカウント値 (モード + 手動調整)
-  const actualCount = computed(() => getBaseCountForMode(countMode) + state.manualAdjustment);
-
-  // 表示用カウント値 (カウントダウンモードの場合は逆算)
-  const displayCount = computed(() => {
-   if (isCountdown) {
-    return Math.max(target - actualCount.value, 0);
-   }
-   return actualCount.value;
-  });
+ // カウント計算
+ const createCalculatedCount = (mode: CountType, target: number) => {
+  // カウント値 (モード + 手動調整)
+  const count = computed(() => getBaseCountForMode(mode) + state.manualAdjustment);
 
   // 最大値の計算 (upVote/viewerモードの場合)
   const countMax = computed(() => {
-   if (countMode === 'upVote') {
-    const value = state.peakUpVoteCount + state.manualAdjustment;
-    return isCountdown ? Math.max(target - value, 0) : value;
-   }
-   if (countMode === 'viewer') {
-    const value = state.peakViewerCount + state.manualAdjustment;
-    return isCountdown ? Math.max(target - value, 0) : value;
-   }
+   if (target > 0) return target;
+   if (mode === 'upVote') return state.peakUpVoteCount + state.manualAdjustment;
+   if (mode === 'viewer') return state.peakViewerCount + state.manualAdjustment;
    return null;
   });
 
-  return { actualCount, displayCount, countMax };
+  return { count, countMax };
  };
 
- const createCounterControls = (
-  isCountdown: boolean,
-  getCount: () => number,
-  getActualCount: () => number
- ) => {
-  return {
-   increment: () => {
-    if (isCountdown) {
-     if (getCount() > 0) state.manualAdjustment++;
-    } else {
-     state.manualAdjustment++;
-    }
-   },
+ // カウンター操作
+ const createCounterControls = (getCount: () => number) => ({
+  increment: () => state.manualAdjustment++,
+  decrement: () => {
+   if (getCount() > 0) state.manualAdjustment--;
+  },
+  reset: () => {
+   state.manualAdjustment = 0;
+  }
+ });
 
-   decrement: () => {
-    if (isCountdown) {
-     if (getActualCount() > 0) state.manualAdjustment--;
-    } else {
-     if (getCount() > 0) state.manualAdjustment--;
-    }
-   },
-
-   reset: () => {
-    state.manualAdjustment = 0;
-   }
-  };
- };
-
- return {
-  state,
-  createCalculatedCount,
-  createCounterControls
- };
+ return { state, createCalculatedCount, createCounterControls };
 }

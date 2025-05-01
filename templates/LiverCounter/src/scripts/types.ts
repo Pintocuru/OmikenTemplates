@@ -9,6 +9,7 @@ export type WordCounterState = {
  commentCount: number; // fetchCommentsで取得した基本コメント数
  userCount: number; // fetchCommentsで取得した基本ユーザー数
  syokenCount: number; // fetchCommentsで取得した基本ユーザー数のうち、初見さん
+ startTime: number | null; // metaで取得した配信開始時間(Date)
  upVoteCount: number; // metaで取得した高評価数
  viewerCount: number; // metaで取得した視聴者数
  peakUpVoteCount: number; // 過去最高の高評価数

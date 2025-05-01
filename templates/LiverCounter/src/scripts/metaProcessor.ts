@@ -9,6 +9,9 @@ export function createMetaProcessor(state: WordCounterState) {
   // 配信状態の更新
   state.isLive = meta.isLive || false;
 
+  // isLive が true の場合のみ startTime を更新、それ以外は null にリセット
+  state.startTime = state.isLive ? (meta.startTime ?? null) : null;
+
   // 高評価数の更新
   if (meta.upVote) {
    const upVoteNum = parseInt(String(meta.upVote), 10);

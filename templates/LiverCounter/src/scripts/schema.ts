@@ -70,14 +70,15 @@ export type CountType = (typeof countMode)[number];
 
 // コンポーネントの種類
 export const componentMap = [
- 'test',
  'BasicSquare',
  'BasicCircle',
  'capsule',
  'instaUpVote',
  'CyberNeon',
  'minimal',
- 'holographic'
+ 'holographic',
+ 'ProgressLight',
+ 'ProgressDark'
 ] as const;
 export type ComponentType = (typeof componentMap)[number];
 
