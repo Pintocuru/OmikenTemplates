@@ -1,5 +1,5 @@
 // src/apps/scripts/useWordCounter.ts
-import { onMounted, watch } from 'vue';
+import { watch } from 'vue';
 import { CounterSet } from './schema';
 import { GetUserVisits } from '@common/subscribe/GetUserVisits';
 import { GetMetas } from '@common/subscribe/GetMetas';
@@ -13,7 +13,7 @@ export function useWordCounter(counterSet: CounterSet) {
  const { counter: counterConfig, userVisits: userVisitsConfig } = counterSet;
  const isCountdownMode = counterConfig.targetCountdown > 0;
 
- // サービスの初期化
+ // コンポーザブル:サービスの初期化
  const { state, createCalculatedCount, createCounterControls } = createCounterService();
  const processComment = createCommentProcessor(state);
  const processMetaUpdate = createMetaProcessor(state);
@@ -36,7 +36,7 @@ export function useWordCounter(counterSet: CounterSet) {
   () => actualCount.value
  );
 
- // イベント処理
+ // コンポーザブル:イベント処理
  const handleWordParty = createPartyService(counterConfig, isCountdownMode);
 
  // カウント変更を監視してイベントを発火
@@ -44,17 +44,15 @@ export function useWordCounter(counterSet: CounterSet) {
   handleWordParty(newCount, oldCount, state.isInitFlag, () => actualCount.value);
  });
 
- // 初期化
- onMounted(async () => {
-  document.documentElement.setAttribute('data-theme', 'dark');
-
+ // 初期化関数を定義
+ const initialize = async () => {
   try {
    await Promise.all([fetchComments(processComment), fetchMeta(processMetaUpdate)]);
   } catch (error) {
    console.error('WordCounter initialization error:', error);
    state.isInitFlag = false;
   }
- });
+ };
 
  return {
   count: displayCount,
@@ -64,6 +62,7 @@ export function useWordCounter(counterSet: CounterSet) {
   increment,
   decrement,
   resetManualAdjustment: reset,
-  actualCount
+  actualCount,
+  initialize
  };
 }

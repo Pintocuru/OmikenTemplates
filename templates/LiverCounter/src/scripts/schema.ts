@@ -83,19 +83,19 @@ export type ComponentType = (typeof componentMap)[number];
 
 const counterConfigSchema = z.object({
  component: z.enum(componentMap).default('BasicSquare').catch('BasicSquare'), // コンポーネントの種類
- typeColor: z.enum(TAILWIND_COLORS).default('default'), // カラーモード(optional)
- title: z.string().default(''), // カウンター名
- unit: z.string().default(''), // 単位(pt、円など)
- countMode: z.enum(countMode).default('comment'), // カウントモード
- targetCountdown: z.number().int().min(0).default(0), // 1以上でカウントダウンモード
- multiplier: z.number().positive().default(1), // 倍率(totalCounterSetがある時に使用)
- PARTY: z.record(z.string(), z.string()).default({}), // 特定のカウントでWordParty発火
- PARTY_EVENT: z.string().default(''), // カウントアップ時にWordParty発火
- PARTY_SUCCESS: z.string().default(''), // カウントダウンモード時、カウントが0でWordParty発火
- BOT_NAME: z.string().default('info'), // BOTの表示名
- BOT: z.record(z.string(), z.string()).default({}), // 特定のカウントでBOTコメント
- BOT_EVENT: z.string().default(''), // カウントアップ時にBOTコメント
- BOT_SUCCESS: z.string().default('') // カウントダウンモード時、カウントが0でBOTコメント
+ typeColor: z.enum(TAILWIND_COLORS).default('default').catch('default'), // カラーモード(optional)
+ title: z.string().default('').catch(''), // カウンター名
+ unit: z.string().default('').catch(''), // 単位(pt、円など)
+ countMode: z.enum(countMode).default('comment').catch('comment'), // カウントモード
+ targetCountdown: z.number().int().min(0).default(0).catch(0), // 1以上でカウントダウンモード
+ multiplier: z.number().positive().default(1).catch(1), // 倍率(totalCounterSetがある時に使用)
+ PARTY: z.record(z.string(), z.string()).default({}).catch({}), // 特定のカウントでWordParty発火
+ PARTY_EVENT: z.string().default('').catch(''), // カウントアップ時にWordParty発火
+ PARTY_SUCCESS: z.string().default('').catch(''), // カウントダウンモード時、カウントが0でWordParty発火
+ BOT_NAME: z.string().default('info').catch('info'), // BOTの表示名
+ BOT: z.record(z.string(), z.string()).default({}).catch({}), // 特定のカウントでBOTコメント
+ BOT_EVENT: z.string().default('').catch(''), // カウントアップ時にBOTコメント
+ BOT_SUCCESS: z.string().default('').catch('') // カウントダウンモード時、カウントが0でBOTコメント
 });
 
 // ---

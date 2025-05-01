@@ -60,6 +60,13 @@ onMounted(async () => {
  setTimeout(() => {
   showBadge.value = false;
  }, 10000); // 10秒間だけ表示
+
+ // すべてのカウンターの初期化関数を実行
+ counters.forEach((counter) => {
+  if (counter.initialize) {
+   counter.initialize();
+  }
+ });
 });
 
 // アプリケーション設定
