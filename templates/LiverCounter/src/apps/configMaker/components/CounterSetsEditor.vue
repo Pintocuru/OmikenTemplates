@@ -1,11 +1,17 @@
 <!-- src/apps/configMaker/components/CounterSetsEditor.vue -->
 <template>
  <div class="card bg-base-200 p-4">
+  <!-- ヘッダー部分 -->
   <div class="flex justify-between items-center mb-4">
    <h2 class="text-xl font-semibold">カウンターセット設定</h2>
-   <button @click="addCounterSet" class="btn btn-sm btn-primary">
-    <span class="mr-1">+</span> 新規カウンターセット
-   </button>
+   <div class="flex gap-2">
+    <button v-if="isDevelopmentMode" @click="test" class="btn btn-sm btn-primary">
+     test:コンソール出力
+    </button>
+    <button @click="addCounterSet" class="btn btn-sm btn-primary">
+     <span class="mr-1">+</span> 新規カウンターセット
+    </button>
+   </div>
   </div>
 
   <!-- サンプルコンポーネントの表示 -->
@@ -15,7 +21,7 @@
    :activeTabIndex="activeTabIndex"
   />
 
-  <!-- タブナビゲーション部分をコンポーネント化 -->
+  <!-- タブナビゲーション -->
   <CounterSetTabs
    :counterSets="configStore.counterSets"
    :activeTabIndex="activeTabIndex"
@@ -26,6 +32,7 @@
   />
 
   <div v-if="activeSet" class="space-y-6">
+   <!-- カウンター名 -->
    <div class="form-control w-full">
     <label class="block mb-1 font-medium">カウンター名</label>
     <div class="flex gap-2">
@@ -46,7 +53,7 @@
     <CounterConfigEditor v-model="activeSet.counter" />
    </div>
 
-   <!-- 対象コメント設定 -->
+   <!-- 対象コメント設定 (条件付き表示) -->
    <transition
     enter-active-class="transition-all duration-300 ease-in-out"
     enter-from-class="max-h-0 opacity-0"
@@ -55,14 +62,7 @@
     leave-from-class="max-h-96 opacity-100"
     leave-to-class="max-h-0 opacity-0"
    >
-    <div
-     v-if="
-      activeSet.counter.countMode !== 'none' &&
-      activeSet.counter.countMode !== 'viewer' &&
-      activeSet.counter.countMode !== 'upVote'
-     "
-     class="overflow-hidden collapse collapse-arrow bg-base-300"
-    >
+    <div v-if="shouldShowUserVisits" class="overflow-hidden collapse collapse-arrow bg-base-300">
      <input type="checkbox" class="peer" checked />
      <UserVisitsEditor v-model="activeSet.userVisits" :counter="activeSet.counter" />
     </div>
@@ -87,6 +87,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { createDefaultCounterSet } from '@scripts/schema';
 import { useConfigMaker } from './useConfigMaker';
 import SampleComponent from './SampleComponent.vue';
 import CounterConfigEditor from './CounterConfigEditor.vue';
@@ -95,78 +96,79 @@ import PartyEventsSettings from './PartyEventsSettings.vue';
 import BotEventsSettings from './BotEventsSettings.vue';
 import CounterSetTabs from './CounterSetTabs.vue';
 
-import { createDefaultCounterSet } from '@/scripts/schema';
+// 開発モードかどうか
+const isDevelopmentMode = ref(true);
 
+// pinia
 const configStore = useConfigMaker();
 const activeTabIndex = ref(0);
 
-const activeSet = computed(() => {
- return activeTabIndex.value >= 0 && activeTabIndex.value < configStore.counterSets.length
+// 算出プロパティ
+const activeSet = computed(() =>
+ activeTabIndex.value >= 0 && activeTabIndex.value < configStore.counterSets.length
   ? configStore.counterSets[activeTabIndex.value]
-  : null;
+  : null
+);
+
+const shouldShowUserVisits = computed(() => {
+ if (!activeSet.value) return false;
+ const { countMode } = activeSet.value.counter;
+ return !['none', 'viewer', 'upVote'].includes(countMode);
 });
 
+// メソッド
+const test = () => console.log(configStore.counterSets);
+
 const addCounterSet = () => {
- const newSet = createDefaultCounterSet();
- configStore.counterSets.push(newSet);
+ configStore.counterSets.push(createDefaultCounterSet());
  activeTabIndex.value = configStore.counterSets.length - 1;
 };
 
 const removeCurrentSet = () => {
  if (configStore.counterSets.length <= 1) return;
+
  configStore.counterSets.splice(activeTabIndex.value, 1);
  if (activeTabIndex.value >= configStore.counterSets.length) {
   activeTabIndex.value = configStore.counterSets.length - 1;
  }
 };
 
-// セットの移動機能
 const moveSet = (index: number, direction: 'left' | 'right') => {
- if (direction === 'left' && index > 0) {
-  const temp = configStore.counterSets[index];
-  configStore.counterSets[index] = configStore.counterSets[index - 1];
-  configStore.counterSets[index - 1] = temp;
+ const isMovingLeft = direction === 'left' && index > 0;
+ const isMovingRight = direction === 'right' && index < configStore.counterSets.length - 1;
 
-  // アクティブなタブが移動対象なら、選択位置も更新
-  if (activeTabIndex.value === index) {
-   activeTabIndex.value = index - 1;
-  } else if (activeTabIndex.value === index - 1) {
-   activeTabIndex.value = index;
-  }
- } else if (direction === 'right' && index < configStore.counterSets.length - 1) {
-  const temp = configStore.counterSets[index];
-  configStore.counterSets[index] = configStore.counterSets[index + 1];
-  configStore.counterSets[index + 1] = temp;
+ if (!isMovingLeft && !isMovingRight) return;
 
-  // アクティブなタブが移動対象なら、選択位置も更新
-  if (activeTabIndex.value === index) {
-   activeTabIndex.value = index + 1;
-  } else if (activeTabIndex.value === index + 1) {
-   activeTabIndex.value = index;
-  }
+ const newIndex = isMovingLeft ? index - 1 : index + 1;
+
+ // 配列の要素を交換
+ const temp = configStore.counterSets[index];
+ configStore.counterSets[index] = configStore.counterSets[newIndex];
+ configStore.counterSets[newIndex] = temp;
+
+ // アクティブタブの更新
+ if (activeTabIndex.value === index) {
+  activeTabIndex.value = newIndex;
+ } else if (activeTabIndex.value === newIndex) {
+  activeTabIndex.value = index;
  }
 };
 
-// セットの複製機能
 const duplicateSet = (index: number) => {
  const originalSet = configStore.counterSets[index];
- const newSet = JSON.parse(JSON.stringify(originalSet)); // ディープコピー
-
- // タイトルに「のコピー」を追加
+ // ディープコピーを作成
+ const newSet = JSON.parse(JSON.stringify(originalSet));
  newSet.counter.title = `${originalSet.counter.title}のコピー`;
 
- // 複製したセットを元のセットの後ろに挿入
+ // 複製したセットを挿入して選択
  configStore.counterSets.splice(index + 1, 0, newSet);
- activeTabIndex.value = index + 1; // 複製したセットを選択
+ activeTabIndex.value = index + 1;
 };
 
-// インデックスを指定してセットを削除
 const removeSet = (index: number) => {
  if (configStore.counterSets.length <= 1) return;
 
  configStore.counterSets.splice(index, 1);
-
- // 削除後にアクティブタブの位置を調整
  if (activeTabIndex.value >= configStore.counterSets.length) {
   activeTabIndex.value = configStore.counterSets.length - 1;
  }

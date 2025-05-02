@@ -44,10 +44,11 @@
 
     <!-- サンプルコンポーネントの表示 -->
     <component
-     v-if="totalCounterSetValue"
-     :is="getComponent(totalCounterSetValue.component)"
+     v-if="configStore.componentConfig.totalCounterSet"
+     :is="getComponent(counterConfig.component)"
      :count="0"
-     :counterConfig="totalCounterSetValue"
+     :countMax="null"
+     :counterConfig="counterConfig"
     />
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -58,7 +59,7 @@
       </label>
       <input
        type="text"
-       v-model="totalCounterTitle"
+       v-model="counterConfig.title"
        class="input input-bordered w-full"
        placeholder="合計"
       />
@@ -71,7 +72,7 @@
       </label>
       <input
        type="text"
-       v-model="totalCounterUnit"
+       v-model="counterConfig.unit"
        class="input input-bordered w-full"
        placeholder="単位名(空白も可)"
       />
@@ -89,7 +90,7 @@
       >
        <input
         type="radio"
-        name="component"
+        name="componentTotal"
         class="radio radio-xs"
         :value="mode"
         v-model="counterConfig.component"
@@ -110,7 +111,7 @@
       >
        <input
         type="radio"
-        name="typeColor"
+        name="typeColorTotal"
         class="radio radio-xs"
         :value="mode"
         v-model="counterConfig.typeColor"
@@ -126,8 +127,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { getComponent } from '@scripts/CreateComponentMapping';
 import { CounterConfig, TAILWIND_COLORS, createDefaultCounterSet } from '@scripts/schema';
+import { getComponent } from '@scripts/CreateComponentMapping';
 import { componentMap } from '@scripts/schema';
 import { useConfigMaker } from './useConfigMaker';
 
@@ -143,29 +144,12 @@ const counterConfig = ref<CounterConfig>(
 const showTotalCounter = computed({
  get: () => !!configStore.componentConfig.totalCounterSet,
  set: (value) => {
-  configStore.componentConfig.totalCounterSet = value ? { ...counterConfig.value } : null;
- }
-});
-
-// 型安全な参照のためのコンピューテッドプロパティ
-const totalCounterSetValue = computed(() => configStore.componentConfig.totalCounterSet);
-
-// タイトルの型安全なバインディング
-const totalCounterTitle = computed({
- get: () => totalCounterSetValue.value?.title || '',
- set: (value) => {
-  if (totalCounterSetValue.value) {
-   totalCounterSetValue.value.title = value;
-  }
- }
-});
-
-// 単位の型安全なバインディング
-const totalCounterUnit = computed({
- get: () => totalCounterSetValue.value?.unit || '',
- set: (value) => {
-  if (totalCounterSetValue.value) {
-   totalCounterSetValue.value.unit = value;
+  if (value) {
+   // チェックされたときは、現在の counterConfig の値でストアを更新
+   configStore.componentConfig.totalCounterSet = { ...counterConfig.value };
+  } else {
+   // チェックが外されたときは null に設定
+   configStore.componentConfig.totalCounterSet = null;
   }
  }
 });
@@ -176,6 +160,18 @@ watch(
  () => {
   if (showTotalCounter.value) {
    configStore.componentConfig.totalCounterSet = { ...counterConfig.value };
+  }
+ },
+ { deep: true }
+);
+
+// 逆方向の同期: ストアの値が変わったときに counterConfig を更新
+watch(
+ () => configStore.componentConfig.totalCounterSet,
+ (newValue) => {
+  if (newValue) {
+   // 新しい値でcounterConfigを更新（ただしnullの場合は更新しない）
+   Object.assign(counterConfig.value, newValue);
   }
  },
  { deep: true }

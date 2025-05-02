@@ -30,7 +30,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'BasicCircle',
      typeColor: 'default',
      title: '初コメ',
      unit: '人',
@@ -57,7 +57,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'BasicCircle',
      typeColor: 'default',
      title: 'リスナー',
      unit: '人',
@@ -84,7 +84,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'BasicCircle',
      typeColor: 'default',
      title: 'コメント',
      unit: 'コメ',
@@ -121,9 +121,9 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'instaUpVote',
      typeColor: 'default',
-     title: '👀',
+     title: '',
      unit: '',
      countMode: 'viewer',
      targetCountdown: 0,
@@ -148,9 +148,9 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'instaUpVote',
      typeColor: 'default',
-     title: '👍️',
+     title: '',
      unit: '',
      countMode: 'upVote',
      targetCountdown: 0,
@@ -238,19 +238,19 @@ export const presets: ConfigPreset[] = [
     },
     counter: {
      component: 'BasicSquare',
+     typeColor: 'red',
      title: '初コメ',
      unit: '',
      countMode: 'syoken',
      targetCountdown: 0,
-     multiplier: 100,
+     multiplier: 50,
      PARTY: {},
      PARTY_EVENT: '',
      PARTY_SUCCESS: '',
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: '',
-     typeColor: 'red'
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -265,6 +265,7 @@ export const presets: ConfigPreset[] = [
     },
     counter: {
      component: 'BasicSquare',
+     typeColor: 'yellow',
      title: 'あいさつ',
      unit: '',
      countMode: 'user',
@@ -276,8 +277,7 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: '',
-     typeColor: 'yellow'
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -292,6 +292,7 @@ export const presets: ConfigPreset[] = [
     },
     counter: {
      component: 'BasicSquare',
+     typeColor: 'green',
      title: 'コメント',
      unit: '',
      countMode: 'comment',
@@ -303,8 +304,7 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: '',
-     typeColor: 'green'
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -319,6 +319,7 @@ export const presets: ConfigPreset[] = [
     },
     counter: {
      component: 'BasicSquare',
+     typeColor: 'blue',
      title: '同接数',
      unit: '',
      countMode: 'viewer',
@@ -330,8 +331,7 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: '',
-     typeColor: 'blue'
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -346,6 +346,7 @@ export const presets: ConfigPreset[] = [
     },
     counter: {
      component: 'BasicSquare',
+     typeColor: 'purple',
      title: '高評価',
      unit: '',
      countMode: 'upVote',
@@ -357,8 +358,7 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: '',
-     typeColor: 'purple'
+     BOT_SUCCESS: ''
     }
    },
    {
@@ -373,6 +373,7 @@ export const presets: ConfigPreset[] = [
     },
     counter: {
      component: 'BasicSquare',
+     typeColor: 'pink',
      title: 'ギフト',
      unit: '',
      countMode: 'gift',
@@ -384,8 +385,7 @@ export const presets: ConfigPreset[] = [
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',
-     BOT_SUCCESS: '',
-     typeColor: 'pink'
+     BOT_SUCCESS: ''
     }
    }
   ]
@@ -409,18 +409,18 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'instaUpVote',
      typeColor: 'default',
-     title: '残りコメント数',
+     title: 'コメント数',
      unit: 'コメ',
      countMode: 'comment',
      targetCountdown: 500,
      multiplier: 1,
      PARTY: {
-      '400': '!残り400',
-      '300': '!残り300',
-      '200': '!残り200',
-      '100': '!残り100'
+      '100': '!残り400',
+      '200': '!残り300',
+      '300': '!残り200',
+      '400': '!残り100'
      },
      PARTY_EVENT: '',
      PARTY_SUCCESS: '!目標達成',
@@ -451,8 +451,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['ある', 'アル']
     },
     counter: {
-     component: 'BasicSquare',
-     typeColor: 'default',
+     component: 'holographic',
+     typeColor: 'red',
      title: '猫使アル',
      unit: '',
      countMode: 'user',
@@ -478,8 +478,8 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['びぃ', 'びい', 'ビィ']
     },
     counter: {
-     component: 'BasicSquare',
-     typeColor: 'default',
+     component: 'holographic',
+     typeColor: 'blue',
      title: '猫使ビィ',
      unit: '',
      countMode: 'user',

@@ -1,7 +1,7 @@
 // src/scripts/CreateComponentMapping
-import { ComponentType } from '@/scripts/schema';
-import BasicSquare from '@/packages/BasicSquare.vue';
-import BasicCircle from '@/packages/BasicCircle.vue';
+import { ComponentType } from '@scripts/schema';
+import BasicSquare from '@packages/BasicSquare.vue';
+import BasicCircle from '@packages/BasicCircle.vue';
 import capsule from '@packages/capsule.vue';
 import instaUpVote from '@packages/instaUpVote.vue';
 import CyberNeon from '@packages/CyberNeon.vue';

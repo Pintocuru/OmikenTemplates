@@ -16,30 +16,45 @@
    </div>
   </div>
   <div class="space-x-2">
-   <button @click="downloadAndShowInstructions" class="btn btn-primary">設定を出力</button>
+   <button @click="download" class="btn btn-primary">設定を出力</button>
   </div>
  </div>
 
  <!-- DaisyUI Modal Dialog -->
  <div class="modal" :class="{ 'modal-open': showModal }">
-  <div class="modal-box">
-   <h3 class="font-bold text-lg">設定ファイルのダウンロード完了</h3>
-   <p class="py-4">設定ファイルのダウンロードが完了しました。以下の場所に保存してください：</p>
-   <div class="bg-base-200 p-3 rounded-lg mb-4">
-    <code>project/config/config.js</code>
+  <div class="modal-box max-w-md">
+   <h3 class="font-bold text-lg text-primary mb-4">設定ファイルのダウンロード完了</h3>
+
+   <div class="space-y-4 text-sm">
+    <div class="flex items-start gap-3">
+     <div class="text-success mt-0.5">✓</div>
+     <p>設定ファイルのダウンロードが完了しました。</p>
+    </div>
+
+    <div class="bg-base-200 p-4 rounded-lg">
+     <h4 class="font-semibold mb-2 flex items-center gap-2">📋 次の手順</h4>
+     <ol class="list-decimal list-inside space-y-2">
+      <li>
+       <span class="font-medium">config.js</span>
+       ファイルを、コンフィグエディターと同じフォルダに上書き保存
+      </li>
+      <li>OBSなどのアプリケーションを再起動して新しい設定を反映</li>
+     </ol>
+    </div>
    </div>
-   <p>ファイルを上記のパスに配置後、アプリケーションを再起動すると新しい設定が反映されます。</p>
-   <div class="modal-action">
-    <button class="btn" @click="showModal = false">閉じる</button>
+
+   <div class="modal-action mt-6">
+    <button class="btn btn-primary" @click="showModal = false">閉じる</button>
    </div>
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useConfigMaker } from './useConfigMaker';
 import { presets } from './ConfigPresetsData';
-import { ref } from 'vue';
+import test from 'node:test';
 
 // pinia
 const configStore = useConfigMaker();
@@ -50,7 +65,7 @@ const isActivePreset = (presetId: string) => {
  const preset = presets.find((p) => p.id === presetId);
  if (!preset) return false;
 
- // 簡易比較 - 実際の実装ではより詳細な比較が必要かもしれません
+ // 簡易比較
  const configMatch = JSON.stringify(configStore.componentConfig) === JSON.stringify(preset.config);
  const setsMatch = JSON.stringify(configStore.counterSets) === JSON.stringify(preset.counterSets);
 
@@ -66,15 +81,11 @@ const applyPreset = (presetId: string) => {
  configStore.applyPreset(preset.config, preset.counterSets);
 };
 
-// 設定ファイルをダウンロードして説明を表示する関数
-const downloadAndShowInstructions = async () => {
+// 設定ファイルをダウンロードしてモーダルを表示
+const download = async () => {
  // 既存のダウンロード機能を呼び出し
  const success = await configStore.generateConfig();
-
- // ダウンロードが成功したらモーダルを表示
- if (success) {
-  showModal.value = true;
- }
+ if (success) showModal.value = true;
 };
 </script>
 

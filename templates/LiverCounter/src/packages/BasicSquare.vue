@@ -2,14 +2,8 @@
 <template>
  <div class="flex items-center justify-center">
   <div
-   class="relative aspect-square w-28 rounded-md overflow-hidden shadow-lg bg-white"
-   :style="{
-    color: getColorValue(colorClasses.dark),
-    borderWidth: '3px',
-    borderStyle: 'solid',
-    borderColor: getColorValue(colorClasses.base)
-   }"
-   :class="{ 'animate-wobble': isAnimating }"
+   class="relative aspect-square w-28 rounded-md overflow-hidden shadow-lg bg-white border-3"
+   :class="[colorClasses.borderColor, colorClasses.textColor, { 'animate-wobble': isAnimating }]"
   >
    <!-- 紙の質感 -->
    <div class="absolute inset-0 opacity-10 bg-texture"></div>
@@ -18,10 +12,7 @@
    <div
     v-if="counterConfig.title"
     class="w-full text-center pt-2 pb-1 px-2 font-semibold text-sm border-b"
-    :style="{
-     color: getColorValue(colorClasses.dark),
-     borderColor: getColorValue(colorClasses.light)
-    }"
+    :class="[colorClasses.textColor, colorClasses.borderLightColor]"
    >
     {{ counterConfig.title }}
    </div>
@@ -32,7 +23,7 @@
     <div
      v-if="counterConfig.multiplier !== 1"
      class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full text-xs font-bold shadow-md z-10 text-white"
-     :style="{ backgroundColor: getColorValue(colorClasses.dark) }"
+     :class="colorClasses.bgDarkColor"
     >
      x{{ counterConfig.multiplier }}
     </div>
@@ -42,9 +33,7 @@
      <span
       :key="count"
       class="font-display text-4xl leading-tight text-center"
-      :style="{
-       color: getColorValue(colorClasses.dark)
-      }"
+      :class="colorClasses.textColor"
      >
       {{ count }}
      </span>
@@ -88,63 +77,60 @@ watch(
 // カラークラス設定
 const colorClasses = computed(() => {
  const type = props.counterConfig.typeColor ?? 'default';
- const colors = {
-  default: { base: 'gray-600', light: 'gray-500', dark: 'gray-700' },
-  blue: { base: 'blue-600', light: 'blue-500', dark: 'blue-700' },
-  green: { base: 'green-600', light: 'green-500', dark: 'green-700' },
-  red: { base: 'red-600', light: 'red-500', dark: 'red-700' },
-  purple: { base: 'purple-600', light: 'purple-500', dark: 'purple-700' },
-  yellow: { base: 'yellow-600', light: 'yellow-500', dark: 'yellow-700' },
-  pink: { base: 'pink-600', light: 'pink-500', dark: 'pink-700' },
-  gray: { base: 'gray-600', light: 'gray-500', dark: 'gray-700' }
- };
 
- return colors[type];
-});
-
-// Tailwindの色クラスから実際のカラーコードに変換
-const getColorValue = (colorClass: string) => {
- const colorMap: Record<string, Record<string, string>> = {
-  gray: {
-   '500': '#6b7280',
-   '600': '#4b5563',
-   '700': '#374151'
+ const colorMap = {
+  default: {
+   borderColor: 'border-gray-600',
+   borderLightColor: 'border-gray-500',
+   textColor: 'text-gray-700',
+   bgDarkColor: 'bg-gray-700'
   },
   blue: {
-   '500': '#3b82f6',
-   '600': '#2563eb',
-   '700': '#1d4ed8'
+   borderColor: 'border-blue-600',
+   borderLightColor: 'border-blue-500',
+   textColor: 'text-blue-700',
+   bgDarkColor: 'bg-blue-700'
   },
   green: {
-   '500': '#22c55e',
-   '600': '#16a34a',
-   '700': '#15803d'
+   borderColor: 'border-green-600',
+   borderLightColor: 'border-green-500',
+   textColor: 'text-green-700',
+   bgDarkColor: 'bg-green-700'
   },
   red: {
-   '500': '#ef4444',
-   '600': '#dc2626',
-   '700': '#b91c1c'
+   borderColor: 'border-red-600',
+   borderLightColor: 'border-red-500',
+   textColor: 'text-red-700',
+   bgDarkColor: 'bg-red-700'
   },
   purple: {
-   '500': '#a855f7',
-   '600': '#9333ea',
-   '700': '#7e22ce'
+   borderColor: 'border-purple-600',
+   borderLightColor: 'border-purple-500',
+   textColor: 'text-purple-700',
+   bgDarkColor: 'bg-purple-700'
   },
   yellow: {
-   '500': '#eab308',
-   '600': '#ca8a04',
-   '700': '#a16207'
+   borderColor: 'border-yellow-600',
+   borderLightColor: 'border-yellow-500',
+   textColor: 'text-yellow-700',
+   bgDarkColor: 'bg-yellow-700'
   },
   pink: {
-   '500': '#ec4899',
-   '600': '#db2777',
-   '700': '#be185d'
+   borderColor: 'border-pink-600',
+   borderLightColor: 'border-pink-500',
+   textColor: 'text-pink-700',
+   bgDarkColor: 'bg-pink-700'
+  },
+  gray: {
+   borderColor: 'border-gray-600',
+   borderLightColor: 'border-gray-500',
+   textColor: 'text-gray-700',
+   bgDarkColor: 'bg-gray-700'
   }
  };
 
- const [color, shade] = colorClass.split('-');
- return colorMap[color]?.[shade] || '#374151'; // デフォルトはgray-700
-};
+ return colorMap[type] || colorMap.default;
+});
 </script>
 
 <style>

@@ -42,17 +42,21 @@ const props = defineProps<{
  counterConfig: CounterConfig;
 }>();
 
-// 進捗率を計算
+// 進捗率
 const progressPercentage = computed(() => {
  if (props.counterConfig.targetCountdown === 0) return 0;
- return (props.count / props.counterConfig.targetCountdown) * 100;
+ const raw = (props.count / props.counterConfig.targetCountdown) * 100;
+ return Math.min(raw, 100);
 });
 
 // カラーテーマに基づいたクラスを設定 - ライトテーマ用
 const colorClasses = computed(() => {
  const color = props.counterConfig.typeColor || 'default';
 
- const colorMap = {
+ const colorMap: Record<
+  ColorType,
+  { labelColor: string; borderColor: string; barColor: string; badgeColor: string }
+ > = {
   default: {
    labelColor: 'text-blue-600',
    borderColor: 'border border-blue-200',

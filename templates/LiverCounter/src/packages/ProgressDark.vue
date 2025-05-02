@@ -11,6 +11,7 @@
    </div>
 
    <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+    <!-- 進捗バー -->
     <div
      class="h-full transition-all duration-300"
      :class="colorClasses.barColor"
@@ -34,7 +35,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ColorType, CounterConfig } from '@/scripts/schema';
+import { ColorType, CounterConfig } from '@scripts/schema';
 
 const props = defineProps<{
  count: number;
@@ -42,17 +43,21 @@ const props = defineProps<{
  counterConfig: CounterConfig;
 }>();
 
-// 進捗率を計算
+// 進捗率
 const progressPercentage = computed(() => {
  if (props.counterConfig.targetCountdown === 0) return 0;
- return (props.count / props.counterConfig.targetCountdown) * 100;
+ const raw = (props.count / props.counterConfig.targetCountdown) * 100;
+ return Math.min(raw, 100);
 });
 
 // カラーテーマに基づいたクラスを設定
 const colorClasses = computed(() => {
  const color = props.counterConfig.typeColor || 'default';
 
- const colorMap = {
+ const colorMap: Record<
+  ColorType,
+  { labelColor: string; borderColor: string; barColor: string; badgeColor: string }
+ > = {
   default: {
    labelColor: 'text-blue-400',
    borderColor: 'border border-gray-600',
