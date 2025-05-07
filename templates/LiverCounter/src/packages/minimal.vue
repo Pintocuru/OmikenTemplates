@@ -12,7 +12,7 @@
    <div class="flex flex-col items-center">
     <span
      class="text-4xl font-light transition-all duration-300"
-     :style="{ color: colorVars['--counter-color'] }"
+     :class="colorMap[counterConfig.typeColor ?? 'default'].textColor"
     >
      {{ count }}
     </span>
@@ -28,7 +28,9 @@
      <span class="text-xl font-light text-gray-500">
       {{ countMax }}
      </span>
-     <span class="text-xs text-gray-500 mt-1">最大</span>
+     <span class="text-xs text-gray-500 mt-1">
+      {{ counterConfig.targetCountdown !== 0 ? '目標' : '最大' }}
+     </span>
     </div>
    </template>
 
@@ -44,8 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { ColorType, CounterConfig } from '@/scripts/schema';
+import { ColorType, CounterConfig } from '@scripts/schema';
 
 const props = defineProps<{
  count: number;
@@ -54,22 +55,14 @@ const props = defineProps<{
 }>();
 
 // カラースキームに基づいたCSS変数を計算
-const colorVars = computed(() => {
- const colorMap: Record<ColorType, string> = {
-  default: '#1f2937', // = gray-800
-  blue: '#1e40af', // = blue-800
-  green: '#065f46', // = green-800
-  red: '#991b1b', // = red-800
-  purple: '#6b21a8', // = purple-800
-  yellow: '#854d0e', // = yellow-800
-  pink: '#9d174d', // = pink-800
-  gray: '#d1d5dc' // = gray-300
- };
-
- const selectedColor = colorMap[props.counterConfig.typeColor ?? 'default'];
-
- return {
-  '--counter-color': selectedColor
- };
-});
+const colorMap: Record<ColorType, { textColor: string }> = {
+ default: { textColor: 'text-gray-800' },
+ blue: { textColor: 'text-blue-800' },
+ green: { textColor: 'text-green-800' },
+ red: { textColor: 'text-red-800' },
+ purple: { textColor: 'text-purple-800' },
+ yellow: { textColor: 'text-yellow-800' },
+ pink: { textColor: 'text-pink-800' },
+ gray: { textColor: 'text-gray-300' }
+};
 </script>

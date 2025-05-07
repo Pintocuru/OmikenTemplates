@@ -14,29 +14,34 @@
    <span v-else-if="connectionStatus === 'onecomme'">🐶 わんコメありモード</span>
   </div>
 
-  <!-- Total counter component -->
-  <TotalCounter
-   v-if="componentConfig.totalCounterSet"
-   :counters="counters"
-   :totalCounterConfig="componentConfig.totalCounterSet"
-  />
-  <hr class="mb-4" />
   <div
-   :class="[
-    componentConfig.isHorizontalLayout ? 'flex flex-row space-x-4' : 'flex flex-col space-y-4'
-   ]"
+   :class="['flex flex-col', componentConfig.isHorizontalLayout ? 'items-center' : 'items-start']"
   >
-   <component
-    :is="getComponent(counter.counterConfig.component)"
-    v-for="(counter, index) in counters"
-    :key="index"
-    :count="counter.count.value"
-    :countMax="counter.countMax.value"
-    :counterConfig="counter.counterConfig"
-    :state="counter.state"
-    @click.prevent="counter.increment"
-    @contextmenu.prevent="counter.decrement"
+   <!-- Total counter component -->
+   <TotalCounter
+    v-if="componentConfig.totalCounterSet"
+    :counters="counters"
+    :totalCounterConfig="componentConfig.totalCounterSet"
    />
+   <hr class="mb-4" />
+   <div
+    :class="[
+     componentConfig.isHorizontalLayout ? 'flex flex-row space-x-2' : 'flex flex-col space-y-2',
+     componentConfig.isHorizontalLayout ? 'items-center' : 'items-start'
+    ]"
+   >
+    <component
+     :is="getComponent(counter.counterConfig.component)"
+     v-for="(counter, index) in counters"
+     :key="index"
+     :count="counter.count.value"
+     :countMax="counter.countMax.value"
+     :counterConfig="counter.counterConfig"
+     :state="counter.state"
+     @click.prevent="counter.increment"
+     @contextmenu.prevent="counter.decrement"
+    />
+   </div>
   </div>
  </div>
 </template>

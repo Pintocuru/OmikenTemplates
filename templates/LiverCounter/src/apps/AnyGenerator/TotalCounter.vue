@@ -26,12 +26,11 @@ const props = defineProps<{
 
 // Calculate the total count based on all counters
 const totalCount = computed(() => {
- return props.counters.reduce((total, counter) => {
+ const total = props.counters.reduce((sum, counter) => {
   const { count, countMax, counterConfig } = counter;
 
   const isCountdownMode = counterConfig.targetCountdown > 0;
 
-  // 実際の加算対象となる値
   const baseValue = isCountdownMode
    ? counterConfig.targetCountdown - count.value
    : countMax.value !== null
@@ -40,7 +39,9 @@ const totalCount = computed(() => {
 
   const multipliedValue = baseValue * counterConfig.multiplier;
 
-  return total + multipliedValue;
+  return sum + multipliedValue;
  }, 0);
+
+ return Math.floor(total); // 小数点以下を切り捨て
 });
 </script>

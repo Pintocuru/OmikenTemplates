@@ -3,7 +3,7 @@
  <div class="card bg-base-200 p-4">
   <!-- ヘッダー部分 -->
   <div class="flex justify-between items-center mb-4">
-   <h2 class="text-xl font-semibold">カウンターセット設定</h2>
+   <h2 class="text-xl font-semibold">🔢カウンターセット設定 (Counter Set Settings)</h2>
    <div class="flex gap-2">
     <button v-if="isDevelopmentMode" @click="test" class="btn btn-sm btn-primary">
      test:コンソール出力
@@ -71,7 +71,9 @@
    <!-- WordParty/BOT設定 -->
    <div class="collapse collapse-arrow bg-base-300">
     <input type="checkbox" class="peer" />
-    <div class="collapse-title text-lg font-semibold">WordParty/BOT設定</div>
+    <div class="collapse-title text-lg font-semibold">
+     🎉WordParty/BOT 設定 (WordParty & BOT Settings)
+    </div>
     <div class="collapse-content flex flex-col gap-4">
      <PartyEventsSettings v-model="activeSet.counter" />
      <BotEventsSettings v-model="activeSet.counter" />

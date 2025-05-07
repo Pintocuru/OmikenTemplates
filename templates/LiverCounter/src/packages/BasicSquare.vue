@@ -2,8 +2,8 @@
 <template>
  <div class="flex items-center justify-center">
   <div
-   class="relative aspect-square w-28 rounded-md overflow-hidden shadow-lg bg-white border-3"
-   :class="[colorClasses.borderColor, colorClasses.textColor, { 'animate-wobble': isAnimating }]"
+   class="relative min-w-28 w-auto max-w-xs rounded-md overflow-hidden shadow-lg bg-white border-3"
+   :class="[colorConfig.borderColor, colorConfig.textColor, { 'animate-wobble': isAnimating }]"
   >
    <!-- 紙の質感 -->
    <div class="absolute inset-0 opacity-10 bg-texture"></div>
@@ -12,7 +12,7 @@
    <div
     v-if="counterConfig.title"
     class="w-full text-center pt-2 pb-1 px-2 font-semibold text-sm border-b"
-    :class="[colorClasses.textColor, colorClasses.borderLightColor]"
+    :class="[colorConfig.textColor, colorConfig.borderLightColor]"
    >
     {{ counterConfig.title }}
    </div>
@@ -23,17 +23,20 @@
     <div
      v-if="counterConfig.multiplier !== 1"
      class="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full text-xs font-bold shadow-md z-10 text-white"
-     :class="colorClasses.bgDarkColor"
+     :class="colorConfig.bgColor"
     >
      x{{ counterConfig.multiplier }}
     </div>
 
     <!-- カウンター値 -->
-    <div class="relative flex items-center justify-center w-full px-1">
+    <div class="relative flex items-center justify-center w-full px-1 whitespace-nowrap">
      <span
       :key="count"
-      class="font-display text-4xl leading-tight text-center"
-      :class="colorClasses.textColor"
+      class="font-display leading-tight text-center"
+      :class="[
+       colorConfig.textColor,
+       { 'text-4xl': String(count).length <= 2, 'text-3xl': String(count).length > 2 }
+      ]"
      >
       {{ count }}
      </span>
@@ -46,13 +49,24 @@
      </div>
     </div>
    </div>
+   <!-- ✅ 進捗バー -->
+   <div
+    v-if="counterConfig.targetCountdown !== 0"
+    class="absolute bottom-0 left-0 h-1.5 transition-all duration-300"
+    :class="[
+     progressPercentage === 100
+      ? 'bg-gradient-to-r from-pink-500 via-yellow-400 to-cyan-400 animate-gradient'
+      : 'bg-' + colorMap[counterConfig.typeColor || 'default'].borderColor.replace('border-', '')
+    ]"
+    :style="{ width: `${progressPercentage}%` }"
+   />
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { ColorType, CounterConfig } from '@/scripts/schema';
+import { ColorType, CounterConfig } from '@scripts/schema';
 
 const props = defineProps<{
  count: number;
@@ -62,6 +76,13 @@ const props = defineProps<{
 
 // アニメーション制御
 const isAnimating = ref(false);
+
+// 進捗率
+const progressPercentage = computed(() => {
+ if (props.counterConfig.targetCountdown === 0) return 0;
+ const raw = (props.count / props.counterConfig.targetCountdown) * 100;
+ return Math.min(raw, 100);
+});
 
 // カウント変更時のアニメーション
 watch(
@@ -75,59 +96,67 @@ watch(
 );
 
 // カラークラス設定
-const colorClasses = computed(() => {
- const type = props.counterConfig.typeColor ?? 'default';
+const colorMap: Record<
+ ColorType,
+ {
+  borderColor: string;
+  borderLightColor: string;
+  textColor: string;
+  bgColor: string;
+ }
+> = {
+ default: {
+  borderColor: 'border-gray-600',
+  borderLightColor: 'border-gray-500',
+  textColor: 'text-gray-700',
+  bgColor: 'bg-gray-700'
+ },
+ blue: {
+  borderColor: 'border-blue-600',
+  borderLightColor: 'border-blue-500',
+  textColor: 'text-blue-700',
+  bgColor: 'bg-blue-700'
+ },
+ green: {
+  borderColor: 'border-green-600',
+  borderLightColor: 'border-green-500',
+  textColor: 'text-green-700',
+  bgColor: 'bg-green-700'
+ },
+ red: {
+  borderColor: 'border-red-600',
+  borderLightColor: 'border-red-500',
+  textColor: 'text-red-700',
+  bgColor: 'bg-red-700'
+ },
+ purple: {
+  borderColor: 'border-purple-600',
+  borderLightColor: 'border-purple-500',
+  textColor: 'text-purple-700',
+  bgColor: 'bg-purple-700'
+ },
+ yellow: {
+  borderColor: 'border-yellow-600',
+  borderLightColor: 'border-yellow-500',
+  textColor: 'text-yellow-700',
+  bgColor: 'bg-yellow-700'
+ },
+ pink: {
+  borderColor: 'border-pink-600',
+  borderLightColor: 'border-pink-500',
+  textColor: 'text-pink-700',
+  bgColor: 'bg-pink-700'
+ },
+ gray: {
+  borderColor: 'border-gray-600',
+  borderLightColor: 'border-gray-500',
+  textColor: 'text-gray-700',
+  bgColor: 'bg-gray-700'
+ }
+};
 
- const colorMap = {
-  default: {
-   borderColor: 'border-gray-600',
-   borderLightColor: 'border-gray-500',
-   textColor: 'text-gray-700',
-   bgDarkColor: 'bg-gray-700'
-  },
-  blue: {
-   borderColor: 'border-blue-600',
-   borderLightColor: 'border-blue-500',
-   textColor: 'text-blue-700',
-   bgDarkColor: 'bg-blue-700'
-  },
-  green: {
-   borderColor: 'border-green-600',
-   borderLightColor: 'border-green-500',
-   textColor: 'text-green-700',
-   bgDarkColor: 'bg-green-700'
-  },
-  red: {
-   borderColor: 'border-red-600',
-   borderLightColor: 'border-red-500',
-   textColor: 'text-red-700',
-   bgDarkColor: 'bg-red-700'
-  },
-  purple: {
-   borderColor: 'border-purple-600',
-   borderLightColor: 'border-purple-500',
-   textColor: 'text-purple-700',
-   bgDarkColor: 'bg-purple-700'
-  },
-  yellow: {
-   borderColor: 'border-yellow-600',
-   borderLightColor: 'border-yellow-500',
-   textColor: 'text-yellow-700',
-   bgDarkColor: 'bg-yellow-700'
-  },
-  pink: {
-   borderColor: 'border-pink-600',
-   borderLightColor: 'border-pink-500',
-   textColor: 'text-pink-700',
-   bgDarkColor: 'bg-pink-700'
-  },
-  gray: {
-   borderColor: 'border-gray-600',
-   borderLightColor: 'border-gray-500',
-   textColor: 'text-gray-700',
-   bgDarkColor: 'bg-gray-700'
-  }
- };
+const colorConfig = computed(() => {
+ const type = props.counterConfig.typeColor ?? 'default';
 
  return colorMap[type] || colorMap.default;
 });
@@ -181,5 +210,22 @@ const colorClasses = computed(() => {
 
 .animate-wobble {
  animation: wobble 0.8s ease;
+}
+
+@keyframes gradientAnimation {
+ 0% {
+  background-position: 0% 50%;
+ }
+ 50% {
+  background-position: 100% 50%;
+ }
+ 100% {
+  background-position: 0% 50%;
+ }
+}
+
+.animate-gradient {
+ background-size: 200% 200%;
+ animation: gradientAnimation 3s ease infinite;
 }
 </style>

@@ -65,7 +65,7 @@
     <div
      v-if="counterConfig.title"
      class="absolute top-3 left-0 right-0 title-badge text-center text-lg font-bold py-1 mx-auto w-4/5 rounded-full transform transition-all duration-300 ease-in-out"
-     :class="colorConfig.text"
+     :class="colorConfig.textColor"
     >
      {{ counterConfig.title }}
     </div>
@@ -89,7 +89,7 @@
         :key="count"
         class="counter-value font-bold transition-all duration-300"
         :class="[
-         colorConfig.text,
+         colorConfig.textColor,
          { 'text-3xl': String(count).length <= 2, 'text-2xl': String(count).length > 2 }
         ]"
        >
@@ -100,7 +100,7 @@
       <span
        v-if="counterConfig.unit || typeof countMax === 'number'"
        class="counter-unit font-bold"
-       :class="colorConfig.textOpacity"
+       :class="colorConfig.textColor"
       >
        {{ counterConfig.unit }}{{ typeof countMax === 'number' ? ` / ${countMax}` : '' }}
       </span>
@@ -110,7 +110,7 @@
      <div
       v-if="counterConfig.multiplier !== 1"
       class="multiplier-badge text-xs font-bold px-3 py-0 rounded-full text-white mt-0 shadow-md transform transition-transform duration-300"
-      :class="colorConfig.bg"
+      :class="colorConfig.bgColor"
      >
       ×{{ counterConfig.multiplier }}
      </div>
@@ -139,81 +139,71 @@ const progressPercentage = computed(() => {
 
 // 色の設定をひとまとめにする
 const colorConfig = computed(() => {
- const colorType = props.counterConfig.typeColor || 'blue';
+ const colorType = props.counterConfig.typeColor || 'default';
  return {
-  gradient: colorMappings[colorType].gradient,
-  text: colorMappings[colorType].text,
-  textOpacity: colorMappings[colorType].textOpacity,
-  bg: colorMappings[colorType].bg,
-  progressStroke: colorMappings[colorType].progressStroke
+  gradient: colorMap[colorType].gradient,
+  textColor: colorMap[colorType].textColor,
+  bgColor: colorMap[colorType].bgColor,
+  progressStroke: colorMap[colorType].progressStroke
  };
 });
 
 // 色のマッピング
-const colorMappings: Record<
+const colorMap: Record<
  ColorType,
  {
   gradient: string;
-  text: string;
-  textOpacity: string;
-  bg: string;
+  textColor: string;
+  bgColor: string;
   progressStroke: string;
  }
 > = {
  default: {
   gradient: 'bg-gradient-to-br from-gray-600 to-gray-800',
-  text: 'text-gray-700',
-  textOpacity: 'text-gray-700/70',
-  bg: 'bg-gray-700',
+  textColor: 'text-gray-700',
+  bgColor: 'bg-gray-700',
   progressStroke: '#9CA3AF' // gray-400
  },
  blue: {
-  gradient: 'bg-gradient-to-br from-blue-400 to-blue-600',
-  text: 'text-blue-500',
-  textOpacity: 'text-blue-500/70',
-  bg: 'bg-blue-500',
+  gradient: 'bg-gradient-to-br from-blue-400 to-blue-700',
+  textColor: 'text-blue-700',
+  bgColor: 'bg-blue-500',
   progressStroke: '#60A5FA' // blue-400
  },
  green: {
   gradient: 'bg-gradient-to-br from-green-400 to-green-700',
-  text: 'text-green-600',
-  textOpacity: 'text-green-600/70',
-  bg: 'bg-green-600',
+  textColor: 'text-green-700',
+  bgColor: 'bg-green-500',
   progressStroke: '#34D399' // green-400
  },
  red: {
-  gradient: 'bg-gradient-to-br from-red-400 to-red-600',
-  text: 'text-red-500',
-  textOpacity: 'text-red-500/70',
-  bg: 'bg-red-500',
+  gradient: 'bg-gradient-to-br from-red-400 to-red-700',
+  textColor: 'text-red-700',
+  bgColor: 'bg-red-500',
   progressStroke: '#F87171' // red-400
  },
  purple: {
-  gradient: 'bg-gradient-to-br from-purple-300 to-purple-600',
-  text: 'text-purple-500',
-  textOpacity: 'text-purple-500/70',
-  bg: 'bg-purple-500',
+  gradient: 'bg-gradient-to-br from-purple-400 to-purple-700',
+  textColor: 'text-purple-700',
+  bgColor: 'bg-purple-500',
   progressStroke: '#C084FC' // purple-400
  },
  yellow: {
-  gradient: 'bg-gradient-to-br from-yellow-400 to-yellow-600',
-  text: 'text-yellow-500',
-  textOpacity: 'text-yellow-500/70',
-  bg: 'bg-yellow-500',
+  gradient: 'bg-gradient-to-br from-yellow-400 to-yellow-700',
+  textColor: 'text-yellow-700',
+  bgColor: 'bg-yellow-500',
   progressStroke: '#FBBF24' // yellow-400
  },
  pink: {
   gradient: 'bg-gradient-to-br from-pink-400 to-pink-700',
-  text: 'text-pink-500',
-  textOpacity: 'text-pink-500/70',
-  bg: 'bg-pink-500',
+  textColor: 'text-pink-700',
+  bgColor: 'bg-pink-500',
   progressStroke: '#F472B6' // pink-400
  },
  gray: {
   gradient: 'bg-gradient-to-br from-gray-400 to-gray-600',
-  text: 'text-gray-500',
-  textOpacity: 'text-gray-500/70',
-  bg: 'bg-gray-500',
+  textColor: 'text-gray-500',
+  bgColor: 'bg-gray-500',
   progressStroke: '#9CA3AF' // gray-400
  }
 };

@@ -1,7 +1,7 @@
 <!-- src/apps/configMaker/components/ComponentConfigEditor.vue -->
 <template>
  <div class="card bg-base-200 p-4">
-  <h2 class="text-xl font-semibold mb-4">コンポーネント設定</h2>
+  <h2 class="text-xl font-semibold mb-4">🧩 コンポーネント設定（Component Settings）</h2>
 
   <!-- レイアウト設定 -->
   <div class="mb-4">

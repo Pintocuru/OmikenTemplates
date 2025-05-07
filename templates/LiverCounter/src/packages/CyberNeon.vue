@@ -32,7 +32,7 @@
      :class="[
       progressPercentage === 100
        ? 'bg-gradient-to-r from-pink-500 via-yellow-400 to-cyan-400 animate-gradient'
-       : 'bg-' + colorClassMap[counterConfig.typeColor || 'default'].border.replace('border-', '')
+       : colorMap[counterConfig.typeColor || 'default'].bgColor
      ]"
      :style="{ width: `${progressPercentage}%` }"
     />
@@ -57,26 +57,34 @@ const props = defineProps<{
 }>();
 
 // Tailwindのカラークラスマッピング
-const colorClassMap: Record<ColorType, { text: string; border: string }> = {
- default: { text: 'text-gray-300', border: 'border-gray-300' },
- blue: { text: 'text-blue-600', border: 'border-blue-600' },
- green: { text: 'text-green-600', border: 'border-green-600' },
- red: { text: 'text-red-600', border: 'border-red-600' },
- purple: { text: 'text-purple-600', border: 'border-purple-600' },
- yellow: { text: 'text-yellow-600', border: 'border-yellow-600' },
- pink: { text: 'text-pink-600', border: 'border-pink-600' },
- gray: { text: 'text-gray-600', border: 'border-gray-600' }
+const colorMap: Record<ColorType, { textColor: string; borderColor: string; bgColor: string }> = {
+ default: { textColor: 'text-gray-300', borderColor: 'border-gray-300', bgColor: 'bg-gray-300' },
+ blue: { textColor: 'text-blue-600', borderColor: 'border-blue-600', bgColor: 'bg-blue-600' },
+ green: { textColor: 'text-green-600', borderColor: 'border-green-600', bgColor: 'bg-green-600' },
+ red: { textColor: 'text-red-600', borderColor: 'border-red-600', bgColor: 'bg-red-600' },
+ purple: {
+  textColor: 'text-purple-600',
+  borderColor: 'border-purple-600',
+  bgColor: 'bg-purple-600'
+ },
+ yellow: {
+  textColor: 'text-yellow-600',
+  borderColor: 'border-yellow-600',
+  bgColor: 'bg-yellow-600'
+ },
+ pink: { textColor: 'text-pink-600', borderColor: 'border-pink-600', bgColor: 'bg-pink-600' },
+ gray: { textColor: 'text-gray-600', borderColor: 'border-gray-600', bgColor: 'bg-gray-600' }
 };
 
 // 計算プロパティでクラスを取得
 const getBorderColorClass = computed(() => {
  const color = props.counterConfig.typeColor || 'default';
- return colorClassMap[color].border;
+ return colorMap[color].borderColor;
 });
 
 const getTextColorClass = computed(() => {
  const color = props.counterConfig.typeColor || 'default';
- return colorClassMap[color].text;
+ return colorMap[color].textColor;
 });
 
 // 進捗率

@@ -31,11 +31,11 @@ export const presets: ConfigPreset[] = [
     },
     counter: {
      component: 'BasicCircle',
-     typeColor: 'default',
+     typeColor: 'pink',
      title: '初コメ',
      unit: '人',
      countMode: 'syoken',
-     targetCountdown: 0,
+     targetCountdown: 10,
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '!syoken',
@@ -58,11 +58,11 @@ export const presets: ConfigPreset[] = [
     },
     counter: {
      component: 'BasicCircle',
-     typeColor: 'default',
+     typeColor: 'blue',
      title: 'リスナー',
      unit: '人',
      countMode: 'user',
-     targetCountdown: 0,
+     targetCountdown: 30,
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
@@ -85,11 +85,11 @@ export const presets: ConfigPreset[] = [
     },
     counter: {
      component: 'BasicCircle',
-     typeColor: 'default',
+     typeColor: 'green',
      title: 'コメント',
-     unit: 'コメ',
+     unit: '',
      countMode: 'comment',
-     targetCountdown: 0,
+     targetCountdown: 500,
      multiplier: 1,
      PARTY: {},
      PARTY_EVENT: '',
@@ -208,7 +208,7 @@ export const presets: ConfigPreset[] = [
   name: '今日のランチ代',
   config: {
    totalCounterSet: {
-    component: 'BasicSquare',
+    component: 'instaUpVote',
     typeColor: 'default',
     title: '今日のランチ代',
     unit: '円',
@@ -237,13 +237,13 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'CyberNeon',
      typeColor: 'red',
      title: '初コメ',
      unit: '',
      countMode: 'syoken',
      targetCountdown: 0,
-     multiplier: 50,
+     multiplier: 10,
      PARTY: {},
      PARTY_EVENT: '',
      PARTY_SUCCESS: '',
@@ -264,7 +264,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: ['おは', 'こん']
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'CyberNeon',
      typeColor: 'yellow',
      title: 'あいさつ',
      unit: '',
@@ -291,7 +291,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'CyberNeon',
      typeColor: 'green',
      title: 'コメント',
      unit: '',
@@ -318,13 +318,13 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'CyberNeon',
      typeColor: 'blue',
      title: '同接数',
      unit: '',
      countMode: 'viewer',
      targetCountdown: 0,
-     multiplier: 1,
+     multiplier: 5,
      PARTY: {},
      PARTY_EVENT: '',
      PARTY_SUCCESS: '',
@@ -345,13 +345,13 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'CyberNeon',
      typeColor: 'purple',
      title: '高評価',
      unit: '',
      countMode: 'upVote',
      targetCountdown: 0,
-     multiplier: 1,
+     multiplier: 5,
      PARTY: {},
      PARTY_EVENT: '',
      PARTY_SUCCESS: '',
@@ -372,7 +372,7 @@ export const presets: ConfigPreset[] = [
      KEYWORDS: []
     },
     counter: {
-     component: 'BasicSquare',
+     component: 'CyberNeon',
      typeColor: 'pink',
      title: 'ギフト',
      unit: '',
@@ -382,48 +382,6 @@ export const presets: ConfigPreset[] = [
      PARTY: {},
      PARTY_EVENT: '',
      PARTY_SUCCESS: '',
-     BOT_NAME: 'info',
-     BOT: {},
-     BOT_EVENT: '',
-     BOT_SUCCESS: ''
-    }
-   }
-  ]
- },
- {
-  id: 'test5',
-  name: 'コメント耐久',
-  config: {
-   totalCounterSet: null,
-   isHorizontalLayout: true
-  },
-  counterSets: [
-   {
-    id: 'counter-1744351060756',
-    userVisits: {
-     IS_DIFF_MODE: false,
-     ENABLED_SERVICES: 'platforms',
-     ALLOWED_IDS: ['!zibun-no-ID'],
-     ACCESS_LEVEL: 1,
-     IS_GIFT: false,
-     KEYWORDS: []
-    },
-    counter: {
-     component: 'instaUpVote',
-     typeColor: 'default',
-     title: 'コメント数',
-     unit: 'コメ',
-     countMode: 'comment',
-     targetCountdown: 500,
-     multiplier: 1,
-     PARTY: {
-      '100': '!残り400',
-      '200': '!残り300',
-      '300': '!残り200',
-      '400': '!残り100'
-     },
-     PARTY_EVENT: '',
-     PARTY_SUCCESS: '!目標達成',
      BOT_NAME: 'info',
      BOT: {},
      BOT_EVENT: '',

@@ -32,20 +32,22 @@
    <div class="absolute inset-0 flex flex-col items-center justify-center text-center z-10">
     <!-- タイトル -->
     <div
-     class="text-xs font-bold uppercase tracking-wider mb-1 text-glow transition-all duration-300"
-     :style="{ color: colorVars['--counter-color'] }"
+     class="text-white font-bold opacity-70 uppercase tracking-wider text-glow transition-all duration-300"
     >
      {{ counterConfig.title }}
     </div>
 
     <!-- カウント値 -->
     <div class="flex items-baseline">
-     <span class="text-4xl font-bold text-white value-display transition-all duration-300">{{
-      count
-     }}</span>
-     <span v-if="typeof countMax === 'number'" class="text-xs ml-1 text-gray-300"
-      >/{{ countMax ?? '' }}</span
+     <span
+      class="font-bold text-white value-display transition-all duration-300"
+      :class="[{ 'text-5xl': String(count).length <= 2, 'text-4xl': String(count).length > 2 }]"
      >
+      {{ count }}
+     </span>
+     <span v-if="typeof countMax === 'number'" class="ml-1 text-gray-300">
+      /{{ countMax ?? '' }}
+     </span>
     </div>
 
     <!-- 倍率バッジ -->
