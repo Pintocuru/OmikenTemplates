@@ -4,7 +4,7 @@
  "description": "わんコメのテンプレートbasicをVue+TypeScriptで対応させたバージョン",
  "scripts": {
   "dev": "vite",
-  "build": "webpack --config webpack.config.mjs"
+  "build": "webpack"
  },
  "author": "Pintocuru",
  "license": "Apache-2.0",

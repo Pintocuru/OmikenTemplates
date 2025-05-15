@@ -5,7 +5,7 @@ import { defineConfig, mergeConfig } from 'vite';
 
 // ホットリロード用設定
 export default defineConfig(({ mode }) => {
- return mergeConfig(baseViteConfig(__dirname, mode, false), {
+ return mergeConfig(baseViteConfig(__dirname), {
   root: path.resolve(__dirname),
   publicDir: path.resolve(__dirname, '../../public'),
   resolve: {

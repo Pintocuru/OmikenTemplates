@@ -26,6 +26,7 @@ import SuikaResult from './SuikaResult.vue';
 import SuikaRankingList from './SuikaRankingList.vue';
 import type { CommentChara, ConfigType } from '@common/commonTypes';
 import { getGameData } from '@common/ApiHandler';
+import { onMounted, watch } from 'vue';
 
 const props = defineProps<{
  filterComments: CommentChara[];

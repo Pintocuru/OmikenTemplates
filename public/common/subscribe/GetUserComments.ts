@@ -11,6 +11,12 @@ export function GetUserComments(config: ConfigUserType, isFirstComment: boolean 
 
  const fetchComments = async (callback?: (comments: Comment[]) => void): Promise<boolean> => {
   return await GetComments(true, isFirstComment, (comments) => {
+   // comments が空なら、リセット処理
+   if (comments.length === 0) {
+    userComments.value = [];
+    if (callback) callback([]);
+    return;
+   }
    // コメントをフィルタリング
    const processed = processor.process(comments, userComments.value);
    if (processed !== null) {
