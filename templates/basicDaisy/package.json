@@ -1,0 +1,13 @@
+{
+ "name": "basic-daisy",
+ "version": "0.0.1",
+ "description": "わんコメのテンプレートbasicをVue+TypeScriptで対応させたバージョン",
+ "scripts": {
+  "dev:basic-daisy": "vite",
+  "build:basic-daisy": "webpack"
+ },
+ "author": "Pintocuru",
+ "license": "Apache-2.0",
+ "main": "src/main.js",
+ "type": "module"
+}
