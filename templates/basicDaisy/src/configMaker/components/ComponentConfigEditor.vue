@@ -130,7 +130,7 @@ import { ref, computed, watch } from 'vue';
 import { CounterConfig, TAILWIND_COLORS, createDefaultCounterSet } from '@scripts/schema';
 import { getComponent } from '@scripts/CreateComponentMapping';
 import { componentMap } from '@scripts/schema';
-import { useConfigMaker } from './useConfigMaker';
+import { useConfigMaker } from '../script/useConfigMaker';
 
 // ストア全体を参照
 const configStore = useConfigMaker();

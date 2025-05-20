@@ -60,7 +60,7 @@ export type ConfigBotType = {
  BOT_POST_PARAM: string[]; // paramがPOST_PARAMに含まれているか(!paramなら含まれていないか)
 };
 
-// おみくじBOTプラグインでBOT用のconfig
+// subscribe/GetUserComments.ts 用の Config
 export type ConfigUserType = {
  IS_DIFF_MODE: boolean; // 差分モードにするか(true:'diff',false:'all')
  ENABLED_SERVICES: 'all' | 'platforms' | ServiceType; // 'all'/'platforms'/サービスリスト

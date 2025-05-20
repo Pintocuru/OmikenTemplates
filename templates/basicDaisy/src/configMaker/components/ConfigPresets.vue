@@ -1,7 +1,8 @@
 <!-- src/apps/configMaker/components/ConfigPresets.vue -->
 <template>
  <div class="flex flex-wrap justify-between items-center gap-4">
-  <div class="preset-container">
+  <!-- プリセット -->
+  <div v-if="presets.length > 0" class="preset-container">
    <span class="font-medium mr-2">プリセット:</span>
    <div class="flex flex-wrap gap-2">
     <button
@@ -52,8 +53,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useConfigMaker } from './useConfigMaker';
-import { presets } from './ConfigPresetsData';
+import { useConfigMaker } from '../script/useConfigMaker';
+import { presets } from '../script/ConfigPresetsData';
 
 // pinia
 const configStore = useConfigMaker();
@@ -65,10 +66,9 @@ const isActivePreset = (presetId: string) => {
  if (!preset) return false;
 
  // 簡易比較
- const configMatch = JSON.stringify(configStore.componentConfig) === JSON.stringify(preset.config);
- const setsMatch = JSON.stringify(configStore.counterSets) === JSON.stringify(preset.counterSets);
+ const configMatch = JSON.stringify(configStore.config) === JSON.stringify(preset.config);
 
- return configMatch && setsMatch;
+ return configMatch;
 };
 
 // プリセットを適用する関数
@@ -77,7 +77,7 @@ const applyPreset = (presetId: string) => {
  if (!preset) return;
 
  // configStoreの状態を更新
- configStore.applyPreset(preset.config, preset.counterSets);
+ //configStore.applyPreset(preset.config);
 };
 
 // 設定ファイルをダウンロードしてモーダルを表示

@@ -89,8 +89,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { createDefaultCounterSet } from '@scripts/schema';
-import { useConfigMaker } from './useConfigMaker';
+import { createDefaultCounterSet } from '@/schema';
+import { useConfigMaker } from '../script/useConfigMaker';
 import SampleComponent from './SampleComponent.vue';
 import CounterConfigEditor from './CounterConfigEditor.vue';
 import UserVisitsEditor from './UserVisitsEditor.vue';

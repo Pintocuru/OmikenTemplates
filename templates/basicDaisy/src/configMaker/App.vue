@@ -11,7 +11,7 @@
 
   <!-- ComponentConfig 編集セクション -->
   <div class="mb-6">
-   <UserVisitsEditor v-model="activeSet.userVisits" :counter="activeSet.counter" />
+   <UserVisitsEditor />
   </div>
  </div>
 </template>

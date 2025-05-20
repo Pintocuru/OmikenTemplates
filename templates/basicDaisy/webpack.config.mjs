@@ -1,60 +1,101 @@
 // [packages] webpack.config.mjs
+import { createConfig, createCommonPlugins, createCommonResolve } from '../../webpack.config.mjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createConfig, createCommonPlugins, createCommonResolve } from '../../webpack.config.mjs';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
-// 現在のファイルのディレクトリパスを取得
+// ---
+
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/**
- * Webpack 設定をエクスポート
- * @param {Record<string, any>} env - 環境変数
- * @param {import('webpack').WebpackOptionsNormalized} argv - Webpackのオプション
- * @returns {import('webpack').Configuration} - Webpack設定
- */
-export default (env, argv) => {
- const { mode = 'development' } = argv;
- const baseConfig = createConfig(dirname, mode);
+export default () => {
+ const baseConfig = createConfig(dirname, false);
+ const commonResolve = createCommonResolve();
 
- // 子プロジェクト固有の設定
- const childConfig = {
-  entry: path.resolve(dirname, './src/main.ts'),
+ const entries = {
+  MainGenerator: path.resolve(dirname, `./src/MainGenerator/main.ts`),
+  ConfigMaker: path.resolve(dirname, `./src/ConfigMaker/main.ts`)
+ };
+
+ const htmlPlugins = [
+  // 本体:MainGenerator
+  new HtmlWebpackPlugin({
+   template: path.resolve(dirname, `./src/MainGenerator/index.ejs`),
+   filename: `index.html`,
+   chunks: ['MainGenerator'],
+   inject: 'body'
+  }),
+  // ConfigMaker
+  new HtmlWebpackPlugin({
+   template: path.resolve(dirname, `./src/ConfigMaker/index.ejs`),
+   filename: `ConfigMaker.html`,
+   chunks: ['ConfigMaker'],
+   inject: 'body'
+  })
+ ];
+
+ const copyPatterns = [
+  {
+   from: path.resolve(dirname, `./assets/app.css`),
+   to: path.resolve(dirname, `dist/scripts/app.css`)
+  },
+  {
+   from: path.resolve(dirname, `./assets/config.js`),
+   to: path.resolve(dirname, `dist/config.js`)
+  },
+  {
+   from: path.resolve(dirname, `./assets/readme.txt`),
+   to: path.resolve(dirname, `dist/readme.txt`)
+  },
+  {
+   from: path.resolve(dirname, `./assets/template.json`),
+   to: path.resolve(dirname, `dist/template.json`)
+  },
+  {
+   from: path.resolve(dirname, `./assets/thumb.png`),
+   to: path.resolve(dirname, `dist/thumb.png`)
+  }
+ ];
+
+ // CSS ローダーの設定をカスタマイズ
+ const cssLoaderRule = {
+  test: /\.css$/,
+  use: ['style-loader', 'css-loader', 'postcss-loader']
+ };
+
+ // baseConfig から rules を取得し、CSS ルールを置き換える
+ const rules = baseConfig.module.rules.map((rule) =>
+  rule.test.toString() === /\.css$/.toString() ? cssLoaderRule : rule
+ );
+
+ return {
+  ...baseConfig,
+  entry: entries,
   output: {
-   filename: 'script/script.js', // 出力ファイル名
-   path: path.resolve(dirname, 'dist'), // 出力ディレクトリ
-   clean: true // 出力ディレクトリをクリーンアップ
+   filename: `scripts/[name].js`,
+   path: path.resolve(dirname, `dist`),
+   clean: true
   },
   resolve: {
-   ...createCommonResolve(),
+   ...commonResolve,
    alias: {
-    ...createCommonResolve().alias,
-    // 子プロジェクトのエイリアス
-    '@': path.resolve(dirname, 'src')
+    ...commonResolve.alias,
+    '@': path.resolve(dirname, 'src'),
+    '@assets': path.resolve(dirname, 'assets')
    }
+  },
+  module: {
+   ...baseConfig.module,
+   rules: rules
+  },
+  externals: {
+   vue: 'Vue'
   },
   plugins: [
    ...createCommonPlugins(),
-   new HtmlWebpackPlugin({
-    template: path.resolve(dirname, './src/index.ejs'),
-    filename: 'index.html',
-    inject: 'body'
-   }),
-   new CopyWebpackPlugin({
-    patterns: [
-     {
-      from: path.resolve(dirname, './assets/template.json'),
-      to: path.resolve(dirname, 'dist/template.json')
-     },
-     {
-      from: path.resolve(dirname, `./assets/config.js`),
-      to: path.resolve(dirname, `dist/config.js`)
-     }
-    ]
-   })
+   ...htmlPlugins,
+   new CopyWebpackPlugin({ patterns: copyPatterns })
   ]
  };
-
- return { ...baseConfig, ...childConfig };
 };

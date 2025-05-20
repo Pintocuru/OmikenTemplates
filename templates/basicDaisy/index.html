@@ -1,20 +1,23 @@
 <!doctype html>
 <html lang="ja">
- <head>
-  <meta charset="UTF-8" />
-  <meta name="referrer" content="no-referrer" />
-  <!-- わんコメ依存のCSS(preset.basicに入っているものを使ってください) -->
-  <link rel="stylesheet" href="./style.css" />
-  <!-- 設定ファイル -->
-  <script src="./assets/config.js"></script>
- </head>
- <body>
-  <div id="App"></div>
-  <!-- Vue3 -->
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <!-- OneSDK -->
-  <script src="/onesdk.js"></script>
-  <!-- ■■■対象のエントリーポイント■■■ -->
-  <script type="module" src="./src/main.ts"></script>
- </body>
+
+<head>
+ <meta charset="UTF-8" />
+ <meta name="referrer" content="no-referrer" />
+ <!-- わんコメ依存のCSS(preset.basicに入っているものを使ってください) -->
+ <link rel="stylesheet" href="./style.css" />
+ <!-- 設定ファイル -->
+ <script src="./assets/config.js"></script>
+</head>
+
+<body>
+ <div id="App"></div>
+ <!-- Vue3 -->
+ <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+ <!-- OneSDK -->
+ <script src="/onesdk.js"></script>
+ <!-- 対象のエントリーポイント MainGenerator ConfigMaker -->
+ <script type="module" src="./src/ConfigMaker/main.ts"></script>
+</body>
+
 </html>

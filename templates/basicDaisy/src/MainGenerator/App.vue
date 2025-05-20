@@ -11,17 +11,10 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { ConfigUserType } from '@common/commonTypes';
+import { ConfigUserType } from '@common/CommonSchema';
 import { GetUserComments } from '@common/subscribe/GetUserComments';
-import BasicNew from './BasicNew.vue';
 import ErrorInitComponent from '@common/ErrorInitComponent.vue';
-
-// グローバル変数の型定義
-declare global {
- interface Window {
-  CONFIG?: ConfigUserType;
- }
-}
+import BasicNew from './BasicNew.vue';
 
 // 定数
 const config: ConfigUserType = {
