@@ -31,25 +31,33 @@ export function GetUserVisits(config: ConfigUserType) {
  let userVisitsData: Record<string, ServiceVisitType> = {};
 
  const fetchComments = async (
-  callback: (userVisits: Record<string, ServiceVisitType>) => void
+  callback: (userVisits: Record<string, ServiceVisitType>, comments: Comment[]) => void
  ): Promise<boolean> => {
   const result = await userFetch((comments) => {
+   // 空が返った場合はリセットなので、リセット処理
    if (!comments.length) return;
    // 処理して結果を取得
    userVisitsData = processor.mergeComments(comments);
    // 外部から処理を追加するcallback
-   callback(userVisitsData);
+   callback(userVisitsData, comments);
   });
   // わんコメ接続時のみポーリングを開始
   if (result) processor.startServicePolling();
   return result;
  };
 
- const getUserVisits = () => userVisitsData;
+ // UserVisitType に追加データを入れるユーティリティ関数
+ function extendUserVisit<T extends UserVisitType>(
+  user: T,
+  extra: Partial<Record<string, any>>
+ ): T & typeof extra {
+  return Object.assign({}, user, extra);
+ }
 
  return {
-  getUserVisits, // Getter function to access the current data
-  fetchComments // 初期化
+  getUserVisits: () => userVisitsData, // TODO たぶんこれ要らない
+  fetchComments,
+  extendUserVisit
  };
 }
 

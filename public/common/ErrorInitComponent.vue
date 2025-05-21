@@ -57,9 +57,10 @@ const handleReload = () => {
 };
 
 // 15秒後に自動リロード
+// TODO:エラーでなくても必ずリロードしてしまうので、修正が必要
 onMounted(() => {
  setTimeout(() => {
   handleReload();
- }, 15000);
+ }, 15000000);
 });
 </script>

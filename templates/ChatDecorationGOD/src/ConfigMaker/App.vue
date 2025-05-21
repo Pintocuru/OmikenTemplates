@@ -2,7 +2,7 @@
 <template>
  <div class="p-4 max-w-4xl mx-auto">
   <h1 class="text-2xl font-bold mb-6 text-center text-primary">
-   コメント設定 コンフィグエディター
+   チャットデコレーション! コンフィグエディター
   </h1>
 
   <!-- アクションボタンとプリセット -->

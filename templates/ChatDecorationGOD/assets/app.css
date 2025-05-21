@@ -1,0 +1,5 @@
+/* app.css */
+@import 'tailwindcss';
+@plugin "daisyui" {
+ themes: dark --default;
+}
