@@ -35,7 +35,11 @@ export function GetUserVisits(config: ConfigUserType) {
  ): Promise<boolean> => {
   const result = await userFetch((comments) => {
    // 空が返った場合はリセットなので、リセット処理
-   if (!comments.length) return;
+   if (comments.length === 0) {
+    userVisitsData = {};
+    if (callback) callback({}, []);
+    return;
+   }
    // 処理して結果を取得
    userVisitsData = processor.mergeComments(comments);
    // 外部から処理を追加するcallback

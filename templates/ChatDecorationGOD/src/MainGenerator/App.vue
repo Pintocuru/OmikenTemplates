@@ -1,7 +1,7 @@
 <!-- src/MainGenerator/App.vue -->
 <template>
  <div v-if="isInitialized">
-  <BasicNew :newComments="userComments" :userVisits="processedUserVisits" />
+  <BasicNew :GodComments="GodComments" />
  </div>
  <!-- わんコメが起動されていない場合のエラー表示 -->
  <div v-else>
@@ -10,18 +10,19 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { GetUserVisits, ServiceVisitType } from '@common/subscribe/GetUserVisits';
-import ErrorInitComponent from '@common/ErrorInitComponent.vue';
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import BasicNew from './components/BasicNew.vue';
-import { processUserVisits, ExtendedServiceVisitType } from './utils/userVisitProcessor';
+import { onMounted, Ref, ref } from 'vue';
+import { CommentGod } from '@/types';
 import { getAppConfig } from './utils/config';
+import BasicNew from './components/BasicNew.vue';
+import { CommentProcessor } from './utils/commentProcessor';
+import { GetUserVisits } from '@common/subscribe/GetUserVisits';
+import ErrorInitComponent from '@common/ErrorInitComponent.vue';
+import { ThemeType } from '@common/DaisyUi/DaisyUiTheme';
 
 // リアクティブ変数
-const userComments = ref<Comment[]>([]);
-const processedUserVisits = ref<Record<string, ExtendedServiceVisitType>>({});
-const isInitialized = ref(false);
+const GodComments = ref<CommentGod[]>([]);
+const isInitialized = ref(true);
+const theme: Ref<ThemeType> = ref('light');
 
 // 設定の読み込み
 const config = getAppConfig();
@@ -29,34 +30,26 @@ const config = getAppConfig();
 // GetUserVisitsコンポーザブルから取得
 const { fetchComments } = GetUserVisits(config);
 
+// CommentProcessorインスタンスを作成（一度だけ）
+const processor = new CommentProcessor();
+
 // 初期化処理
 onMounted(async () => {
  try {
-  document.body.removeAttribute('hidden');
+  // 初期テーマを手動で設定
+  document.documentElement.setAttribute('data-theme', theme.value);
 
   const isInit = await fetchComments((userVisits, comments) => {
-   // コメントが空の場合、userComments / UserVisits すべて空にする
    if (!comments.length) {
-    userComments.value = [];
-    processedUserVisits.value = {};
+    GodComments.value = [];
     return;
    }
 
-   // 最新のコメントタイムスタンプを確認（5秒以内のコメントがあるか）
-   const now = Date.now();
-   const time = new Date(comments[0].data.timestamp).getTime();
-   const recentCommentsOnly = comments.length > 0 && (now - time) / 1000 <= 5;
+   // コメントを抽選結果付きで処理
+   const processedComments = processor.processComments(userVisits, comments);
 
-   // コメントをリアクティブ変数に保存
-   userComments.value = comments;
-
-   // ユーザー訪問データを処理（最新コメントが5秒以内の場合のみ処理）
-   if (recentCommentsOnly) {
-    const processed = processUserVisits(userVisits, comments);
-    if (processed) {
-     processedUserVisits.value = processed;
-    }
-   }
+   // 既存のコメントに新しい処理済みコメントを追加
+   GodComments.value = [...GodComments.value, ...processedComments];
   });
 
   isInitialized.value = isInit;
@@ -68,9 +61,19 @@ onMounted(async () => {
 </script>
 
 <style>
-/* ビューポート全体を占める */
+html,
+body {
+ height: 100%;
+ width: 100%;
+ margin: 0;
+ padding: 0;
+ overflow: hidden;
+}
 #App {
- height: 100vh;
+ height: 100%;
+ width: 100%;
+ flex-direction: column;
  display: flex;
+ justify-content: flex-end;
 }
 </style>

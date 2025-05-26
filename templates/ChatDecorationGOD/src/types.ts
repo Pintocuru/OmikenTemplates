@@ -1,21 +1,33 @@
 // src/types.ts
 import { ConfigUserType } from '@common/CommonSchema';
+import { UserVisitType } from '@common/subscribe/GetUserVisits';
+import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { BaseBadge } from '@onecomme.com/onesdk/types/BaseResponse';
 
-// stateの型定義
-export type WordCounterState = {
- isInitFlag: boolean; // わんコメ初期化フラグ]
- isLive: boolean; // metaからライブ中かを取得
- manualAdjustment: number; // 手動で加算・減算した数値
- commentCount: number; // fetchCommentsで取得した基本コメント数
- userCount: number; // fetchCommentsで取得した基本ユーザー数
- syokenCount: number; // fetchCommentsで取得した基本ユーザー数のうち、初見さん
- startTime: number | null; // metaで取得した配信開始時間(Date)
- upVoteCount: number; // metaで取得した高評価数
- viewerCount: number; // metaで取得した視聴者数
- peakUpVoteCount: number; // 過去最高の高評価数
- peakViewerCount: number; // 最大視聴者数
- totalGift: number; // ギフト金額の合計値
+// UserVisitType の拡張
+export interface ServiceVisitGodType extends UserVisitType, GodStatus {}
+
+// Comment の拡張
+export type CommentGod = Comment & {
+ godStatus?: GodStatus; // コメントにステータスを乗せる
+ hitEntry: LotteryEntry; // その回の当選フラグ
 };
+
+// 現在のステータス
+export interface GodStatus {
+ rank: number; // 現在のランク
+ effectId: number | null; // 現在の効果枠ID
+ badges: BaseBadge[]; // 所持バッジ（確定役）
+}
+
+// 抽選テーブル
+export interface LotteryEntry {
+ name: string;
+ numerator: number;
+ rank: number;
+ effectId: number | null;
+ badgeImg: string; // base64画像
+}
 
 // ---
 

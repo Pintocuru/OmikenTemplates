@@ -1,24 +1,8 @@
 <!-- src/MainGenerator/components/BasicNew.vue -->
 <template>
- <div class="container p-4">
-  <transition-group class="comments flex flex-col gap-3" name="comment" tag="div">
-   <div
-    v-for="(comment, index) in comments"
-    :key="comment.data.id"
-    :data-service="comment.service"
-    :data-user="comment.data.name"
-    :data-gift="comment.data.hasGift"
-    :data-owner="comment.data.isOwner"
-    :data-moderator="isModerator(comment)"
-    :data-member="isMember(comment)"
-    :data-is-new="comment.data.isFirstTime"
-    :data-service-name="comment.name"
-    :data-service-id="comment.id"
-    :data-paid="hasPaidText(comment)"
-    :data-rank="getUserRank(comment)"
-    :data-effect-id="getUserEffectId(comment)"
-   >
-    <!-- コメントの動的コンポーネント選択 -->
+ <div class="px-1">
+  <transition-group class="flex flex-col gap-1" name="comment" tag="div">
+   <div v-for="comment in comments" :key="comment.data.id" v-bind="getCommentAttributes(comment)">
     <component :is="getCommentComponent(comment)" :comment="comment" />
    </div>
   </transition-group>
@@ -27,117 +11,71 @@
 
 <script setup lang="ts">
 import { computed, defineAsyncComponent } from 'vue';
-import OneSDK from '@onecomme.com/onesdk';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { useCommentGuards } from '@common/subscribe/CommentGuards';
-import { ExtendedServiceVisitType } from '../utils/userVisitProcessor';
-
-// 基本のコメントコンポーネント
 import EffectDefault from './EffectDefault.vue';
+import { CommentGod } from '@/types';
 
-// エフェクトコンポーネントを遅延ロード
-const Effect41 = defineAsyncComponent(() => import('./Effect41.vue'));
-const Effect31 = defineAsyncComponent(() => import('./Effect31.vue'));
-const Effect24 = defineAsyncComponent(() => import('./Effect24.vue'));
-const Effect23 = defineAsyncComponent(() => import('./Effect23.vue'));
-const Effect22 = defineAsyncComponent(() => import('./Effect22.vue'));
-const Effect21 = defineAsyncComponent(() => import('./Effect21.vue'));
-const Effect13 = defineAsyncComponent(() => import('./Effect13.vue'));
-const Effect12 = defineAsyncComponent(() => import('./Effect12.vue'));
-const Effect11 = defineAsyncComponent(() => import('./Effect11.vue'));
+// エフェクトコンポーネントマップ（遅延ロード）
+const EFFECT_COMPONENTS = {
+ 41: defineAsyncComponent(() => import('./Effect41.vue')), // 全回転GOD
+ 31: defineAsyncComponent(() => import('./Effect31.vue')), // GOD
+ 24: defineAsyncComponent(() => import('./Effect24.vue')), // 赤7揃い - 宇宙背景
+ 23: defineAsyncComponent(() => import('./Effect23.vue')), // 冥王揃い
+ 22: defineAsyncComponent(() => import('./Effect22.vue')), // 紫7揃い
+ 21: defineAsyncComponent(() => import('./Effect21.vue')), // 青7揃い
+ 13: defineAsyncComponent(() => import('./Effect13.vue')), // GOGO
+ 12: defineAsyncComponent(() => import('./Effect12.vue')), // ハイビスカス
+ 11: defineAsyncComponent(() => import('./Effect11.vue')) // パトランプ
+} as const;
 
 const props = defineProps<{
- newComments: Comment[];
- userVisits: Record<string, ExtendedServiceVisitType>;
+ GodComments: CommentGod[];
 }>();
 
-const comments = computed(() => {
- return props.newComments;
-});
-
-// コンポーザブル
-const { hasMembership, isModerator, isMember, hasPaidText } = useCommentGuards();
+const comments = computed(() => props.GodComments);
+const { isModerator, isMember, hasPaidText } = useCommentGuards();
 
 /**
- * ユーザーのランクを取得
+ * コメントの属性を取得
  */
-const getUserRank = (comment: Comment): number => {
- const userId = comment.data.userId;
- const serviceId = comment.id;
-
- // userVisits からユーザーのランクを取得
- if (
-  props.userVisits &&
-  props.userVisits[serviceId] &&
-  props.userVisits[serviceId].user &&
-  props.userVisits[serviceId].user[userId]
- ) {
-  return props.userVisits[serviceId].user[userId].rank || 0;
- }
-
- return 0;
+const getCommentAttributes = (comment: CommentGod) => {
+ return {
+  'data-service': comment.service,
+  'data-user': comment.data.name,
+  'data-gift': comment.data.hasGift,
+  'data-owner': comment.data.isOwner,
+  'data-moderator': isModerator(comment as Comment),
+  'data-member': isMember(comment as Comment),
+  'data-is-new': comment.data.isFirstTime,
+  'data-service-name': comment.name,
+  'data-service-id': comment.id,
+  'data-paid': hasPaidText(comment as Comment),
+  'data-rank': comment.godStatus?.rank || 0,
+  'data-effect-id': comment.godStatus?.effectId || null
+ };
 };
 
 /**
- * ユーザーのエフェクトIDを取得
+ * エフェクトIDに基づいてコンポーネントを決定
  */
-const getUserEffectId = (comment: Comment): number | null => {
- const userId = comment.data.userId;
- const serviceId = comment.id;
+const getCommentComponent = (comment: CommentGod) => {
+ const effectId = comment.godStatus?.effectId;
 
- // userVisits からユーザーのエフェクトIDを取得
- if (
-  props.userVisits &&
-  props.userVisits[serviceId] &&
-  props.userVisits[serviceId].user &&
-  props.userVisits[serviceId].user[userId]
- ) {
-  return props.userVisits[serviceId].user[userId].effectId;
- }
-
- return null;
-};
-
-/**
- * ユーザーのエフェクトIDに基づいてコンポーネントを決定
- */
-const getCommentComponent = (comment: Comment) => {
- const effectId = getUserEffectId(comment);
-
- // effectIdに基づいて適切なコンポーネントを返す
- switch (effectId) {
-  case 41: // 全回転GOD
-   return Effect41;
-  case 31: // GOD
-   return Effect31;
-  case 24: // 赤7揃い - 宇宙背景
-   return Effect24;
-  case 23: // 冥王揃い
-   return Effect23;
-  case 22: // 紫7揃い
-   return Effect22;
-  case 21: // 青7揃い
-   return Effect21;
-  case 13: // GOGO
-   return Effect13;
-  case 12: // ハイビスカス
-   return Effect12;
-  case 11: // パトランプ
-   return Effect11;
-  default:
-   return EffectDefault;
- }
+ return EFFECT_COMPONENTS[effectId as keyof typeof EFFECT_COMPONENTS] || EffectDefault;
 };
 </script>
 
 <style scoped>
 .comment-enter-active,
 .comment-leave-active {
- transition: all var(--lcv-enter-duration) var(--lcv-enter-easing);
+ transition: all 1s 0s;
 }
+
 .comment-enter-from {
  transform: translateY(100%) !important;
 }
+
 .comment-leave-to {
  transform: translateY(-100%) !important;
 }
