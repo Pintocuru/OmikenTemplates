@@ -1,0 +1,13 @@
+{
+ "name": "chat-decoration",
+ "version": "0.0.1",
+ "description": "わんコメのテンプレートbasicをVue+TypeScriptで対応させたバージョン",
+ "scripts": {
+  "dev:decoration": "vite",
+  "build:decoration": "webpack"
+ },
+ "author": "Pintocuru",
+ "license": "Apache-2.0",
+ "main": "src/main.js",
+ "type": "module"
+}

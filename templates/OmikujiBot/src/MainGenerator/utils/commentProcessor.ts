@@ -1,8 +1,14 @@
 // src/MainGenerator/utils/commentProcessor.ts
-import { CommentGod, LotteryEntry, ServiceVisitGodType } from '@/types';
+import { CommentBot, LotteryEntry, ServiceVisitGodType } from '@/types';
 import { ServiceVisitType, UserVisitType } from '@common/subscribe/GetUserVisits';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { DEFAULT_WIN, lotteryTable } from './LotteryTable';
+import { ThresholdCommentChecker } from './ThresholdCommentChecker';
+import { omikujiSampleData } from '@/omikujiSampleData';
+import { PlayOmikuji } from './PlayOmikuji';
+
+// このスクリプトBOTのcomment.data.userId
+const BotUserIDname = 'OmikujiBot';
 
 // コメント処理と抽選機能
 export class CommentProcessor {
@@ -12,7 +18,7 @@ export class CommentProcessor {
  private userDataCache = new Map<string, UserVisitType>();
 
  // コメントに抽選結果を付与して拡張コメントを作成
- processComments(userVisits: Record<string, ServiceVisitType>, comments: Comment[]): CommentGod[] {
+ processComments(userVisits: Record<string, ServiceVisitType>, comments: Comment[]): CommentBot[] {
   if (!comments.length) return [];
 
   const currentTime = Date.now();
@@ -21,6 +27,15 @@ export class CommentProcessor {
   return comments.map((comment) => {
    const { userId, timestamp } = comment.data;
    const secondsSince = (currentTime - new Date(timestamp).getTime()) / 1000;
+   const huga = secondsSince > this.timeThreshold;
+
+   // 時間制限外のコメントは何もしない
+   // コメントの処理を振り分ける
+   if (comment.data.userId === BotUserIDname) {
+    if (!huga) this.ProcessBotComment(comment);
+   } else {
+    if (!huga) this.ProcessUserComment(comment, userId);
+   }
 
    // 時間制限外のコメント/ユーザーデータが見つからない場合は抽選しない
    if (secondsSince > this.timeThreshold || !this.userDataCache.has(userId)) {
@@ -31,6 +46,58 @@ export class CommentProcessor {
    this.updateUserVisitData(userId, hitEntry);
    return this.createCommentGod(comment, hitEntry, true);
   });
+ }
+
+ // BOTコメントの処理
+ private ProcessBotComment(comment: Comment): CommentBot {}
+
+ // ユーザーコメントの処理
+ private ProcessUserComment(comment: Comment, userId: string): void {
+  let userData = this.userVisitsGod[userId];
+  if (!userData) {
+   userData = this.userVisitsGod[userId] = {
+    isSyoken: false,
+    profileImage: '',
+    count: 0,
+    price: 0,
+    rank: 0,
+    effectId: null,
+    badges: []
+   };
+  }
+  this.WordCheck(comment);
+ }
+
+ // おみくじCheck・実行
+ private WordCheck(comment: Comment): boolean {
+  const commentsData = omikujiSampleData.comments;
+  const placeholders = omikujiSampleData.placeholders;
+
+  // 全ルールをチェックする
+  for (const rule of Object.values(commentsData)) {
+   // コメントとルールのマッチング
+   const higa = new ThresholdCommentChecker(rule.threshold);
+   const isMatched = higa.check(comment);
+   if (!isMatched) continue;
+
+   // scriptId
+   const scriptId = rule.scriptId;
+
+   // おみくじ
+   const item = new PlayOmikuji(rule.omikuji).draw();
+   if (!item) continue; // 万が一ない場合はエラーでもいい
+
+   const isApplicable = this.isRuleApplicable(rule, isOverlapping);
+   if (!isApplicable) continue;
+
+   // ルールに基づいたアクションを実行
+   const result = this.FunctionExecutor(rule);
+
+   // アクションが成功した場合は終了
+   if (result) return result;
+  }
+
+  return false; // どのルールも成功しなかった場合
  }
 
  // ユーザーデータキャッシュを構築
@@ -52,7 +119,7 @@ export class CommentProcessor {
   comment: Comment,
   hitEntry: LotteryEntry,
   isLottery: boolean
- ): CommentGod {
+ ): CommentBot {
   const userId = comment.data.userId;
   const userData = this.userVisitsGod[userId];
 

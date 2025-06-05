@@ -59,7 +59,7 @@ export function GetUserVisits(config: ConfigUserType) {
  }
 
  return {
-  getUserVisits: () => userVisitsData, // TODO たぶんこれ要らない
+  getUserVisits: () => userVisitsData,
   fetchComments,
   extendUserVisit
  };

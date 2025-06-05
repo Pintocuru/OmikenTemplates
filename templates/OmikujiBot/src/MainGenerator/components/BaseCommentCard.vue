@@ -116,11 +116,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useCommentGuards } from '@common/subscribe/CommentGuards';
-import { CommentGod } from '@/types';
+import { CommentBot } from '@/types';
 import { getCommentColorStyles } from '../utils/cssToTailwind';
 
 interface Props {
- comment: CommentGod;
+ comment: CommentBot;
  // テーマ設定（各エフェクトで上書き可能）
  theme?: {
   container?: string;
