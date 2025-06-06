@@ -8,7 +8,7 @@ import {
  SyokenConditionArray,
  SyokenCondition,
  GiftCondition
-} from '@/OmikujiThresholdTypes';
+} from '@/types/OmikujiThresholdTypes';
 
 export class ThresholdCommentChecker {
  private comment: Comment | null = null;

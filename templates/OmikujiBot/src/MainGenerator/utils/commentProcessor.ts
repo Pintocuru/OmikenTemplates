@@ -1,234 +1,336 @@
 // src/MainGenerator/utils/commentProcessor.ts
-import { CommentBot, LotteryEntry, ServiceVisitGodType } from '@/types';
+import { BotMessage, CommentBot } from '@/types/types';
 import { ServiceVisitType, UserVisitType } from '@common/subscribe/GetUserVisits';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { DEFAULT_WIN, lotteryTable } from './LotteryTable';
 import { ThresholdCommentChecker } from './ThresholdCommentChecker';
-import { omikujiSampleData } from '@/omikujiSampleData';
+import { charasSampleData, omikujiSampleData } from '@/omikujiSampleData';
 import { PlayOmikuji } from './PlayOmikuji';
+import { CommentRule, OmikujiSet, PostAction } from '@/types/OmikujiTypes';
+import { ScriptClass, ScriptPreset } from '@/types/PresetTypes';
+import { BomberSpin } from '../scriptGame/BomberSpin.js';
+import { PostMessage } from './PostMessage2';
+import { PlaceProcess } from './PlaceProcess2';
 
 // このスクリプトBOTのcomment.data.userId
-const BotUserIDname = 'OmikujiBot';
+const BOT_USER_ID = 'OmikujiBot';
 
-// コメント処理と抽選機能
+/**
+ * コメント処理と抽選機能を管理するクラス
+ */
 export class CommentProcessor {
- private userVisitsGod: Record<string, ServiceVisitGodType> = {};
- private timeThreshold = 5;
- private lottery = new LotteryEngine();
- private userDataCache = new Map<string, UserVisitType>();
+ private readonly timeThreshold = 5; // 秒
+ private readonly userDataCache = new Map<string, UserVisitType>();
+ private readonly scriptInstances: Record<string, ScriptClass> = {};
 
- // コメントに抽選結果を付与して拡張コメントを作成
- processComments(userVisits: Record<string, ServiceVisitType>, comments: Comment[]): CommentBot[] {
+ // 外部スクリプトのマップ
+ private readonly scriptMap: Record<string, ScriptPreset> = {
+  BomberSpin
+ };
+
+ public readonly PostMessage: PostMessage; // わんコメ投稿用class
+ public readonly placeProcess: PlaceProcess; // プレースホルダー用class
+
+ constructor() {
+  this.PostMessage = new PostMessage(charasSampleData);
+  this.placeProcess = new PlaceProcess(omikujiSampleData.placeholders);
+  this.initializeScripts();
+ }
+
+ /**
+  * 外部スクリプトの初期化
+  */
+ private initializeScripts(): void {
+  try {
+   const commentRules: Record<string, CommentRule> = omikujiSampleData.comments;
+
+   for (const rule of Object.values(commentRules)) {
+    const { scriptId, scriptSettings } = rule;
+
+    if (scriptId && this.scriptMap[scriptId]) {
+     // クラスをインスタンス化
+     const scriptInstance = this.scriptMap[scriptId].execute;
+
+     // 設定を渡す
+     if (scriptSettings) {
+      scriptInstance.setup(scriptSettings);
+     }
+
+     // インスタンスを保存
+     this.scriptInstances[scriptId] = scriptInstance;
+    }
+   }
+  } catch (error) {
+   console.error('スクリプト初期化エラー:', error);
+  }
+ }
+
+ /**
+  * スクリプトインスタンスを取得
+  */
+ private getScriptInstance(scriptId: string): ScriptClass | null {
+  return this.scriptInstances[scriptId] || null;
+ }
+
+ /**
+  * コメントに抽選結果を付与して拡張コメントを作成
+  */
+ processComments(userVisits: Record<string, ServiceVisitType>, comments: Comment[]): BotMessage[] {
   if (!comments.length) return [];
 
   const currentTime = Date.now();
   this.buildUserDataCache(userVisits);
 
-  return comments.map((comment) => {
+  const processedComments: BotMessage[] = [];
+
+  for (const comment of comments) {
    const { userId, timestamp } = comment.data;
-   const secondsSince = (currentTime - new Date(timestamp).getTime()) / 1000;
-   const huga = secondsSince > this.timeThreshold;
+   const secondsSinceComment = (currentTime - new Date(timestamp).getTime()) / 1000;
+   const isWithinTimeThreshold = secondsSinceComment <= this.timeThreshold;
 
-   // 時間制限外のコメントは何もしない
-   // コメントの処理を振り分ける
-   if (comment.data.userId === BotUserIDname) {
-    if (!huga) this.ProcessBotComment(comment);
+   if (comment.data.userId === BOT_USER_ID) {
+    // BOTのコメント処理
+    if (isWithinTimeThreshold) {
+     const processedBotComment = this.processBotComment(comment);
+     if (processedBotComment) {
+      processedComments.push(processedBotComment);
+     }
+    }
    } else {
-    if (!huga) this.ProcessUserComment(comment, userId);
+    // ユーザーコメント処理
+    if (isWithinTimeThreshold) {
+     this.processUserComment(comment, userId);
+    }
+    this.updateUserVisitData(userId);
    }
-
-   // 時間制限外のコメント/ユーザーデータが見つからない場合は抽選しない
-   if (secondsSince > this.timeThreshold || !this.userDataCache.has(userId)) {
-    return this.createCommentGod(comment, DEFAULT_WIN, false);
-   }
-
-   const hitEntry = this.lottery.performLottery();
-   this.updateUserVisitData(userId, hitEntry);
-   return this.createCommentGod(comment, hitEntry, true);
-  });
- }
-
- // BOTコメントの処理
- private ProcessBotComment(comment: Comment): CommentBot {}
-
- // ユーザーコメントの処理
- private ProcessUserComment(comment: Comment, userId: string): void {
-  let userData = this.userVisitsGod[userId];
-  if (!userData) {
-   userData = this.userVisitsGod[userId] = {
-    isSyoken: false,
-    profileImage: '',
-    count: 0,
-    price: 0,
-    rank: 0,
-    effectId: null,
-    badges: []
-   };
   }
-  this.WordCheck(comment);
+
+  return processedComments;
  }
 
- // おみくじCheck・実行
- private WordCheck(comment: Comment): boolean {
-  const commentsData = omikujiSampleData.comments;
-  const placeholders = omikujiSampleData.placeholders;
+ /**
+  * BOTコメントの処理
+  */
+ private processBotComment(comment: Comment): BotMessage | null {
+  // 現在はスキップ
+  // TODO: BOTコメント処理の実装
+  return null;
+ }
 
-  // 全ルールをチェックする
-  for (const rule of Object.values(commentsData)) {
+ /**
+  * ユーザーコメントの処理
+  */
+ private processUserComment(comment: Comment, userId: string): void {
+  this.executeWordCheck(comment);
+ }
+
+ /**
+  * おみくじCheck・実行
+  * 改善点：
+  * - 戻り値をvoidに変更（使用されていないため）
+  * - エラーハンドリングを追加
+  * - 処理の流れを明確化
+  */
+ private executeWordCheck(comment: Comment): void {
+  try {
+   const commentRules = omikujiSampleData.comments;
+
+   // 全ルールをチェックする
+   // TODO:1つでもヒットした場合はそこでチェック終了(残りがヒットしても無視する)
+   for (const rule of Object.values(commentRules)) {
+    if (this.processCommentRule(comment, rule)) {
+     // ルールが成功した場合、最初の一つだけ処理して終了
+     break;
+    }
+   }
+  } catch (error) {
+   console.error('コメント処理エラー:', error);
+  }
+ }
+
+ /**
+  * 個別のコメントルール処理
+  */
+ private processCommentRule(comment: Comment, rule: CommentRule): boolean {
+  try {
    // コメントとルールのマッチング
-   const higa = new ThresholdCommentChecker(rule.threshold);
-   const isMatched = higa.check(comment);
-   if (!isMatched) continue;
+   const thresholdChecker = new ThresholdCommentChecker(rule.threshold);
+   if (!thresholdChecker.check(comment)) {
+    return false;
+   }
 
-   // scriptId
-   const scriptId = rule.scriptId;
+   // おみくじ抽選
+   const omikujiItem = this.drawOmikuji(rule);
+   if (!omikujiItem) {
+    console.warn('おみくじアイテムが取得できませんでした');
+    return false;
+   }
 
-   // おみくじ
-   const item = new PlayOmikuji(rule.omikuji).draw();
-   if (!item) continue; // 万が一ない場合はエラーでもいい
+   // スクリプト実行とプレースホルダー処理
+   this.executeScriptAndProcessPlaceholders(comment, rule, omikujiItem);
 
-   const isApplicable = this.isRuleApplicable(rule, isOverlapping);
-   if (!isApplicable) continue;
-
-   // ルールに基づいたアクションを実行
-   const result = this.FunctionExecutor(rule);
-
-   // アクションが成功した場合は終了
-   if (result) return result;
+   return true;
+  } catch (error) {
+   console.error('コメントルール処理エラー:', error);
+   return false;
   }
-
-  return false; // どのルールも成功しなかった場合
  }
 
- // ユーザーデータキャッシュを構築
+ /**
+  * おみくじ抽選
+  */
+ private drawOmikuji(rule: CommentRule): OmikujiSet | null {
+  try {
+   const omikujiItem = new PlayOmikuji(rule.omikuji).draw() as OmikujiSet;
+   return omikujiItem || null;
+  } catch (error) {
+   console.error('おみくじ抽選エラー:', error);
+   return null;
+  }
+ }
+
+ /**
+  * スクリプト実行とプレースホルダー処理
+  */
+ private executeScriptAndProcessPlaceholders(
+  comment: Comment,
+  rule: CommentRule,
+  omikujiItem: OmikujiSet
+ ): void {
+  const { scriptId } = rule;
+
+  if (!scriptId || !this.scriptMap[scriptId]) {
+   // スクリプトがない場合はおみくじのみ処理
+   this.processOmikujiOnly(omikujiItem);
+   return;
+  }
+
+  const scriptInstance = this.getScriptInstance(scriptId);
+  if (!scriptInstance) {
+   console.warn(`スクリプトインスタンスが見つかりません: ${scriptId}`);
+   this.processOmikujiOnly(omikujiItem);
+   return;
+  }
+
+  try {
+   // スクリプト実行
+   const scriptResult = scriptInstance.run(comment, rule.omikuji);
+
+   // スクリプトの投稿アクション実行
+   if (scriptResult.postActions?.length > 0) {
+    this.PostMessage.post(scriptResult.postActions);
+   }
+
+   // プレースホルダー処理
+   this.processPlaceholders(scriptResult.placeholders, omikujiItem);
+  } catch (error) {
+   console.error(`スクリプト実行エラー (${scriptId}):`, error);
+   // スクリプトエラー時もおみくじは処理する
+   this.processOmikujiOnly(omikujiItem);
+  }
+ }
+
+ /**
+  * プレースホルダー処理
+  */
+ private processPlaceholders(
+  scriptPlaceholders: Record<string, string> | undefined,
+  omikujiItem: OmikujiSet
+ ): void {
+  try {
+   // スクリプトのプレースホルダーを更新
+   if (scriptPlaceholders) {
+    this.placeProcess.updateResolvedValues(scriptPlaceholders);
+   }
+
+   // おみくじのプレースホルダーを解決し、わんコメに投稿
+   const postActions = this.placeProcess.processOmikuji(omikujiItem);
+   this.PostMessage.post(postActions);
+
+   // Toast処理
+   this.handleToast(postActions);
+  } finally {
+   // プレースホルダーをクリア（必ずクリアする）
+   this.placeProcess.clearResolvedValues();
+  }
+ }
+
+ /**
+  * おみくじのみ処理（スクリプトなし）
+  */
+ private processOmikujiOnly(omikujiItem: OmikujiSet): void {
+  try {
+   const postActions = this.placeProcess.processOmikuji(omikujiItem);
+   this.PostMessage.post(postActions);
+   this.handleToast(postActions);
+  } finally {
+   this.placeProcess.clearResolvedValues();
+  }
+ }
+
+ /**
+  * Toast処理
+  */
+ private async handleToast(postActions: PostAction[]): Promise<BotMessage[]> {
+  const toastActions = postActions.filter((action) => action.messageToast?.trim());
+
+  const botMessages = await Promise.all(
+   toastActions.map(async (action) => {
+    const characterKey = action.characterKey;
+    // delaySeconds に応じて遅延
+    await new Promise((resolve) => setTimeout(resolve, action.delaySeconds * 1000));
+
+    return {
+     id: crypto.randomUUID(),
+     name: charasSampleData[characterKey].name ?? '',
+     profileImage: charasSampleData[characterKey].image[action.iconKey] ?? '',
+     timestamp: new Date().toISOString(),
+     comment: action.messageToast,
+     isToast: true
+    };
+   })
+  );
+
+  return botMessages;
+ }
+
+ /**
+  * ユーザー訪問データを更新
+  */
+ private updateUserVisitData(userId: string): void {
+  const userData = this.userDataCache.get(userId);
+  if (userData) {
+   // TODO: ユーザーデータの更新処理を実装
+   // userData.count += 1;
+   // その他の更新処理
+  }
+ }
+
+ /**
+  * ユーザーデータを構築
+  */
  private buildUserDataCache(userVisits: Record<string, ServiceVisitType>): void {
   this.userDataCache.clear();
-  Object.values(userVisits).forEach((serviceVisit) => {
+
+  for (const serviceVisit of Object.values(userVisits)) {
    if (serviceVisit?.user) {
-    Object.entries(serviceVisit.user).forEach(([userId, userData]) => {
+    for (const [userId, userData] of Object.entries(serviceVisit.user)) {
      if (!this.userDataCache.has(userId)) {
       this.userDataCache.set(userId, userData);
      }
-    });
+    }
    }
+  }
+ }
+
+ /**
+  * スクリプトの再初期化（必要に応じて）
+  */
+ public reinitializeScripts(): void {
+  // 既存のインスタンスをクリア
+  Object.keys(this.scriptInstances).forEach((key) => {
+   delete this.scriptInstances[key];
   });
- }
 
- // 拡張コメントを生成
- private createCommentGod(
-  comment: Comment,
-  hitEntry: LotteryEntry,
-  isLottery: boolean
- ): CommentBot {
-  const userId = comment.data.userId;
-  const userData = this.userVisitsGod[userId];
-
-  return {
-   ...comment,
-   godStatus: userData
-    ? {
-       rank: userData.rank,
-       effectId: userData.effectId,
-       badges: userData.badges
-      }
-    : { rank: 0, effectId: null, badges: [] },
-   hitEntry: isLottery ? hitEntry : DEFAULT_WIN
-  };
- }
-
- // ユーザー訪問データを更新
- private updateUserVisitData(userId: string, hitEntry: LotteryEntry): void {
-  let userData = this.userVisitsGod[userId];
-
-  if (!userData) {
-   userData = this.userVisitsGod[userId] = {
-    isSyoken: false,
-    profileImage: '',
-    count: 0,
-    price: 0,
-    rank: 0,
-    effectId: null,
-    badges: []
-   };
-  }
-
-  // より高いランクの場合のみ更新
-  if (hitEntry.rank > userData.rank) {
-   userData.rank = hitEntry.rank;
-   userData.effectId = hitEntry.effectId;
-  }
-
-  // バッジを追加
-  if (hitEntry.badgeImg !== '') {
-   const existingLabels = new Set(userData.badges.map((badge) => badge.label));
-   if (!existingLabels.has(hitEntry.name)) {
-    userData.badges.push({ url: hitEntry.badgeImg, label: hitEntry.name });
-   }
-  }
- }
-
- // 処理済みユーザー訪問データを取得する
- getUserVisitsGod() {
-  return this.userVisitsGod;
- }
- // 時間閾値を設定する
- setTimeThreshold(seconds: number) {
-  this.timeThreshold = seconds;
- }
- // キャッシュをクリア（メモリ管理用）
- clearCache() {
-  this.userDataCache.clear();
- }
-}
-
-// 抽選エンジン
-class LotteryEngine {
- private cumulativeWeights: number[];
-
- constructor() {
-  this.cumulativeWeights = [];
-  let cumulative = 0;
-  lotteryTable.forEach((entry) => {
-   cumulative += entry.numerator;
-   this.cumulativeWeights.push(cumulative);
-  });
- }
-
- // 抽選を実行
- performLottery(): LotteryEntry {
-  const draw = this.getSecureRandomInt(65536);
-  const index = this.binarySearch(this.cumulativeWeights, draw);
-
-  if (index < lotteryTable.length) {
-   console.log(`[当選] ${lotteryTable[index].name} (抽選値: ${draw})`);
-  } else {
-   console.log(`[デフォルト当選] ${DEFAULT_WIN.name} (抽選値: ${draw})`);
-  }
-
-  return index < lotteryTable.length ? lotteryTable[index] : DEFAULT_WIN;
- }
-
- // 二分探索
- private binarySearch(arr: number[], target: number): number {
-  let left = 0,
-   right = arr.length - 1;
-
-  while (left <= right) {
-   const mid = Math.floor((left + right) / 2);
-   if (arr[mid] > target) {
-    if (mid === 0 || arr[mid - 1] <= target) return mid;
-    right = mid - 1;
-   } else {
-    left = mid + 1;
-   }
-  }
-  return arr.length;
- }
-
- // 乱数生成
- private getSecureRandomInt(max: number): number {
-  const array = new Uint16Array(1);
-  crypto.getRandomValues(array);
-  return array[0] % max;
+  this.initializeScripts();
  }
 }

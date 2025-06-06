@@ -11,12 +11,18 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { CommentBot } from '@/types';
+import { CommentBot } from '@/types/types';
 import { getAppConfig } from './utils/config';
 import ViewBotComment from './components/ViewBotComment.vue';
 import { CommentProcessor } from './utils/commentProcessor';
 import { GetUserVisits } from '@common/subscribe/GetUserVisits';
 import ErrorInitComponent from '@common/ErrorInitComponent.vue';
+
+// 外部スクリプト読み込み
+import { omikujiSampleData } from '../omikujiSampleData';
+import { BomberSpin } from './scriptGame/BomberSpin.js';
+import { CommentRule } from '@/types/OmikujiTypes';
+import { ScriptPreset } from '@/types/PresetTypes';
 
 // リアクティブ変数
 const BotComments = ref<CommentBot[]>([]);

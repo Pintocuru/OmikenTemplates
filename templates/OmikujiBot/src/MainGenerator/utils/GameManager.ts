@@ -1,5 +1,5 @@
 // src/MainGenerator/utils/GameManager.ts
-import { GameState, ScriptPreset, ScriptResult, UserStatistics } from '@/ScriptsType';
+import { GameState, ScriptPreset, ScriptResult, UserStatistics } from '@/types/PresetTypes';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 // 統計情報の型定義を追加
@@ -89,7 +89,7 @@ export class GameManager<Extras extends Record<string, any> = {}> {
   // ユーザー履歴の更新（重複排除して最新を先頭に）
   this.gameState.currentUserIds = [
    userId,
-   ...this.gameState.currentUserIds.filter((id) => id !== userId)
+   ...this.gameState.currentUserIds.filter((id: any) => id !== userId)
   ];
  }
 

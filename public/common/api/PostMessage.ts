@@ -1,6 +1,6 @@
 // src/Modules/api/PostMessage.ts
 import { CharaType, OneCommePostType, SendCommentParamsType, SendCommentType } from '../../type';
-import { postSpeech, postSystemMessage, postWordParty, sendComment } from './PostOneComme';
+import { postSpeech, postSystemMessage, postWordParty, postComment } from './PostOneComme';
 import { ServiceAPI } from './ServiceAPI';
 import { SETTINGS } from '../settings';
 import { Service } from '@onecomme.com/onesdk/types/Service';
@@ -70,7 +70,7 @@ export class PostMessage {
     const DefaultFrameId = this.services[0]?.id || null;
     if (chara && DefaultFrameId) {
      const request = this.createCommentRequest(post, chara, DefaultFrameId);
-     sendComment(request, delaySeconds);
+     postComment(request, delaySeconds);
     } else {
      // キャラ情報がない、または枠情報がないなら、コメントテスターで投稿
      postSystemMessage(content, SETTINGS.BOT_DEFAULT_NAME, delaySeconds);

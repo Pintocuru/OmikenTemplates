@@ -7,6 +7,16 @@ import { BaseBadge } from '@onecomme.com/onesdk/types/BaseResponse';
 // UserVisitType の拡張
 export interface ServiceVisitGodType extends UserVisitType, GodStatus {}
 
+// BotMessage Commentを大幅に略したもの
+export type BotMessage = {
+ id: string; // 一意のid
+ name: string; // 表示する名前
+ profileImage: string | null; // アイコン
+ timestamp: string; // 投稿日時
+ comment: string; // コメント
+ isToast: boolean; // 通常表示かトースト表示か
+};
+
 // Comment の拡張
 export type CommentBot = Comment & {
  godStatus?: GodStatus; // コメントにステータスを乗せる

@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
-import { CommentBot } from '@/types';
+import { CommentBot } from '@/types/types';
 
 const props = defineProps<{
  BotComments: CommentBot[];

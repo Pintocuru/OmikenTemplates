@@ -9,6 +9,7 @@ export type OmikujiData = {
  comments: Record<string, CommentRule>; // コメントベースの抽選ルール
  timers: Record<string, TimerRule>; // 自動で投稿するの抽選ルール
  placeholders: Record<string, PlaceholderSource>; // プレースホルダー
+ // scriptSettings
 };
 
 // =============================================================================
@@ -28,6 +29,7 @@ type BaseRule = {
  order: number;
  editorColor: string;
  scriptId: string | null;
+ scriptSettings: Record<string, any> | null; // 外部script のsetting情報
 };
 
 /** コメント条件によるおみくじ抽選ルール */
@@ -54,10 +56,11 @@ export type RuleTypeMap = {
 // おみくじ関連の型
 // =============================================================================
 
-export type OmikujiSet = {
+export type OmikujiSet<TParams extends Record<string, any> = Record<string, any>> = {
  name: string; // 表示名
  description: string;
  weight: number; // 出現割合
+ scriptParams: TParams; // パラメータ
  placeholderIds: string[]; // プレースホルダーのID
  postActions: PostAction[]; // わんコメへの投稿
 };
@@ -67,12 +70,16 @@ export type OmikujiSet = {
  * おみくじ結果の一部として実行される具体的な動作
  */
 export type PostAction = {
+ characterKey: string; // キャラクターキー
  iconKey: string; // アイコンキー
  delaySeconds: number; // 投稿までの遅延時間（秒）
  wordParty: string; // 発動させるWordParty
  messageContent: string; // わんコメに投稿するメッセージ
  messageToast: string; // このジェネレーターで表示させるトースト
 };
+
+// wordParty用
+export type PostActionWordParty = Pick<PostAction, 'delaySeconds' | 'wordParty'>;
 
 // =============================================================================
 // プレースホルダー関連の型（循環参照による複雑な分岐を実現）

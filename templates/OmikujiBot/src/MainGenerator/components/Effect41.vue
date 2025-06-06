@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import BaseCommentCard from './BaseCommentCard.vue';
-import { CommentBot } from '@/types';
+import { CommentBot } from '@/types/types';
 
 const props = defineProps<{
  comment: CommentBot;

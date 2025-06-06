@@ -116,7 +116,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useCommentGuards } from '@common/subscribe/CommentGuards';
-import { CommentBot } from '@/types';
+import { CommentBot } from '@/types/types';
 import { getCommentColorStyles } from '../utils/cssToTailwind';
 
 interface Props {

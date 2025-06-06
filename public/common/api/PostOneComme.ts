@@ -2,95 +2,161 @@
 import { SendCommentType, SendTestCommentType } from '../../type';
 import { SETTINGS } from '../settings';
 
-// わんコメへの投稿
-export async function sendComment(
+/**
+ * わんコメAPIへの各種投稿機能を提供するモジュール
+ *
+ * 主な機能：
+ * - 通常コメントの投稿
+ * - テストコメントの投稿（コメントテスター）
+ * - WordPartyリアクションの投稿
+ * - 音声合成（Speech）の投稿
+ *
+ * 全ての投稿は遅延実行に対応
+ */
+
+/**
+ * わんコメに通常のコメントを投稿
+ *
+ * @param {SendCommentType} request - 投稿するコメントデータ
+ * @param {number} [delaySeconds=0] - 投稿を遅延させる秒数
+ * @returns {Promise<void>} 投稿完了のPromise
+ */
+export async function postComment(
  request: SendCommentType,
  delaySeconds: number = 0
 ): Promise<void> {
  return delayFetchPost(
-  `${SETTINGS.BASE_URL}/comments`,
+  '/comments',
   request,
   delaySeconds,
-  'Failed to post comment'
+  'わんコメへのコメント投稿に失敗しました'
  );
 }
 
-// テストコメントを使ったシステムメッセージ
+/**
+ * コメントテスター機能を使用してテストコメントを投稿
+ * システムメッセージやエラー通知などに使用
+ *
+ * @param {string} comment - 投稿するコメント内容
+ * @param {string} [username='error'] - 表示するユーザー名（デフォルト: 'error'）
+ * @param {number} [delaySeconds=0] - 投稿を遅延させる秒数
+ * @returns {Promise<void>} 投稿完了のPromise
+ */
 export async function postSystemMessage(
  comment: string,
  username: string = 'error',
  delaySeconds: number = 0
 ): Promise<void> {
+ // テストコメント用の標準設定
  const request: SendTestCommentType = {
-  platform: 'youtube',
-  hasGift: false,
-  unit: '',
-  price: 1000,
-  giftType: 'none',
-  newComment: false,
-  repeater: false,
-  subscribe: false,
-  speech: true,
-  username,
-  comment
+  platform: 'youtube', // プラットフォーム（固定）
+  hasGift: false, // ギフトなし
+  unit: '', // 通貨単位なし
+  price: 1000, // デフォルト価格
+  giftType: 'none', // ギフトタイプなし
+  newComment: false, // 新規コメントフラグ
+  repeater: false, // リピーターフラグ
+  subscribe: false, // 購読者フラグ
+  speech: true, // 音声読み上げ有効
+  username, // 指定されたユーザー名
+  comment // 投稿内容
  };
 
  return delayFetchPost(
-  `${SETTINGS.BASE_URL}/comments/test`,
+  '/comments/test',
   request,
   delaySeconds,
-  'Failed to post test comment'
+  'テストコメントの投稿に失敗しました'
  );
 }
 
-// WordPartyへの投稿
+/**
+ * WordPartyにリアクションを投稿
+ * 配信画面上にリアクションとして表示される
+ *
+ * @param {string} content - リアクション内容
+ * @param {number} [delaySeconds=0] - 投稿を遅延させる秒数
+ * @returns {Promise<void>} 投稿完了のPromise
+ */
 export async function postWordParty(content: string, delaySeconds: number = 0): Promise<void> {
  return delayFetchPost(
-  `${SETTINGS.BASE_URL}/reactions`,
-  { reactions: [{ key: content, value: 1 }] },
+  '/reactions',
+  {
+   reactions: [
+    {
+     key: content, // リアクション内容
+     value: 1 // リアクションの重み（固定値）
+    }
+   ]
+  },
   delaySeconds,
-  'Failed to post WordParty reaction'
+  'WordPartyリアクションの投稿に失敗しました'
  );
 }
 
-// スピーチへの投稿
+/**
+ * 音声合成（Speech）にテキストを投稿
+ * 指定したテキストが音声で読み上げられる
+ *
+ * @param {string} content - 読み上げるテキスト
+ * @param {number} [delaySeconds=0] - 投稿を遅延させる秒数
+ * @returns {Promise<void>} 投稿完了のPromise
+ */
 export async function postSpeech(content: string, delaySeconds: number = 0): Promise<void> {
- return delayFetchPost(
-  `${SETTINGS.BASE_URL}/speech`,
-  { text: content },
-  delaySeconds,
-  'Failed to post speech'
- );
+ return delayFetchPost('/speech', { text: content }, delaySeconds, '音声合成の投稿に失敗しました');
 }
 
-// 遅延付きfetch.post
+/**
+ * 遅延実行付きのHTTP POST リクエストを実行
+ *
+ * 機能：
+ * - 指定された秒数だけ遅延してからリクエスト実行
+ * - 基本遅延時間（SETTINGS.basicDelaySeconds）を自動で加算
+ * - HTTPステータスコードによるエラーハンドリング
+ *
+ * @param {string} endpoint - APIエンドポイント（/から始まるパス）
+ * @param {any} data - 送信するデータ
+ * @param {number} delaySeconds - 遅延秒数
+ * @param {string} errorMessage - エラー時のメッセージ
+ * @returns {Promise<void>} リクエスト完了のPromise
+ *
+ * @private
+ */
 function delayFetchPost(
- url: string,
+ endpoint: string,
  data: any,
  delaySeconds: number,
  errorMessage: string
 ): Promise<void> {
  return new Promise((resolve, reject) => {
+  // 遅延実行のセットアップ
   setTimeout(
    async () => {
     try {
-     const response = await fetch(url, {
+     // HTTP POSTリクエストを実行
+     const response = await fetch(`${SETTINGS.BASE_URL}${endpoint}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+       'Content-Type': 'application/json'
+      },
       body: JSON.stringify(data)
      });
 
-     // fetchはエラーでもHTTPステータスコードによらず正常終了するため、明示的にチェック
+     // HTTPステータスコードをチェック
+     // fetch APIは4xx/5xxエラーでも例外を投げないため、明示的にチェックが必要
      if (!response.ok) {
       throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
      }
 
+     // 成功時は正常終了
      resolve();
     } catch (error) {
+     // エラーログを出力して例外を再スロー
      console.error(errorMessage, error);
      reject(error);
     }
    },
+   // 指定された遅延時間 + 基本遅延時間（ミリ秒に変換）
    (delaySeconds + SETTINGS.basicDelaySeconds) * 1000
   );
  });

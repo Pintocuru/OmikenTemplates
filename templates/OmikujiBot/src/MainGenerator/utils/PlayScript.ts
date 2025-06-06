@@ -1,5 +1,5 @@
 // src/Modules/components/PlayScript.ts
-import { Placeholder } from '@/OmikujiTypes';
+import { Placeholder } from '@/types/OmikujiTypes';
 import crypto from 'crypto';
 
 

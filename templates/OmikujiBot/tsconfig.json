@@ -2,6 +2,10 @@
  "extends": "../../tsconfig.json", // 親の設定をマージ
  "compilerOptions": {
   "baseUrl": ".", // モジュールのベースURL
+  "typeRoots": [
+   "./src/types",
+   "./node_modules/@types"
+  ],
   "outDir": "./dist", // 出力先ディレクトリ
   "paths": {
    "@type": [
