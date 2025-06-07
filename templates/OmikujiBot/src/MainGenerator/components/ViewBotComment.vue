@@ -3,17 +3,17 @@
  <div class="px-1">
   <!-- BOTコメント(main) -->
   <transition-group class="flex flex-col gap-1" name="comment" tag="div">
-   <div v-for="(comment, index) in displayedComments" :key="comment.data.id">
+   <div v-for="(message, index) in displayedComments" :key="message.id">
     <div
      class="comment-block relative p-6 rounded-3xl"
      :class="getCommentClasses(index)"
      :style="getCommentStyles(index)"
     >
      <div class="name text-3xl font-bold text-black mb-2">
-      {{ comment.data.name }}
+      {{ message.name }}
      </div>
      <div class="comment-text text-black break-words">
-      {{ comment.data.comment }}
+      {{ message.comment }}
      </div>
      <!-- コメントの吹き出しの矢印 -->
      <div
@@ -25,12 +25,12 @@
      class="avatar absolute w-96 h-96 rounded-full overflow-hidden bg-gray-200"
      :class="getAvatarClasses(index)"
      :style="getAvatarStyles(index)"
-     v-show="comment.data.profileImage"
+     v-show="message.profileImage"
     >
      <img
       alt=""
-      v-if="comment.data.profileImage"
-      :src="comment.data.profileImage"
+      v-if="message.profileImage"
+      :src="message.profileImage"
       class="block w-full h-full relative z-10"
      />
     </div>
@@ -41,16 +41,16 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
-import { CommentBot } from '@/types/types';
+import { BotMessage } from '@/types/types';
 
 const props = defineProps<{
- BotComments: CommentBot[];
+ botMessages: BotMessage[];
 }>();
 
-const displayedComments = ref<CommentBot[]>([]);
+const displayedComments = ref<BotMessage[]>([]);
 const animationFrameId = ref<number>();
 
-const comments = computed(() => props.BotComments);
+const comments = computed(() => props.botMessages);
 
 // コメントのスタイルを取得（indexは表示順序、0が最新）
 const getCommentClasses = (displayIndex: number) => {
@@ -117,19 +117,19 @@ const commentDisplay = () => {
    const nextComment = comments.value[lastProcessedIndex + 1];
 
    if (nextComment) {
-    const extraTime = Math.max((nextComment.data.comment?.length ?? 0) - THRESHOLD, 0) * 100;
+    const extraTime = Math.max((nextComment.comment?.length ?? 0) - THRESHOLD, 0) * 100;
     const totalLifeTime = LIFE_TIME + extraTime;
 
     displayedComments.value.push(nextComment);
-    commentTimers.set(nextComment.data.id, now + totalLifeTime);
+    commentTimers.set(nextComment.id, now + totalLifeTime);
     lastProcessedIndex++;
    }
   }
 
   // 表示時間が過ぎたコメントを削除
   displayedComments.value = displayedComments.value.filter((comment) => {
-   if (commentTimers.has(comment.data.id) && now > commentTimers.get(comment.data.id)) {
-    commentTimers.delete(comment.data.id);
+   if (commentTimers.has(comment.id) && now > commentTimers.get(comment.id)) {
+    commentTimers.delete(comment.id);
     return false;
    }
    return true;
@@ -154,7 +154,7 @@ onUnmounted(() => {
 
 // propsの変更を監視（新しいコメントが追加された場合の対応）
 watch(
- () => props.BotComments.length,
+ () => props.botMessages.length,
  () => {
   // 新しいコメントが追加された場合、次回のupdateで処理される
  }

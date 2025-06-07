@@ -6,7 +6,7 @@ import {
  PlaceholderSourceValue,
  PostAction
 } from '@/types/OmikujiTypes';
-import { PlayOmikuji } from './PlayOmikuji';
+import { drawOmikuji } from './PlayOmikuji';
 
 /**
  * プレースホルダー置換処理を行うクラス
@@ -84,7 +84,7 @@ export class PlaceProcess {
 
    // 値を抽選して解決
    if (source.values.length > 0) {
-    const selectedValue = new PlayOmikuji(source.values).draw() as PlaceholderSourceValue;
+    const selectedValue = drawOmikuji(source.values) as PlaceholderSourceValue;
     if (selectedValue?.content !== undefined) {
      this.resolvedValues[source.name] = selectedValue.content;
     }

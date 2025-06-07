@@ -1,10 +1,10 @@
 {
- "name": "chat-decoration",
+ "name": "omikuji-bot",
  "version": "0.0.1",
  "description": "わんコメのテンプレートbasicをVue+TypeScriptで対応させたバージョン",
  "scripts": {
-  "dev:decoration": "vite",
-  "build:decoration": "webpack"
+  "dev:omikujiBot": "vite",
+  "build:omikujiBot": "webpack"
  },
  "author": "Pintocuru",
  "license": "Apache-2.0",

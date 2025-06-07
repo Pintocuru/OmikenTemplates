@@ -32,7 +32,7 @@
  },
  "devDependencies": {
   "@tailwindcss/postcss": "^4.0.15",
-  "@types/node": "^22.13.10",
+  "@types/node": "^22.15.30",
   "@types/webpack": "^5.28.5",
   "@types/webpack-env": "^1.18.8",
   "@typescript-eslint/eslint-plugin": "^8.18.0",
