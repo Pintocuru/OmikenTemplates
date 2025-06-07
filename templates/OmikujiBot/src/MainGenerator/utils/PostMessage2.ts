@@ -222,8 +222,8 @@ export class PostMessage {
     id: chara.frameId
    },
    comment: {
-    // 一意なコメントIDを生成（タイムスタンプ + ランダム文字列）
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    // 一意なコメントIDを生成（キャラクターid + タイムスタンプ + ランダム文字列）
+    id: `${chara.id}-` + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
     userId: SETTINGS.BOT_USER_ID,
     name: chara.displayName || 'おみくじBOT',
     comment: post.messageContent,

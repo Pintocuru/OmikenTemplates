@@ -3,6 +3,7 @@ import { ConfigUserType } from '@common/CommonSchema';
 import { UserVisitType } from '@common/subscribe/GetUserVisits';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { BaseBadge } from '@onecomme.com/onesdk/types/BaseResponse';
+import { CharacterColorScheme } from './PresetTypes';
 
 // UserVisitType の拡張
 export interface ServiceVisitGodType extends UserVisitType, GodStatus {}
@@ -15,6 +16,7 @@ export type BotMessage = {
  timestamp: string; // 投稿日時
  comment: string; // コメント
  isToast: boolean; // 通常表示かトースト表示か
+ color: CharacterColorScheme; // カラー
 };
 
 // Comment の拡張

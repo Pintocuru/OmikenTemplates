@@ -1,12 +1,12 @@
 // src/MainGenerator/utils/commentProcessor.ts
-import { BotMessage, CommentBot } from '@/types/types';
-import { ServiceVisitType, UserVisitType } from '@common/subscribe/GetUserVisits';
+import { BotMessage } from '@/types/types';
+import { ServiceVisitType } from '@common/subscribe/GetUserVisits';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { ThresholdCommentChecker } from './ThresholdCommentChecker';
+import { checkThresholdComment } from './ThresholdCommentChecker';
 import { charasSampleData, omikujiSampleData } from '@/omikujiSampleData';
 import { PlayOmikuji } from './PlayOmikuji';
 import { CommentRule, OmikujiSet, PostAction } from '@/types/OmikujiTypes';
-import { ScriptClass, ScriptPreset } from '@/types/PresetTypes';
+import { CharacterPreset, ScriptClass, ScriptPreset } from '@/types/PresetTypes';
 import { BomberSpin } from '../scriptGame/BomberSpin.js';
 import { PostMessage } from './PostMessage2';
 import { PlaceProcess } from './PlaceProcess2';
@@ -14,18 +14,18 @@ import { PlaceProcess } from './PlaceProcess2';
 // このスクリプトBOTのcomment.data.userId
 const BOT_USER_ID = 'OmikujiBot';
 
+// 外部スクリプトのマップ
+const scriptMap: Record<string, ScriptPreset> = {
+ BomberSpin
+};
+
 /**
  * コメント処理と抽選機能を管理するクラス
  */
 export class CommentProcessor {
  private readonly timeThreshold = 5; // 秒
- private readonly userDataCache = new Map<string, UserVisitType>();
+ private userVisits: Record<string, ServiceVisitType> = {};
  private readonly scriptInstances: Record<string, ScriptClass> = {};
-
- // 外部スクリプトのマップ
- private readonly scriptMap: Record<string, ScriptPreset> = {
-  BomberSpin
- };
 
  public readonly PostMessage: PostMessage; // わんコメ投稿用class
  public readonly placeProcess: PlaceProcess; // プレースホルダー用class
@@ -46,9 +46,9 @@ export class CommentProcessor {
    for (const rule of Object.values(commentRules)) {
     const { scriptId, scriptSettings } = rule;
 
-    if (scriptId && this.scriptMap[scriptId]) {
+    if (scriptId && scriptMap[scriptId]) {
      // クラスをインスタンス化
-     const scriptInstance = this.scriptMap[scriptId].execute;
+     const scriptInstance = scriptMap[scriptId].execute;
 
      // 設定を渡す
      if (scriptSettings) {
@@ -76,9 +76,9 @@ export class CommentProcessor {
   */
  processComments(userVisits: Record<string, ServiceVisitType>, comments: Comment[]): BotMessage[] {
   if (!comments.length) return [];
+  this.userVisits = userVisits;
 
   const currentTime = Date.now();
-  this.buildUserDataCache(userVisits);
 
   const processedComments: BotMessage[] = [];
 
@@ -97,10 +97,10 @@ export class CommentProcessor {
     }
    } else {
     // ユーザーコメント処理
+    // TODO: 前回処理してから3秒以内であれば、「処理できない」フラグを渡す
     if (isWithinTimeThreshold) {
-     this.processUserComment(comment, userId);
+     this.processUserComment(comment);
     }
-    this.updateUserVisitData(userId);
    }
   }
 
@@ -111,15 +111,31 @@ export class CommentProcessor {
   * BOTコメントの処理
   */
  private processBotComment(comment: Comment): BotMessage | null {
-  // 現在はスキップ
-  // TODO: BOTコメント処理の実装
-  return null;
+  const checkId = comment.data.id;
+  let hogg: CharacterPreset;
+
+  // charasSampleData をすべて調べて checkId の先頭に入っているなら、そのデータを入れる
+  if (checkId.includes(charasSampleData[0].id)) {
+   hogg = charasSampleData[0];
+  } else {
+   // 万が一見つからなかった場合(他のプラグインの投稿など)は何も返さない
+   return null;
+  }
+  return {
+   id: comment.data.id,
+   name: comment.data.name,
+   profileImage: comment.data.profileImage,
+   timestamp: comment.data.timestamp,
+   comment: comment.data.comment,
+   isToast: false,
+   color: hogg.color
+  };
  }
 
  /**
   * ユーザーコメントの処理
   */
- private processUserComment(comment: Comment, userId: string): void {
+ private processUserComment(comment: Comment): void {
   this.executeWordCheck(comment);
  }
 
@@ -131,15 +147,15 @@ export class CommentProcessor {
   * - 処理の流れを明確化
   */
  private executeWordCheck(comment: Comment): void {
+  let flag: boolean = false; // コメント重複flag
+
   try {
    const commentRules = omikujiSampleData.comments;
 
    // 全ルールをチェックする
-   // TODO:1つでもヒットした場合はそこでチェック終了(残りがヒットしても無視する)
    for (const rule of Object.values(commentRules)) {
-    if (this.processCommentRule(comment, rule)) {
-     // ルールが成功した場合、最初の一つだけ処理して終了
-     break;
+    if (this.processCommentRule(comment, rule, flag)) {
+     flag = true; // コメント重複flagをtrueにして更にcheck
     }
    }
   } catch (error) {
@@ -150,14 +166,25 @@ export class CommentProcessor {
  /**
   * 個別のコメントルール処理
   */
- private processCommentRule(comment: Comment, rule: CommentRule): boolean {
+ private processCommentRule(comment: Comment, rule: CommentRule, flag: boolean): boolean {
   try {
    // コメントとルールのマッチング
-   const thresholdChecker = new ThresholdCommentChecker(rule.threshold);
-   if (!thresholdChecker.check(comment)) {
-    return false;
-   }
+   if (!checkThresholdComment(comment, rule.threshold)) return false;
 
+   // TODO:「コメント重複flag」がtrueかつ、threshold.conditionsに'comment'が入っているなら、
+   // おみくじ抽選をせず、代わりに「おみくじが被った」というToast表示をさせる
+   if (flag && rule.threshold.conditions.includes('comment')) {
+    return this.handleToast([
+     {
+      characterKey: charasSampleData[0].id,
+      iconKey: 'Default',
+      delaySeconds: 0,
+      wordParty: '',
+      messageContent: '',
+      messageToast: `コメントが被って、「${rule.name}」ができなかったよ。またコメントしてね。`
+     }
+    ]);
+   }
    // おみくじ抽選
    const omikujiItem = this.drawOmikuji(rule);
    if (!omikujiItem) {
@@ -166,7 +193,7 @@ export class CommentProcessor {
    }
 
    // スクリプト実行とプレースホルダー処理
-   this.executeScriptAndProcessPlaceholders(comment, rule, omikujiItem);
+   this.executeScriptAndProcessPlaceholders(comment, rule, omikujiItem, flag);
 
    return true;
   } catch (error) {
@@ -194,20 +221,21 @@ export class CommentProcessor {
  private executeScriptAndProcessPlaceholders(
   comment: Comment,
   rule: CommentRule,
-  omikujiItem: OmikujiSet
+  omikujiItem: OmikujiSet,
+  flag: boolean
  ): void {
   const { scriptId } = rule;
 
-  if (!scriptId || !this.scriptMap[scriptId]) {
+  if (!scriptId || !scriptMap[scriptId]) {
    // スクリプトがない場合はおみくじのみ処理
-   this.processOmikujiOnly(omikujiItem);
+   this.processOmikujiOnly(omikujiItem, flag);
    return;
   }
 
   const scriptInstance = this.getScriptInstance(scriptId);
   if (!scriptInstance) {
    console.warn(`スクリプトインスタンスが見つかりません: ${scriptId}`);
-   this.processOmikujiOnly(omikujiItem);
+   this.processOmikujiOnly(omikujiItem, flag);
    return;
   }
 
@@ -225,7 +253,7 @@ export class CommentProcessor {
   } catch (error) {
    console.error(`スクリプト実行エラー (${scriptId}):`, error);
    // スクリプトエラー時もおみくじは処理する
-   this.processOmikujiOnly(omikujiItem);
+   this.processOmikujiOnly(omikujiItem, flag);
   }
  }
 
@@ -257,10 +285,17 @@ export class CommentProcessor {
  /**
   * おみくじのみ処理（スクリプトなし）
   */
- private processOmikujiOnly(omikujiItem: OmikujiSet): void {
+ private processOmikujiOnly(omikujiItem: OmikujiSet, flag: boolean): void {
   try {
    const postActions = this.placeProcess.processOmikuji(omikujiItem);
-   this.PostMessage.post(postActions);
+   // コメント重複flagがないなら通常の投稿
+   if (!flag) {
+    this.PostMessage.post(postActions);
+   } else {
+    // TODO:コメント重複flag があるなら、postActions に入っているすべてのwordParty を削除し、
+    // すべての messageContent の内容を messageToast に移動させる
+    // (messageToastに入っていた内容は上書きして良い)
+   }
    this.handleToast(postActions);
   } finally {
    this.placeProcess.clearResolvedValues();
@@ -285,41 +320,13 @@ export class CommentProcessor {
      profileImage: charasSampleData[characterKey].image[action.iconKey] ?? '',
      timestamp: new Date().toISOString(),
      comment: action.messageToast,
-     isToast: true
+     isToast: true,
+     color: charasSampleData[characterKey].color
     };
    })
   );
 
   return botMessages;
- }
-
- /**
-  * ユーザー訪問データを更新
-  */
- private updateUserVisitData(userId: string): void {
-  const userData = this.userDataCache.get(userId);
-  if (userData) {
-   // TODO: ユーザーデータの更新処理を実装
-   // userData.count += 1;
-   // その他の更新処理
-  }
- }
-
- /**
-  * ユーザーデータを構築
-  */
- private buildUserDataCache(userVisits: Record<string, ServiceVisitType>): void {
-  this.userDataCache.clear();
-
-  for (const serviceVisit of Object.values(userVisits)) {
-   if (serviceVisit?.user) {
-    for (const [userId, userData] of Object.entries(serviceVisit.user)) {
-     if (!this.userDataCache.has(userId)) {
-      this.userDataCache.set(userId, userData);
-     }
-    }
-   }
-  }
  }
 
  /**
