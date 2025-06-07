@@ -1,6 +1,5 @@
 // src/MainGenerator/utils/CommentProcessor.ts
 import { BotMessage } from '@/types/types';
-import { ServiceVisitType } from '@common/subscribe/GetUserVisits';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { charasSampleData, omikujiSampleData } from '@/omikujiSampleData';
 import { CommentRule, OmikujiSet } from '@/types/OmikujiTypes';

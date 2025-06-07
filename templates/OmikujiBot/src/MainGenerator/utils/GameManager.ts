@@ -12,18 +12,17 @@ interface GameStatistics {
 
 export class GameManager<Extras extends Record<string, any> = {}> {
  private gameState: GameState<Extras>;
- private script: ScriptPreset;
+ private script: ScriptPreset<any, any, any, Extras>;
 
- constructor(script: ScriptPreset, initialGame?: GameState<Extras>) {
+ constructor(script: ScriptPreset<any, any, any, Extras>, initialGame?: GameState<Extras>) {
   this.script = script;
   this.gameState = this.createInitialState(initialGame);
  }
 
  // 初期状態作成をメソッドに分離（DRY原則）
  private createInitialState(initialGame?: GameState<Extras>): GameState<Extras> {
-  const baseState = {
+  const baseState: GameState = {
    ruleId: this.script.id,
-   settings: this.script.settings,
    totalDraws: 0,
    userStats: {},
    currentUserIds: []
@@ -31,7 +30,7 @@ export class GameManager<Extras extends Record<string, any> = {}> {
 
   return {
    ...baseState,
-   ...initialGame // 初期値で上書き可能
+   ...initialGame
   } as GameState<Extras>;
  }
 
@@ -43,13 +42,13 @@ export class GameManager<Extras extends Record<string, any> = {}> {
  public async run(comment: Comment): Promise<ScriptResult> {
   try {
    // パラメータの取得
-   const paramValues = this.script.params.values;
+   const paramValues = this.getParamValues();
 
-   // スクリプト実行（同期・非同期両対応）
-   const result = await Promise.resolve(this.script.func(this.gameState, comment, paramValues));
+   // スクリプト実行（ScriptClass.run を呼び出し）
+   const result = await Promise.resolve(this.script.execute.run(comment, paramValues));
 
-   // ゲーム状態の更新
-   this.updateFromScriptResult(result, comment);
+   // ゲーム状態の更新（GameManager内部で管理）
+   this.updateGameStateAfterScript(comment);
 
    return result;
   } catch (error) {
@@ -59,14 +58,19 @@ export class GameManager<Extras extends Record<string, any> = {}> {
   }
  }
 
- // メソッド名を明確化（private updateGameState から変更）
- private updateFromScriptResult(result: ScriptResult, comment: Comment): void {
-  // 結果からゲーム状態を更新
-  this.gameState = {
-   ...this.gameState,
-   ...result.gameState,
-   totalDraws: this.gameState.totalDraws + 1 // おみくじ実行回数を増やす
-  };
+ // パラメータ値を取得するヘルパーメソッド
+ private getParamValues(): Record<string, any> {
+  const paramValues: Record<string, any> = {};
+  this.script.params.forEach((param) => {
+   paramValues[param.id] = param.defaultValue;
+  });
+  return paramValues;
+ }
+
+ // スクリプト実行後のゲーム状態更新
+ private updateGameStateAfterScript(comment: Comment): void {
+  // おみくじ実行回数を増やす
+  this.gameState.totalDraws += 1;
 
   // ユーザー統計の更新
   this.updateUserStats(comment.data.name, comment.data.userId);
@@ -89,15 +93,14 @@ export class GameManager<Extras extends Record<string, any> = {}> {
   // ユーザー履歴の更新（重複排除して最新を先頭に）
   this.gameState.currentUserIds = [
    userId,
-   ...this.gameState.currentUserIds.filter((id: any) => id !== userId)
+   ...this.gameState.currentUserIds.filter((id: string) => id !== userId)
   ];
  }
 
  private createErrorResult(error: any): ScriptResult {
   return {
    postActions: [],
-   placeholders: {},
-   gameState: this.gameState
+   placeholders: {}
   };
  }
 
@@ -125,11 +128,15 @@ export class GameManager<Extras extends Record<string, any> = {}> {
  }
 
  // API呼び出し（統一されたエラーハンドリング）
- public async callApi(method: 'GET' | 'POST' | 'PUT' | 'DELETE', body?: any): Promise<any> {
-  if (!this.script.ApiCall) {
+ public async callApi(
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+  endpoint: string,
+  body?: any,
+  headers?: Record<string, string>
+ ): Promise<any> {
+  if (!this.script.execute.apiCall) {
    const errorResult = {
     status: 'error' as const,
-    gameState: this.gameState,
     message: 'ApiCall function not defined in script'
    };
    console.error('API call failed:', errorResult.message);
@@ -137,10 +144,16 @@ export class GameManager<Extras extends Record<string, any> = {}> {
   }
 
   try {
-   const result = await this.script.ApiCall(this.gameState, method, body);
+   const result = await this.script.execute.apiCall(
+    this.gameState,
+    method,
+    endpoint,
+    body,
+    headers
+   );
 
    // API呼び出し結果でゲーム状態を更新
-   if (result.status === 'success') {
+   if (result.status === 'success' && result.gameState) {
     this.gameState = {
      ...this.gameState,
      ...result.gameState
@@ -153,7 +166,6 @@ export class GameManager<Extras extends Record<string, any> = {}> {
    // エラー時も統一された形式で返す（throwではなく）
    return {
     status: 'error' as const,
-    gameState: this.gameState,
     message: error instanceof Error ? error.message : 'Unknown error occurred',
     error
    };
@@ -162,7 +174,11 @@ export class GameManager<Extras extends Record<string, any> = {}> {
 
  // 使用できるプレースホルダーの取得
  public getPlaceholders(): Record<string, string> {
-  return { ...this.script.placeholders.values };
+  const placeholders: Record<string, string> = {};
+  this.script.placeholders.forEach((placeholder) => {
+   placeholders[placeholder.id] = placeholder.value;
+  });
+  return placeholders;
  }
 
  // 統計情報の取得（戻り値型を明示）
@@ -174,5 +190,29 @@ export class GameManager<Extras extends Record<string, any> = {}> {
    activeUsers: this.gameState.currentUserIds.length,
    averageDrawsPerUser: this.gameState.totalDraws / Math.max(totalUsers, 1)
   };
+ }
+
+ // スクリプトのセットアップ実行
+ public async setup(): Promise<void> {
+  if (this.script.execute.setup) {
+   const settingsValues = this.getSettingsValues();
+   await this.script.execute.setup(settingsValues);
+  }
+ }
+
+ // スクリプトのクリーンアップ実行
+ public async cleanup(): Promise<void> {
+  if (this.script.execute.cleanup) {
+   await this.script.execute.cleanup(this.gameState);
+  }
+ }
+
+ // 設定値を取得するヘルパーメソッド
+ private getSettingsValues(): Record<string, any> {
+  const settingsValues: Record<string, any> = {};
+  this.script.settings.forEach((setting) => {
+   settingsValues[setting.id] = setting.defaultValue;
+  });
+  return settingsValues;
  }
 }

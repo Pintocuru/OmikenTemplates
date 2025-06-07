@@ -15,6 +15,7 @@ export const omikujiSampleData: OmikujiData = {
    order: 1,
    editorColor: '#FF6B6B',
    scriptId: null,
+   scriptParams: null,
    ruleType: 'comments',
    threshold: {
     conditions: ['comment'],
@@ -36,6 +37,7 @@ export const omikujiSampleData: OmikujiData = {
      placeholderIds: ['greeting', 'lucky_message'],
      postActions: [
       {
+       characterKey: '',
        iconKey: 'star',
        delaySeconds: 2,
        wordParty: 'celebration',
@@ -51,6 +53,7 @@ export const omikujiSampleData: OmikujiData = {
      placeholderIds: ['greeting', 'normal_message'],
      postActions: [
       {
+       characterKey: '',
        iconKey: 'smile',
        delaySeconds: 1,
        wordParty: 'normal',
@@ -66,26 +69,12 @@ export const omikujiSampleData: OmikujiData = {
      placeholderIds: ['greeting', 'encourage_message'],
      postActions: [
       {
+       characterKey: '',
        iconKey: 'thumbs_up',
        delaySeconds: 1,
        wordParty: 'encourage',
        messageContent: '👍 <<greeting>> 小吉ですね。 <<encourage_message>>',
        messageToast: '小吉のおみくじを投稿しました'
-      }
-     ]
-    },
-    {
-     name: '凶',
-     description: '注意が必要な運勢',
-     weight: 20,
-     placeholderIds: ['greeting', 'warning_message'],
-     postActions: [
-      {
-       iconKey: 'warning',
-       delaySeconds: 3,
-       wordParty: 'caution',
-       messageContent: '⚠️ <<greeting>> 凶が出ました... <<warning_message>>',
-       messageToast: '凶のおみくじを投稿しました'
       }
      ]
     }
@@ -98,7 +87,8 @@ export const omikujiSampleData: OmikujiData = {
    isEnabled: true,
    order: 2,
    editorColor: '#4ECDC4',
-   scriptId: 'question_script_001',
+   scriptId: null,
+   scriptParams: null,
    ruleType: 'comments',
    threshold: {
     conditions: ['comment'],
@@ -120,6 +110,7 @@ export const omikujiSampleData: OmikujiData = {
      placeholderIds: ['clear_answer', 'confidence'],
      postActions: [
       {
+       characterKey: '',
        iconKey: 'lightbulb',
        delaySeconds: 1,
        wordParty: 'answer',
@@ -135,6 +126,7 @@ export const omikujiSampleData: OmikujiData = {
      placeholderIds: ['vague_answer', 'maybe'],
      postActions: [
       {
+       characterKey: '',
        iconKey: 'question',
        delaySeconds: 2,
        wordParty: 'maybe',
@@ -150,6 +142,7 @@ export const omikujiSampleData: OmikujiData = {
      placeholderIds: ['riddle', 'hint'],
      postActions: [
       {
+       characterKey: '',
        iconKey: 'mystery',
        delaySeconds: 4,
        wordParty: 'riddle',
@@ -174,6 +167,7 @@ export const omikujiSampleData: OmikujiData = {
    order: 1,
    editorColor: '#45B7D1',
    scriptId: null,
+   scriptParams: null,
    ruleType: 'timers',
    intervalSeconds: 1800, // 30分
    omikuji: [
@@ -184,6 +178,7 @@ export const omikujiSampleData: OmikujiData = {
      placeholderIds: ['time_greeting', 'current_fortune', 'advice'],
      postActions: [
       {
+       characterKey: '',
        iconKey: 'clock',
        delaySeconds: 0,
        wordParty: 'time_check',
@@ -201,7 +196,8 @@ export const omikujiSampleData: OmikujiData = {
    isEnabled: false,
    order: 2,
    editorColor: '#96CEB4',
-   scriptId: 'trivia_script_001',
+   scriptId: null,
+   scriptParams: null,
    ruleType: 'timers',
    intervalSeconds: 3600, // 1時間
    omikuji: [
@@ -212,6 +208,7 @@ export const omikujiSampleData: OmikujiData = {
      placeholderIds: ['animal_fact', 'surprise_emoji'],
      postActions: [
       {
+       characterKey: '',
        iconKey: 'animal',
        delaySeconds: 1,
        wordParty: 'trivia',
@@ -227,6 +224,7 @@ export const omikujiSampleData: OmikujiData = {
      placeholderIds: ['space_fact', 'wonder_emoji'],
      postActions: [
       {
+       characterKey: '',
        iconKey: 'star',
        delaySeconds: 2,
        wordParty: 'space',
@@ -242,6 +240,7 @@ export const omikujiSampleData: OmikujiData = {
      placeholderIds: ['history_fact', 'time_emoji'],
      postActions: [
       {
+       characterKey: '',
        iconKey: 'book',
        delaySeconds: 1,
        wordParty: 'history',
@@ -543,6 +542,10 @@ export const omikujiSampleData: OmikujiData = {
     { weight: 25, content: '🏛️' }
    ]
   }
+ },
+ scriptSettings: {
+  BomberSpin: {},
+  GouseiSuika: {}
  }
 };
 

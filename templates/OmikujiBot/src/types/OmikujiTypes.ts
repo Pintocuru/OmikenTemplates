@@ -9,7 +9,7 @@ export type OmikujiData = {
  comments: Record<string, CommentRule>; // コメントベースの抽選ルール
  timers: Record<string, TimerRule>; // 自動で投稿するの抽選ルール
  placeholders: Record<string, PlaceholderSource>; // プレースホルダー
- // scriptSettings
+ scriptSettings: Record<string, Record<string, any>>; // scriptSettings
 };
 
 // =============================================================================
@@ -21,16 +21,18 @@ export const RULE_CATEGORIES = ['comments', 'timers'] as const;
 export type RuleCategory = (typeof RULE_CATEGORIES)[number];
 
 /** すべてのルールに共通する基本構造 */
-type BaseRule = {
+type BaseRuleCommon = {
  id: string;
  name: string;
  description: string;
  isEnabled: boolean;
  order: number;
  editorColor: string;
- scriptId: string | null;
- scriptSettings: Record<string, any> | null; // 外部script のsetting情報
 };
+
+type BaseRule =
+ | (BaseRuleCommon & { scriptId: string; scriptParams: Record<string, any> })
+ | (BaseRuleCommon & { scriptId: null; scriptParams: null });
 
 /** コメント条件によるおみくじ抽選ルール */
 export type CommentRule = BaseRule & {
@@ -60,7 +62,6 @@ export type OmikujiSet<TParams extends Record<string, any> = Record<string, any>
  name: string; // 表示名
  description: string;
  weight: number; // 出現割合
- scriptParams: TParams; // パラメータ
  placeholderIds: string[]; // プレースホルダーのID
  postActions: PostAction[]; // わんコメへの投稿
 };

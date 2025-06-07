@@ -6,7 +6,8 @@ import BomberSpin from '../scriptGame/BomberSpin.js';
 import { omikujiSampleData } from '@/omikujiSampleData';
 
 const scriptMap: Record<string, ScriptPreset> = {
- BomberSpin: BomberSpin.BomberSpin
+ BomberSpin: BomberSpin.BomberSpin,
+ GouseiSuika: GouseiSuika.GouseiSuika
 };
 
 export class ScriptManager {
@@ -24,7 +25,7 @@ export class ScriptManager {
    const commentRules: Record<string, CommentRule> = omikujiSampleData.comments;
 
    for (const rule of Object.values(commentRules)) {
-    const { scriptId, scriptSettings } = rule;
+    const { scriptId, scriptParams: scriptSettings } = rule;
 
     if (scriptId && scriptMap[scriptId]) {
      const scriptInstance = scriptMap[scriptId].execute;
