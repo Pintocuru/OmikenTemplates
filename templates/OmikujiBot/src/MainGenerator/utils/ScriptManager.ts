@@ -6,8 +6,8 @@ import BomberSpin from '../scriptGame/BomberSpin.js';
 import { omikujiSampleData } from '@/omikujiSampleData';
 
 const scriptMap: Record<string, ScriptPreset> = {
- BomberSpin: BomberSpin.BomberSpin,
- GouseiSuika: GouseiSuika.GouseiSuika
+ BomberSpin: BomberSpin.BomberSpin
+ // GouseiSuika: GouseiSuika.GouseiSuika
 };
 
 export class ScriptManager {

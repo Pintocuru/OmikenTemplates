@@ -1,6 +1,6 @@
 // src/main.ts
 import { createApp } from 'vue';
-import App from './MainGenerator/App.vue';
+import App from './App.vue';
 import OneSDK from '@onecomme.com/onesdk';
 
 // createApp

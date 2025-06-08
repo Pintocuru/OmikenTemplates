@@ -33,7 +33,7 @@ export const omikujiSampleData: OmikujiData = {
     {
      name: '大吉',
      description: '最高の運勢！',
-     weight: 10,
+     weight: 1,
      placeholderIds: ['greeting', 'lucky_message'],
      postActions: [
       {
@@ -42,14 +42,14 @@ export const omikujiSampleData: OmikujiData = {
        delaySeconds: 2,
        wordParty: 'celebration',
        messageContent: '🌟 <<greeting>> 大吉が出ました！ <<lucky_message>>',
-       messageToast: '大吉のおみくじを投稿しました'
+       messageToast: ''
       }
      ]
     },
     {
      name: '中吉',
      description: 'まずまずの運勢',
-     weight: 30,
+     weight: 3,
      placeholderIds: ['greeting', 'normal_message'],
      postActions: [
       {
@@ -58,23 +58,23 @@ export const omikujiSampleData: OmikujiData = {
        delaySeconds: 1,
        wordParty: 'normal',
        messageContent: '😊 <<greeting>> 中吉です！ <<normal_message>>',
-       messageToast: '中吉のおみくじを投稿しました'
+       messageToast: ''
       }
      ]
     },
     {
      name: '小吉',
      description: '少し良い運勢',
-     weight: 40,
+     weight: 4000,
      placeholderIds: ['greeting', 'encourage_message'],
      postActions: [
       {
-       characterKey: '',
+       characterKey: 'reimu',
        iconKey: 'thumbs_up',
        delaySeconds: 1,
        wordParty: 'encourage',
        messageContent: '👍 <<greeting>> 小吉ですね。 <<encourage_message>>',
-       messageToast: '小吉のおみくじを投稿しました'
+       messageToast: ''
       }
      ]
     }
@@ -115,7 +115,7 @@ export const omikujiSampleData: OmikujiData = {
        delaySeconds: 1,
        wordParty: 'answer',
        messageContent: '💡 <<clear_answer>> <<confidence>>',
-       messageToast: '明確な回答を投稿しました'
+       messageToast: ''
       }
      ]
     },
@@ -131,7 +131,7 @@ export const omikujiSampleData: OmikujiData = {
        delaySeconds: 2,
        wordParty: 'maybe',
        messageContent: '🤔 <<vague_answer>> <<maybe>>',
-       messageToast: '曖昧な回答を投稿しました'
+       messageToast: ''
       }
      ]
     },
@@ -147,7 +147,7 @@ export const omikujiSampleData: OmikujiData = {
        delaySeconds: 4,
        wordParty: 'riddle',
        messageContent: '🎭 <<riddle>> <<hint>>',
-       messageToast: '謎かけを投稿しました'
+       messageToast: ''
       }
      ]
     }
@@ -183,7 +183,7 @@ export const omikujiSampleData: OmikujiData = {
        delaySeconds: 0,
        wordParty: 'time_check',
        messageContent: '⏰ <<time_greeting>> <<current_fortune>> <<advice>>',
-       messageToast: '定期運勢チェックを投稿しました'
+       messageToast: ''
       }
      ]
     }
@@ -213,7 +213,7 @@ export const omikujiSampleData: OmikujiData = {
        delaySeconds: 1,
        wordParty: 'trivia',
        messageContent: '🐾 <<surprise_emoji>> <<animal_fact>>',
-       messageToast: '動物の豆知識を投稿しました'
+       messageToast: ''
       }
      ]
     },
@@ -229,7 +229,7 @@ export const omikujiSampleData: OmikujiData = {
        delaySeconds: 2,
        wordParty: 'space',
        messageContent: '🌌 <<wonder_emoji>> <<space_fact>>',
-       messageToast: '宇宙の豆知識を投稿しました'
+       messageToast: ''
       }
      ]
     },
@@ -245,7 +245,7 @@ export const omikujiSampleData: OmikujiData = {
        delaySeconds: 1,
        wordParty: 'history',
        messageContent: '📚 <<time_emoji>> <<history_fact>>',
-       messageToast: '歴史の豆知識を投稿しました'
+       messageToast: ''
       }
      ]
     }
@@ -260,7 +260,7 @@ export const omikujiSampleData: OmikujiData = {
   // 挨拶系
   greeting: {
    id: 'greeting',
-   name: '挨拶',
+   name: 'greeting',
    description: '様々な挨拶表現',
    placeholderIds: [],
    values: [
@@ -275,7 +275,7 @@ export const omikujiSampleData: OmikujiData = {
   // メッセージ系
   lucky_message: {
    id: 'lucky_message',
-   name: '幸運メッセージ',
+   name: 'lucky_message',
    description: '幸運を表すメッセージ',
    placeholderIds: ['lucky_action'],
    values: [
@@ -288,7 +288,7 @@ export const omikujiSampleData: OmikujiData = {
 
   normal_message: {
    id: 'normal_message',
-   name: '通常メッセージ',
+   name: 'normal_message',
    description: '普通の状況でのメッセージ',
    placeholderIds: [],
    values: [
@@ -301,7 +301,7 @@ export const omikujiSampleData: OmikujiData = {
 
   encourage_message: {
    id: 'encourage_message',
-   name: '励ましメッセージ',
+   name: 'encourage_message',
    description: '励ましや応援のメッセージ',
    placeholderIds: [],
    values: [
@@ -314,7 +314,7 @@ export const omikujiSampleData: OmikujiData = {
 
   warning_message: {
    id: 'warning_message',
-   name: '注意メッセージ',
+   name: 'warning_message',
    description: '注意や気をつけるべきことのメッセージ',
    placeholderIds: [],
    values: [
@@ -328,7 +328,7 @@ export const omikujiSampleData: OmikujiData = {
   // アクション系
   lucky_action: {
    id: 'lucky_action',
-   name: '幸運のアクション',
+   name: 'lucky_action',
    description: '幸運を呼び込むための行動提案',
    placeholderIds: [],
    values: [
@@ -343,7 +343,7 @@ export const omikujiSampleData: OmikujiData = {
   // 質問応答系
   clear_answer: {
    id: 'clear_answer',
-   name: '明確な回答',
+   name: 'clear_answer',
    description: 'はっきりとした答え',
    placeholderIds: [],
    values: [
@@ -356,7 +356,7 @@ export const omikujiSampleData: OmikujiData = {
 
   vague_answer: {
    id: 'vague_answer',
-   name: '曖昧な回答',
+   name: 'vague_answer',
    description: '少し曖昧な答え',
    placeholderIds: [],
    values: [
@@ -369,7 +369,7 @@ export const omikujiSampleData: OmikujiData = {
 
   confidence: {
    id: 'confidence',
-   name: '自信度',
+   name: 'confidence',
    description: '回答の確信度を表現',
    placeholderIds: [],
    values: [
@@ -381,7 +381,7 @@ export const omikujiSampleData: OmikujiData = {
 
   maybe: {
    id: 'maybe',
-   name: 'かもしれない表現',
+   name: 'maybe',
    description: '不確実性を表現する言葉',
    placeholderIds: [],
    values: [
@@ -394,7 +394,7 @@ export const omikujiSampleData: OmikujiData = {
 
   riddle: {
    id: 'riddle',
-   name: '謎かけ',
+   name: 'riddle',
    description: '謎かけやなぞなぞ',
    placeholderIds: [],
    values: [
@@ -407,7 +407,7 @@ export const omikujiSampleData: OmikujiData = {
 
   hint: {
    id: 'hint',
-   name: 'ヒント',
+   name: 'hint',
    description: '謎解きのヒント',
    placeholderIds: [],
    values: [
@@ -421,7 +421,7 @@ export const omikujiSampleData: OmikujiData = {
   // 時間系
   time_greeting: {
    id: 'time_greeting',
-   name: '時間の挨拶',
+   name: 'time_greeting',
    description: '時間に応じた挨拶',
    placeholderIds: [],
    values: [
@@ -434,7 +434,7 @@ export const omikujiSampleData: OmikujiData = {
 
   current_fortune: {
    id: 'current_fortune',
-   name: '現在の運勢',
+   name: 'current_fortune',
    description: '今の運勢状況',
    placeholderIds: [],
    values: [
@@ -448,7 +448,7 @@ export const omikujiSampleData: OmikujiData = {
 
   advice: {
    id: 'advice',
-   name: 'アドバイス',
+   name: 'advice',
    description: '運勢に基づくアドバイス',
    placeholderIds: [],
    values: [
@@ -463,7 +463,7 @@ export const omikujiSampleData: OmikujiData = {
   // 豆知識系
   animal_fact: {
    id: 'animal_fact',
-   name: '動物の豆知識',
+   name: 'animal_fact',
    description: '動物に関する面白い事実',
    placeholderIds: [],
    values: [
@@ -477,7 +477,7 @@ export const omikujiSampleData: OmikujiData = {
 
   space_fact: {
    id: 'space_fact',
-   name: '宇宙の豆知識',
+   name: 'space_fact',
    description: '宇宙に関する興味深い話',
    placeholderIds: [],
    values: [
@@ -491,7 +491,7 @@ export const omikujiSampleData: OmikujiData = {
 
   history_fact: {
    id: 'history_fact',
-   name: '歴史の豆知識',
+   name: 'history_fact',
    description: '歴史の面白いエピソード',
    placeholderIds: [],
    values: [
@@ -506,7 +506,7 @@ export const omikujiSampleData: OmikujiData = {
   // 絵文字系
   surprise_emoji: {
    id: 'surprise_emoji',
-   name: '驚き絵文字',
+   name: 'surprise_emoji',
    description: '驚きを表現する絵文字',
    placeholderIds: [],
    values: [
@@ -519,7 +519,7 @@ export const omikujiSampleData: OmikujiData = {
 
   wonder_emoji: {
    id: 'wonder_emoji',
-   name: '不思議絵文字',
+   name: 'wonder_emoji',
    description: '不思議さを表現する絵文字',
    placeholderIds: [],
    values: [
@@ -532,7 +532,7 @@ export const omikujiSampleData: OmikujiData = {
 
   time_emoji: {
    id: 'time_emoji',
-   name: '時間絵文字',
+   name: 'time_emoji',
    description: '時間や歴史を表現する絵文字',
    placeholderIds: [],
    values: [
@@ -569,7 +569,7 @@ export const charasSampleData: Record<string, CharacterPreset> = {
    backgroundColor: '#FF4081'
   },
   image: {
-   Default: 'reimu/Default.png',
+   Default: 'reimu/Default.webp',
    fun01: 'reimu/fun01.png',
    fun02: 'reimu/fun02.png',
    fun03: 'reimu/fun03.png',

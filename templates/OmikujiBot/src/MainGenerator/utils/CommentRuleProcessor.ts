@@ -23,7 +23,7 @@ export function sanitizePostActionsForDuplicate(postActions: PostAction[]): Post
 function createProcessingCooldownToast(ruleName: string): PostAction[] {
  return [
   {
-   characterKey: charasSampleData[0].id,
+   characterKey: Object.values(charasSampleData)[0]?.id,
    iconKey: 'Default',
    delaySeconds: 0,
    wordParty: '',

@@ -33,6 +33,9 @@ const processor = new CommentProcessor();
 
 // 初期化処理
 onMounted(async () => {
+ // 初期テーマを手動で設定
+ document.documentElement.setAttribute('data-theme', 'light');
+
  try {
   const isInit = await fetchComments((comments) => {
    // コメントがリセットされたら、空にする
@@ -43,7 +46,6 @@ onMounted(async () => {
 
    // コメントを抽選結果付きで処理
    const processedMessages = processor.processComments(comments);
-
    // BotMessage[] のうち、delaySeconds に従って同時に追加
    Promise.all(
     processedMessages.map((message) => {

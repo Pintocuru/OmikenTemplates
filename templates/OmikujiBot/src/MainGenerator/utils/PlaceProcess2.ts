@@ -70,7 +70,7 @@ export class PlaceProcess {
 
   // 既に解決済みの場合はスキップ
   const source = this.placeholderSources[placeholderId];
-  if (!source || this.resolvedValues[source.name] !== undefined) {
+  if (!source || source.name in this.resolvedValues) {
    return;
   }
 

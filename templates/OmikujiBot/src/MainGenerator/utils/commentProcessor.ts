@@ -12,8 +12,9 @@ import {
  sanitizePostActionsForDuplicate
 } from './CommentRuleProcessor';
 import { drawOmikuji } from './PlayOmikuji';
+import { SETTINGS } from '@common/settings';
 
-const BOT_USER_ID = 'OmikujiBot';
+const BOT_USER_ID = SETTINGS.BOT_USER_ID; // OmikujiBot に変更したい
 
 export class CommentProcessor {
  private readonly timeThreshold = 5; // これ以上経過した古いコメントは判定しない(秒)
@@ -35,6 +36,7 @@ export class CommentProcessor {
   * メイン処理: コメントを処理して拡張コメントを作成
   */
  processComments(comments: Comment[]): BotMessage[] {
+  console.log(comments);
   if (!comments.length) return [];
 
   const currentTime = Date.now();
@@ -46,7 +48,7 @@ export class CommentProcessor {
 
    if (!isWithinTimeThreshold) continue;
 
-   if (comment.data.userId === BOT_USER_ID) {
+   if (comment.data.userId === BOT_USER_ID || comment.data.userId === SETTINGS.BOT_DEFAULT_NAME) {
     const processedBotComment = this.processBotComment(comment);
     if (processedBotComment) {
      botMessages.push(processedBotComment);

@@ -46,6 +46,7 @@ export class PostMessage {
    await Promise.all(
     posts.map(async (post) => {
      const chara = this.getCharacterFromPost(post);
+     console.log(chara);
      await this.processPost(post, chara);
     })
    );
@@ -216,7 +217,6 @@ export class PostMessage {
   if (!chara.frameId || chara.frameId === '') {
    throw new Error(`キャラクター「${chara.name}」にframeIdが設定されていません`);
   }
-
   return {
    service: {
     id: chara.frameId
