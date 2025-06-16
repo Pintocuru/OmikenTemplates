@@ -1,9 +1,7 @@
 <!-- src/apps/configMaker/App.vue -->
 <template>
  <div class="p-4 max-w-4xl mx-auto">
-  <h1 class="text-2xl font-bold mb-6 text-center text-primary">
-   チャットデコレーション! コンフィグエディター
-  </h1>
+  <h1 class="text-2xl font-bold mb-6 text-center text-primary">おみくじBot コンフィグエディター</h1>
 
   <!-- アクションボタンとプリセット -->
   <div class="mb-4">
@@ -11,14 +9,29 @@
    <ConfigPresets />
   </div>
 
-  <!-- config 編集セクション -->
+  <!-- テンプレ -->
+  <div class="card bg-base-200">
+   <div class="card-title bg-primary text-lg p-2 pl-4 rounded-t">コメントルール設定</div>
+   <div class="card-body">
+    <CommentRuleEditor />
+   </div>
+  </div>
+  <hr />
+  <!-- テンプレ -->
   <div class="mb-6">
-   <UserVisitsEditor />
+   <TimerRuleEditor />
+  </div>
+  <hr />
+  <!-- テンプレ -->
+  <div class="mb-6">
+   <PlaceholderEditor />
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
-import UserVisitsEditor from './components/UserVisitsEditor.vue';
 import ConfigPresets from './components/ConfigPresets.vue';
+import CommentRuleEditor from './components/CommentRuleEditor.vue';
+import TimerRuleEditor from './components/TimerRuleEditor.vue';
+import PlaceholderEditor from './components/PlaceholderEditor.vue';
 </script>

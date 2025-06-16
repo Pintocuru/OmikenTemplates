@@ -1,7 +1,11 @@
 <!-- src/MainGenerator/App.vue -->
 <template>
  <div v-if="isInitialized">
-  <ViewBotComment :botMessages="botMessages" />
+  <!-- 通常のコメント表示 -->
+  <ViewBotMessage :botMessages="normalMessages" />
+
+  <!-- トースト表示 -->
+  <ViewBotToast :botMessages="toastMessages" />
  </div>
  <!-- わんコメが起動されていない場合のエラー表示 -->
  <div v-else>
@@ -10,10 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { BotMessage } from '@/types/types';
 import { getAppConfig } from './utils/config';
-import ViewBotComment from './components/ViewBotComment.vue';
+import ViewBotMessage from './components/ViewBotMessage.vue';
+import ViewBotToast from './components/ViewBotToast.vue';
 import { CommentProcessor } from './utils/commentProcessor';
 import { GetUserComments } from '@common/subscribe/GetUserComments';
 import ErrorInitComponent from '@common/ErrorInitComponent.vue';
@@ -30,6 +35,10 @@ const { fetchComments } = GetUserComments(config);
 
 // CommentProcessorインスタンスを作成
 const processor = new CommentProcessor();
+
+// メッセージを isToast で分離
+const normalMessages = computed(() => botMessages.value.filter((message) => !message.isToast));
+const toastMessages = computed(() => botMessages.value.filter((message) => message.isToast));
 
 // 初期化処理
 onMounted(async () => {
@@ -76,6 +85,7 @@ onMounted(async () => {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap');
 html,
 body {
  height: 100%;
@@ -83,6 +93,7 @@ body {
  margin: 0;
  padding: 0;
  overflow: hidden;
+ font-family: 'Zen Maru Gothic', sans-serif;
 }
 #App {
  height: 100%;

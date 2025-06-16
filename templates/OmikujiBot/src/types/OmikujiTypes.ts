@@ -58,7 +58,7 @@ export type RuleTypeMap = {
 // おみくじ関連の型
 // =============================================================================
 
-export type OmikujiSet<TParams extends Record<string, any> = Record<string, any>> = {
+export type OmikujiSet = {
  name: string; // 表示名
  description: string;
  weight: number; // 出現割合

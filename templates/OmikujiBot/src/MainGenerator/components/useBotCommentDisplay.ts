@@ -6,47 +6,43 @@ const DISPLAY_CONFIG = {
  INTERVAL: 250,
  BASE_LIFE_TIME: 10000,
  THRESHOLD: 30,
- EXTRA_TIME_PER_CHAR: 100
+ EXTRA_TIME_PER_CHAR: 100 // 文字数が多い場合は表示時間を延長
 } as const;
 
-export const useBotCommentDisplay = (botMessages: Ref<BotMessage[]>, maxDisplayedComments = 5) => {
+export type DisplayMode = 'comment' | 'toast';
+
+export const useBotCommentDisplay = (
+ botMessages: Ref<BotMessage[]>,
+ mode: DisplayMode = 'comment'
+) => {
  const displayedComments = ref<BotMessage[]>([]);
  const animationFrameId = ref<number>();
 
  const comments = computed(() => {
-  return Array.isArray(botMessages) ? botMessages : botMessages.value;
+  const allMessages = botMessages.value;
+  return allMessages.filter((message) => (mode === 'comment' ? !message.isToast : message.isToast));
  });
 
- // スタイル計算の最適化
+ // スタイル計算を統一
  const getCommentStyles = (displayIndex: number, message: BotMessage) => {
-  const brightness = Math.max(100 - displayIndex * 15, 30);
   const backgroundColor = message.color?.backgroundColor || '#ffffff';
 
+  if (mode === 'toast') {
+   return { backgroundColor };
+  }
+
+  const brightness = Math.max(100 - displayIndex * 15, 30);
   return {
    backgroundColor,
    filter: `brightness(${brightness}%)`
   };
  };
 
- const getArrowStyles = (displayIndex: number, message: BotMessage) => {
-  const brightness = Math.max(100 - displayIndex * 15, 30);
-  const backgroundColor = message.color?.backgroundColor || '#ffffff';
-
-  return {
-   borderLeft: '20px solid transparent',
-   borderRight: '20px solid transparent',
-   borderTop: `20px solid ${backgroundColor}`,
-   filter: `brightness(${brightness}%)`
-  };
- };
-
  const getAvatarStyles = (displayIndex: number) => {
-  const isLatest = displayIndex === 0;
+  if (mode === 'toast') return {};
 
   return {
-   top: '400px',
-   opacity: isLatest ? '100%' : '0%',
-   zIndex: 9999
+   opacity: displayIndex === 0 ? '100%' : '0%'
   };
  };
 
@@ -65,7 +61,15 @@ export const useBotCommentDisplay = (botMessages: Ref<BotMessage[]>, maxDisplaye
   });
  };
 
- // コメント表示制御の最適化
+ // トースト用の手動削除機能
+ const removeItem = (messageId: string) => {
+  const index = displayedComments.value.findIndex((item) => item.id === messageId);
+  if (index > -1) {
+   displayedComments.value.splice(index, 1);
+  }
+ };
+
+ // 表示制御ロジック
  const useCommentDisplayControl = () => {
   let lastTime = 0;
   let processedMessageIds = new Set<string>();
@@ -73,31 +77,25 @@ export const useBotCommentDisplay = (botMessages: Ref<BotMessage[]>, maxDisplaye
 
   const processNewComments = (now: number) => {
    if (now - lastTime <= DISPLAY_CONFIG.INTERVAL) return;
-
    const newComments = comments.value.filter((comment) => !processedMessageIds.has(comment.id));
    if (newComments.length === 0) return;
 
    lastTime = now;
-   const nextComment = newComments[0];
 
-   // 表示時間の計算
-   const commentLength = nextComment.comment?.length ?? 0;
-   const extraTime =
-    Math.max(commentLength - DISPLAY_CONFIG.THRESHOLD, 0) * DISPLAY_CONFIG.EXTRA_TIME_PER_CHAR;
-   const totalLifeTime = DISPLAY_CONFIG.BASE_LIFE_TIME + extraTime;
+   // 新しいコメントを処理
+   newComments.forEach((nextComment) => {
+    // 表示時間の計算（現在時刻を基準に設定）
+    let totalLifeTime: number;
 
-   // コメント追加
-   displayedComments.value.unshift(nextComment);
-   commentTimers.set(nextComment.id, now + totalLifeTime);
-   processedMessageIds.add(nextComment.id);
+    const commentLength = nextComment.comment?.length ?? 0;
+    const extraTime =
+     Math.max(commentLength - DISPLAY_CONFIG.THRESHOLD, 0) * DISPLAY_CONFIG.EXTRA_TIME_PER_CHAR;
+    totalLifeTime = DISPLAY_CONFIG.BASE_LIFE_TIME + extraTime;
 
-   // 表示数制限
-   if (displayedComments.value.length > maxDisplayedComments) {
-    const removedComment = displayedComments.value.pop();
-    if (removedComment) {
-     commentTimers.delete(removedComment.id);
-    }
-   }
+    displayedComments.value.unshift(nextComment);
+    commentTimers.set(nextComment.id, Date.now() + totalLifeTime);
+    processedMessageIds.add(nextComment.id);
+   });
   };
 
   const removeExpiredComments = (now: number) => {
@@ -111,13 +109,17 @@ export const useBotCommentDisplay = (botMessages: Ref<BotMessage[]>, maxDisplaye
    });
   };
 
-  const update = (now = Date.now()) => {
+  const update = () => {
+   const now = Date.now();
    processNewComments(now);
    removeExpiredComments(now);
    animationFrameId.value = requestAnimationFrame(update);
   };
 
   const start = () => {
+   processedMessageIds.clear();
+   commentTimers.clear();
+   displayedComments.value = [];
    update();
   };
 
@@ -126,6 +128,7 @@ export const useBotCommentDisplay = (botMessages: Ref<BotMessage[]>, maxDisplaye
     cancelAnimationFrame(animationFrameId.value);
    }
    commentTimers.clear();
+   processedMessageIds.clear();
   };
 
   return { start, stop };
@@ -136,10 +139,10 @@ export const useBotCommentDisplay = (botMessages: Ref<BotMessage[]>, maxDisplaye
  return {
   displayedComments,
   getCommentStyles,
-  getArrowStyles,
   getAvatarStyles,
   getImagePath,
   handleImageError,
+  removeItem,
   start: displayControl.start,
   stop: displayControl.stop
  };

@@ -4,6 +4,7 @@ import { CommentRule, PostAction } from '@/types/OmikujiTypes';
 import { checkThresholdComment } from './ThresholdCommentChecker';
 import { charasSampleData } from '@/omikujiSampleData';
 import { BotMessage } from '@/types/types';
+import { SETTINGS } from '@common/settings';
 
 /**
  * コメント重複時のPostAction調整
@@ -72,15 +73,19 @@ export function processCommentRule(
 export function generateToastFromAction(postAction: PostAction): BotMessage {
  const characterKey = postAction.characterKey;
 
+ // TODO:charasSampleData[characterKey]?.image[postAction.iconKey] が存在しない場合、何らかのアラートを出したい
  return {
-  id: crypto.randomUUID(),
+  id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
   name: charasSampleData[characterKey]?.name ?? '',
-  profileImage: charasSampleData[characterKey]?.image[postAction.iconKey] ?? '',
+  profileImage:
+   charasSampleData[characterKey]?.image[postAction.iconKey] ??
+   charasSampleData[characterKey]?.image['Default'] ??
+   '',
   timestamp: new Date().toISOString(),
   comment: postAction.messageToast,
   isToast: true,
   color: charasSampleData[characterKey]?.color ?? '#000000',
-  delaySeconds: postAction.delaySeconds
+  delaySeconds: postAction.delaySeconds + SETTINGS.basicDelaySeconds
  };
 }
 
@@ -91,8 +96,5 @@ export function generateToastsFromActions(postActions: PostAction[]): BotMessage
  const toastActions = postActions.filter((action) => action.messageToast?.trim());
 
  if (toastActions.length === 0) return [];
-
- const botMessages = toastActions.map((action) => generateToastFromAction(action));
-
- return botMessages;
+ return toastActions.map((action) => generateToastFromAction(action));
 }

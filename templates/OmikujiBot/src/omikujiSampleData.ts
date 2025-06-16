@@ -74,7 +74,7 @@ export const omikujiSampleData: OmikujiData = {
        delaySeconds: 1,
        wordParty: 'encourage',
        messageContent: '👍 <<greeting>> 小吉ですね。 <<encourage_message>>',
-       messageToast: ''
+       messageToast: '<<greeting>>、テスト。'
       }
      ]
     }

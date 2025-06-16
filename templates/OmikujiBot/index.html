@@ -1,19 +1,17 @@
 <!doctype html>
-<html data-theme="light">
+<html data-theme="dark">
+ <head>
+  <meta charset="UTF-8" />
+  <meta name="referrer" content="no-referrer" />
+  <!-- 設定ファイル -->
+  <script src="./assets/config.js"></script>
+ </head>
 
-<head>
- <meta charset="UTF-8" />
- <meta name="referrer" content="no-referrer" />
- <!-- 設定ファイル -->
- <script src="./assets/config.js"></script>
-</head>
-
-<body>
- <div id="App"></div>
- <!-- Vue3 -->
- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
- <!-- 対象のエントリーポイント MainGenerator ConfigMaker -->
- <script type="module" src="./src/MainGenerator/main.ts"></script>
-</body>
-
+ <body>
+  <div id="App"></div>
+  <!-- Vue3 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <!-- 対象のエントリーポイント MainGenerator ConfigMaker -->
+  <script type="module" src="./src/ConfigMaker/main.ts"></script>
+ </body>
 </html>

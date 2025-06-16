@@ -36,7 +36,6 @@ export class CommentProcessor {
   * メイン処理: コメントを処理して拡張コメントを作成
   */
  processComments(comments: Comment[]): BotMessage[] {
-  console.log(comments);
   if (!comments.length) return [];
 
   const currentTime = Date.now();
@@ -221,14 +220,13 @@ export class CommentProcessor {
     // 通常の投稿
     this.PostMessage.post(postActions);
    } else {
-    // コメント重複時の処理
+    // コメント重複時はToastで表示
     const modifiedPostActions = sanitizePostActionsForDuplicate(postActions);
     this.PostMessage.post(modifiedPostActions);
    }
 
    // Toast処理とBotMessage取得
-   const toastBotMessages = generateToastsFromActions(postActions);
-   return toastBotMessages;
+   return generateToastsFromActions(postActions);
   } finally {
    this.placeProcess.clearResolvedValues();
   }
