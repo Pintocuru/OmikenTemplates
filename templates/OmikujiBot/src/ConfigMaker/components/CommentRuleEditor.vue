@@ -4,9 +4,6 @@
  <RuleTabs
   :rules="rules"
   :selectedRule="selectedRule"
-  ruleNamePrefix="ルール"
-  ruleTypeName="コメントルール"
-  emptyMessage="コメントルールがありません"
   @selectRule="selectRule"
   @addRule="addNewRule"
   @duplicateRule="duplicateRule"
@@ -18,66 +15,10 @@
  <!-- ルール編集エリア -->
  <div v-if="selectedRule">
   <!-- 基本設定セクション -->
-  <div class="card bg-base-300 mt-4 relative">
-   <!-- ヘッダー（タイトル＋右上スイッチ） -->
-   <div
-    class="card-title bg-secondary text-lg p-2 pl-4 rounded-t flex items-center justify-between"
-   >
-    <div class="flex items-center gap-2">
-     <!-- エディターカラー（アイコン化） -->
-     <button
-      class="btn btn-sm btn-square"
-      :style="{ backgroundColor: selectedRule.editorColor }"
-      title="エディターカラー"
-     >
-      🎨
-     </button>
-     <span>基本設定</span>
-    </div>
-    <!-- ルール有効スイッチ -->
-    <label class="cursor-pointer flex items-center gap-2">
-     <input type="checkbox" v-model="selectedRule.isEnabled" class="toggle toggle-primary" />
-     <span class="text-sm">ルールを有効にする</span>
-    </label>
-   </div>
+  <BaseSettingsEditor :modelValue="selectedRule" @update:modelValue="updateSelectedRule" />
 
-   <!-- ボディ -->
-   <div class="card-body">
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-     <!-- 左カラム -->
-     <div class="space-y-3">
-      <!-- ルール名 -->
-      <div class="form-control">
-       <label class="label">
-        <span class="label-text font-medium">ルール名</span>
-       </label>
-       <input
-        type="text"
-        v-model="selectedRule.name"
-        placeholder="ルール名を入力"
-        class="input input-bordered w-full"
-       />
-      </div>
-
-      <!-- 説明 -->
-      <div class="form-control">
-       <label class="label">
-        <span class="label-text font-medium">説明</span>
-       </label>
-       <input
-        type="text"
-        v-model="selectedRule.description"
-        placeholder="ルールの説明を入力"
-        class="input input-bordered w-full"
-       />
-      </div>
-     </div>
-
-     <!-- 右カラム -->
-     <div class="space-y-3"></div>
-    </div>
-   </div>
-  </div>
+  <!-- 外部スクリプト設定セクション -->
+  <ExternalScriptEditor :modelValue="selectedRule" @update:modelValue="updateSelectedRule" />
 
   <!-- しきい値設定セクション -->
   <CommentThresholdEditor v-model="selectedRule.threshold" />
@@ -91,9 +32,12 @@
 import { computed } from 'vue';
 import { useCommentRulesStore } from '../script/useCommentRulesStore';
 import { useOmikujiStore } from '../script/useOmikujiStore';
+import BaseSettingsEditor from './BaseSettingsEditor.vue';
 import CommentThresholdEditor from './CommentThresholdEditor.vue';
+import ExternalScriptEditor from './ExternalScriptEditor.vue';
 import OmikujiSetEditor from './OmikujiSetEditor.vue';
 import RuleTabs from './RuleTabs.vue';
+import { CommentRuleType, TimerRuleType } from '@/types/OmikujiTypesSchema';
 
 // ストアを使用
 const commentRulesStore = useCommentRulesStore();
@@ -125,13 +69,18 @@ const moveRuleDown = (index: number) => {
  commentRulesStore.reorder(index, index + 1);
 };
 
+// これをコピペする
+const updateSelectedRule = (updatedRule: CommentRuleType | TimerRuleType) => {
+ if (selectedRule.value && selectedRule.value.id) {
+  commentRulesStore.update(selectedRule.value.id, updatedRule as CommentRuleType);
+ }
+};
+
 const deleteRule = (ruleId: string) => {
  commentRulesStore.remove(ruleId);
  // 最後のルールを削除した場合、新しいルールを自動作成
  setTimeout(() => {
-  if (rules.value.length === 0) {
-   addNewRule();
-  }
+  if (rules.value.length === 0) addNewRule();
  }, 0);
 };
 </script>

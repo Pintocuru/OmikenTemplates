@@ -25,7 +25,7 @@
        class="w-3 h-3 rounded-full border border-white/20"
        :style="{ backgroundColor: rule.editorColor }"
       ></div>
-      {{ rule.name || `${ruleNamePrefix}${index + 1}` }}
+      {{ rule.name || `NoName${index + 1}` }}
       <span v-if="!rule.isEnabled" class="opacity-50 text-xs">(無効)</span>
      </span>
     </button>
@@ -37,15 +37,6 @@
     @click="addNewRule"
    >
     ➕ 追加
-   </button>
-  </div>
-
-  <!-- ルールが存在しない場合 -->
-  <div v-if="rules.length === 0" class="text-center py-12 space-y-4">
-   <div class="text-gray-500 text-lg">{{ emptyMessage }}</div>
-   <div class="text-gray-400 text-sm">新しい{{ ruleTypeName }}を追加してください</div>
-   <button @click="addNewRule" class="btn btn-primary btn-lg gap-2">
-    ➕ 新しい{{ ruleTypeName }}を追加
    </button>
   </div>
 
@@ -113,16 +104,9 @@ import { reactive, computed, onMounted, onUnmounted } from 'vue';
 interface Props {
  rules: any[];
  selectedRule: any;
- ruleNamePrefix?: string;
- ruleTypeName?: string;
- emptyMessage?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
- ruleNamePrefix: 'ルール',
- ruleTypeName: 'ルール',
- emptyMessage: 'ルールがありません'
-});
+const props = withDefaults(defineProps<Props>(), {});
 
 // Emits
 const emit = defineEmits<{

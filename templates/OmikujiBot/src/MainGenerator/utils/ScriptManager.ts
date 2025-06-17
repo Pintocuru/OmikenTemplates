@@ -1,14 +1,9 @@
 // src/MainGenerator/utils/processors/ScriptManager.ts
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { CommentRule } from '@/types/OmikujiTypes';
-import { ScriptClass, ScriptPreset } from '@/types/PresetTypes';
-import BomberSpin from '../scriptGame/BomberSpin.js';
+import { ScriptClass } from '@/types/PresetTypes';
 import { omikujiSampleData } from '@/omikujiSampleData';
-
-const scriptMap: Record<string, ScriptPreset> = {
- BomberSpin: BomberSpin.BomberSpin
- // GouseiSuika: GouseiSuika.GouseiSuika
-};
+import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 
 export class ScriptManager {
  private readonly scriptInstances: Record<string, ScriptClass> = {};
@@ -27,8 +22,8 @@ export class ScriptManager {
    for (const rule of Object.values(commentRules)) {
     const { scriptId, scriptParams: scriptSettings } = rule;
 
-    if (scriptId && scriptMap[scriptId]) {
-     const scriptInstance = scriptMap[scriptId].execute;
+    if (scriptId && scriptGameMap[scriptId]) {
+     const scriptInstance = scriptGameMap[scriptId].execute;
 
      if (scriptSettings) {
       scriptInstance.setup(scriptSettings);
@@ -55,7 +50,7 @@ export class ScriptManager {
  executeScript(comment: Comment, rule: CommentRule): any {
   const { scriptId } = rule;
 
-  if (!scriptId || !scriptMap[scriptId]) {
+  if (!scriptId || !scriptGameMap[scriptId]) {
    return null;
   }
 
