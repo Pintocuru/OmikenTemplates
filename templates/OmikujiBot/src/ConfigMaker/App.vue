@@ -9,22 +9,32 @@
    <ConfigPresets />
   </div>
 
-  <!-- テンプレ -->
+  <!-- コメントでのおみくじ -->
   <div class="card bg-base-200">
    <div class="card-title bg-primary text-lg p-2 pl-4 rounded-t">コメントルール設定</div>
    <div class="card-body">
     <CommentRuleEditor />
    </div>
   </div>
-  <hr />
-  <!-- テンプレ -->
-  <div class="mb-6">
-   <TimerRuleEditor />
+
+  <hr class="my-8" />
+
+  <!-- タイマーでのおみくじ -->
+  <div class="card bg-base-200">
+   <div class="card-title bg-primary text-lg p-2 pl-4 rounded-t">タイマールール設定</div>
+   <div class="card-body">
+    <TimerRuleEditor />
+   </div>
   </div>
-  <hr />
-  <!-- テンプレ -->
-  <div class="mb-6">
-   <PlaceholderEditor />
+
+  <hr class="my-8" />
+
+  <!-- プレースホルダー -->
+  <div class="card bg-base-200">
+   <div class="card-title bg-primary text-lg p-2 pl-4 rounded-t">プレースホルダー設定</div>
+   <div class="card-body">
+    <PlaceholderEditor />
+   </div>
   </div>
  </div>
 </template>

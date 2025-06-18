@@ -1,11 +1,7 @@
 // src/ConfigMaker/script/useOmikujiStore.ts - メインstore
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import {
- OmikujiDataSchema,
- OmikujiDataType,
- createDefaultOmikujiData
-} from '@/types/OmikujiTypesSchema';
+import { OmikujiDataSchema, OmikujiDataType } from '@/types/OmikujiTypesSchema';
 import { omikujiSampleData } from '@/omikujiSampleData';
 
 export const useOmikujiStore = defineStore('omikuji', () => {

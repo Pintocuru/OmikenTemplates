@@ -74,7 +74,7 @@ export interface CharacterPreset extends PresetMetadata {
  isIconDisplay: boolean;
  /** 音声読み上げ時の名前（ひらがな等） */
  displayName?: string;
- /** わんコメの枠ID（nullの場合はデフォルト） */
+ /** わんコメの枠ID（nullの場合はコメントテスターでの投稿） */
  frameId: string | null;
  /** 表示色設定 */
  color: CharacterColorScheme;
@@ -95,12 +95,22 @@ export interface CharacterColorScheme {
  * キャラクターの画像設定
  * Defaultは必須、その他の状態画像は任意
  */
-export interface CharacterImageSet {
- /** デフォルト画像（必須） */
- Default: string;
- /** その他の状態画像（例: "happy", "sad", "angry"など） */
- [emotionState: string]: string;
-}
+export type CharacterImageSet = {
+ default: string;
+} & Partial<Record<CharacterEmotion, string>>;
+
+export type CharacterEmotion =
+ | 'happy' // 喜び
+ | 'excited' // ワクワク、盛り上がり
+ | 'laughing' // 爆笑している
+ | 'blushing' // 照れてる・嬉しい
+ | 'surprised' // 驚き
+ | 'sad' // 悲しみ
+ | 'angry' // 怒り
+ | 'thinking' // 考え中・困惑
+ | 'wink' // 茶目っ気・軽い冗談
+ | 'singing' // 歌ってる
+ | 'sleepy'; // 眠い・休憩中
 
 // ===== スクリプトプリセット =====
 

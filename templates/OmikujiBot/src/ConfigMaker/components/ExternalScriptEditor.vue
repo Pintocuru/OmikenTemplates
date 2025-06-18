@@ -134,7 +134,6 @@ const isScriptEnabled = computed(() => props.modelValue.scriptId !== null);
 // 選択されたスクリプトの取得
 const selectedScript = computed((): ScriptPreset | null => {
  if (!props.modelValue.scriptId) return null;
- console.log(scriptGameMap[props.modelValue.scriptId]);
  return scriptGameMap[props.modelValue.scriptId] || null;
 });
 

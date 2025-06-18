@@ -5,6 +5,11 @@ import { z } from 'zod';
 // デフォルト値生成関数
 // =============================================================================
 
+// ID生成ユーティリティ
+export const generateId = () => {
+ return '' + Date.now();
+};
+
 export const createDefaultCountCondition = () => ({
  comparison: 'min' as const,
  unit: 'lc' as const,
@@ -37,21 +42,21 @@ export const createDefaultOmikujiSet = () => ({
  postActions: []
 });
 
-export const createDefaultPlaceholderSourceValue = () => ({
+export const createDefaultPlaceholderValue = () => ({
  weight: 1,
  content: ''
 });
 
-export const createDefaultPlaceholderSource = () => ({
- id: '',
+export const createDefaultPlaceholder = () => ({
+ id: generateId(),
  name: '',
- description: '',
+ order: 9999,
  placeholderIds: [],
- values: [createDefaultPlaceholderSourceValue()]
+ values: [createDefaultPlaceholderValue()]
 });
 
 export const createDefaultCommentRule = () => ({
- id: '',
+ id: generateId(),
  name: '',
  description: '',
  isEnabled: true,
@@ -65,7 +70,7 @@ export const createDefaultCommentRule = () => ({
 });
 
 export const createDefaultTimerRule = () => ({
- id: '',
+ id: generateId(),
  name: '',
  description: '',
  isEnabled: true,
@@ -153,29 +158,22 @@ export const PostActionWordPartySchema = z
 // Placeholder関連のスキーマ
 // =============================================================================
 
-export const PlaceholderSourceValueSchema = z
+export const PlaceholderValueSchema = z
  .object({
   weight: z.number().min(0).catch(1),
   content: z.string().catch('')
  })
- .catch(createDefaultPlaceholderSourceValue);
-
-export const PlaceholderSourceSchema = z
- .object({
-  id: z.string().catch(''),
-  name: z.string().catch(''),
-  description: z.string().catch(''),
-  placeholderIds: z.array(z.string().catch('')).catch([]),
-  values: z.array(PlaceholderSourceValueSchema).catch([createDefaultPlaceholderSourceValue()])
- })
- .catch(createDefaultPlaceholderSource);
+ .catch(createDefaultPlaceholderValue);
 
 export const PlaceholderSchema = z
  .object({
   id: z.string().catch(''),
-  value: z.string().catch('')
+  name: z.string().catch(''),
+  order: z.number().min(0).catch(0),
+  placeholderIds: z.array(z.string().catch('')).catch([]),
+  values: z.array(PlaceholderValueSchema).catch([createDefaultPlaceholderValue()])
  })
- .catch(() => ({ id: '', value: '' }));
+ .catch(createDefaultPlaceholder);
 
 // =============================================================================
 // Omikuji関連のスキーマ
@@ -204,28 +202,25 @@ const BaseRuleCommonSchema = z.object({
  editorColor: z
   .string()
   .regex(/^#[0-9A-Fa-f]{6}$/)
-  .catch('#3B82F6')
+  .catch('#3B82F6'),
+ scriptId: z.union([z.string(), z.null()]).catch(null),
+ scriptParams: z.union([z.record(z.any()), z.null()]).catch(null),
+ omikuji: z.array(OmikujiSetSchema).catch([createDefaultOmikujiSet()])
 });
 
 export const CommentRuleSchema = z
  .object({
   ...BaseRuleCommonSchema.shape,
-  scriptId: z.union([z.string(), z.null()]).catch(null),
-  scriptParams: z.union([z.record(z.any()), z.null()]).catch(null),
   ruleType: z.literal('comments').catch('comments'),
-  threshold: CommentThresholdSchema,
-  omikuji: z.array(OmikujiSetSchema).catch([createDefaultOmikujiSet()])
+  threshold: CommentThresholdSchema
  })
  .catch(createDefaultCommentRule);
 
 export const TimerRuleSchema = z
  .object({
   ...BaseRuleCommonSchema.shape,
-  scriptId: z.union([z.string(), z.null()]).catch(null),
-  scriptParams: z.union([z.record(z.any()), z.null()]).catch(null),
   ruleType: z.literal('timers').catch('timers'),
-  intervalSeconds: z.number().min(1).catch(60),
-  omikuji: z.array(OmikujiSetSchema).catch([createDefaultOmikujiSet()])
+  intervalSeconds: z.number().min(1).catch(60)
  })
  .catch(createDefaultTimerRule);
 
@@ -237,7 +232,7 @@ export const OmikujiDataSchema = z
  .object({
   comments: z.record(z.string(), CommentRuleSchema).catch({}),
   timers: z.record(z.string(), TimerRuleSchema).catch({}),
-  placeholders: z.record(z.string(), PlaceholderSourceSchema).catch({}),
+  placeholders: z.record(z.string(), PlaceholderSchema).catch({}),
   scriptSettings: z.record(z.string(), z.record(z.string(), z.any())).catch({})
  })
  .catch(createDefaultOmikujiData);
@@ -249,7 +244,7 @@ export const OmikujiDataSchema = z
 export type OmikujiDataType = z.infer<typeof OmikujiDataSchema>;
 export type CommentRuleType = z.infer<typeof CommentRuleSchema>;
 export type TimerRuleType = z.infer<typeof TimerRuleSchema>;
-export type PlaceholderSourceType = z.infer<typeof PlaceholderSourceSchema>;
+export type PlaceholderSourceType = z.infer<typeof PlaceholderSchema>;
 export type OmikujiSetType = z.infer<typeof OmikujiSetSchema>;
 export type PostActionType = z.infer<typeof PostActionSchema>;
 export type CommentThresholdType = z.infer<typeof CommentThresholdSchema>;

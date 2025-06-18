@@ -18,23 +18,23 @@
      <!-- カラーピッカー -->
      <div
       v-if="showColorPicker"
-      class="absolute top-full left-0 mt-2 z-50 bg-base-100 p-3 rounded-lg shadow-lg border"
+      class="absolute top-full left-0 mt-2 z-50 bg-base-100 p-4 rounded-lg shadow-lg border w-64"
      >
-      <div class="grid grid-cols-6 gap-1 mb-2">
-       <button
-        v-for="color in presetColors"
-        :key="color"
-        class="w-6 h-6 rounded border-2"
-        :class="modelValue.editorColor === color ? 'border-white' : 'border-gray-400'"
-        :style="{ backgroundColor: color }"
-        @click="selectColor(color)"
-       ></button>
+      <div class="grid grid-cols-6 gap-2 mb-3">
+       <div v-for="color in presetColors" :key="color" class="p-1">
+        <button
+         class="w-6 h-6 rounded-full border-2 block"
+         :class="modelValue.editorColor === color ? 'border-white' : 'border-gray-400'"
+         :style="{ backgroundColor: color }"
+         @click="selectColor(color)"
+        ></button>
+       </div>
       </div>
       <input
        type="color"
        :value="modelValue.editorColor"
        @input="updateColor($event)"
-       class="w-full h-8"
+       class="w-full h-8 cursor-pointer"
       />
      </div>
     </div>

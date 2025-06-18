@@ -50,26 +50,11 @@
      </div>
     </div>
 
-    <div class="form-control mt-2">
-     <label class="label py-1">
-      <span class="label-text text-sm">説明</span>
-     </label>
-     <textarea
-      :value="omikuji.description"
-      @input="updateOmikujiDescription(index, ($event.target as HTMLTextAreaElement).value)"
-      placeholder="おみくじの説明"
-      class="textarea textarea-bordered textarea-sm"
-      rows="2"
-     ></textarea>
-    </div>
-
     <!-- Post Actions Editor コンポーネント -->
     <div class="mt-3">
      <PostActionsEditor
       :model-value="omikuji.postActions"
       @update:model-value="updatePostActions(index, $event)"
-      :character-options="characterOptions"
-      :icon-options="iconOptions"
      />
     </div>
    </div>
@@ -87,33 +72,12 @@ import PostActionsEditor from './PostActionsEditor.vue';
 // Props
 const props = defineProps<{
  modelValue: OmikujiSetType[];
- characterOptions?: Array<{ value: string; label: string }>;
- iconOptions?: Array<{ value: string; label: string }>;
 }>();
 
 // Emits
 const emit = defineEmits<{
  'update:modelValue': [value: OmikujiSetType[]];
 }>();
-
-// Default options - 実際のアプリケーションに合わせて調整してください
-const defaultCharacterOptions = [
- { value: 'character1', label: 'キャラクター1' },
- { value: 'character2', label: 'キャラクター2' },
- { value: 'character3', label: 'キャラクター3' },
- { value: 'character4', label: 'キャラクター4' }
-];
-
-const defaultIconOptions = [
- { value: 'icon1', label: 'アイコン1' },
- { value: 'icon2', label: 'アイコン2' },
- { value: 'icon3', label: 'アイコン3' },
- { value: 'icon4', label: 'アイコン4' }
-];
-
-// Computed props with defaults
-const characterOptions = props.characterOptions || defaultCharacterOptions;
-const iconOptions = props.iconOptions || defaultIconOptions;
 
 // ヘルパー関数
 const updateModelValue = (newValue: OmikujiSetType[]) => {
@@ -130,12 +94,6 @@ const updateOmikujiName = (index: number, name: string) => {
 const updateOmikujiWeight = (index: number, weight: number) => {
  const newValue = [...props.modelValue];
  newValue[index] = { ...newValue[index], weight };
- updateModelValue(newValue);
-};
-
-const updateOmikujiDescription = (index: number, description: string) => {
- const newValue = [...props.modelValue];
- newValue[index] = { ...newValue[index], description };
  updateModelValue(newValue);
 };
 

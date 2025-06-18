@@ -3,11 +3,11 @@
  <div class="form-control">
   <div class="flex justify-between items-center mb-2">
    <label class="label py-1">
-    <span class="label-text text-sm font-medium">Post Actions</span>
+    <span class="label-text text-sm font-medium">わんコメへの投稿</span>
     <span class="badge badge-sm badge-outline ml-2">{{ modelValue.length }}</span>
    </label>
    <button @click="openDialog" class="btn btn-sm btn-primary" type="button">
-    <span class="text-xs">⚙️</span>
+    <span class="text-sm">⚙️</span>
     編集
    </button>
   </div>
@@ -17,26 +17,39 @@
    <div v-if="modelValue.length === 0" class="text-gray-500 italic">
     Post Actions が設定されていません
    </div>
-   <div v-else class="space-y-1">
-    <div v-for="(action, index) in previewActions" :key="index" class="flex items-center gap-2">
-     <span class="w-4 text-center text-xs text-gray-500">{{ index + 1 }}</span>
-     <div class="flex-1 flex flex-wrap gap-1 text-xs">
-      <span v-if="action.characterKey" class="badge badge-xs"
-       >👤 {{ getCharacterLabel(action.characterKey) }}</span
-      >
-      <span v-if="action.iconKey" class="badge badge-xs"
-       >🎨 {{ getIconLabel(action.iconKey) }}</span
-      >
-      <span v-if="action.delaySeconds > 0" class="badge badge-xs"
-       >⏱️ {{ action.delaySeconds }}s</span
-      >
-      <span v-if="action.wordParty" class="badge badge-xs badge-accent">🎉 Party</span>
-      <span v-if="action.messageContent" class="badge badge-xs badge-info">💬 Message</span>
-      <span v-if="action.messageToast" class="badge badge-xs badge-warning">🍞 Toast</span>
+   <div v-else class="space-y-2">
+    <div v-for="(action, index) in modelValue" :key="index">
+     <div class="flex items-center gap-2 mb-1">
+      <span class="w-4 text-center text-sm text-gray-500 font-medium">{{ index + 1 }}</span>
+      <div class="flex flex-wrap gap-1 text-xs">
+       <span v-if="action.characterKey" class="badge badge-sm"
+        >👤 {{ getCharacterLabel(action.characterKey) }}</span
+       >
+       <span v-if="action.iconKey" class="badge badge-sm"
+        >🎨 {{ getIconLabel(action.iconKey) }}</span
+       >
+       <span v-if="action.delaySeconds > 0" class="badge badge-sm badge-secondary">
+        ⏱️ {{ action.delaySeconds }}s
+       </span>
+      </div>
      </div>
-    </div>
-    <div v-if="modelValue.length > maxPreviewItems" class="text-xs text-gray-500 mt-1">
-     他 {{ modelValue.length - maxPreviewItems }} 件...
+     <div
+      v-if="action.messageContent || action.wordParty || action.messageToast"
+      class="ml-6 space-y-1"
+     >
+      <div v-if="action.messageContent" class="text-sm">
+       <span class="text-info font-medium">💬 Message:</span>
+       <span class="ml-1">{{ action.messageContent }}</span>
+      </div>
+      <div v-if="action.wordParty" class="text-sm">
+       <span class="text-accent font-medium">🎉 Party:</span>
+       <span class="ml-1">{{ action.wordParty }}</span>
+      </div>
+      <div v-if="action.messageToast" class="text-sm">
+       <span class="text-warning font-medium">🍞 Toast:</span>
+       <span class="ml-1">{{ action.messageToast }}</span>
+      </div>
+     </div>
     </div>
    </div>
   </div>
@@ -48,6 +61,7 @@
      <h3 class="font-bold text-lg">Post Actions 編集</h3>
      <div class="flex gap-2">
       <button @click="addAction" class="btn btn-sm btn-primary">➕ 追加</button>
+      <button @click="sortByDelay" class="btn btn-sm btn-secondary">⏱️ 時間順ソート</button>
       <button @click="closeDialog" class="btn btn-sm btn-circle btn-ghost">✕</button>
      </div>
     </div>
@@ -65,36 +79,21 @@
          Action
         </h4>
         <div class="flex gap-1">
-         <button
-          @click="moveActionUp(index)"
-          :disabled="index === 0"
-          class="btn btn-xs btn-outline"
-          title="上に移動"
-         >
-          ⬆️
-         </button>
-         <button
-          @click="moveActionDown(index)"
-          :disabled="index === editingActions.length - 1"
-          class="btn btn-xs btn-outline"
-          title="下に移動"
-         >
-          ⬇️
-         </button>
-         <button @click="duplicateAction(index)" class="btn btn-xs btn-outline" title="複製">
+         <button @click="duplicateAction(index)" class="btn btn-sm btn-outline" title="複製">
           📋
          </button>
-         <button @click="removeAction(index)" class="btn btn-xs btn-outline btn-error" title="削除">
+         <button @click="removeAction(index)" class="btn btn-sm btn-outline btn-error" title="削除">
           🗑️
          </button>
         </div>
        </div>
 
-       <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+       <!-- 基本設定: 横並び3つ -->
+       <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-4">
         <!-- Character Key -->
         <div class="form-control">
          <label class="label py-1">
-          <span class="label-text text-sm">👤 Character</span>
+          <span class="label-text text-sm">👤 キャラクター</span>
          </label>
          <select v-model="action.characterKey" class="select select-bordered select-sm">
           <option value="">選択してください</option>
@@ -107,7 +106,7 @@
         <!-- Icon Key -->
         <div class="form-control">
          <label class="label py-1">
-          <span class="label-text text-sm">🎨 Icon</span>
+          <span class="label-text text-sm">🎨 アイコン</span>
          </label>
          <select v-model="action.iconKey" class="select select-bordered select-sm">
           <option value="">選択してください</option>
@@ -133,19 +132,31 @@
         </div>
        </div>
 
-       <!-- Optional Fields -->
-       <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-3">
+       <!-- メッセージ系フィールド -->
+       <div class="space-y-3">
+        <!-- Message Content -->
+        <div class="form-control">
+         <label class="label py-1">
+          <span class="label-text text-sm">💬 コメント</span>
+         </label>
+         <input
+          type="text"
+          v-model="action.messageContent"
+          class="input input-bordered input-sm w-full"
+          placeholder="コメントの投稿"
+         />
+        </div>
+
         <!-- Word Party -->
         <div class="form-control">
          <label class="label py-1">
-          <span class="label-text text-sm">🎉 Word Party</span>
-          <span class="text-xs text-gray-500">(オプション)</span>
+          <span class="label-text text-sm">🎉 WordParty</span>
          </label>
          <input
           type="text"
           v-model="action.wordParty"
-          class="input input-bordered input-sm"
-          placeholder="必要な場合のみ"
+          class="input input-bordered input-sm w-full"
+          placeholder="WordParty"
          />
         </div>
 
@@ -153,28 +164,13 @@
         <div class="form-control">
          <label class="label py-1">
           <span class="label-text text-sm">🍞 Message Toast</span>
-          <span class="text-xs text-gray-500">(オプション)</span>
          </label>
          <input
           type="text"
           v-model="action.messageToast"
-          class="input input-bordered input-sm"
-          placeholder="必要な場合のみ"
+          class="input input-bordered input-sm w-full"
+          placeholder="トーストの表示"
          />
-        </div>
-
-        <!-- Message Content (フルwidth) -->
-        <div class="form-control lg:col-span-1">
-         <label class="label py-1">
-          <span class="label-text text-sm">💬 Message Content</span>
-          <span class="text-xs text-gray-500">(オプション)</span>
-         </label>
-         <textarea
-          v-model="action.messageContent"
-          class="textarea textarea-bordered textarea-sm"
-          rows="2"
-          placeholder="必要な場合のみ"
-         ></textarea>
         </div>
        </div>
       </div>
@@ -192,13 +188,13 @@
 
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue';
-import type { PostActionType } from '@/types/OmikujiTypesSchema';
+import { createDefaultPostAction, type PostActionType } from '@/types/OmikujiTypesSchema';
+import { charactersMap } from '@/Characters/CharactersMap';
+import { CharacterEmotion } from '@/types/PresetTypes';
 
 // Props
 const props = defineProps<{
  modelValue: PostActionType[];
- characterOptions?: Array<{ value: string; label: string }>;
- iconOptions?: Array<{ value: string; label: string }>;
 }>();
 
 // Emits
@@ -210,35 +206,61 @@ const emit = defineEmits<{
 const dialog: Ref<HTMLDialogElement | null> = ref(null);
 const editingActions: Ref<PostActionType[]> = ref([]);
 
-// Constants
-const maxPreviewItems = 3;
+// キャラクター
+const characterOptions = computed(() => {
+ return Object.entries(charactersMap).map(([key, character]) => ({
+  value: key,
+  label: character.name
+ }));
+});
+const iconOptions = computed(() => {
+ const selectedCharacterKey = editingActions.value.find(
+  (action) => action.characterKey
+ )?.characterKey;
+ if (!selectedCharacterKey) {
+  return [];
+ }
 
-// Default options
-const defaultCharacterOptions = [
- { value: 'character1', label: 'キャラクター1' },
- { value: 'character2', label: 'キャラクター2' },
- { value: 'character3', label: 'キャラクター3' }
-];
+ const character = charactersMap[selectedCharacterKey];
+ if (!character) {
+  return [];
+ }
 
-const defaultIconOptions = [
- { value: 'icon1', label: 'アイコン1' },
- { value: 'icon2', label: 'アイコン2' },
- { value: 'icon3', label: 'アイコン3' }
-];
+ const options: Array<{ value: string; label: string }> = [];
 
-// Computed
-const characterOptions = computed(() => props.characterOptions || defaultCharacterOptions);
-const iconOptions = computed(() => props.iconOptions || defaultIconOptions);
-const previewActions = computed(() => props.modelValue.slice(0, maxPreviewItems));
+ // デフォルト画像
+ options.push({
+  value: `${selectedCharacterKey}:default`,
+  label: `${character.name} (デフォルト)`
+ });
 
-// Helper functions
-const createDefaultAction = (): PostActionType => ({
- characterKey: '',
- iconKey: '',
- delaySeconds: 0,
- wordParty: '',
- messageContent: '',
- messageToast: ''
+ // 感情別画像
+ Object.keys(character.image).forEach((emotion) => {
+  if (emotion !== 'default') {
+   const emotionLabels: Record<CharacterEmotion, string> = {
+    happy: '喜び',
+    excited: 'ワクワク',
+    laughing: '爆笑',
+    blushing: '照れ',
+    surprised: '驚き',
+    sad: '悲しみ',
+    angry: '怒り',
+    thinking: '考え中',
+    wink: '茶目っ気',
+    singing: '歌',
+    sleepy: '眠い'
+   };
+
+   options.push({
+    value: `${selectedCharacterKey}:${emotion}`,
+    // @ts-ignore
+    // 型 'string' の式を使用して型 'Record<CharacterEmotion, string>' にインデックスを付けることはできないため、要素は暗黙的に 'any' 型になります。
+    label: `${character.name} (${emotionLabels[emotion] || emotion})`
+   });
+  }
+ });
+
+ return options;
 });
 
 const getCharacterLabel = (key: string): string => {
@@ -269,7 +291,7 @@ const saveActions = () => {
 
 // Action management methods
 const addAction = () => {
- editingActions.value.push(createDefaultAction());
+ editingActions.value.push(createDefaultPostAction());
 };
 
 const removeAction = (index: number) => {
@@ -282,19 +304,12 @@ const duplicateAction = (index: number) => {
  editingActions.value.splice(index + 1, 0, duplicated);
 };
 
-const moveActionUp = (index: number) => {
- if (index > 0) {
-  const temp = editingActions.value[index];
-  editingActions.value[index] = editingActions.value[index - 1];
-  editingActions.value[index - 1] = temp;
- }
-};
-
-const moveActionDown = (index: number) => {
- if (index < editingActions.value.length - 1) {
-  const temp = editingActions.value[index];
-  editingActions.value[index] = editingActions.value[index + 1];
-  editingActions.value[index + 1] = temp;
- }
+// 遅延秒数でソートする機能
+const sortByDelay = () => {
+ editingActions.value.sort((a, b) => {
+  const delayA = a.delaySeconds || 0;
+  const delayB = b.delaySeconds || 0;
+  return delayA - delayB;
+ });
 };
 </script>

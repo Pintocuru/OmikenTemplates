@@ -1,8 +1,8 @@
 // OmikujiData のサンプルデータ
-import { OmikujiData } from '@/types/OmikujiTypes';
+import { OmikujiDataType } from './types/OmikujiTypesSchema';
 import { CharacterPreset } from './types/PresetTypes';
 
-export const omikujiSampleData: OmikujiData = {
+export const omikujiSampleData: OmikujiDataType = {
  // =============================================================================
  // コメントルール
  // =============================================================================
@@ -261,7 +261,7 @@ export const omikujiSampleData: OmikujiData = {
   greeting: {
    id: 'greeting',
    name: 'greeting',
-   description: '様々な挨拶表現',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 25, content: 'こんにちは！' },
@@ -276,7 +276,7 @@ export const omikujiSampleData: OmikujiData = {
   lucky_message: {
    id: 'lucky_message',
    name: 'lucky_message',
-   description: '幸運を表すメッセージ',
+   order: 1,
    placeholderIds: ['lucky_action'],
    values: [
     { weight: 30, content: '今日は素晴らしい一日になりそうです！ <<lucky_action>>' },
@@ -289,7 +289,7 @@ export const omikujiSampleData: OmikujiData = {
   normal_message: {
    id: 'normal_message',
    name: 'normal_message',
-   description: '普通の状況でのメッセージ',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 30, content: '程よく頑張っていきましょう。' },
@@ -302,7 +302,7 @@ export const omikujiSampleData: OmikujiData = {
   encourage_message: {
    id: 'encourage_message',
    name: 'encourage_message',
-   description: '励ましや応援のメッセージ',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 30, content: 'きっと良いことがありますよ！' },
@@ -315,7 +315,7 @@ export const omikujiSampleData: OmikujiData = {
   warning_message: {
    id: 'warning_message',
    name: 'warning_message',
-   description: '注意や気をつけるべきことのメッセージ',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 30, content: '今日は慎重に行動してくださいね。' },
@@ -329,7 +329,7 @@ export const omikujiSampleData: OmikujiData = {
   lucky_action: {
    id: 'lucky_action',
    name: 'lucky_action',
-   description: '幸運を呼び込むための行動提案',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 20, content: '笑顔を心がけてみてください。' },
@@ -344,7 +344,7 @@ export const omikujiSampleData: OmikujiData = {
   clear_answer: {
    id: 'clear_answer',
    name: 'clear_answer',
-   description: 'はっきりとした答え',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 25, content: 'はい、その通りです！' },
@@ -357,7 +357,7 @@ export const omikujiSampleData: OmikujiData = {
   vague_answer: {
    id: 'vague_answer',
    name: 'vague_answer',
-   description: '少し曖昧な答え',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 25, content: 'うーん、そうかもしれませんね。' },
@@ -370,7 +370,7 @@ export const omikujiSampleData: OmikujiData = {
   confidence: {
    id: 'confidence',
    name: 'confidence',
-   description: '回答の確信度を表現',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 40, content: '自信を持って言えます！' },
@@ -382,7 +382,7 @@ export const omikujiSampleData: OmikujiData = {
   maybe: {
    id: 'maybe',
    name: 'maybe',
-   description: '不確実性を表現する言葉',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 30, content: 'かもしれませんね。' },
@@ -395,7 +395,7 @@ export const omikujiSampleData: OmikujiData = {
   riddle: {
    id: 'riddle',
    name: 'riddle',
-   description: '謎かけやなぞなぞ',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 25, content: '答えは風の中にあります...' },
@@ -408,7 +408,7 @@ export const omikujiSampleData: OmikujiData = {
   hint: {
    id: 'hint',
    name: 'hint',
-   description: '謎解きのヒント',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 25, content: 'ヒント：よく考えてみてくださいね。' },
@@ -422,7 +422,7 @@ export const omikujiSampleData: OmikujiData = {
   time_greeting: {
    id: 'time_greeting',
    name: 'time_greeting',
-   description: '時間に応じた挨拶',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 25, content: 'お疲れ様です！' },
@@ -435,7 +435,7 @@ export const omikujiSampleData: OmikujiData = {
   current_fortune: {
    id: 'current_fortune',
    name: 'current_fortune',
-   description: '今の運勢状況',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 20, content: '今の運気は上昇中です！' },
@@ -449,7 +449,7 @@ export const omikujiSampleData: OmikujiData = {
   advice: {
    id: 'advice',
    name: 'advice',
-   description: '運勢に基づくアドバイス',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 20, content: '積極的に行動してみてください。' },
@@ -464,7 +464,7 @@ export const omikujiSampleData: OmikujiData = {
   animal_fact: {
    id: 'animal_fact',
    name: 'animal_fact',
-   description: '動物に関する面白い事実',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 20, content: 'パンダの指は実は6本あります！' },
@@ -478,7 +478,7 @@ export const omikujiSampleData: OmikujiData = {
   space_fact: {
    id: 'space_fact',
    name: 'space_fact',
-   description: '宇宙に関する興味深い話',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 20, content: '一日は実際には23時間56分4秒です。' },
@@ -492,7 +492,7 @@ export const omikujiSampleData: OmikujiData = {
   history_fact: {
    id: 'history_fact',
    name: 'history_fact',
-   description: '歴史の面白いエピソード',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 20, content: 'クレオパトラはピラミッド建設よりも現代に近い時代を生きていました。' },
@@ -507,7 +507,7 @@ export const omikujiSampleData: OmikujiData = {
   surprise_emoji: {
    id: 'surprise_emoji',
    name: 'surprise_emoji',
-   description: '驚きを表現する絵文字',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 25, content: '😲' },
@@ -520,7 +520,7 @@ export const omikujiSampleData: OmikujiData = {
   wonder_emoji: {
    id: 'wonder_emoji',
    name: 'wonder_emoji',
-   description: '不思議さを表現する絵文字',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 25, content: '✨' },
@@ -533,7 +533,7 @@ export const omikujiSampleData: OmikujiData = {
   time_emoji: {
    id: 'time_emoji',
    name: 'time_emoji',
-   description: '時間や歴史を表現する絵文字',
+   order: 1,
    placeholderIds: [],
    values: [
     { weight: 25, content: '⏳' },
@@ -546,60 +546,5 @@ export const omikujiSampleData: OmikujiData = {
  scriptSettings: {
   BomberSpin: {},
   GouseiSuika: {}
- }
-};
-
-export const charasSampleData: Record<string, CharacterPreset> = {
- reimu: {
-  id: 'reimu',
-  name: 'ゆっくり霊夢',
-  displayName: 'ゆっくり霊夢',
-  description: '優しい振る舞いで人気者のゆっくり霊夢。じゃんけんはとても強い。',
-  version: '0.0.1',
-  author: 'Pintocuru',
-  order: 101,
-  tags: ['Yukkuri', 'Reimu'],
-  url: 'https://nagipon-sozai.studio.site/',
-  banner: 'reimu/Default.png',
-  isIconDisplay: true,
-  frameId: 'OmikenReimu',
-  color: {
-   nameColor: '#FFC107',
-   textColor: '#ECEFF1',
-   backgroundColor: '#FF4081'
-  },
-  image: {
-   Default: 'reimu/Default.webp',
-   fun01: 'reimu/fun01.png',
-   fun02: 'reimu/fun02.png',
-   fun03: 'reimu/fun03.png',
-   joy01: 'reimu/joy01.png',
-   joy02: 'reimu/joy02.png',
-   joy03: 'reimu/joy03.png',
-   joy04: 'reimu/joy04.png',
-   relax01: 'reimu/relax01.png',
-   relax02: 'reimu/relax02.png',
-   relax03: 'reimu/relax03.png',
-   love01: 'reimu/love01.png',
-   love02: 'reimu/love02.png',
-   love03: 'reimu/love03.png',
-   shy01: 'reimu/shy01.png',
-   shy02: 'reimu/shy02.png',
-   surprise01: 'reimu/surprise01.png',
-   surprise02: 'reimu/surprise02.png',
-   surprise03: 'reimu/surprise03.png',
-   panic01: 'reimu/panic01.png',
-   panic02: 'reimu/panic02.png',
-   panic03: 'reimu/panic03.png',
-   anger01: 'reimu/anger01.png',
-   anger02: 'reimu/anger02.png',
-   anger03: 'reimu/anger03.png',
-   contempt01: 'reimu/contempt01.png',
-   contempt02: 'reimu/contempt02.png',
-   sad01: 'reimu/sad01.png',
-   sad02: 'reimu/sad02.png',
-   sorry01: 'reimu/sorry01.png',
-   sorry02: 'reimu/sorry02.png'
-  }
  }
 };
