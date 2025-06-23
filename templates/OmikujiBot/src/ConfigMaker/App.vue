@@ -37,6 +37,16 @@
    </div>
   </div>
  </div>
+
+ <!-- トースト通知コンポーネント -->
+ <Toaster
+  position="top-right"
+  :expand="true"
+  :richColors="true"
+  :visibleToasts="5"
+  :z-index="9999999"
+  class="z-[9999999]"
+ />
 </template>
 
 <script setup lang="ts">
@@ -44,4 +54,5 @@ import ConfigPresets from './components/ConfigPresets.vue';
 import CommentRuleEditor from './components/CommentRuleEditor.vue';
 import TimerRuleEditor from './components/TimerRuleEditor.vue';
 import PlaceholderEditor from './components/PlaceholderEditor.vue';
+import { Toaster } from 'vue-sonner';
 </script>

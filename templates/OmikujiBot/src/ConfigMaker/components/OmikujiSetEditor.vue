@@ -3,6 +3,7 @@
  <div class="card bg-base-300 mt-4">
   <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">おみくじ設定</div>
   <div class="card-body space-y-3">
+   <!-- おみくじセットコンポーネント -->
    <div v-for="(omikuji, index) in modelValue" :key="index" class="card bg-base-100 p-3">
     <div class="flex justify-between items-start mb-2">
      <h4 class="font-medium">おみくじセット {{ index + 1 }}</h4>
@@ -73,8 +74,6 @@ import PostActionsEditor from './PostActionsEditor.vue';
 const props = defineProps<{
  modelValue: OmikujiSetType[];
 }>();
-
-// Emits
 const emit = defineEmits<{
  'update:modelValue': [value: OmikujiSetType[]];
 }>();

@@ -11,25 +11,21 @@
     <span class="ml-2 cursor-help" title="説明"> ℹ️ </span>
    </div>
    <div class="card-body space-y-3">
-    <!-- 基本設定セクション -->
-
-    <!-- ID表示と編集 -->
+    <!-- ID表示とコピー -->
     <div class="form-control">
      <label class="label">
       <span class="label-text font-medium">プレースホルダーID</span>
      </label>
      <div class="flex gap-2 items-center">
-      <input
-       type="text"
-       :value="selectedSource.id"
-       readonly
-       class="input input-bordered w-full bg-base-200 text-gray-600"
-      />
+      <div class="w-full px-4 py-2 rounded bg-base-200 text-gray-600 break-all">
+       {{ selectedSource.id }}
+      </div>
+      <!-- コピーボタン -->
+      <CopyButton :value="`<<${selectedSource.id}>>`" title="IDをコピー" />
+      <!-- 編集ボタン -->
       <PlaceholderIdEditor :currentId="selectedSource.id" />
      </div>
     </div>
-
-    <div class="text-sm text-gray-600 mb-2"><strong>総重み:</strong> {{ totalWeight }}</div>
 
     <div class="grid grid-cols-1 gap-3">
      <!-- プレースホルダー名 -->
@@ -57,11 +53,7 @@
      <span class="ml-2 cursor-help" title="説明"> ℹ️ </span>
     </div>
     <!-- テキストエディットボタン -->
-    <TextEditModal
-     :values="selectedSource.values"
-     :title="selectedSource.name || 'プレースホルダー'"
-     @updateValues="updateValues"
-    />
+    <PlaceholderTextEdit :placeholderId="selectedSource.id" textContent="編集" />
    </div>
    <div class="card-body">
     <div v-for="(value, index) in selectedSource.values" :key="index" class="card bg-base-100 p-2">
@@ -105,54 +97,24 @@
   </div>
 
   <!-- プレビューセクション -->
-  <div class="card bg-base-300 mt-4" v-if="selectedSource.values.length > 0">
-   <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">
-    プレースホルダープレビュー
-    <span class="ml-2 cursor-help" title="説明"> ℹ️ </span>
-   </div>
-   <div class="card-body space-y-3">
-    <div class="text-sm text-gray-600 mb-2"><strong>ID:</strong> {{ selectedSource.id }}</div>
-    <div class="text-sm text-gray-600 mb-2"><strong>総重み:</strong> {{ totalWeight }}</div>
-    <div class="text-sm text-gray-600 mb-3">
-     <strong>値の数:</strong> {{ selectedSource.values.length }}
-    </div>
-
-    <div class="space-y-2">
-     <div class="text-sm font-medium">値一覧:</div>
-     <div class="space-y-1">
-      <div
-       v-for="(value, index) in selectedSource.values"
-       :key="index"
-       class="flex justify-between items-start bg-base-200 p-2 rounded text-sm"
-      >
-       <div class="flex-1 min-w-0">
-        <div class="truncate">{{ value.content || '(内容なし)' }}</div>
-       </div>
-       <div class="flex-shrink-0 ml-2">
-        <span class="badge badge-outline badge-xs">{{ value.weight }}</span>
-        <span class="text-xs text-gray-500 ml-1">
-         ({{ Math.round((value.weight / totalWeight) * 100) }}%)
-        </span>
-       </div>
-      </div>
-     </div>
-    </div>
-   </div>
-  </div>
+  <PlaceholderPreview
+   v-if="selectedSource.values.length > 0"
+   :id="selectedSource.id"
+   :values="selectedSource.values"
+  />
  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, provide } from 'vue';
+import { computed, provide } from 'vue';
 import { usePlaceholderStore } from '../script/usePlaceholderStore';
-import {
- createDefaultPlaceholderValue,
- createDefaultPlaceholder
-} from '@/types/OmikujiTypesSchema';
+import { createDefaultPlaceholderValue } from '@/types/OmikujiTypesSchema';
 import { useOmikujiStore } from '../script/useOmikujiStore';
 import RuleTabs from './RuleTabs.vue';
+import CopyButton from './CopyButton.vue';
 import PlaceholderIdEditor from './PlaceholderIdEditor.vue';
-import TextEditModal from './TextEditModal.vue';
+import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
+import PlaceholderPreview from './PlaceholderPreview.vue';
 
 // ストアを使用
 const placeholderStore = usePlaceholderStore();
@@ -182,12 +144,6 @@ const placeholderList = computed(() => {
  }));
 });
 
-// 総重みを計算
-const totalWeight = computed(() => {
- if (!selectedSource.value) return 0;
- return selectedSource.value.values.reduce((sum, value) => sum + (value.weight || 0), 0);
-});
-
 // 値の追加
 const addValue = () => {
  if (!selectedSource.value) return;
@@ -209,11 +165,5 @@ const duplicateValue = (index: number) => {
  duplicated.content = `${original.content} (コピー)`;
 
  selectedSource.value.values.splice(index + 1, 0, duplicated);
-};
-
-// テキストエディットモーダルから値を更新
-const updateValues = (newValues: { weight: number; content: string }[]) => {
- if (!selectedSource.value) return;
- selectedSource.value.values = newValues;
 };
 </script>

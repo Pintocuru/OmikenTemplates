@@ -1,9 +1,10 @@
-// src/ConfigMaker/script/usePlaceholderStore.ts - プレースホルダー専用store
+// src/ConfigMaker/script/usePlaceholderStore.ts
+// プレースホルダー専用store
 import { computed } from 'vue';
 import { defineStore } from 'pinia';
 import { useOmikujiStore } from './useOmikujiStore';
-import { PlaceholderSourceType } from '@/types/OmikujiTypesSchema';
 import { useRecordOperations } from './useRecordStore';
+import type { PlaceholderValueType } from '@/types/OmikujiTypesSchema';
 
 export const usePlaceholderStore = defineStore('placeholder', () => {
  const baseOperations = useRecordOperations('placeholders');
@@ -13,47 +14,15 @@ export const usePlaceholderStore = defineStore('placeholder', () => {
  // プレースホルダーの辞書型データを取得するためのcomputed
  const placeholders = computed(() => omikujiStore.data.placeholders);
 
- const sources = computed(() => Object.values(omikujiStore.data.placeholders));
-
- // PlaceholderEditor.vueで使用される機能の実装
- const addPlaceholder = (placeholder: PlaceholderSourceType) => {
-  // プレースホルダーをストアに追加
-  omikujiStore.data.placeholders[placeholder.id] = placeholder;
-
-  // プレースホルダーカテゴリを選択状態にする
-  omikujiStore.selectCategory('placeholders');
-
-  return placeholder.id;
- };
-
- const deletePlaceholder = (placeholderId: string): boolean => {
-  // プレースホルダーが存在するかチェック
-  if (!omikujiStore.data.placeholders[placeholderId]) {
+ // プレースホルダーの値を更新
+ const updatePlaceholderValues = (id: string, values: PlaceholderValueType[]): boolean => {
+  // 指定されたIDのプレースホルダーが存在するかチェック
+  if (!omikujiStore.data.placeholders[id]) {
    return false;
   }
 
-  // プレースホルダーを削除
-  delete omikujiStore.data.placeholders[placeholderId];
-
-  // 削除されたプレースホルダーが現在選択中の場合、選択をクリア
-  if (omikujiStore.selectedRuleId === placeholderId) {
-   omikujiStore.clearSelection();
-  }
-
-  return true;
- };
-
- const selectPlaceholder = (placeholderId: string): boolean => {
-  // プレースホルダーが存在するかチェック
-  if (!omikujiStore.data.placeholders[placeholderId]) {
-   return false;
-  }
-
-  // プレースホルダーカテゴリを選択
-  omikujiStore.selectCategory('placeholders');
-
-  // 指定されたプレースホルダーを選択
-  omikujiStore.selectRule(placeholderId);
+  // プレースホルダーのvaluesを更新
+  omikujiStore.data.placeholders[id].values = values;
 
   return true;
  };
@@ -152,6 +121,8 @@ export const usePlaceholderStore = defineStore('placeholder', () => {
  return {
   ...baseOperations,
   // computedプロパティ
-  placeholders // 追加: PlaceholderEditor.vueで使用される
+  placeholders, // 追加: PlaceholderEditor.vueで使用される
+  updatePlaceholderId,
+  updatePlaceholderValues // 新しく追加
  };
 });

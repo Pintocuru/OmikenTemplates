@@ -1,9 +1,9 @@
 // src/types/OmikujiTypesSchema.ts
 import { z } from 'zod';
 
-// =============================================================================
+// ======================
 // デフォルト値生成関数
-// =============================================================================
+// ======================
 
 // ID生成ユーティリティ
 export const generateId = () => {
@@ -83,16 +83,44 @@ export const createDefaultTimerRule = () => ({
  omikuji: [createDefaultOmikujiSet()]
 });
 
+export const createDefaultCharacterColorScheme = () => ({
+ nameColor: '#000000',
+ textColor: '#000000',
+ backgroundColor: '#FFFFFF'
+});
+
+export const createDefaultCharacterImageSet = () => ({
+ default: ''
+});
+
+export const createDefaultCharacterPreset = () => ({
+ id: generateId(),
+ name: '',
+ description: '',
+ version: '1.0.0',
+ author: '',
+ order: 0,
+ tags: [],
+ url: '',
+ path: '',
+ isIconDisplay: true,
+ displayName: '',
+ frameId: null,
+ color: createDefaultCharacterColorScheme(),
+ image: createDefaultCharacterImageSet()
+});
+
 export const createDefaultOmikujiData = () => ({
  comments: {},
  timers: {},
  placeholders: {},
- scriptSettings: {}
+ scriptSettings: {},
+ characters: {}
 });
 
-// =============================================================================
+// ======================
 // Threshold関連のスキーマ
-// =============================================================================
+// ======================
 
 export const CommentConditionTypesSchema = z
  .enum(['syoken', 'access', 'gift', 'count', 'comment'])
@@ -132,9 +160,9 @@ export const CommentThresholdSchema = z
  })
  .catch(createDefaultCommentThreshold);
 
-// =============================================================================
+// ======================
 // Post Action関連のスキーマ
-// =============================================================================
+// ======================
 
 export const PostActionSchema = z
  .object({
@@ -154,9 +182,9 @@ export const PostActionWordPartySchema = z
  })
  .catch(() => ({ delaySeconds: 0, wordParty: '' }));
 
-// =============================================================================
+// ======================
 // Placeholder関連のスキーマ
-// =============================================================================
+// ======================
 
 export const PlaceholderValueSchema = z
  .object({
@@ -175,9 +203,71 @@ export const PlaceholderSchema = z
  })
  .catch(createDefaultPlaceholder);
 
-// =============================================================================
+// ======================
+// Character関連のスキーマ
+// ======================
+
+export const CharacterEmotionSchema = z.enum([
+ 'happy',
+ 'excited',
+ 'laughing',
+ 'blushing',
+ 'surprised',
+ 'sad',
+ 'angry',
+ 'thinking',
+ 'wink',
+ 'singing',
+ 'sleepy'
+]);
+
+export const CharacterColorSchemeSchema = z
+ .object({
+  nameColor: z.string().catch('#000000'),
+  textColor: z.string().catch('#000000'),
+  backgroundColor: z.string().catch('#FFFFFF')
+ })
+ .catch(createDefaultCharacterColorScheme);
+
+export const CharacterImageSetSchema = z
+ .object({
+  default: z.string().catch(''),
+  happy: z.string().optional(),
+  excited: z.string().optional(),
+  laughing: z.string().optional(),
+  blushing: z.string().optional(),
+  surprised: z.string().optional(),
+  sad: z.string().optional(),
+  angry: z.string().optional(),
+  thinking: z.string().optional(),
+  wink: z.string().optional(),
+  singing: z.string().optional(),
+  sleepy: z.string().optional()
+ })
+ .catch(createDefaultCharacterImageSet);
+
+export const CharacterPresetSchema = z
+ .object({
+  id: z.string().catch(''),
+  name: z.string().catch(''),
+  description: z.string().catch(''),
+  version: z.string().catch('1.0.0'),
+  author: z.string().optional(),
+  order: z.number().min(0).catch(0),
+  tags: z.array(z.string().catch('')).catch([]),
+  url: z.string().optional(),
+  path: z.string().optional(),
+  isIconDisplay: z.boolean().catch(true),
+  displayName: z.string().optional(),
+  frameId: z.union([z.string(), z.null()]).catch(null),
+  color: CharacterColorSchemeSchema,
+  image: CharacterImageSetSchema
+ })
+ .catch(createDefaultCharacterPreset);
+
+// ======================
 // Omikuji関連のスキーマ
-// =============================================================================
+// ======================
 
 export const OmikujiSetSchema = z
  .object({
@@ -189,9 +279,9 @@ export const OmikujiSetSchema = z
  })
  .catch(createDefaultOmikujiSet);
 
-// =============================================================================
+// ======================
 // Rule関連のスキーマ
-// =============================================================================
+// ======================
 
 const BaseRuleCommonSchema = z.object({
  id: z.string().catch(''),
@@ -224,28 +314,34 @@ export const TimerRuleSchema = z
  })
  .catch(createDefaultTimerRule);
 
-// =============================================================================
+// ======================
 // メインデータ構造のスキーマ
-// =============================================================================
+// ======================
 
 export const OmikujiDataSchema = z
  .object({
   comments: z.record(z.string(), CommentRuleSchema).catch({}),
   timers: z.record(z.string(), TimerRuleSchema).catch({}),
   placeholders: z.record(z.string(), PlaceholderSchema).catch({}),
-  scriptSettings: z.record(z.string(), z.record(z.string(), z.any())).catch({})
+  scriptSettings: z.record(z.string(), z.record(z.string(), z.any())).catch({}),
+  characters: z.record(z.string(), CharacterPresetSchema).catch({})
  })
  .catch(createDefaultOmikujiData);
 
-// =============================================================================
+// ======================
 // 型エクスポート
-// =============================================================================
+// ======================
 
 export type OmikujiDataType = z.infer<typeof OmikujiDataSchema>;
 export type CommentRuleType = z.infer<typeof CommentRuleSchema>;
 export type TimerRuleType = z.infer<typeof TimerRuleSchema>;
-export type PlaceholderSourceType = z.infer<typeof PlaceholderSchema>;
+export type PlaceholderValueType = z.infer<typeof PlaceholderValueSchema>;
+export type PlaceholderType = z.infer<typeof PlaceholderSchema>;
 export type OmikujiSetType = z.infer<typeof OmikujiSetSchema>;
 export type PostActionType = z.infer<typeof PostActionSchema>;
 export type CommentThresholdType = z.infer<typeof CommentThresholdSchema>;
 export type CountConditionType = z.infer<typeof CountConditionSchema>;
+export type CharacterPresetType = z.infer<typeof CharacterPresetSchema>;
+export type CharacterColorSchemeType = z.infer<typeof CharacterColorSchemeSchema>;
+export type CharacterImageSetType = z.infer<typeof CharacterImageSetSchema>;
+export type CharacterEmotionType = z.infer<typeof CharacterEmotionSchema>;

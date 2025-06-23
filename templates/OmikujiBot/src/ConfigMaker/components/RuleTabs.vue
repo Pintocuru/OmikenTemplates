@@ -13,14 +13,7 @@
     @mouseleave="hoveredRule = null"
    >
     <button
-     :class="[
-      'tab tab-bordered px-4 py-2 text-sm font-medium transition-all duration-200',
-      'flex items-center gap-2 relative overflow-hidden',
-      selectedRule?.id === rule.id
-       ? 'tab-active bg-primary text-primary-content shadow-lg'
-       : 'hover:bg-base-200 hover:shadow-md',
-      !rule.isEnabled && 'opacity-60'
-     ]"
+     :class="getTabClasses(rule)"
      @click="handleSelectRule(rule.id)"
      @dblclick="startInlineEdit(rule)"
      :style="{ borderTopColor: rule.editorColor }"
@@ -43,7 +36,7 @@
       @click.stop
      />
      <span v-else class="truncate max-w-24">
-      {{ rule.name || `${ruleTypeLabel}${index + 1}` }}
+      {{ rule.name || `ルール${index + 1}` }}
      </span>
 
      <!-- 状態インジケーター -->
@@ -61,7 +54,7 @@
 
     <!-- ホバープレビュー -->
     <div
-     v-if="showPreview && hoveredRule?.id === rule.id && !editingRuleId"
+     v-if="hoveredRule?.id === rule.id && !editingRuleId"
      class="absolute top-full left-0 mt-2 z-30 bg-base-100 border border-base-300 rounded-lg shadow-xl p-4 w-72"
      @mouseenter="hoveredRule = rule"
     >
@@ -77,7 +70,6 @@
         </span>
         <span v-if="rule.scriptId" class="badge badge-sm badge-info">スクリプト</span>
        </div>
-       <!-- ルールタイプ固有の情報 -->
        <div v-if="rule.omikuji?.length">
         <div class="font-medium">おみくじ : {{ rule.omikuji.length }}種</div>
        </div>
@@ -92,7 +84,7 @@
     @click="handleAddNewRule"
     title="新しいルールを追加"
    >
-    <span class="flex items-center gap-2"> ➕ 追加 </span>
+    <span class="flex items-center gap-2">➕ 追加</span>
    </button>
   </div>
 
@@ -105,26 +97,16 @@
   >
    <button
     @click="handleMoveRuleUp"
-    :disabled="contextMenu.rule && getOriginalIndex(contextMenu.rule.id) === 0"
-    :class="[
-     'w-full px-4 py-2 text-left hover:bg-base-200 flex items-center gap-2',
-     contextMenu.rule && getOriginalIndex(contextMenu.rule.id) === 0
-      ? 'opacity-50 cursor-not-allowed'
-      : ''
-    ]"
+    :disabled="!canMoveUp"
+    :class="getContextMenuItemClasses(!canMoveUp)"
    >
     ⬆️ 上に移動
    </button>
 
    <button
     @click="handleMoveRuleDown"
-    :disabled="contextMenu.rule && getOriginalIndex(contextMenu.rule.id) === rules.length - 1"
-    :class="[
-     'w-full px-4 py-2 text-left hover:bg-base-200 flex items-center gap-2',
-     contextMenu.rule && getOriginalIndex(contextMenu.rule.id) === rules.length - 1
-      ? 'opacity-50 cursor-not-allowed'
-      : ''
-    ]"
+    :disabled="!canMoveDown"
+    :class="getContextMenuItemClasses(!canMoveDown)"
    >
     ⬇️ 下に移動
    </button>
@@ -140,11 +122,7 @@
 
    <button
     @click="handleDeleteRule"
-    :disabled="rules.length === 1 && !canDeleteLast"
-    :class="[
-     'w-full px-4 py-2 text-left hover:bg-error hover:text-error-content flex items-center gap-2 text-error',
-     rules.length === 1 && !canDeleteLast ? 'opacity-50 cursor-not-allowed' : ''
-    ]"
+    class="w-full px-4 py-2 text-left hover:bg-error hover:text-error-content flex items-center gap-2 text-error"
    >
     🗑️ 削除
    </button>
@@ -158,30 +136,18 @@
 <script setup lang="ts">
 import { reactive, computed, onMounted, onUnmounted, ref, nextTick, inject } from 'vue';
 
-// Props - storeベースに最小化
-interface Props {
+// Props
+const props = defineProps<{
  rules: any[];
  selectedRule: any;
- ruleType?: 'comments' | 'timers' | 'placeholders';
- canDeleteLast?: boolean;
- showPreview?: boolean;
- // storeのインジェクションキーを指定
- storeKey?: string;
-}
+ ruleType: 'comments' | 'timers' | 'placeholders';
+}>();
 
-const props = withDefaults(defineProps<Props>(), {
- ruleType: 'comments',
- canDeleteLast: true,
- showPreview: true,
- storeKey: 'default'
-});
-
-// Store injection - 複数のストアタイプに対応
+// Store injection
 const injectedStore = inject<any>(`${props.ruleType}RulesStore`);
 
 // リアクティブデータ
 const searchQuery = ref('');
-const showDisabled = ref(false);
 const editingRuleId = ref<string | null>(null);
 const editingName = ref('');
 const hoveredRule = ref<any>(null);
@@ -197,32 +163,12 @@ const contextMenu = reactive({
 });
 
 // 計算プロパティ
-const ruleTypeLabel = computed(() => {
- switch (props.ruleType) {
-  case 'comments':
-   return 'コメント';
-  case 'timers':
-   return 'タイマー';
-  case 'placeholders':
-   return 'プレースホルダー';
-  default:
-   return 'ルール';
- }
-});
-
 const sortedRules = computed(() => {
- if (Array.isArray(props.rules)) {
-  return props.rules.slice().sort((a, b) => a.order - b.order);
- }
- return [];
+ return Array.isArray(props.rules) ? props.rules.slice().sort((a, b) => a.order - b.order) : [];
 });
 
 const filteredSortedRules = computed(() => {
  let rules = sortedRules.value;
-
- if (!showDisabled.value) {
-  rules = rules.filter((rule) => rule.isEnabled);
- }
 
  if (searchQuery.value) {
   const query = searchQuery.value.toLowerCase();
@@ -236,84 +182,91 @@ const filteredSortedRules = computed(() => {
  return rules;
 });
 
-// 元の配列でのインデックスを取得する関数
+const canMoveUp = computed(() => contextMenu.rule && getOriginalIndex(contextMenu.rule.id) > 0);
+
+const canMoveDown = computed(
+ () => contextMenu.rule && getOriginalIndex(contextMenu.rule.id) < props.rules.length - 1
+);
+
+// ヘルパー関数
 const getOriginalIndex = (ruleId: string): number => {
  return props.rules.findIndex((rule) => rule.id === ruleId);
 };
 
-// TODO:emitがなくなったので、適切に書きたい
-const handleSelectRule = (ruleId: string) => {
- if (injectedStore?.selectRule) {
-  injectedStore.selectRule(ruleId);
- }
+const getTabClasses = (rule: any) => [
+ 'tab tab-bordered px-4 py-2 text-sm font-medium transition-all duration-200',
+ 'flex items-center gap-2 relative overflow-hidden',
+ props.selectedRule?.id === rule.id
+  ? 'tab-active bg-primary text-primary-content shadow-lg'
+  : 'hover:bg-base-200 hover:shadow-md',
+ !rule.isEnabled && 'opacity-60'
+];
+
+const getContextMenuItemClasses = (disabled: boolean) => [
+ 'w-full px-4 py-2 text-left hover:bg-base-200 flex items-center gap-2',
+ disabled && 'opacity-50 cursor-not-allowed'
+];
+
+const hasValidationErrors = (rule: any) => {
+ if (!rule.name?.trim()) return true;
+ if (props.ruleType === 'comments' && !rule.threshold) return true;
+ if (props.ruleType === 'timers' && (!rule.intervalSeconds || rule.intervalSeconds < 1))
+  return true;
+ return false;
 };
 
-// store にある、 add,update,remove,duplicate,reorder を使いstoreを操作する
+// ストア操作
+const handleSelectRule = (ruleId: string) => {
+ injectedStore?.selectRule?.(ruleId);
+};
+
 const handleAddNewRule = () => {
- if (injectedStore?.add) {
-  injectedStore.add();
- }
+ injectedStore?.add?.();
 };
 
 const handleDuplicateRule = () => {
  if (contextMenu.rule) {
-  if (injectedStore?.duplicate) {
-   injectedStore.duplicate(contextMenu.rule.id);
-  }
+  injectedStore?.duplicate?.(contextMenu.rule.id);
  }
  hideContextMenu();
 };
 
 const handleMoveRuleUp = () => {
- if (contextMenu.rule) {
+ if (contextMenu.rule && canMoveUp.value) {
   const originalIndex = getOriginalIndex(contextMenu.rule.id);
-  if (originalIndex > 0) {
-   if (injectedStore?.reorder) {
-    injectedStore.reorder(originalIndex, originalIndex - 1);
-   }
-  }
+  injectedStore?.reorder?.(originalIndex, originalIndex - 1);
  }
  hideContextMenu();
 };
 
 const handleMoveRuleDown = () => {
- if (contextMenu.rule) {
+ if (contextMenu.rule && canMoveDown.value) {
   const originalIndex = getOriginalIndex(contextMenu.rule.id);
-  if (originalIndex < props.rules.length - 1) {
-   if (injectedStore?.reorder) {
-    injectedStore.reorder(originalIndex, originalIndex + 1);
-   }
-  }
+  injectedStore?.reorder?.(originalIndex, originalIndex + 1);
  }
  hideContextMenu();
 };
 
 const handleDeleteRule = () => {
- if (contextMenu.rule) {
-  const ruleName = contextMenu.rule.name || '名前未設定';
-  let confirmMessage = `「${ruleName}」を削除しますか？`;
+ if (!contextMenu.rule) return;
 
-  if (props.rules.length === 1 && !props.canDeleteLast) {
-   hideContextMenu();
-   return;
-  }
+ const ruleName = contextMenu.rule.name || '名前未設定';
+ let confirmMessage = `「${ruleName}」を削除しますか？`;
 
-  if (props.rules.length === 1) {
-   confirmMessage += '\n※最後のルールを削除すると、新しいルールが自動作成されます。';
-  }
-
-  if (confirm(confirmMessage)) {
-   if (injectedStore?.remove) {
-    injectedStore.remove(contextMenu.rule.id);
-    // 最後のルールを削除した場合の自動作成
-    setTimeout(() => {
-     if (props.rules.length === 0 && injectedStore?.add) {
-      injectedStore.add();
-     }
-    }, 0);
-   }
-  }
+ if (props.rules.length === 1) {
+  confirmMessage += '\n※最後のルールを削除すると、新しいルールが自動作成されます。';
  }
+
+ if (confirm(confirmMessage)) {
+  injectedStore?.remove?.(contextMenu.rule.id);
+  // 最後のルールを削除した場合の自動作成
+  setTimeout(() => {
+   if (props.rules.length === 0) {
+    injectedStore?.add?.();
+   }
+  }, 0);
+ }
+
  hideContextMenu();
 };
 
@@ -329,9 +282,7 @@ const startInlineEdit = (rule: any) => {
 
 const finishInlineEdit = () => {
  if (editingRuleId.value) {
-  if (injectedStore?.update) {
-   injectedStore.update(editingRuleId.value, { name: editingName.value });
-  }
+  injectedStore?.update?.(editingRuleId.value, { name: editingName.value });
   editingRuleId.value = null;
  }
 };
@@ -354,15 +305,6 @@ const hideContextMenu = () => {
  contextMenu.show = false;
  contextMenu.rule = null;
  contextMenu.index = -1;
-};
-
-// ヘルパー関数
-const hasValidationErrors = (rule: any) => {
- if (!rule.name?.trim()) return true;
- if (props.ruleType === 'comments' && !rule.threshold) return true;
- if (props.ruleType === 'timers' && (!rule.intervalSeconds || rule.intervalSeconds < 1))
-  return true;
- return false;
 };
 
 // ESCキーでメニューを閉じる

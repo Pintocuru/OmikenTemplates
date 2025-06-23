@@ -7,7 +7,7 @@ import {
  createDefaultCommentRule,
  createDefaultPlaceholder,
  createDefaultTimerRule,
- PlaceholderSourceType,
+ PlaceholderType,
  TimerRuleType
 } from '@/types/OmikujiTypesSchema';
 
@@ -17,7 +17,7 @@ type Category = 'comments' | 'timers' | 'placeholders';
 type CategoryTypeMap = {
  comments: CommentRuleType;
  timers: TimerRuleType;
- placeholders: PlaceholderSourceType;
+ placeholders: PlaceholderType;
 };
 
 export function useRecordOperations<C extends Category>(category: C) {
