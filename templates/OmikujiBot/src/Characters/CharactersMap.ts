@@ -12,7 +12,6 @@ export const charactersMap: Record<string, CharacterPreset> = {
   order: 101,
   tags: ['Yukkuri', 'Reimu'],
   url: 'https://nagipon-sozai.studio.site/',
-  banner: 'reimu/Default.png',
   isIconDisplay: true,
   frameId: 'OmikenReimu',
   color: {
@@ -21,7 +20,7 @@ export const charactersMap: Record<string, CharacterPreset> = {
    backgroundColor: '#FF4081'
   },
   image: {
-   default: 'reimu/Default.png',
+   default: 'reimu/Default.webp',
    happy: 'reimu/joy01.png',
    excited: 'reimu/joy04.png',
    laughing: 'reimu/relax01.png',
@@ -45,7 +44,6 @@ export const charactersMap: Record<string, CharacterPreset> = {
   order: 102,
   tags: ['Yukkuri', 'Marisa'],
   url: 'https://nagipon-sozai.studio.site/',
-  banner: 'marisa/Default.png',
   isIconDisplay: true,
   frameId: 'OmikenMarisa',
   color: {

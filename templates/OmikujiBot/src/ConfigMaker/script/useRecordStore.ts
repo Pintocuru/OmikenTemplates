@@ -1,9 +1,10 @@
 // src/ConfigMaker/script/useRecordStore.ts - 共通ルールストア
 import { computed } from 'vue';
-import { defineStore } from 'pinia';
 import { useOmikujiStore } from './useOmikujiStore';
 import {
+ CharacterPresetType,
  CommentRuleType,
+ createDefaultCharacter,
  createDefaultCommentRule,
  createDefaultPlaceholder,
  createDefaultTimerRule,
@@ -12,12 +13,13 @@ import {
 } from '@/types/OmikujiTypesSchema';
 
 // 共通のルール操作を提供するコンポーザブル
-type Category = 'comments' | 'timers' | 'placeholders';
+type Category = 'comments' | 'timers' | 'placeholders' | 'characters';
 
 type CategoryTypeMap = {
  comments: CommentRuleType;
  timers: TimerRuleType;
  placeholders: PlaceholderType;
+ characters: CharacterPresetType;
 };
 
 export function useRecordOperations<C extends Category>(category: C) {
@@ -28,7 +30,8 @@ export function useRecordOperations<C extends Category>(category: C) {
  } = {
   comments: createDefaultCommentRule,
   timers: createDefaultTimerRule,
-  placeholders: createDefaultPlaceholder
+  placeholders: createDefaultPlaceholder,
+  characters: createDefaultCharacter
  };
 
  // データ取得

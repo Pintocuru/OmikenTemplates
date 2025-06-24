@@ -1,58 +1,131 @@
 <!-- src/apps/configMaker/App.vue -->
 <template>
- <div class="p-4 max-w-4xl mx-auto">
+ <div class="p-4 max-w-6xl mx-auto">
   <h1 class="text-2xl font-bold mb-6 text-center text-primary">おみくじBot コンフィグエディター</h1>
 
   <!-- アクションボタンとプリセット -->
   <div class="mb-4">
-   <!-- プリセットコンポーネント -->
    <ConfigPresets />
   </div>
 
-  <!-- コメントでのおみくじ -->
-  <div class="card bg-base-200">
-   <div class="card-title bg-primary text-lg p-2 pl-4 rounded-t">コメントルール設定</div>
-   <div class="card-body">
-    <CommentRuleEditor />
-   </div>
+  <!-- ナビゲーションタブ -->
+  <div class="tabs tabs-boxed mb-6 bg-base-300">
+   <button
+    v-for="(tab, key) in navigationTabs"
+    :key="key"
+    :class="['tab', selectedCategory === key ? 'tab-active' : '', 'flex items-center gap-2']"
+    @click="selectCategory(key as CategoryType)"
+   >
+    <component :is="tab.icon" class="w-4 h-4" />
+    {{ tab.label }}
+    <span v-if="getCategoryItemCount(key) > 0" class="badge badge-sm badge-primary">
+     {{ getCategoryItemCount(key) }}
+    </span>
+   </button>
   </div>
 
-  <hr class="my-8" />
-
-  <!-- タイマーでのおみくじ -->
+  <!-- 動的コンテンツエリア -->
   <div class="card bg-base-200">
-   <div class="card-title bg-primary text-lg p-2 pl-4 rounded-t">タイマールール設定</div>
-   <div class="card-body">
-    <TimerRuleEditor />
+   <div class="card-title bg-primary text-lg p-2 pl-4 rounded-t flex items-center gap-2">
+    <component :is="navigationTabs[selectedCategory].icon" class="w-5 h-5" />
+    {{ navigationTabs[selectedCategory].label }}
    </div>
-  </div>
-
-  <hr class="my-8" />
-
-  <!-- プレースホルダー -->
-  <div class="card bg-base-200">
-   <div class="card-title bg-primary text-lg p-2 pl-4 rounded-t">プレースホルダー設定</div>
    <div class="card-body">
-    <PlaceholderEditor />
+    <!-- コメントルール -->
+    <div v-if="selectedCategory === 'comments'">
+     <CommentRuleEditor />
+    </div>
+
+    <!-- タイマールール -->
+    <div v-else-if="selectedCategory === 'timers'">
+     <TimerRuleEditor />
+    </div>
+
+    <!-- プレースホルダー -->
+    <div v-else-if="selectedCategory === 'placeholders'">
+     <PlaceholderEditor />
+    </div>
+
+    <!-- スクリプト設定 -->
+    <div v-else-if="selectedCategory === 'scriptSettings'">
+     <ScriptSettingsEditor />
+    </div>
+
+    <!-- キャラクター設定 -->
+    <div v-else-if="selectedCategory === 'characters'">
+     <CharacterEditor />
+    </div>
+
+    <!-- フォールバック -->
+    <div v-else>
+     <p class="text-gray-600">不明なカテゴリ: {{ selectedCategory }}</p>
+    </div>
    </div>
   </div>
  </div>
 
  <!-- トースト通知コンポーネント -->
- <Toaster
-  position="top-right"
-  :expand="true"
-  :richColors="true"
-  :visibleToasts="5"
-  :z-index="9999999"
-  class="z-[9999999]"
- />
+ <Toaster position="top-right" :expand="true" :richColors="true" :visibleToasts="5" />
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
+import { useOmikujiStore } from './script/useOmikujiStore';
+import { CategoryType } from '@/types/OmikujiTypesSchema';
 import ConfigPresets from './components/ConfigPresets.vue';
 import CommentRuleEditor from './components/CommentRuleEditor.vue';
 import TimerRuleEditor from './components/TimerRuleEditor.vue';
 import PlaceholderEditor from './components/PlaceholderEditor.vue';
+import ScriptSettingsEditor from './components/ScriptSettingsEditor.vue';
+import CharacterEditor from './components/CharacterEditor.vue';
 import { Toaster } from 'vue-sonner';
+import { MessageCircle, Timer, Hash, Settings, Users } from 'lucide-vue-next';
+
+const omikujiStore = useOmikujiStore();
+
+// storeToRefsを使って反応性を保持
+const { selectedCategory, data } = storeToRefs(omikujiStore);
+const { selectCategory } = omikujiStore;
+
+// ナビゲーションタブの設定
+const navigationTabs = {
+ comments: {
+  label: 'コメントルール',
+  icon: MessageCircle
+ },
+ timers: {
+  label: 'タイマールール',
+  icon: Timer
+ },
+ placeholders: {
+  label: 'プレースホルダー',
+  icon: Hash
+ },
+ scriptSettings: {
+  label: 'スクリプト設定',
+  icon: Settings
+ },
+ characters: {
+  label: 'キャラクター',
+  icon: Users
+ }
+} as const;
+
+// カテゴリごとのアイテム数を取得
+const getCategoryItemCount = (category: string): number => {
+ switch (category) {
+  case 'comments':
+   return Object.keys(data.value.comments).length;
+  case 'timers':
+   return Object.keys(data.value.timers).length;
+  case 'placeholders':
+   return Object.keys(data.value.placeholders).length;
+  case 'scriptSettings':
+   return Object.keys(data.value.scriptSettings).length;
+  case 'characters':
+   return Object.keys(data.value.characters).length;
+  default:
+   return 0;
+ }
+};
 </script>

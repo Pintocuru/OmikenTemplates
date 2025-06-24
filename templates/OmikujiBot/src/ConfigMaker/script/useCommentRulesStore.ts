@@ -1,6 +1,6 @@
-// src/ConfigMaker/script/useCommentRulesStore.ts - 簡略化されたコメントルールストア
+// src/ConfigMaker/script/useCommentRulesStore.ts
+// 簡略化されたコメントルールストア
 import { defineStore } from 'pinia';
-import { CommentRuleType, createDefaultCommentRule } from '@/types/OmikujiTypesSchema';
 import { useRecordOperations } from './useRecordStore';
 
 export const useCommentRulesStore = defineStore('commentRules', () => {

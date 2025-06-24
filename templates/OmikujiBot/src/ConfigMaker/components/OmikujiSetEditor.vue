@@ -5,49 +5,54 @@
   <div class="card-body space-y-3">
    <!-- おみくじセットコンポーネント -->
    <div v-for="(omikuji, index) in modelValue" :key="index" class="card bg-base-100 p-3">
-    <div class="flex justify-between items-start mb-2">
-     <h4 class="font-medium">おみくじセット {{ index + 1 }}</h4>
-     <div class="flex gap-1">
-      <button @click="duplicateOmikuji(index)" class="btn btn-xs btn-outline" title="複製">
-       📋
-      </button>
-      <button
-       @click="removeOmikuji(index)"
-       class="btn btn-xs btn-outline btn-error"
-       title="削除"
-       :disabled="modelValue.length <= 1"
-      >
-       🗑️
-      </button>
-     </div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-     <div class="form-control">
-      <label class="label py-1">
-       <span class="label-text text-sm">名前</span>
-      </label>
-      <input
-       type="text"
-       :value="omikuji.name"
-       @input="updateOmikujiName(index, ($event.target as HTMLInputElement).value)"
-       placeholder="おみくじ名"
-       class="input input-bordered input-sm"
-      />
+    <div class="flex items-center gap-4">
+     <!-- 名前 -->
+     <div class="form-control flex-1">
+      <div class="flex items-center gap-2">
+       <span class="text-xs w-12">名前</span>
+       <input
+        type="text"
+        :value="omikuji.name"
+        @input="updateOmikuji(index, 'name', ($event.target as HTMLInputElement).value)"
+        placeholder="おみくじ名"
+        class="input input-bordered input-sm w-full"
+       />
+      </div>
      </div>
 
-     <div class="form-control">
-      <label class="label py-1">
-       <span class="label-text text-sm">重み</span>
-      </label>
-      <input
-       type="number"
-       :value="omikuji.weight"
-       @input="updateOmikujiWeight(index, parseFloat(($event.target as HTMLInputElement).value))"
-       min="0"
-       step="0.1"
-       class="input input-bordered input-sm"
-      />
+     <!-- 重み -->
+     <div class="form-control flex-1">
+      <div class="flex items-center gap-2">
+       <span class="text-xs w-12">重み</span>
+       <input
+        type="number"
+        :value="omikuji.weight"
+        @input="
+         updateOmikuji(index, 'weight', parseFloat(($event.target as HTMLInputElement).value))
+        "
+        min="0"
+        class="input input-bordered input-sm w-full"
+       />
+      </div>
+     </div>
+
+     <!-- メニュー -->
+     <div class="ml-auto">
+      <div class="dropdown dropdown-end">
+       <label tabindex="0" class="btn btn-ghost">☰</label>
+       <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-32">
+        <li><button @click="duplicateOmikuji(index)" class="text-sm">📋 複製</button></li>
+        <li>
+         <button
+          @click="removeOmikuji(index)"
+          class="text-sm text-error"
+          :disabled="modelValue.length <= 1"
+         >
+          🗑️ 削除
+         </button>
+        </li>
+       </ul>
+      </div>
      </div>
     </div>
 
@@ -55,7 +60,7 @@
     <div class="mt-3">
      <PostActionsEditor
       :model-value="omikuji.postActions"
-      @update:model-value="updatePostActions(index, $event)"
+      @update:model-value="updateOmikuji(index, 'postActions', $event)"
      />
     </div>
    </div>
@@ -70,58 +75,32 @@ import type { OmikujiSetType, PostActionType } from '@/types/OmikujiTypesSchema'
 import { createDefaultOmikujiSet } from '@/types/OmikujiTypesSchema';
 import PostActionsEditor from './PostActionsEditor.vue';
 
-// Props
-const props = defineProps<{
- modelValue: OmikujiSetType[];
-}>();
-const emit = defineEmits<{
- 'update:modelValue': [value: OmikujiSetType[]];
-}>();
+const props = defineProps<{ modelValue: OmikujiSetType[] }>();
+const emit = defineEmits<{ 'update:modelValue': [value: OmikujiSetType[]] }>();
 
-// ヘルパー関数
-const updateModelValue = (newValue: OmikujiSetType[]) => {
+// 統合された更新関数
+const updateOmikuji = (index: number, key: keyof OmikujiSetType, value: any) => {
+ const newValue = [...props.modelValue];
+ newValue[index] = { ...newValue[index], [key]: value };
  emit('update:modelValue', newValue);
 };
 
-// メソッド
-const updateOmikujiName = (index: number, name: string) => {
- const newValue = [...props.modelValue];
- newValue[index] = { ...newValue[index], name };
- updateModelValue(newValue);
-};
-
-const updateOmikujiWeight = (index: number, weight: number) => {
- const newValue = [...props.modelValue];
- newValue[index] = { ...newValue[index], weight };
- updateModelValue(newValue);
-};
-
-const updatePostActions = (index: number, postActions: PostActionType[]) => {
- const newValue = [...props.modelValue];
- newValue[index] = { ...newValue[index], postActions };
- updateModelValue(newValue);
-};
-
 const addOmikuji = () => {
- const newValue = [...props.modelValue, createDefaultOmikujiSet()];
- updateModelValue(newValue);
+ emit('update:modelValue', [...props.modelValue, createDefaultOmikujiSet()]);
 };
 
 const removeOmikuji = (index: number) => {
  if (props.modelValue.length <= 1) return;
-
  const newValue = [...props.modelValue];
  newValue.splice(index, 1);
- updateModelValue(newValue);
+ emit('update:modelValue', newValue);
 };
 
 const duplicateOmikuji = (index: number) => {
  const original = props.modelValue[index];
- const duplicated = JSON.parse(JSON.stringify(original));
- duplicated.name = `${original.name} (コピー)`;
-
+ const duplicated = { ...JSON.parse(JSON.stringify(original)), name: `${original.name} (コピー)` };
  const newValue = [...props.modelValue];
  newValue.splice(index + 1, 0, duplicated);
- updateModelValue(newValue);
+ emit('update:modelValue', newValue);
 };
 </script>

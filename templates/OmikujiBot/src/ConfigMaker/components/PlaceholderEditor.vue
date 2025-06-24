@@ -1,10 +1,10 @@
 <!-- src/configMaker/components/PlaceholderEditor.vue -->
 <template>
  <!-- タブ部分 -->
- <RuleTabs :rules="placeholderList" :selectedRule="selectedSource" ruleType="placeholders" />
+ <RuleTabs :rules="placeholders" :selectedRule="selectedPlaceholder" ruleType="placeholders" />
 
  <!-- プレースホルダー編集エリア -->
- <div v-if="selectedSource">
+ <div v-if="selectedPlaceholder">
   <div class="card bg-base-300 mt-4">
    <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">
     基本設定
@@ -18,12 +18,12 @@
      </label>
      <div class="flex gap-2 items-center">
       <div class="w-full px-4 py-2 rounded bg-base-200 text-gray-600 break-all">
-       {{ selectedSource.id }}
+       {{ selectedPlaceholder.id }}
       </div>
       <!-- コピーボタン -->
-      <CopyButton :value="`<<${selectedSource.id}>>`" title="IDをコピー" />
+      <CopyButton :value="`<<${selectedPlaceholder.id}>>`" title="IDをコピー" />
       <!-- 編集ボタン -->
-      <PlaceholderIdEditor :currentId="selectedSource.id" />
+      <PlaceholderIdEditor :currentId="selectedPlaceholder.id" />
      </div>
     </div>
 
@@ -35,7 +35,7 @@
       </label>
       <input
        type="text"
-       v-model="selectedSource.name"
+       v-model="selectedPlaceholder.name"
        placeholder="プレースホルダー名を入力"
        class="input input-bordered w-full"
       />
@@ -53,10 +53,14 @@
      <span class="ml-2 cursor-help" title="説明"> ℹ️ </span>
     </div>
     <!-- テキストエディットボタン -->
-    <PlaceholderTextEdit :placeholderId="selectedSource.id" textContent="編集" />
+    <PlaceholderTextEdit :placeholderId="selectedPlaceholder.id" textContent="編集" />
    </div>
    <div class="card-body">
-    <div v-for="(value, index) in selectedSource.values" :key="index" class="card bg-base-100 p-2">
+    <div
+     v-for="(value, index) in selectedPlaceholder.values"
+     :key="index"
+     class="card bg-base-100 p-2"
+    >
      <div class="flex flex-col sm:flex-row sm:items-center sm:gap-2">
       <!-- 重み -->
       <input
@@ -84,7 +88,7 @@
         @click="removeValue(index)"
         class="btn btn-xs btn-outline btn-error"
         title="削除"
-        :disabled="selectedSource.values.length <= 1"
+        :disabled="selectedPlaceholder.values.length <= 1"
        >
         🗑️
        </button>
@@ -98,9 +102,9 @@
 
   <!-- プレビューセクション -->
   <PlaceholderPreview
-   v-if="selectedSource.values.length > 0"
-   :id="selectedSource.id"
-   :values="selectedSource.values"
+   v-if="selectedPlaceholder.values.length > 0"
+   :id="selectedPlaceholder.id"
+   :values="selectedPlaceholder.values"
   />
  </div>
 </template>
@@ -131,39 +135,29 @@ const extendedStore = {
 provide('placeholdersRulesStore', extendedStore);
 
 // computed
-const selectedSource = computed(() => placeholderStore.selectedRule);
-
-// プレースホルダーのリストを取得（RuleTabsで使用するためにorderプロパティを追加）
-const placeholderList = computed(() => {
- const placeholders = Object.values(placeholderStore.placeholders || {});
- return placeholders.map((placeholder, index) => ({
-  ...placeholder,
-  order: index,
-  isEnabled: true, // プレースホルダーは常に有効
-  editorColor: '#3b82f6' // ブルーカラー
- }));
-});
+const placeholders = computed(() => placeholderStore.rules);
+const selectedPlaceholder = computed(() => placeholderStore.selectedRule);
 
 // 値の追加
 const addValue = () => {
- if (!selectedSource.value) return;
- selectedSource.value.values.push(createDefaultPlaceholderValue());
+ if (!selectedPlaceholder.value) return;
+ selectedPlaceholder.value.values.push(createDefaultPlaceholderValue());
 };
 
 // 値の削除
 const removeValue = (index: number) => {
- if (!selectedSource.value || selectedSource.value.values.length <= 1) return;
- selectedSource.value.values.splice(index, 1);
+ if (!selectedPlaceholder.value || selectedPlaceholder.value.values.length <= 1) return;
+ selectedPlaceholder.value.values.splice(index, 1);
 };
 
 // 値の複製
 const duplicateValue = (index: number) => {
- if (!selectedSource.value) return;
+ if (!selectedPlaceholder.value) return;
 
- const original = selectedSource.value.values[index];
+ const original = selectedPlaceholder.value.values[index];
  const duplicated = JSON.parse(JSON.stringify(original));
  duplicated.content = `${original.content} (コピー)`;
 
- selectedSource.value.values.splice(index + 1, 0, duplicated);
+ selectedPlaceholder.value.values.splice(index + 1, 0, duplicated);
 };
 </script>

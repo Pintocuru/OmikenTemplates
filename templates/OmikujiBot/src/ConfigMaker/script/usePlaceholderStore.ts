@@ -4,125 +4,111 @@ import { computed } from 'vue';
 import { defineStore } from 'pinia';
 import { useOmikujiStore } from './useOmikujiStore';
 import { useRecordOperations } from './useRecordStore';
-import type { PlaceholderValueType } from '@/types/OmikujiTypesSchema';
+import type {
+ PlaceholderValueType,
+ CommentRuleType,
+ TimerRuleType,
+ OmikujiSetType,
+ PostActionType
+} from '@/types/OmikujiTypesSchema';
 
 export const usePlaceholderStore = defineStore('placeholder', () => {
  const baseOperations = useRecordOperations('placeholders');
-
  const omikujiStore = useOmikujiStore();
 
  // プレースホルダーの辞書型データを取得するためのcomputed
  const placeholders = computed(() => omikujiStore.data.placeholders);
 
+ // プレースホルダーが存在するかチェック
+ const checkPlaceholderExists = (id: string): boolean => {
+  return !!omikujiStore.data.placeholders[id];
+ };
+
+ // プレースホルダー参照を一括更新するヘルパー
+ const updatePlaceholderReferences = (oldId: string, newId: string): void => {
+  const oldPlaceholder = `<<${oldId}>>`;
+  const newPlaceholder = `<<${newId}>>`;
+  const regex = new RegExp(oldPlaceholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+
+  // プレースホルダー内のcontent更新
+  Object.values(omikujiStore.data.placeholders).forEach((placeholder) => {
+   placeholder.values.forEach((value) => {
+    if (value.content.includes(oldPlaceholder)) {
+     value.content = value.content.replace(regex, newPlaceholder);
+    }
+   });
+  });
+
+  // コメントルールとタイマールールのcontent更新
+  const updateRuleActions = (rules: Record<string, CommentRuleType | TimerRuleType>) => {
+   Object.values(rules).forEach((rule: CommentRuleType | TimerRuleType) => {
+    rule.omikuji.forEach((omikujiSet: OmikujiSetType) => {
+     omikujiSet.postActions?.forEach((action: PostActionType) => {
+      // messageContentとmessageToastの両方をチェック
+      if (action.messageContent.includes(oldPlaceholder)) {
+       action.messageContent = action.messageContent.replace(regex, newPlaceholder);
+      }
+      if (action.messageToast.includes(oldPlaceholder)) {
+       action.messageToast = action.messageToast.replace(regex, newPlaceholder);
+      }
+      if (action.wordParty.includes(oldPlaceholder)) {
+       action.wordParty = action.wordParty.replace(regex, newPlaceholder);
+      }
+     });
+    });
+   });
+  };
+
+  updateRuleActions(omikujiStore.data.comments);
+  updateRuleActions(omikujiStore.data.timers);
+ };
+
+ // プレースホルダーの名前を更新
+ const updatePlaceholderName = (id: string, newName: string): boolean => {
+  if (!checkPlaceholderExists(id)) return false;
+
+  omikujiStore.data.placeholders[id].name = newName;
+  return true;
+ };
+
  // プレースホルダーの値を更新
  const updatePlaceholderValues = (id: string, values: PlaceholderValueType[]): boolean => {
-  // 指定されたIDのプレースホルダーが存在するかチェック
-  if (!omikujiStore.data.placeholders[id]) {
-   return false;
-  }
+  if (!checkPlaceholderExists(id)) return false;
 
-  // プレースホルダーのvaluesを更新
   omikujiStore.data.placeholders[id].values = values;
-
   return true;
  };
 
  // プレースホルダーIDの更新
  const updatePlaceholderId = (oldId: string, newId: string): boolean => {
-  // 古いIDのプレースホルダーが存在するかチェック
-  if (!omikujiStore.data.placeholders[oldId]) {
+  // 存在チェック
+  if (!checkPlaceholderExists(oldId) || omikujiStore.data.placeholders[newId]) {
    return false;
   }
 
-  // 新しいIDが既に存在するかチェック（重複回避）
-  if (omikujiStore.data.placeholders[newId]) {
-   return false;
-  }
-
-  // 既存のプレースホルダーデータを取得
+  // プレースホルダーデータを移行
   const placeholderData = { ...omikujiStore.data.placeholders[oldId] };
-
-  // プレースホルダーデータのIDを更新
   placeholderData.id = newId;
 
-  // 新しいIDでプレースホルダーを追加
   omikujiStore.data.placeholders[newId] = placeholderData;
-
-  // 古いIDのプレースホルダーを削除
   delete omikujiStore.data.placeholders[oldId];
 
-  // 現在選択中のプレースホルダーが更新対象の場合、選択状態を新しいIDに更新
+  // 選択状態の更新
   if (omikujiStore.selectedRuleId === oldId) {
    omikujiStore.selectRule(newId);
   }
 
-  // プレースホルダー内のcontentを更新
-  const oldPlaceholder = `<<${oldId}>>`;
-  const newPlaceholder = `<<${newId}>>`;
-
-  // 全てのプレースホルダーのvalues.contentを更新
-  Object.values(omikujiStore.data.placeholders).forEach((placeholder) => {
-   placeholder.values.forEach((value) => {
-    if (value.content.includes(oldPlaceholder)) {
-     value.content = value.content.replace(
-      new RegExp(oldPlaceholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-      newPlaceholder
-     );
-    }
-   });
-  });
-
-  // 全てのコメントルールのomikuji.contentを更新
-  Object.values(omikujiStore.data.comments).forEach((rule) => {
-   rule.omikuji.forEach((omikujiSet) => {
-    // omikujiSetのpostActionsは配列で、各要素にcontentプロパティがある可能性があるため確認
-    omikujiSet.postActions?.forEach((action) => {
-     if (
-      action &&
-      typeof action === 'object' &&
-      'content' in action &&
-      typeof action.content === 'string'
-     ) {
-      if (action.content.includes(oldPlaceholder)) {
-       action.content = action.content.replace(
-        new RegExp(oldPlaceholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-        newPlaceholder
-       );
-      }
-     }
-    });
-   });
-  });
-
-  // 全てのタイマールールのomikuji.contentを更新
-  Object.values(omikujiStore.data.timers).forEach((rule) => {
-   rule.omikuji.forEach((omikujiSet) => {
-    omikujiSet.postActions?.forEach((action) => {
-     if (
-      action &&
-      typeof action === 'object' &&
-      'content' in action &&
-      typeof action.content === 'string'
-     ) {
-      if (action.content.includes(oldPlaceholder)) {
-       action.content = action.content.replace(
-        new RegExp(oldPlaceholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-        newPlaceholder
-       );
-      }
-     }
-    });
-   });
-  });
+  // 参照の更新
+  updatePlaceholderReferences(oldId, newId);
 
   return true;
  };
 
  return {
   ...baseOperations,
-  // computedプロパティ
-  placeholders, // 追加: PlaceholderEditor.vueで使用される
+  placeholders,
+  updatePlaceholderName,
   updatePlaceholderId,
-  updatePlaceholderValues // 新しく追加
+  updatePlaceholderValues
  };
 });

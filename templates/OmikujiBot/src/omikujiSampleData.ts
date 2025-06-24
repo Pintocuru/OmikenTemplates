@@ -3,17 +3,15 @@ import { OmikujiDataType } from './types/OmikujiTypesSchema';
 import { CharacterPreset } from './types/PresetTypes';
 
 export const omikujiSampleData: OmikujiDataType = {
- // =============================================================================
- // コメントルール
- // =============================================================================
  comments: {
-  comment_rule_1: {
-   id: 'comment_rule_1',
-   name: '新規視聴者歓迎おみくじ',
-   description: '新しい視聴者がコメントした時のおみくじ',
+  '1750735467199': {
+   id: '1750735467199',
+   name: 'おみくじ',
+   description:
+    '本職巫女さん手製。ゆっくり霊夢の、真面目なおみくじ。時々ゆっくり魔理沙も占います。',
    isEnabled: true,
-   order: 1,
-   editorColor: '#FF6B6B',
+   order: 2,
+   editorColor: '#3B82F6',
    scriptId: null,
    scriptParams: null,
    ruleType: 'comments',
@@ -23,228 +21,226 @@ export const omikujiSampleData: OmikujiDataType = {
     access: [],
     gift: [],
     count: {
-     comparison: 'max',
+     comparison: 'min',
      unit: 'lc',
      value: 1
     },
-    comment: ['おみくじ']
+    comment: ['おみくじ', 'omikuji', 'omikuzi', '御神籤']
    },
    omikuji: [
     {
-     name: '大吉',
-     description: '最高の運勢！',
-     weight: 1,
-     placeholderIds: ['greeting', 'lucky_message'],
-     postActions: [
-      {
-       characterKey: '',
-       iconKey: 'star',
-       delaySeconds: 2,
-       wordParty: 'celebration',
-       messageContent: '🌟 <<greeting>> 大吉が出ました！ <<lucky_message>>',
-       messageToast: ''
-      }
-     ]
-    },
-    {
-     name: '中吉',
-     description: 'まずまずの運勢',
-     weight: 3,
-     placeholderIds: ['greeting', 'normal_message'],
-     postActions: [
-      {
-       characterKey: '',
-       iconKey: 'smile',
-       delaySeconds: 1,
-       wordParty: 'normal',
-       messageContent: '😊 <<greeting>> 中吉です！ <<normal_message>>',
-       messageToast: ''
-      }
-     ]
-    },
-    {
-     name: '小吉',
-     description: '少し良い運勢',
-     weight: 4000,
-     placeholderIds: ['greeting', 'encourage_message'],
+     name: 'おみくじ:大吉',
+     description: '',
+     weight: 15,
      postActions: [
       {
        characterKey: 'reimu',
-       iconKey: 'thumbs_up',
-       delaySeconds: 1,
-       wordParty: 'encourage',
-       messageContent: '👍 <<greeting>> 小吉ですね。 <<encourage_message>>',
-       messageToast: '<<greeting>>、テスト。'
-      }
-     ]
-    }
-   ]
-  },
-  comment_rule_2: {
-   id: 'comment_rule_2',
-   name: '質問応答おみくじ',
-   description: '質問系コメントに対するおみくじ回答',
-   isEnabled: true,
-   order: 2,
-   editorColor: '#4ECDC4',
-   scriptId: null,
-   scriptParams: null,
-   ruleType: 'comments',
-   threshold: {
-    conditions: ['comment'],
-    syoken: [],
-    access: [],
-    gift: [],
-    count: {
-     comparison: 'max',
-     unit: 'lc',
-     value: 1
-    },
-    comment: ['test']
-   },
-   omikuji: [
-    {
-     name: '明確な答え',
-     description: 'はっきりとした回答',
-     weight: 40,
-     placeholderIds: ['clear_answer', 'confidence'],
-     postActions: [
-      {
-       characterKey: '',
-       iconKey: 'lightbulb',
-       delaySeconds: 1,
-       wordParty: 'answer',
-       messageContent: '💡 <<clear_answer>> <<confidence>>',
+       iconKey: 'reimu:default',
+       delaySeconds: -1,
+       wordParty: '!omikuji_huru',
+       messageContent: '',
        messageToast: ''
-      }
-     ]
-    },
-    {
-     name: '曖昧な答え',
-     description: '少し曖昧な回答',
-     weight: 35,
-     placeholderIds: ['vague_answer', 'maybe'],
-     postActions: [
+      },
       {
-       characterKey: '',
-       iconKey: 'question',
-       delaySeconds: 2,
-       wordParty: 'maybe',
-       messageContent: '🤔 <<vague_answer>> <<maybe>>',
-       messageToast: ''
-      }
-     ]
-    },
-    {
-     name: '謎かけ',
-     description: '謎かけで返答',
-     weight: 25,
-     placeholderIds: ['riddle', 'hint'],
-     postActions: [
-      {
-       characterKey: '',
-       iconKey: 'mystery',
-       delaySeconds: 4,
-       wordParty: 'riddle',
-       messageContent: '🎭 <<riddle>> <<hint>>',
-       messageToast: ''
-      }
-     ]
-    }
-   ]
-  }
- },
-
- // =============================================================================
- // タイマールール
- // =============================================================================
- timers: {
-  timer_rule_1: {
-   id: 'timer_rule_1',
-   name: '定期運勢チェック',
-   description: '30分おきに運勢をお知らせ',
-   isEnabled: true,
-   order: 1,
-   editorColor: '#45B7D1',
-   scriptId: null,
-   scriptParams: null,
-   ruleType: 'timers',
-   intervalSeconds: 1800, // 30分
-   omikuji: [
-    {
-     name: '今の運勢',
-     description: '現在の運勢状況',
-     weight: 100,
-     placeholderIds: ['time_greeting', 'current_fortune', 'advice'],
-     postActions: [
-      {
-       characterKey: '',
-       iconKey: 'clock',
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
        delaySeconds: 0,
-       wordParty: 'time_check',
-       messageContent: '⏰ <<time_greeting>> <<current_fortune>> <<advice>>',
+       wordParty: '!omikuji_01',
+       messageContent: '',
        messageToast: ''
-      }
-     ]
-    }
-   ]
-  },
-  timer_rule_2: {
-   id: 'timer_rule_2',
-   name: '毎時の豆知識',
-   description: '1時間ごとに豆知識を投稿',
-   isEnabled: false,
-   order: 2,
-   editorColor: '#96CEB4',
-   scriptId: null,
-   scriptParams: null,
-   ruleType: 'timers',
-   intervalSeconds: 3600, // 1時間
-   omikuji: [
-    {
-     name: '動物の豆知識',
-     description: '動物に関する面白い事実',
-     weight: 30,
-     placeholderIds: ['animal_fact', 'surprise_emoji'],
-     postActions: [
+      },
       {
-       characterKey: '',
-       iconKey: 'animal',
+       characterKey: 'reimu',
+       iconKey: 'reimu:happy',
        delaySeconds: 1,
-       wordParty: 'trivia',
-       messageContent: '🐾 <<surprise_emoji>> <<animal_fact>>',
+       wordParty: '!レベルアップ',
+       messageContent: '<<user>>さんの運勢は【大吉】<<omikuji01>>',
        messageToast: ''
       }
      ]
     },
     {
-     name: '宇宙の豆知識',
-     description: '宇宙に関する興味深い話',
-     weight: 30,
-     placeholderIds: ['space_fact', 'wonder_emoji'],
+     name: 'おみくじ:吉',
+     description: '',
+     weight: 20,
      postActions: [
       {
-       characterKey: '',
-       iconKey: 'star',
-       delaySeconds: 2,
-       wordParty: 'space',
-       messageContent: '🌌 <<wonder_emoji>> <<space_fact>>',
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: -1,
+       wordParty: '!omikuji_huru',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: 0,
+       wordParty: '!omikuji_02',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:happy',
+       delaySeconds: 1,
+       wordParty: '!シャキーン2',
+       messageContent: '<<user>>さんの運勢は【吉】<<omikuji02>>',
        messageToast: ''
       }
      ]
     },
     {
-     name: '歴史の豆知識',
-     description: '歴史の面白いエピソード',
-     weight: 40,
-     placeholderIds: ['history_fact', 'time_emoji'],
+     name: 'おみくじ:中吉',
+     description: '',
+     weight: 20,
      postActions: [
       {
-       characterKey: '',
-       iconKey: 'book',
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: -1,
+       wordParty: '!omikuji_huru',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: 0,
+       wordParty: '!omikuji_03',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
        delaySeconds: 1,
-       wordParty: 'history',
-       messageContent: '📚 <<time_emoji>> <<history_fact>>',
+       wordParty: '!シーン切り替え1',
+       messageContent: '<<user>>さんの運勢は【中吉】<<omikuji03>>',
+       messageToast: ''
+      }
+     ]
+    },
+    {
+     name: 'おみくじ:小吉',
+     description: '',
+     weight: 15,
+     postActions: [
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: -1,
+       wordParty: '!omikuji_huru',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: 0,
+       wordParty: '!omikuji_04',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: 1,
+       wordParty: '!シーン切り替え1',
+       messageContent: '<<user>>さんの運勢は【小吉】<<omikuji04>>',
+       messageToast: ''
+      }
+     ]
+    },
+    {
+     name: 'おみくじ:末吉',
+     description: '',
+     weight: 15,
+     postActions: [
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: -1,
+       wordParty: '!omikuji_huru',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: 0,
+       wordParty: '!omikuji_05',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:wink',
+       delaySeconds: 1,
+       wordParty: '!間抜け1',
+       messageContent: '<<user>>さんの運勢は【末吉】<<omikuji05>>',
+       messageToast: ''
+      }
+     ]
+    },
+    {
+     name: 'おみくじ:凶',
+     description: '',
+     weight: 10,
+     postActions: [
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: -1,
+       wordParty: '!omikuji_huru',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:default',
+       delaySeconds: 0,
+       wordParty: '!omikuji_06',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'reimu',
+       iconKey: 'reimu:sad',
+       delaySeconds: 1,
+       wordParty: '!呪いの旋律',
+       messageContent: '<<user>>さんの運勢は【凶】<<omikuji06>>',
+       messageToast: ''
+      }
+     ]
+    },
+    {
+     name: 'おみくじ:残念賞',
+     description: '',
+     weight: 5,
+     postActions: [
+      {
+       characterKey: 'marisa',
+       iconKey: 'marisa:sleepy',
+       delaySeconds: -1,
+       wordParty: '!omikuji_huru',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'marisa',
+       iconKey: 'marisa:sleepy',
+       delaySeconds: 0,
+       wordParty: '!omikuji_07',
+       messageContent: '',
+       messageToast: ''
+      },
+      {
+       characterKey: 'marisa',
+       iconKey: 'marisa:sleepy',
+       delaySeconds: 1,
+       wordParty: '!ビシッとツッコミ1',
+       messageContent: '<<user>>さんの運勢は【残念賞】<<omikuji07>>',
        messageToast: ''
       }
      ]
@@ -252,299 +248,323 @@ export const omikujiSampleData: OmikujiDataType = {
    ]
   }
  },
-
- // =============================================================================
- // プレースホルダー
- // =============================================================================
+ timers: {
+  '1750736208455': {
+   id: '1750736208455',
+   name: '新しいデータ 1',
+   description: '',
+   isEnabled: true,
+   order: 0,
+   editorColor: '#10B981',
+   scriptId: null,
+   scriptParams: null,
+   ruleType: 'timers',
+   intervalSeconds: 60,
+   omikuji: [
+    {
+     name: '',
+     description: '',
+     weight: 1,
+     postActions: []
+    }
+   ]
+  }
+ },
  placeholders: {
-  // 挨拶系
-  greeting: {
-   id: 'greeting',
-   name: 'greeting',
-   order: 1,
-   placeholderIds: [],
+  omikuji01: {
+   id: 'omikuji01',
+   name: 'おみくじ:大吉',
+   order: 2,
    values: [
-    { weight: 25, content: 'こんにちは！' },
-    { weight: 25, content: 'いらっしゃいませ！' },
-    { weight: 20, content: 'ようこそ！' },
-    { weight: 15, content: 'お疲れ様です！' },
-    { weight: 15, content: 'はじめまして！' }
+    {
+     weight: 1,
+     content: '人との縁が幸運を呼び込みそう。感謝の気持ちを忘れないことが大事よ。'
+    },
+    {
+     weight: 1,
+     content: '健康運が特に好調ね。心身ともに充実した日々になるわ。'
+    },
+    {
+     weight: 1,
+     content: '努力が実を結び、幸運が訪れるって。積極的に行動すると良いことがあるわ。'
+    },
+    {
+     weight: 1,
+     content: '新しい挑戦が成功をもたらす予感。勇気を出して一歩踏み出してみて。'
+    },
+    {
+     weight: 1,
+     content: '良い知らせが届くかも。ポジティブな気持ちを持ち続けてね。'
+    },
+    {
+     weight: 1,
+     content: '困難な状況も乗り越えられるわ。自信を持って進んで大丈夫よ。'
+    }
    ]
   },
-
-  // メッセージ系
-  lucky_message: {
-   id: 'lucky_message',
-   name: 'lucky_message',
-   order: 1,
-   placeholderIds: ['lucky_action'],
+  omikuji02: {
+   id: 'omikuji02',
+   name: 'おみくじ:吉',
+   order: 0,
    values: [
-    { weight: 30, content: '今日は素晴らしい一日になりそうです！ <<lucky_action>>' },
-    { weight: 25, content: '幸運が舞い込んできそうな予感です！ <<lucky_action>>' },
-    { weight: 25, content: 'ラッキーな出来事が待っているかも！ <<lucky_action>>' },
-    { weight: 20, content: '運気上昇中です！ <<lucky_action>>' }
+    {
+     weight: 1,
+     content: '積極的に行動すると運気は上がるわ。新しい挑戦はチャンスよ。'
+    },
+    {
+     weight: 1,
+     content: '周囲の人々に感謝の気持ちを忘れずにね。'
+    },
+    {
+     weight: 1,
+     content: '今後の展望は明るめね。夢に向かって突き進めばいいことがあるわ。'
+    },
+    {
+     weight: 1,
+     content: '仲間との協力が成功への鍵よ。チームワークを大切にしてね。'
+    },
+    {
+     weight: 1,
+     content: '小さな努力が大きな成果を生むわ。コツコツと続けることが大事よ。'
+    },
+    {
+     weight: 1,
+     content: 'ポジティブな考えが良い結果を招くわ。前向きに考え続けてね。'
+    }
    ]
   },
-
-  normal_message: {
-   id: 'normal_message',
-   name: 'normal_message',
+  omikuji03: {
+   id: 'omikuji03',
+   name: 'おみくじ:中吉',
    order: 1,
-   placeholderIds: [],
    values: [
-    { weight: 30, content: '程よく頑張っていきましょう。' },
-    { weight: 25, content: 'マイペースで進んでいけば大丈夫です。' },
-    { weight: 25, content: '今日も一歩ずつ前進しましょう。' },
-    { weight: 20, content: '無理せず自分らしく過ごしてくださいね。' }
+    {
+     weight: 1,
+     content: '思いがけない幸運があるかも。チャンスを逃さないようにね。'
+    },
+    {
+     weight: 1,
+     content: '周囲の人との協力が大切よ。助けを求めることを恐れないで。'
+    },
+    {
+     weight: 1,
+     content: '自分の直感を信じていいわ。大きな成長が待ってるそうよ。'
+    },
+    {
+     weight: 1,
+     content: '新しいスキルを学ぶと良いわ。自分を磨くチャンスが来てるわよ。'
+    },
+    {
+     weight: 1,
+     content: '楽しい出来事が増えるわ。笑顔を忘れずにね。'
+    },
+    {
+     weight: 1,
+     content: '計画をしっかり立てることで、成功への道が開けるわ。'
+    }
    ]
   },
-
-  encourage_message: {
-   id: 'encourage_message',
-   name: 'encourage_message',
-   order: 1,
-   placeholderIds: [],
+  omikuji04: {
+   id: 'omikuji04',
+   name: 'おみくじ:小吉',
+   order: 3,
    values: [
-    { weight: 30, content: 'きっと良いことがありますよ！' },
-    { weight: 25, content: '頑張って続けていれば報われます。' },
-    { weight: 25, content: '諦めずに進んでいけば道は開けます。' },
-    { weight: 20, content: 'あなたならきっとうまくいきます！' }
+    {
+     weight: 1,
+     content: 'いまは焦らず、一歩ずつ進むことね。努力すれば、願いは叶うと出ているわ。'
+    },
+    {
+     weight: 1,
+     content: 'いまは慎重に行動が必要な時。きっと吉へと導かれるわ。慌てない事が大切よ。'
+    },
+    {
+     weight: 1,
+     content: '健康面に注意して。規則正しい生活が運気を呼び込むわ。'
+    },
+    {
+     weight: 1,
+     content: '周囲のサポートを受け入れることで、運気が上昇するわ。'
+    },
+    {
+     weight: 1,
+     content: '小さな喜びを大切にね。それが大きな幸せに繋がるわ。'
+    },
+    {
+     weight: 1,
+     content: 'ゆっくりとした進展があるわ。焦らずに自分のペースで進んでね。'
+    }
    ]
   },
-
-  warning_message: {
-   id: 'warning_message',
-   name: 'warning_message',
-   order: 1,
-   placeholderIds: [],
+  omikuji05: {
+   id: 'omikuji05',
+   name: 'おみくじ:末吉',
+   order: 4,
    values: [
-    { weight: 30, content: '今日は慎重に行動してくださいね。' },
-    { weight: 25, content: 'でも大丈夫、きっと乗り越えられます。' },
-    { weight: 25, content: '注意深く進めば問題ありません。' },
-    { weight: 20, content: 'ピンチをチャンスに変えましょう！' }
+    {
+     weight: 1,
+     content: '油断が思わぬ結果に繋がるわ。慎重に行動して。'
+    },
+    {
+     weight: 1,
+     content: '今は試練の時期ね。乗り越えれば、大きな成長が待ってるわ。'
+    },
+    {
+     weight: 1,
+     content: '新しいことより、今の事を見直すといい事があるわ。'
+    },
+    {
+     weight: 1,
+     content: '計画を練り直すことで、より良い結果が得られるわ。'
+    },
+    {
+     weight: 1,
+     content: '周囲の意見に耳を傾けることが、成功の鍵になるわ。'
+    },
+    {
+     weight: 1,
+     content: '自己改善に取り組むことで運が開けるわ。自分を見つめ直す時間を作ってね。'
+    }
    ]
   },
-
-  // アクション系
-  lucky_action: {
-   id: 'lucky_action',
-   name: 'lucky_action',
-   order: 1,
-   placeholderIds: [],
+  omikuji06: {
+   id: 'omikuji06',
+   name: 'おみくじ:凶',
+   order: 5,
    values: [
-    { weight: 20, content: '笑顔を心がけてみてください。' },
-    { weight: 20, content: '新しいことにチャレンジしてみるのも良いかも。' },
-    { weight: 20, content: '周りの人に感謝の気持ちを伝えてみましょう。' },
-    { weight: 20, content: '自然に触れる時間を作ってみてください。' },
-    { weight: 20, content: '好きなことに時間を使ってリフレッシュしましょう。' }
+    {
+     weight: 1,
+     content: '運気はやや下がり気味。慎重に行動するといいわ。'
+    },
+    {
+     weight: 1,
+     content: '周囲の人とのトラブルに注意して。喧嘩になったら、頭を冷やすことね。'
+    },
+    {
+     weight: 1,
+     content: '健康面に注意が必要ね。体調管理をしっかり。乳酸菌とってるぅ？'
+    },
+    {
+     weight: 1,
+     content: '計画が思い通りに進まないかも。焦らず、柔軟に対応してね。'
+    },
+    {
+     weight: 1,
+     content: '信頼できる人に相談すると、助け舟が出るわよ。'
+    },
+    {
+     weight: 1,
+     content: '無理をせず、休息を取ることが大切よ。リラックスする時間を作ってね。'
+    }
    ]
   },
-
-  // 質問応答系
-  clear_answer: {
-   id: 'clear_answer',
-   name: 'clear_answer',
-   order: 1,
-   placeholderIds: [],
+  omikuji07: {
+   id: 'omikuji07',
+   name: 'おみくじ:残念賞',
+   order: 6,
    values: [
-    { weight: 25, content: 'はい、その通りです！' },
-    { weight: 25, content: '間違いありません。' },
-    { weight: 25, content: '確実にそうですね。' },
-    { weight: 25, content: '絶対にそうです！' }
-   ]
-  },
-
-  vague_answer: {
-   id: 'vague_answer',
-   name: 'vague_answer',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 25, content: 'うーん、そうかもしれませんね。' },
-    { weight: 25, content: '可能性はありそうです。' },
-    { weight: 25, content: 'どちらとも言えませんが...' },
-    { weight: 25, content: '微妙なところですね。' }
-   ]
-  },
-
-  confidence: {
-   id: 'confidence',
-   name: 'confidence',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 40, content: '自信を持って言えます！' },
-    { weight: 35, content: 'きっとそうでしょう。' },
-    { weight: 25, content: 'おそらく正解です。' }
-   ]
-  },
-
-  maybe: {
-   id: 'maybe',
-   name: 'maybe',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 30, content: 'かもしれませんね。' },
-    { weight: 25, content: 'だと思います。' },
-    { weight: 25, content: 'の可能性が高いです。' },
-    { weight: 20, content: 'でしょうね。' }
-   ]
-  },
-
-  riddle: {
-   id: 'riddle',
-   name: 'riddle',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 25, content: '答えは風の中にあります...' },
-    { weight: 25, content: '真実は鏡の向こう側に...' },
-    { weight: 25, content: '解答は星に聞いてみてください...' },
-    { weight: 25, content: '答えはあなたの心の中に...' }
-   ]
-  },
-
-  hint: {
-   id: 'hint',
-   name: 'hint',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 25, content: 'ヒント：よく考えてみてくださいね。' },
-    { weight: 25, content: 'ヒント：答えは意外と身近にあります。' },
-    { weight: 25, content: 'ヒント：逆から考えてみると...' },
-    { weight: 25, content: 'ヒント：答えは一つではないかも？' }
-   ]
-  },
-
-  // 時間系
-  time_greeting: {
-   id: 'time_greeting',
-   name: 'time_greeting',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 25, content: 'お疲れ様です！' },
-    { weight: 25, content: '定刻のお時間です。' },
-    { weight: 25, content: '時間が経つのは早いですね。' },
-    { weight: 25, content: 'いかがお過ごしでしょうか？' }
-   ]
-  },
-
-  current_fortune: {
-   id: 'current_fortune',
-   name: 'current_fortune',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 20, content: '今の運気は上昇中です！' },
-    { weight: 20, content: '運勢は安定しています。' },
-    { weight: 20, content: '少し運気が停滞気味ですが...' },
-    { weight: 20, content: '転機が近づいている予感です。' },
-    { weight: 20, content: '今日の運勢は波がありそうです。' }
-   ]
-  },
-
-  advice: {
-   id: 'advice',
-   name: 'advice',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 20, content: '積極的に行動してみてください。' },
-    { weight: 20, content: '今は様子を見る時期かもしれません。' },
-    { weight: 20, content: '周りの人との協力が鍵になりそうです。' },
-    { weight: 20, content: '直感を信じて進んでみましょう。' },
-    { weight: 20, content: 'バランスを大切に過ごしてください。' }
-   ]
-  },
-
-  // 豆知識系
-  animal_fact: {
-   id: 'animal_fact',
-   name: 'animal_fact',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 20, content: 'パンダの指は実は6本あります！' },
-    { weight: 20, content: 'フラミンゴが片足立ちするのは体温保持のためです。' },
-    { weight: 20, content: 'コアラは1日20時間も眠ります。' },
-    { weight: 20, content: 'ペンギンには膝があります！' },
-    { weight: 20, content: 'ゾウは鼻だけで4万以上の筋肉を持っています。' }
-   ]
-  },
-
-  space_fact: {
-   id: 'space_fact',
-   name: 'space_fact',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 20, content: '一日は実際には23時間56分4秒です。' },
-    { weight: 20, content: '金星は太陽系で一番熱い惑星です。' },
-    { weight: 20, content: '木星には67個以上の衛星があります。' },
-    { weight: 20, content: '宇宙では音は伝わりません。' },
-    { weight: 20, content: '太陽の光が地球に届くまで約8分かかります。' }
-   ]
-  },
-
-  history_fact: {
-   id: 'history_fact',
-   name: 'history_fact',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 20, content: 'クレオパトラはピラミッド建設よりも現代に近い時代を生きていました。' },
-    { weight: 20, content: '万里の長城は月からは見えません。' },
-    { weight: 20, content: 'ナポレオンは実は平均身長でした。' },
-    { weight: 20, content: 'バイキングの兜には角はありませんでした。' },
-    { weight: 20, content: '古代エジプト人はすでに歯磨き粉を使っていました。' }
-   ]
-  },
-
-  // 絵文字系
-  surprise_emoji: {
-   id: 'surprise_emoji',
-   name: 'surprise_emoji',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 25, content: '😲' },
-    { weight: 25, content: '🤯' },
-    { weight: 25, content: '😱' },
-    { weight: 25, content: '🙀' }
-   ]
-  },
-
-  wonder_emoji: {
-   id: 'wonder_emoji',
-   name: 'wonder_emoji',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 25, content: '✨' },
-    { weight: 25, content: '🌟' },
-    { weight: 25, content: '🔮' },
-    { weight: 25, content: '🌠' }
-   ]
-  },
-
-  time_emoji: {
-   id: 'time_emoji',
-   name: 'time_emoji',
-   order: 1,
-   placeholderIds: [],
-   values: [
-    { weight: 25, content: '⏳' },
-    { weight: 25, content: '🕰️' },
-    { weight: 25, content: '📜' },
-    { weight: 25, content: '🏛️' }
+    {
+     weight: 1,
+     content: '笑いすぎに注意だぜ。腹筋が崩壊するかもしれないぜ。'
+    },
+    {
+     weight: 1,
+     content: '終わったわ、風が強すぎるぜ。強すぎてお亡くなりだぜ。'
+    },
+    {
+     weight: 1,
+     content: '高嶋ちさ子さんも、長嶋一茂さんも、石原良純さんも、残念！'
+    },
+    {
+     weight: 1,
+     content: 'ニューヨークが新しくなくなったら、ただのヨークだぜ。残念ッ！'
+    },
+    {
+     weight: 1,
+     content: '剥いても剥いても中身がない野菜？答えは玉ねぎだぜ。残念でした。また来てね。'
+    },
+    {
+     weight: 1,
+     content: '知ってる？「コンクリート」っていう漢字があるんだぜ。しかも1文字で。'
+    },
+    {
+     weight: 1,
+     content: 'バスケ中にゴリラが横切っても誰も気づかないぜ。インビジブル・ゴリラ実験って言うぜ。'
+    },
+    {
+     weight: 1,
+     content: '女子高生とか好きだからって理由で先生になっちゃいけないぜ。奥さんは美人だぜ。'
+    }
    ]
   }
  },
  scriptSettings: {
   BomberSpin: {},
   GouseiSuika: {}
+ },
+ characters: {
+  reimu: {
+   id: 'reimu',
+   name: 'ゆっくり霊夢',
+   displayName: 'ゆっくり霊夢',
+   description: '優しい振る舞いで人気者のゆっくり霊夢。じゃんけんはとても強い。',
+   version: '0.0.1',
+   author: 'Pintocuru',
+   order: 101,
+   tags: ['Yukkuri', 'Reimu'],
+   url: 'https://nagipon-sozai.studio.site/',
+   isIconDisplay: true,
+   frameId: 'OmikenReimu',
+   color: {
+    nameColor: '#FFC107',
+    textColor: '#ECEFF1',
+    backgroundColor: '#FF4081'
+   },
+   image: {
+    default: 'reimu/Default.webp',
+    happy: 'reimu/joy01.png',
+    excited: 'reimu/joy04.png',
+    laughing: 'reimu/relax01.png',
+    blushing: 'reimu/shy02.png',
+    surprised: 'reimu/surprise03.png',
+    sad: 'reimu/sad01.png',
+    angry: 'reimu/anger01.png',
+    thinking: 'reimu/fun02.png',
+    wink: 'reimu/relax03.png',
+    singing: 'reimu/joy03.png',
+    sleepy: 'reimu/contempt02.png'
+   }
+  },
+  marisa: {
+   id: 'marisa',
+   name: 'ゆっくり魔理沙',
+   displayName: 'ゆっくり魔理沙',
+   description: '花とキノコが好きな、ゆっくり魔理沙。じゃんけんはちょっと弱い。',
+   version: '0.0.1',
+   author: 'Pintocuru',
+   order: 102,
+   tags: ['Yukkuri', 'Marisa'],
+   url: 'https://nagipon-sozai.studio.site/',
+   isIconDisplay: true,
+   frameId: 'OmikenMarisa',
+   color: {
+    nameColor: '#FFE082',
+    textColor: '#333333',
+    backgroundColor: '#FF8F00'
+   },
+   image: {
+    default: 'marisa/Default.png',
+    happy: 'marisa/joy01.png',
+    excited: 'marisa/joy04.png',
+    laughing: 'marisa/relax01.png',
+    blushing: 'marisa/shy02.png',
+    surprised: 'marisa/surprise03.png',
+    sad: 'marisa/sad01.png',
+    angry: 'marisa/anger01.png',
+    thinking: 'marisa/fun02.png',
+    wink: 'marisa/relax03.png',
+    singing: 'marisa/joy03.png',
+    sleepy: 'marisa/contempt02.png'
+   }
+  }
  }
 };

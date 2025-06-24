@@ -1,17 +1,15 @@
-// src/ConfigMaker/script/useOmikujiStore.ts - メインstore
+// src/ConfigMaker/script/useOmikujiStore.ts
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { OmikujiDataSchema, OmikujiDataType } from '@/types/OmikujiTypesSchema';
+import { CategoryType, OmikujiDataSchema, OmikujiDataType } from '@/types/OmikujiTypesSchema';
 import { omikujiSampleData } from '@/omikujiSampleData';
 
 export const useOmikujiStore = defineStore('omikuji', () => {
- // Core data createDefaultOmikujiData()
+ // Core data
  const data = ref<OmikujiDataType>(omikujiSampleData);
 
  // Navigation state
- const selectedCategory = ref<'comments' | 'timers' | 'placeholders' | 'scriptSettings'>(
-  'comments'
- );
+ const selectedCategory = ref<CategoryType>('comments');
  const selectedRuleId = ref<string | null>(null);
 
  // Data operations
@@ -45,8 +43,48 @@ export const useOmikujiStore = defineStore('omikuji', () => {
   throw new Error('データの検証に失敗しました。');
  };
 
+ // Category operations
+ const addItemToCategory = <T>(category: CategoryType, id: string, item: T) => {
+  if (!data.value[category]) {
+   data.value[category] = {} as any;
+  }
+  (data.value[category] as Record<string, T>)[id] = item;
+ };
+
+ const updateItemInCategory = <T>(category: CategoryType, id: string, item: T) => {
+  if (data.value[category] && (data.value[category] as Record<string, T>)[id] !== undefined) {
+   (data.value[category] as Record<string, T>)[id] = item;
+  } else {
+   addItemToCategory(category, id, item);
+  }
+ };
+
+ const removeItemFromCategory = (category: CategoryType, id: string) => {
+  if (data.value[category] && (data.value[category] as Record<string, any>)[id] !== undefined) {
+   delete (data.value[category] as Record<string, any>)[id];
+  }
+ };
+
+ const getItemFromCategory = <T>(category: CategoryType, id: string): T | undefined => {
+  return (data.value[category] as Record<string, T>)?.[id];
+ };
+
+ const getCategoryItems = <T>(category: CategoryType): Record<string, T> => {
+  return (data.value[category] as Record<string, T>) || {};
+ };
+
+ const duplicateItemInCategory = <T>(category: CategoryType, id: string): string | null => {
+  const item = getItemFromCategory<T>(category, id);
+  if (!item) return null;
+
+  const newId = `${id}_copy_${Date.now()}`;
+  addItemToCategory(category, newId, { ...item } as T);
+  return newId;
+ };
+
  // Navigation
- const selectCategory = (category: typeof selectedCategory.value) => {
+ const selectCategory = (category: CategoryType) => {
+  console.log('カテゴリ変更:', category);
   selectedCategory.value = category;
   selectedRuleId.value = null;
  };
@@ -60,12 +98,27 @@ export const useOmikujiStore = defineStore('omikuji', () => {
  };
 
  return {
+  // データ
   data,
+
+  // ナビゲーション状態
   selectedCategory,
   selectedRuleId,
+
+  // データ操作メソッド
   loadData,
   validateData,
   exportData,
+
+  // カテゴリ操作メソッド
+  addItemToCategory,
+  updateItemInCategory,
+  removeItemFromCategory,
+  getItemFromCategory,
+  getCategoryItems,
+  duplicateItemInCategory,
+
+  // ナビゲーション
   selectCategory,
   selectRule,
   clearSelection

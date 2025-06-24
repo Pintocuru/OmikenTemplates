@@ -3,7 +3,7 @@
  <dialog ref="dialogRef" class="modal">
   <div class="modal-box max-w-max">
    <!-- プレースホルダーリスト表示 -->
-   <PlaceholderList />
+   <PlaceholderList :actions="editingActions" />
 
    <!-- Post編集ダイアログ -->
    <div class="card bg-base-300 mt-4">
@@ -77,7 +77,7 @@
          <input
           type="number"
           v-model.number="action.delaySeconds"
-          min="0"
+          min="-1"
           step="0.1"
           class="input input-bordered input-sm w-full"
           placeholder="0"

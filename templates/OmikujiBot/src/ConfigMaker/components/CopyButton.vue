@@ -10,62 +10,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, onUnmounted } from 'vue';
 
 interface Props {
  // コピーする値（必須）
  value: string;
-
  // タイトル（ツールチップ）
  title?: string;
-
- // TODO:下記は不要
- defaultText?: string;
- showText?: boolean;
- successText?: string;
- loadingText?: string;
- defaultIcon?: string;
- variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'custom';
- size?: 'xs' | 'sm' | 'md' | 'lg';
- successDuration?: number;
+ // 無効化フラグ
  disabled?: boolean;
- customClass?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
- showText: false,
- defaultText: 'コピー',
- successText: 'コピー済み✓',
- loadingText: 'コピー中...',
- defaultIcon: '📋',
- variant: 'ghost',
- size: 'sm',
- successDuration: 2000,
- disabled: false,
  title: 'クリックしてコピー',
- customClass: ''
+ disabled: false
 });
-
-// Emits
-// TODO:Emitsは不要
-const emit = defineEmits<{
- success: [value: string];
- error: [error: Error];
- click: [event: MouseEvent];
-}>();
 
 // 状態管理
 const copied = ref(false);
 const isLoading = ref(false);
 
-// @ts-ignore
-// 名前空間 'NodeJS' が見つかりません。ts(2503)
-let successTimer: NodeJS.Timeout | null = null;
+let successTimer: number | null = null;
 
 // コピー処理
-const handleCopy = async (event: MouseEvent) => {
- emit('click', event);
-
+const handleCopy = async () => {
  if (props.disabled || isLoading.value) {
   return;
  }
@@ -85,19 +53,13 @@ const handleCopy = async (event: MouseEvent) => {
   isLoading.value = false;
   copied.value = true;
 
-  // 成功イベントを発火
-  emit('success', props.value);
-
-  // 指定時間後に元の状態に戻す
+  // 2秒後に元の状態に戻す
   successTimer = setTimeout(() => {
    copied.value = false;
-  }, props.successDuration);
+  }, 2000);
  } catch (error) {
   isLoading.value = false;
   console.error('Copy failed:', error);
-
-  // エラーイベントを発火
-  emit('error', error as Error);
 
   // フォールバック: 古いブラウザ対応
   try {
@@ -111,11 +73,10 @@ const handleCopy = async (event: MouseEvent) => {
    document.body.removeChild(textArea);
 
    copied.value = true;
-   emit('success', props.value);
 
    successTimer = setTimeout(() => {
     copied.value = false;
-   }, props.successDuration);
+   }, 2000);
   } catch (fallbackError) {
    console.error('Fallback copy also failed:', fallbackError);
   }
@@ -123,7 +84,6 @@ const handleCopy = async (event: MouseEvent) => {
 };
 
 // コンポーネントがアンマウントされる際のクリーンアップ
-import { onUnmounted } from 'vue';
 onUnmounted(() => {
  if (successTimer) {
   clearTimeout(successTimer);

@@ -140,7 +140,7 @@ import { reactive, computed, onMounted, onUnmounted, ref, nextTick, inject } fro
 const props = defineProps<{
  rules: any[];
  selectedRule: any;
- ruleType: 'comments' | 'timers' | 'placeholders';
+ ruleType: 'comments' | 'timers' | 'placeholders' | 'characters';
 }>();
 
 // Store injection

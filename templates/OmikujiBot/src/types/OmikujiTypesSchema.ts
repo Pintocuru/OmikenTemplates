@@ -10,6 +10,41 @@ export const generateId = () => {
  return '' + Date.now();
 };
 
+// デフォルトキャラクターを作成
+export const createDefaultCharacter = () => ({
+ id: '',
+ name: '',
+ description: '',
+ version: '1.0.0',
+ author: '',
+ order: 0,
+ tags: [],
+ url: '',
+ path: '',
+ isIconDisplay: true,
+ displayName: '',
+ frameId: null,
+ color: {
+  nameColor: '#000000',
+  textColor: '#000000',
+  backgroundColor: '#FFFFFF'
+ },
+ image: {
+  default: '',
+  happy: '',
+  excited: '',
+  laughing: '',
+  blushing: '',
+  surprised: '',
+  sad: '',
+  angry: '',
+  thinking: '',
+  wink: '',
+  singing: '',
+  sleepy: ''
+ }
+});
+
 export const createDefaultCountCondition = () => ({
  comparison: 'min' as const,
  unit: 'lc' as const,
@@ -38,7 +73,6 @@ export const createDefaultOmikujiSet = () => ({
  name: '',
  description: '',
  weight: 1,
- placeholderIds: [],
  postActions: []
 });
 
@@ -51,7 +85,6 @@ export const createDefaultPlaceholder = () => ({
  id: generateId(),
  name: '',
  order: 9999,
- placeholderIds: [],
  values: [createDefaultPlaceholderValue()]
 });
 
@@ -117,6 +150,68 @@ export const createDefaultOmikujiData = () => ({
  scriptSettings: {},
  characters: {}
 });
+
+// ======================
+// Character関連のスキーマ
+// ======================
+
+export const CharacterEmotionSchema = z.enum([
+ 'happy',
+ 'excited',
+ 'laughing',
+ 'blushing',
+ 'surprised',
+ 'sad',
+ 'angry',
+ 'thinking',
+ 'wink',
+ 'singing',
+ 'sleepy'
+]);
+
+export const CharacterColorSchemeSchema = z
+ .object({
+  nameColor: z.string().catch('#000000'),
+  textColor: z.string().catch('#000000'),
+  backgroundColor: z.string().catch('#FFFFFF')
+ })
+ .catch(createDefaultCharacterColorScheme);
+
+export const CharacterImageSetSchema = z
+ .object({
+  default: z.string().catch(''),
+  happy: z.string().optional(),
+  excited: z.string().optional(),
+  laughing: z.string().optional(),
+  blushing: z.string().optional(),
+  surprised: z.string().optional(),
+  sad: z.string().optional(),
+  angry: z.string().optional(),
+  thinking: z.string().optional(),
+  wink: z.string().optional(),
+  singing: z.string().optional(),
+  sleepy: z.string().optional()
+ })
+ .catch(createDefaultCharacterImageSet);
+
+export const CharacterPresetSchema = z
+ .object({
+  id: z.string().catch(''),
+  name: z.string().catch(''),
+  description: z.string().catch(''),
+  version: z.string().catch('1.0.0'),
+  author: z.string().optional(),
+  order: z.number().min(0).catch(0),
+  tags: z.array(z.string().catch('')).catch([]),
+  url: z.string().optional(),
+  path: z.string().optional(),
+  isIconDisplay: z.boolean().catch(true),
+  displayName: z.string().optional(),
+  frameId: z.union([z.string(), z.null()]).catch(null),
+  color: CharacterColorSchemeSchema,
+  image: CharacterImageSetSchema
+ })
+ .catch(createDefaultCharacterPreset);
 
 // ======================
 // Threshold関連のスキーマ
@@ -198,83 +293,18 @@ export const PlaceholderSchema = z
   id: z.string().catch(''),
   name: z.string().catch(''),
   order: z.number().min(0).catch(0),
-  placeholderIds: z.array(z.string().catch('')).catch([]),
   values: z.array(PlaceholderValueSchema).catch([createDefaultPlaceholderValue()])
  })
  .catch(createDefaultPlaceholder);
 
 // ======================
-// Character関連のスキーマ
-// ======================
-
-export const CharacterEmotionSchema = z.enum([
- 'happy',
- 'excited',
- 'laughing',
- 'blushing',
- 'surprised',
- 'sad',
- 'angry',
- 'thinking',
- 'wink',
- 'singing',
- 'sleepy'
-]);
-
-export const CharacterColorSchemeSchema = z
- .object({
-  nameColor: z.string().catch('#000000'),
-  textColor: z.string().catch('#000000'),
-  backgroundColor: z.string().catch('#FFFFFF')
- })
- .catch(createDefaultCharacterColorScheme);
-
-export const CharacterImageSetSchema = z
- .object({
-  default: z.string().catch(''),
-  happy: z.string().optional(),
-  excited: z.string().optional(),
-  laughing: z.string().optional(),
-  blushing: z.string().optional(),
-  surprised: z.string().optional(),
-  sad: z.string().optional(),
-  angry: z.string().optional(),
-  thinking: z.string().optional(),
-  wink: z.string().optional(),
-  singing: z.string().optional(),
-  sleepy: z.string().optional()
- })
- .catch(createDefaultCharacterImageSet);
-
-export const CharacterPresetSchema = z
- .object({
-  id: z.string().catch(''),
-  name: z.string().catch(''),
-  description: z.string().catch(''),
-  version: z.string().catch('1.0.0'),
-  author: z.string().optional(),
-  order: z.number().min(0).catch(0),
-  tags: z.array(z.string().catch('')).catch([]),
-  url: z.string().optional(),
-  path: z.string().optional(),
-  isIconDisplay: z.boolean().catch(true),
-  displayName: z.string().optional(),
-  frameId: z.union([z.string(), z.null()]).catch(null),
-  color: CharacterColorSchemeSchema,
-  image: CharacterImageSetSchema
- })
- .catch(createDefaultCharacterPreset);
-
-// ======================
 // Omikuji関連のスキーマ
 // ======================
-
 export const OmikujiSetSchema = z
  .object({
   name: z.string().catch(''),
   description: z.string().catch(''),
   weight: z.number().min(0).catch(1),
-  placeholderIds: z.array(z.string().catch('')).catch([]),
   postActions: z.array(PostActionSchema).catch([])
  })
  .catch(createDefaultOmikujiSet);
@@ -282,7 +312,6 @@ export const OmikujiSetSchema = z
 // ======================
 // Rule関連のスキーマ
 // ======================
-
 const BaseRuleCommonSchema = z.object({
  id: z.string().catch(''),
  name: z.string().catch(''),
@@ -317,7 +346,6 @@ export const TimerRuleSchema = z
 // ======================
 // メインデータ構造のスキーマ
 // ======================
-
 export const OmikujiDataSchema = z
  .object({
   comments: z.record(z.string(), CommentRuleSchema).catch({}),
@@ -331,7 +359,7 @@ export const OmikujiDataSchema = z
 // ======================
 // 型エクスポート
 // ======================
-
+export type CategoryType = 'comments' | 'timers' | 'placeholders' | 'scriptSettings' | 'characters';
 export type OmikujiDataType = z.infer<typeof OmikujiDataSchema>;
 export type CommentRuleType = z.infer<typeof CommentRuleSchema>;
 export type TimerRuleType = z.infer<typeof TimerRuleSchema>;

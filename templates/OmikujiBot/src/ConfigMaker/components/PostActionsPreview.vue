@@ -15,9 +15,7 @@
       <span v-if="action.iconKey" class="badge badge-sm"
        >🎨 {{ getIconLabel(action.iconKey) }}</span
       >
-      <span v-if="action.delaySeconds > 0" class="badge badge-sm badge-secondary">
-       ⏱️ {{ action.delaySeconds }}s
-      </span>
+      <span class="badge badge-sm badge-secondary"> ⏱️ {{ action.delaySeconds }}s </span>
      </div>
     </div>
     <div
