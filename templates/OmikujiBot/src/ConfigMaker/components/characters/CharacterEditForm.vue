@@ -23,12 +23,11 @@
 
 <script setup lang="ts">
 import { defineEmits } from 'vue';
-import { Trash2 } from 'lucide-vue-next';
+import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
 import CharacterBasicInfo from './CharacterBasicInfo.vue';
 import CharacterColorSettings from './CharacterColorSettings.vue';
 import CharacterImageSettings from './CharacterImageSettings.vue';
 import CharacterTagManager from './CharacterTagManager.vue';
-import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
 
 const props = defineProps<{
  character: CharacterPresetType;
@@ -46,11 +45,6 @@ const handleUpdate = (updates: Partial<CharacterPresetType>) => {
 const handleColorUpdate = (colorUpdates: Partial<CharacterPresetType['color']>) => {
  const updatedColor = { ...props.character.color, ...colorUpdates };
  emit('update', { color: updatedColor });
-};
-
-const handleImageUpdate = (imageUpdates: Partial<CharacterPresetType['image']>) => {
- const updatedImage = { ...props.character.image, ...imageUpdates };
- emit('update', { image: updatedImage });
 };
 
 const handleTagsUpdate = (tags: string[]) => {

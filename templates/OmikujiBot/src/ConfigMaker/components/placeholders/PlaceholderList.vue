@@ -64,10 +64,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { usePlaceholderStore } from '../script/usePlaceholderStore';
-import CopyButton from './CopyButton.vue';
-import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
 import { PostActionType } from '@/types/OmikujiTypesSchema';
+import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
+import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
+import CopyButton from '@ConfigComponents/parts/CopyButton.vue';
 
 // Props
 const props = defineProps<{

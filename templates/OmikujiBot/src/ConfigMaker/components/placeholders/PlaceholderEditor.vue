@@ -111,14 +111,14 @@
 
 <script setup lang="ts">
 import { computed, provide } from 'vue';
-import { usePlaceholderStore } from '../script/usePlaceholderStore';
 import { createDefaultPlaceholderValue } from '@/types/OmikujiTypesSchema';
-import { useOmikujiStore } from '../script/useOmikujiStore';
-import RuleTabs from './RuleTabs.vue';
-import CopyButton from './CopyButton.vue';
+import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 import PlaceholderIdEditor from './PlaceholderIdEditor.vue';
 import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
 import PlaceholderPreview from './PlaceholderPreview.vue';
+import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
+import CopyButton from '@ConfigComponents/parts/CopyButton.vue';
 
 // ストアを使用
 const placeholderStore = usePlaceholderStore();

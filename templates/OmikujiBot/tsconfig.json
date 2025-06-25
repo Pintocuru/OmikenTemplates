@@ -14,8 +14,20 @@
    "@common/*": [
     "../../public/common/*"
    ],
+   "@assets/*": [
+    "./assets/*"
+   ],
    "@/*": [
     "./src/*"
+   ],
+   "@Config/*": [
+    "./src/ConfigMaker/*"
+   ],
+   "@ConfigComponents/*": [
+    "./src/ConfigMaker/components/*"
+   ],
+   "@ConfigScript/*": [
+    "./src/ConfigMaker/script/*"
    ],
   }
  },

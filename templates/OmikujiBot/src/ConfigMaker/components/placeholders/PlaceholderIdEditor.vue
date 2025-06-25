@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { usePlaceholderStore } from '../script/usePlaceholderStore';
+import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
 
 // Props
 const props = defineProps<{

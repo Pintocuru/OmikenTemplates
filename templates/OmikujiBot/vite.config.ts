@@ -10,11 +10,11 @@ export default defineConfig(({ mode }) => {
   publicDir: path.resolve(__dirname, '../../public'),
   resolve: {
    alias: {
+    '@assets': path.resolve(__dirname, 'assets'),
     '@': path.resolve(__dirname, 'src'),
-    '@components': path.resolve(__dirname, 'src/components'),
-    '@scripts': path.resolve(__dirname, 'src/scripts'),
-    '@styles': path.resolve(__dirname, 'src/styles'),
-    '@assets': path.resolve(__dirname, 'assets')
+    '@Config': path.resolve(__dirname, 'src/ConfigMaker'),
+    '@ConfigComponents': path.resolve(__dirname, 'src/ConfigMaker/components'),
+    '@ConfigScript': path.resolve(__dirname, 'src/ConfigMaker/script')
    }
   }
  });

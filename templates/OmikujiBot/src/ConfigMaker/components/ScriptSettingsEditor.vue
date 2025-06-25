@@ -136,10 +136,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useOmikujiStore } from '../script/useOmikujiStore';
-import { Settings, RotateCcw } from 'lucide-vue-next';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
-import { useScriptSettingsStore } from '../script/useScriptSettingsStore';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
+import { useScriptSettingsStore } from '@ConfigScript/useScriptSettingsStore';
+import { Settings, RotateCcw } from 'lucide-vue-next';
 
 // store
 const scriptSettingsStore = useScriptSettingsStore();

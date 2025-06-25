@@ -2,14 +2,14 @@
 <template>
  <div class="card bg-base-300 mt-4">
   <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">おみくじ設定</div>
-  <div class="card-body space-y-3">
+  <div class="card-body p-3">
    <!-- おみくじセットコンポーネント -->
    <div v-for="(omikuji, index) in modelValue" :key="index" class="card bg-base-100 p-3">
     <div class="flex items-center gap-4">
      <!-- 名前 -->
      <div class="form-control flex-1">
       <div class="flex items-center gap-2">
-       <span class="text-xs w-12">名前</span>
+       <span class="text-sm w-8">名前</span>
        <input
         type="text"
         :value="omikuji.name"
@@ -23,7 +23,7 @@
      <!-- 重み -->
      <div class="form-control flex-1">
       <div class="flex items-center gap-2">
-       <span class="text-xs w-12">重み</span>
+       <span class="text-sm w-8">重み</span>
        <input
         type="number"
         :value="omikuji.weight"
@@ -56,13 +56,8 @@
      </div>
     </div>
 
-    <!-- Post Actions Editor コンポーネント -->
-    <div class="mt-3">
-     <PostActionsEditor
-      :model-value="omikuji.postActions"
-      @update:model-value="updateOmikuji(index, 'postActions', $event)"
-     />
-    </div>
+    <!-- Post Actions Editor コンポーネント JSON編集機能付き -->
+    <PostActionsEditorJson v-model="omikuji.postActions" />
    </div>
 
    <button @click="addOmikuji" class="btn btn-primary btn-sm w-full">+ おみくじセットを追加</button>
@@ -71,9 +66,10 @@
 </template>
 
 <script setup lang="ts">
-import type { OmikujiSetType, PostActionType } from '@/types/OmikujiTypesSchema';
-import { createDefaultOmikujiSet } from '@/types/OmikujiTypesSchema';
+import { OmikujiSetType, createDefaultOmikujiSet } from '@/types/OmikujiTypesSchema';
 import PostActionsEditor from './PostActionsEditor.vue';
+import PostActionsEditorJson from './PostActionsEditorJson.vue';
+import { MessageCircle, Timer, Hash, Settings, Users } from 'lucide-vue-next';
 
 const props = defineProps<{ modelValue: OmikujiSetType[] }>();
 const emit = defineEmits<{ 'update:modelValue': [value: OmikujiSetType[]] }>();

@@ -1,13 +1,8 @@
 <!-- src/configMaker/components/ExternalScriptEditor.vue -->
 <template>
- <div class="card bg-base-300 shadow-lg">
+ <div class="card bg-base-300 mt-4">
+  <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">外部スクリプト設定</div>
   <div class="card-body">
-   <div
-    class="card-title bg-secondary text-secondary-content px-4 py-2 -mx-6 -mt-6 mb-4 rounded-t-2xl"
-   >
-    外部スクリプト設定
-   </div>
-
    <!-- スクリプト有効化チェックボックス -->
    <div class="form-control">
     <label class="label cursor-pointer justify-start gap-3">
@@ -47,13 +42,9 @@
     </div>
 
     <!-- スクリプト設定パラメータ -->
-    <div v-if="selectedScript?.settings?.length" class="space-y-4">
-     <div class="divider">
-      <span class="text-base font-semibold">スクリプト設定</span>
-     </div>
-
-     <div class="space-y-3">
-      <div v-for="setting in selectedScript.settings" :key="setting.id" class="form-control w-full">
+    <div v-if="selectedScript?.params?.length" class="space-y-4">
+     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-2">
+      <div v-for="setting in selectedScript.params" :key="setting.id" class="form-control w-full">
        <label class="label">
         <span class="label-text font-medium">{{ setting.name }}</span>
         <span v-if="setting.description" class="label-text-alt">{{ setting.description }}</span>
@@ -107,8 +98,6 @@
       </div>
      </div>
     </div>
-
-    <!-- 実行時パラメータは型定義に存在しないため削除 -->
    </div>
   </div>
  </div>
@@ -117,8 +106,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { CommentRuleType } from '@/types/OmikujiTypesSchema';
-import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 import type { ParameterItem, ScriptPreset } from '@/types/PresetTypes';
+import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 
 const props = defineProps<{
  modelValue: CommentRuleType;
@@ -139,8 +128,6 @@ const selectedScript = computed((): ScriptPreset | null => {
 
 // スクリプト設定パラメータの取得（型安全）
 const scriptParams = computed(() => props.modelValue.scriptParams || {});
-
-// 実行時パラメータの取得は不要（型定義にruntimeParamsは存在しない）
 
 // 外部スクリプトの有効/無効を切り替え
 const toggleScript = (event: Event) => {
@@ -173,13 +160,6 @@ const updateScriptId = (event: Event) => {
  // 選択されたスクリプトのデフォルト値を設定
  if (scriptId && scriptGameMap[scriptId]) {
   const script = scriptGameMap[scriptId];
-
-  // 設定パラメータのデफォルト值
-  if (script.settings?.length) {
-   script.settings.forEach((setting: ParameterItem) => {
-    defaultScriptParams[setting.id] = setting.defaultValue;
-   });
-  }
 
   // 実行時パラメータのデフォルト値
   if (script.params?.length) {

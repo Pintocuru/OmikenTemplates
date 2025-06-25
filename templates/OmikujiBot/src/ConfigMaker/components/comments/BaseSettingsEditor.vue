@@ -1,6 +1,6 @@
 <!-- src/configMaker/components/BaseSettingsEditor.vue -->
 <template>
- <div class="card bg-base-300 mt-4 relative">
+ <div class="card bg-base-300 mt-4">
   <!-- ヘッダー（タイトル＋右上スイッチ） -->
   <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t flex items-center justify-between">
    <div class="flex items-center gap-2">
@@ -53,36 +53,33 @@
   </div>
 
   <!-- ボディ -->
-  <div class="card-body">
-   <!-- 単一カラムレイアウト -->
-   <div class="space-y-4">
-    <!-- ルール名 -->
-    <div class="form-control">
-     <label class="label">
-      <span class="label-text font-medium">ルール名</span>
-     </label>
-     <input
-      type="text"
-      :value="modelValue.name"
-      @input="updateField('name', $event)"
-      placeholder="ルール名を入力"
-      class="input input-bordered w-full"
-     />
-    </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
+   <!-- ルール名 -->
+   <div class="form-control">
+    <label class="label">
+     <span class="label-text font-medium">ルール名</span>
+    </label>
+    <input
+     type="text"
+     :value="modelValue.name"
+     @input="updateField('name', $event)"
+     placeholder="ルール名を入力"
+     class="input input-bordered w-full"
+    />
+   </div>
 
-    <!-- 説明 -->
-    <div class="form-control">
-     <label class="label">
-      <span class="label-text font-medium">説明</span>
-     </label>
-     <input
-      type="text"
-      :value="modelValue.description"
-      @input="updateField('description', $event)"
-      placeholder="ルールの説明を入力"
-      class="input input-bordered w-full"
-     />
-    </div>
+   <!-- 説明 -->
+   <div class="form-control">
+    <label class="label">
+     <span class="label-text font-medium">説明</span>
+    </label>
+    <input
+     type="text"
+     :value="modelValue.description"
+     @input="updateField('description', $event)"
+     placeholder="ルールの説明を入力"
+     class="input input-bordered w-full"
+    />
    </div>
   </div>
  </div>

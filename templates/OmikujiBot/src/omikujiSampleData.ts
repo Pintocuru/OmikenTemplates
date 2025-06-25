@@ -1,6 +1,5 @@
 // OmikujiData のサンプルデータ
 import { OmikujiDataType } from './types/OmikujiTypesSchema';
-import { CharacterPreset } from './types/PresetTypes';
 
 export const omikujiSampleData: OmikujiDataType = {
  comments: {
@@ -248,33 +247,12 @@ export const omikujiSampleData: OmikujiDataType = {
    ]
   }
  },
- timers: {
-  '1750736208455': {
-   id: '1750736208455',
-   name: '新しいデータ 1',
-   description: '',
-   isEnabled: true,
-   order: 0,
-   editorColor: '#10B981',
-   scriptId: null,
-   scriptParams: null,
-   ruleType: 'timers',
-   intervalSeconds: 60,
-   omikuji: [
-    {
-     name: '',
-     description: '',
-     weight: 1,
-     postActions: []
-    }
-   ]
-  }
- },
+ timers: {},
  placeholders: {
   omikuji01: {
    id: 'omikuji01',
    name: 'おみくじ:大吉',
-   order: 2,
+   order: 0,
    values: [
     {
      weight: 1,
@@ -305,7 +283,7 @@ export const omikujiSampleData: OmikujiDataType = {
   omikuji02: {
    id: 'omikuji02',
    name: 'おみくじ:吉',
-   order: 0,
+   order: 1,
    values: [
     {
      weight: 1,
@@ -336,7 +314,7 @@ export const omikujiSampleData: OmikujiDataType = {
   omikuji03: {
    id: 'omikuji03',
    name: 'おみくじ:中吉',
-   order: 1,
+   order: 2,
    values: [
     {
      weight: 1,
@@ -498,8 +476,7 @@ export const omikujiSampleData: OmikujiDataType = {
   }
  },
  scriptSettings: {
-  BomberSpin: {},
-  GouseiSuika: {}
+  BomberSpin: {}
  },
  characters: {
   reimu: {

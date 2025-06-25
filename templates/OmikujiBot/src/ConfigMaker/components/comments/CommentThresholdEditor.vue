@@ -1,7 +1,7 @@
 <!-- src/configMaker/components/CommentThresholdEditor.vue -->
 <template>
  <div class="card bg-base-300 mt-4">
-  <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">しきい値設定</div>
+  <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">条件設定</div>
   <div class="card-body">
    <!-- 条件タイプ選択 -->
    <div class="form-control mb-4">
@@ -30,7 +30,7 @@
     <!-- コメント条件 -->
     <div
      v-if="modelValue.conditions.includes('comment')"
-     class="form-control bg-base-100 p-3 rounded-lg flex-1 min-w-64"
+     class="form-control bg-base-100 p-2 rounded-lg flex-1 min-w-fit"
     >
      <label class="label py-0 pb-1">
       <span class="label-text font-medium">コメント条件</span>
@@ -66,7 +66,10 @@
     </div>
 
     <!-- 初見条件 -->
-    <div v-if="modelValue.conditions.includes('syoken')" class="form-control flex-1 min-w-48">
+    <div
+     v-if="modelValue.conditions.includes('syoken')"
+     class="form-control bg-base-100 p-2 rounded-lg flex-1 min-w-fit"
+    >
      <label class="label">
       <span class="label-text font-medium">初見条件</span>
      </label>
@@ -88,7 +91,10 @@
     </div>
 
     <!-- アクセスレベル条件 -->
-    <div v-if="modelValue.conditions.includes('access')" class="form-control flex-1 min-w-48">
+    <div
+     v-if="modelValue.conditions.includes('access')"
+     class="form-control bg-base-100 p-2 rounded-lg flex-1 min-w-fit"
+    >
      <label class="label">
       <span class="label-text font-medium">アクセスレベル条件</span>
      </label>
@@ -110,7 +116,10 @@
     </div>
 
     <!-- ギフト条件 -->
-    <div v-if="modelValue.conditions.includes('gift')" class="form-control flex-1 min-w-48">
+    <div
+     v-if="modelValue.conditions.includes('gift')"
+     class="form-control bg-base-100 p-2 rounded-lg flex-1 min-w-fit"
+    >
      <label class="label">
       <span class="label-text font-medium">ギフト条件</span>
      </label>
@@ -132,7 +141,10 @@
     </div>
 
     <!-- カウント条件 -->
-    <div v-if="modelValue.conditions.includes('count')" class="form-control flex-1 min-w-48">
+    <div
+     v-if="modelValue.conditions.includes('count')"
+     class="form-control bg-base-100 p-2 rounded-lg flex-1 min-w-fit"
+    >
      <label class="label">
       <span class="label-text font-medium">コメント数条件</span>
      </label>

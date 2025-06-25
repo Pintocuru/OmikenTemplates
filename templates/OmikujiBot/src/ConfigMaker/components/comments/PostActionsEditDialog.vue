@@ -136,9 +136,9 @@
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue';
 import { createDefaultPostAction, type PostActionType } from '@/types/OmikujiTypesSchema';
-import { charactersMap } from '@/Characters/CharactersMap';
 import { type CharacterEmotion } from '@/types/PresetTypes';
-import PlaceholderList from './PlaceholderList.vue';
+import { charactersMap } from '@/Characters/CharactersMap';
+import PlaceholderList from '@ConfigComponents/placeholders/PlaceholderList.vue';
 
 // Props
 const props = defineProps<{

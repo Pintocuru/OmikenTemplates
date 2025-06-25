@@ -131,9 +131,9 @@ export interface ScriptPreset<
 > extends PresetMetadata {
  /** メイン実行クラス */
  execute: ScriptClass<TSettings, TParams, TPlaceholders, TGameExtras>;
- /** スクリプトの設定値 */
+ /** スクリプト設定のパラメータ */
  settings: ParameterItem<TSettings>[];
- /** 実行時にユーザーが入力するパラメータ */
+ /** おみくじ実行時のパラメータ */
  params: ParameterItem<TParams>[];
  /** 動的置換用プレースホルダー */
  placeholders: ScriptPlaceholderItem<TPlaceholders>[];

@@ -11,7 +11,7 @@
   <!-- 外部スクリプト設定セクション -->
   <ExternalScriptEditor :modelValue="selectedRule" @update:modelValue="updateSelectedRule" />
 
-  <!-- しきい値設定セクション -->
+  <!-- 条件設定セクション -->
   <CommentThresholdEditor v-model="selectedRule.threshold" />
 
   <!-- おみくじ設定セクション -->
@@ -26,9 +26,9 @@ import BaseSettingsEditor from './BaseSettingsEditor.vue';
 import CommentThresholdEditor from './CommentThresholdEditor.vue';
 import ExternalScriptEditor from './ExternalScriptEditor.vue';
 import OmikujiSetEditor from './OmikujiSetEditor.vue';
-import RuleTabs from './RuleTabs.vue';
-import { useCommentRulesStore } from '../script/useCommentRulesStore';
-import { useOmikujiStore } from '../script/useOmikujiStore';
+import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
+import { useCommentRulesStore } from '@ConfigScript/useCommentRulesStore';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 
 // ストアを使用
 const commentRulesStore = useCommentRulesStore();

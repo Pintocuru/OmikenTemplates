@@ -18,12 +18,12 @@
 
 <script setup lang="ts">
 import { computed, provide } from 'vue';
-import { useTimerRulesStore } from '../script/useTimerRulesStore';
-import { useOmikujiStore } from '../script/useOmikujiStore';
+import { useTimerRulesStore } from '@ConfigScript/useTimerRulesStore';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 import TimerIntervalEditor from './TimerIntervalEditor.vue';
-import OmikujiSetEditor from './OmikujiSetEditor.vue';
-import RuleTabs from './RuleTabs.vue';
-import BaseSettingsEditor from './BaseSettingsEditor.vue';
+import OmikujiSetEditor from '@ConfigComponents/comments/OmikujiSetEditor.vue';
+import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
+import BaseSettingsEditor from '@ConfigComponents/comments/BaseSettingsEditor.vue';
 import { CommentRuleType, TimerRuleType } from '@/types/OmikujiTypesSchema';
 
 // ストアを使用

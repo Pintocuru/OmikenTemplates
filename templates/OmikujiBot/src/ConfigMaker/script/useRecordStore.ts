@@ -43,12 +43,31 @@ export function useRecordOperations<C extends Category>(category: C) {
   Object.values(getData()).sort((a, b) => a.order - b.order)
  );
 
- const selectedRule = computed<CategoryTypeMap[C] | null>(() => {
-  if (omikujiStore.selectedCategory !== category) return null;
-  const data = getData();
-  if (!omikujiStore.selectedRuleId) return null;
-  return data[omikujiStore.selectedRuleId] ?? null;
+ // リアクティブな書き込み可能selectedRule
+ const selectedRule = computed<CategoryTypeMap[C] | null>({
+  get: () => {
+   if (omikujiStore.selectedCategory !== category) return null;
+   const data = getData();
+   if (!omikujiStore.selectedRuleId) return null;
+   return data[omikujiStore.selectedRuleId] ?? null;
+  },
+  set: (value) => {
+   if (value && omikujiStore.selectedRuleId) {
+    update(omikujiStore.selectedRuleId, value);
+   }
+  }
  });
+
+ // ネストされたプロパティ用のヘルパー
+ const selectedRuleNested = <K extends keyof CategoryTypeMap[C]>(key: K) =>
+  computed<CategoryTypeMap[C][K] | undefined>({
+   get: () => selectedRule.value?.[key],
+   set: (value) => {
+    if (value !== undefined && selectedRule.value) {
+     update(selectedRule.value.id, { [key]: value } as Partial<CategoryTypeMap[C]>);
+    }
+   }
+  });
 
  const add = (): string => {
   const createDefault = factoryMap[category];
@@ -108,17 +127,23 @@ export function useRecordOperations<C extends Category>(category: C) {
  };
 
  const reorder = (fromIndex: number, toIndex: number) => {
-  const rulesCopy = [...rules.value];
-  const [moved] = rulesCopy.splice(fromIndex, 1);
-  rulesCopy.splice(toIndex, 0, moved);
-  rulesCopy.forEach((rule, index) => {
-   rule.order = index;
+  const ruleList = rules.value;
+  const ids = ruleList.map((rule) => rule.id);
+  const [movedId] = ids.splice(fromIndex, 1);
+  ids.splice(toIndex, 0, movedId);
+
+  const data = getData();
+  ids.forEach((id, index) => {
+   if (data[id]) {
+    data[id].order = index;
+   }
   });
  };
 
  return {
   rules,
   selectedRule,
+  selectedRuleNested,
   add,
   update,
   remove,

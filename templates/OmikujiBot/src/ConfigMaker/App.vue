@@ -32,29 +32,19 @@
    </div>
    <div class="card-body">
     <!-- コメントルール -->
-    <div v-if="selectedCategory === 'comments'">
-     <CommentRuleEditor />
-    </div>
+    <CommentRuleEditor v-if="selectedCategory === 'comments'" />
 
     <!-- タイマールール -->
-    <div v-else-if="selectedCategory === 'timers'">
-     <TimerRuleEditor />
-    </div>
+    <TimerRuleEditor v-else-if="selectedCategory === 'timers'" />
 
     <!-- プレースホルダー -->
-    <div v-else-if="selectedCategory === 'placeholders'">
-     <PlaceholderEditor />
-    </div>
+    <PlaceholderEditor v-else-if="selectedCategory === 'placeholders'" />
 
     <!-- スクリプト設定 -->
-    <div v-else-if="selectedCategory === 'scriptSettings'">
-     <ScriptSettingsEditor />
-    </div>
+    <ScriptSettingsEditor v-else-if="selectedCategory === 'scriptSettings'" />
 
     <!-- キャラクター設定 -->
-    <div v-else-if="selectedCategory === 'characters'">
-     <CharacterEditor />
-    </div>
+    <CharacterEditor v-else-if="selectedCategory === 'characters'" />
 
     <!-- フォールバック -->
     <div v-else>
@@ -65,19 +55,19 @@
  </div>
 
  <!-- トースト通知コンポーネント -->
- <Toaster position="top-right" :expand="true" :richColors="true" :visibleToasts="5" />
+ <Toaster :expand="true" :richColors="true" :visibleToasts="5" />
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-import { useOmikujiStore } from './script/useOmikujiStore';
 import { CategoryType } from '@/types/OmikujiTypesSchema';
-import ConfigPresets from './components/ConfigPresets.vue';
-import CommentRuleEditor from './components/CommentRuleEditor.vue';
-import TimerRuleEditor from './components/TimerRuleEditor.vue';
-import PlaceholderEditor from './components/PlaceholderEditor.vue';
-import ScriptSettingsEditor from './components/ScriptSettingsEditor.vue';
-import CharacterEditor from './components/CharacterEditor.vue';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
+import ConfigPresets from '@ConfigComponents/ConfigPresets.vue';
+import CommentRuleEditor from '@ConfigComponents/comments/CommentRuleEditor.vue';
+import TimerRuleEditor from '@ConfigComponents/timers/TimerRuleEditor.vue';
+import PlaceholderEditor from '@ConfigComponents/placeholders/PlaceholderEditor.vue';
+import ScriptSettingsEditor from '@ConfigComponents/ScriptSettingsEditor.vue';
+import CharacterEditor from '@ConfigComponents/characters/CharacterEditor.vue';
+import { storeToRefs } from 'pinia';
 import { Toaster } from 'vue-sonner';
 import { MessageCircle, Timer, Hash, Settings, Users } from 'lucide-vue-next';
 
@@ -89,26 +79,11 @@ const { selectCategory } = omikujiStore;
 
 // ナビゲーションタブの設定
 const navigationTabs = {
- comments: {
-  label: 'コメントルール',
-  icon: MessageCircle
- },
- timers: {
-  label: 'タイマールール',
-  icon: Timer
- },
- placeholders: {
-  label: 'プレースホルダー',
-  icon: Hash
- },
- scriptSettings: {
-  label: 'スクリプト設定',
-  icon: Settings
- },
- characters: {
-  label: 'キャラクター',
-  icon: Users
- }
+ comments: { label: 'コメントルール', icon: MessageCircle },
+ timers: { label: 'タイマールール', icon: Timer },
+ placeholders: { label: 'プレースホルダー', icon: Hash },
+ scriptSettings: { label: 'スクリプト設定', icon: Settings },
+ characters: { label: 'キャラクター', icon: Users }
 } as const;
 
 // カテゴリごとのアイテム数を取得

@@ -84,7 +84,6 @@ export const useOmikujiStore = defineStore('omikuji', () => {
 
  // Navigation
  const selectCategory = (category: CategoryType) => {
-  console.log('カテゴリ変更:', category);
   selectedCategory.value = category;
   selectedRuleId.value = null;
  };
