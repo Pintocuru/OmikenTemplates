@@ -1,7 +1,7 @@
 // src/MainGenerator/utils/CommentProcessor.ts
 import { BotMessage } from '@/types/types';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { charasSampleData, omikujiSampleData } from '@/omikujiSampleData';
+import { omikujiSampleData } from '@/omikujiSampleData';
 import { CommentRule, OmikujiSet } from '@/types/OmikujiTypes';
 import { PostMessage } from './PostMessage2';
 import { PlaceProcess } from './PlaceProcess2';
@@ -153,6 +153,15 @@ export class CommentProcessor {
   try {
    // スクリプト実行
    const scriptResult = this.scriptManager.executeScript(comment, rule);
+
+   // デフォルトのプレースホルダー情報を入れる
+   // user/lc(配信でのコメント数)/tc(個人の総コメント数)
+   const hogaMap: Record<string, string | number> = {
+    user: comment.data.displayName || comment.data.name,
+    lc: comment.meta?.lc ?? 0,
+    tc: comment.meta?.tc ?? 0
+   };
+   this.placeProcess.updateResolvedValues(hogaMap);
 
    if (scriptResult) {
     // スクリプトの投稿アクション実行

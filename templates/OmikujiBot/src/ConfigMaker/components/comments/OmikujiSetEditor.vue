@@ -67,7 +67,6 @@
 
 <script setup lang="ts">
 import { OmikujiSetType, createDefaultOmikujiSet } from '@/types/OmikujiTypesSchema';
-import PostActionsEditor from './PostActionsEditor.vue';
 import PostActionsEditorJson from './PostActionsEditorJson.vue';
 import { MessageCircle, Timer, Hash, Settings, Users } from 'lucide-vue-next';
 

@@ -64,10 +64,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { PostActionType } from '@/types/OmikujiTypesSchema';
+import { PlaceholderSchema, PlaceholderType, PostActionType } from '@/types/OmikujiTypesSchema';
 import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
+import { useCommentRulesStore } from '@ConfigScript/useCommentRulesStore';
 import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
 import CopyButton from '@ConfigComponents/parts/CopyButton.vue';
+import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 
 // Props
 const props = defineProps<{
@@ -76,9 +78,52 @@ const props = defineProps<{
 
 // Store
 const placeholderStore = usePlaceholderStore();
+const commentRulesStore = useCommentRulesStore();
+
+// computed
+const selectedRule = computed(() => commentRulesStore.selectedRule);
 
 // リアクティブな状態
 const searchQuery = ref('');
+
+// デフォルトで入るプレースホルダー：user, lc, tc
+const defaultPlaceholders: PlaceholderType[] = [
+ PlaceholderSchema.parse({
+  id: 'user',
+  name: 'コメントしたユーザー',
+  values: [{ content: '(ユーザー名)' }]
+ }),
+ PlaceholderSchema.parse({
+  id: 'lc',
+  name: '配信でのコメント番号',
+  values: [{ content: '(コメント番号)' }]
+ }),
+ PlaceholderSchema.parse({
+  id: 'tc',
+  name: '個人の総コメント数',
+  values: [{ content: '(個人コメント数)' }]
+ })
+];
+
+// 現在選択されているおみくじに外部スクリプトが使われているなら、そのプレースホルダーを取得する
+const scriptPlaceholder = computed((): PlaceholderType[] => {
+ if (selectedRule.value && selectedRule.value?.scriptId !== null) {
+  const scriptPlaceholders = scriptGameMap[selectedRule.value.scriptId].placeholders;
+
+  // ScriptPlaceholderItem[] を PlaceholderType[] に変換
+  return scriptPlaceholders.map(
+   (item): PlaceholderType =>
+    PlaceholderSchema.parse({
+     id: item.id,
+     name: item.name,
+     order: 0, // デフォルト値
+     values: [{ content: item.value }]
+    })
+  );
+ }
+
+ return [];
+});
 
 // プレースホルダーが使用されているかを判定する関数
 const isPlaceholderUsed = (placeholderId: string): boolean => {
@@ -93,7 +138,7 @@ const isPlaceholderUsed = (placeholderId: string): boolean => {
 };
 
 // ランダムな値を取得する関数
-const getRandomValue = (placeholder: any) => {
+const getRandomValue = (placeholder: PlaceholderType) => {
  if (!placeholder.values || placeholder.values.length === 0) return '';
  const randomIndex = Math.floor(Math.random() * placeholder.values.length);
  return placeholder.values[randomIndex]?.content || '';
@@ -101,16 +146,49 @@ const getRandomValue = (placeholder: any) => {
 
 // 全プレースホルダーを取得
 const allPlaceholders = computed(() => {
- const placeholders = Object.values(placeholderStore.placeholders || {});
+ const placeholdersOld = Object.values(placeholderStore.placeholders || {});
+ const scriptPlaceholders = scriptPlaceholder.value || [];
+ const placeholders = [
+  ...Object.values(defaultPlaceholders),
+  ...scriptPlaceholders,
+  ...placeholdersOld
+ ];
+
+ // 優先するIDとその順位
+ const priorityOrder: Record<string, number> = {
+  user: 1,
+  lc: 2,
+  tc: 3
+ };
+
+ // スクリプトプレースホルダーのIDセットを作成
+ const scriptPlaceholderIds = new Set(scriptPlaceholders.map((p) => p.id));
+
  return placeholders.sort((a, b) => {
-  // 使用中のプレースホルダーを上に表示
   const aUsed = isPlaceholderUsed(a.id);
   const bUsed = isPlaceholderUsed(b.id);
+  const aIsScript = scriptPlaceholderIds.has(a.id);
+  const bIsScript = scriptPlaceholderIds.has(b.id);
 
+  // 1. 使用中のものが最優先
   if (aUsed && !bUsed) return -1;
   if (!aUsed && bUsed) return 1;
 
-  // 名前でソート、名前がない場合はIDでソート
+  // 2. 使用中でない場合、スクリプトプレースホルダーが次に優先
+  if (!aUsed && !bUsed) {
+   if (aIsScript && !bIsScript) return -1;
+   if (!aIsScript && bIsScript) return 1;
+  }
+
+  // 3. 優先IDがあるものが次にくる（デフォルトプレースホルダー）
+  const aPriority = priorityOrder[a.id] ?? Number.MAX_SAFE_INTEGER;
+  const bPriority = priorityOrder[b.id] ?? Number.MAX_SAFE_INTEGER;
+
+  if (aPriority !== bPriority) {
+   return aPriority - bPriority;
+  }
+
+  // 4. 名前順（名前がない場合はID順）
   const aName = a.name || a.id;
   const bName = b.name || b.id;
   return aName.localeCompare(bName);

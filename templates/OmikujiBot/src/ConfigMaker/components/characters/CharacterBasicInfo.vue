@@ -46,7 +46,8 @@ const fields = [
  { key: 'name', label: '設定名' },
  { key: 'description', label: '説明' },
  { key: 'displayName', label: 'ジェネレーターでの表示名' },
- { key: 'author', label: '作者' }
+ { key: 'author', label: '作者' },
+ { key: 'url', label: 'Webサイト' }
 ] as const;
 
 function onInput(event: Event, key: keyof CharacterPresetType) {

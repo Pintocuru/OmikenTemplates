@@ -20,9 +20,6 @@
 
   <!-- 画像設定 -->
   <CharacterImageSettings :images="selectedCharacter.image" @update="handleImageUpdate" />
-
-  <!-- タグ設定 -->
-  <CharacterTagManager :tags="selectedCharacter.tags" @update="handleTagsUpdate" />
  </div>
 </template>
 
