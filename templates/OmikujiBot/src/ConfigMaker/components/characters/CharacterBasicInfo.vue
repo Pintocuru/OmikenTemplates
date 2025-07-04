@@ -4,25 +4,29 @@
   <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">基本情報</div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
-   <!-- テキストフィールドループ -->
+   <!-- ID表示 -->
+   <div class="form-control">
+    <label class="label">
+     <span class="label-text font-medium">ID</span>
+    </label>
+    <div class="flex gap-2 items-center">
+     <div class="w-full px-4 py-2 rounded bg-base-200 text-gray-600 break-all">
+      {{ localCharacter.id }}
+     </div>
+     <!-- 編集ボタン -->
+     <PlaceholderIdEditor :currentId="localCharacter.id" mode="character" />
+    </div>
+   </div>
+
+   <!-- id以外のテキストフィールドループ -->
    <div v-for="field in fields" :key="field.key" class="form-control">
     <label class="label-text">{{ field.label }}</label>
-    <input
-     type="text"
-     class="input input-bordered w-full"
-     :value="character[field.key]"
-     @input="onInput($event, field.key)"
-    />
+    <input type="text" class="input input-bordered w-full" v-model="localCharacter[field.key]" />
    </div>
 
    <!-- チェックボックス -->
    <div class="form-control flex-row items-center gap-2 mt-2">
-    <input
-     type="checkbox"
-     class="checkbox"
-     :checked="character.isIconDisplay"
-     @change="onCheckboxChange"
-    />
+    <input type="checkbox" class="checkbox" v-model="localCharacter.isIconDisplay" />
     <label class="label-text">アイコン表示</label>
    </div>
   </div>
@@ -30,19 +34,20 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
+import PlaceholderIdEditor from '@ConfigComponents/placeholders/PlaceholderIdEditor.vue';
 
 const props = defineProps<{
- character: CharacterPresetType;
+ modelValue: CharacterPresetType;
 }>();
 
 const emit = defineEmits<{
- update: [updates: Partial<CharacterPresetType>];
+ 'update:modelValue': [value: CharacterPresetType];
 }>();
 
 // 共通フィールド定義
 const fields = [
- { key: 'id', label: 'ID' },
  { key: 'name', label: '設定名' },
  { key: 'description', label: '説明' },
  { key: 'displayName', label: 'ジェネレーターでの表示名' },
@@ -50,17 +55,11 @@ const fields = [
  { key: 'url', label: 'Webサイト' }
 ] as const;
 
-function onInput(event: Event, key: keyof CharacterPresetType) {
- const target = event.target as HTMLInputElement;
- if (target) {
-  emit('update', { [key]: target.value });
+// v-modelを使用したlocalCharacterの実装
+const localCharacter = computed({
+ get: () => props.modelValue,
+ set: (value: CharacterPresetType) => {
+  emit('update:modelValue', value);
  }
-}
-
-function onCheckboxChange(event: Event) {
- const target = event.target as HTMLInputElement;
- if (target) {
-  emit('update', { isIconDisplay: target.checked });
- }
-}
+});
 </script>

@@ -16,7 +16,6 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
 import { BotMessage } from '@/types/types';
-import { getAppConfig } from './utils/config';
 import ViewBotMessage from './components/ViewBotMessage.vue';
 import ViewBotToast from './components/ViewBotToast.vue';
 import { CommentProcessor } from './utils/commentProcessor';
@@ -32,7 +31,14 @@ const botMessages = ref<BotMessage[]>([]);
 const isInitialized = ref(true);
 
 // 設定の読み込み
-const config = getAppConfig();
+const config = window.CONFIG ?? {
+ IS_DIFF_MODE: true, // 差分モードにするか(true:'diff',false:'all')
+ ENABLED_SERVICES: 'all', // 通すプラットフォーム
+ ALLOWED_IDS: [], // 通すユーザーIDリスト(!IDでネガティブ)
+ ACCESS_LEVEL: 1, // 1:だれでも/2:メンバー/3:モデレーター/4:管理者
+ IS_GIFT: false, // ギフトで有効にするか
+ KEYWORDS: [] // isGiftがfalseなら、このコメントで判定(正規表現)
+};
 
 // GetUserVisitsコンポーザブルから取得
 const { fetchComments } = GetUserComments(config);
@@ -47,6 +53,7 @@ const toastMessages = computed(() => botMessages.value.filter((message) => messa
 // 初期化処理
 onMounted(async () => {
  // 初期テーマを手動で設定
+ // TODO:DaisyUiはこちらでは使わないので、これを消す
  document.documentElement.setAttribute('data-theme', 'light');
 
  try {
@@ -56,7 +63,6 @@ onMounted(async () => {
     botMessages.value = [];
     return;
    }
-
    // コメントを抽選結果付きで処理
    const processedMessages = processor.processComments(comments);
    // BotMessage[] のうち、delaySeconds に従って同時に追加

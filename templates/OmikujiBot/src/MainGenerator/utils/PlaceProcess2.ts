@@ -1,7 +1,11 @@
 // src/Modules/tasks/PlaceProcess2.ts
-import { PostAction } from '@/types/OmikujiTypes';
 import { drawOmikuji } from './PlayOmikuji';
-import { OmikujiSetType, PlaceholderType, PlaceholderValueType } from '@/types/OmikujiTypesSchema';
+import {
+ OmikujiSetType,
+ PlaceholderType,
+ PlaceholderValueType,
+ PostActionType
+} from '@/types/OmikujiTypesSchema';
 
 /**
  * プレースホルダー置換処理を行うクラス
@@ -28,7 +32,7 @@ export class PlaceProcess {
  /**
   * おみくじデータのプレースホルダーを置換して返す
   */
- processOmikuji(omikuji: OmikujiSetType): PostAction[] {
+ processOmikuji(omikuji: OmikujiSetType): PostActionType[] {
   // 使用されているプレースホルダーIDを収集
   const usedPlaceholderIds = this.collectUsedPlaceholderIds(omikuji);
 

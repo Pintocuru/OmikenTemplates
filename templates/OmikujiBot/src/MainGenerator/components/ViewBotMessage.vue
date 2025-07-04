@@ -1,6 +1,6 @@
 <!-- src/MainGenerator/components/ViewBotMessage.vue -->
 <template>
- <div class="px-1 relative w-full h-screen overflow-hidden">
+ <div class="relative w-full h-screen overflow-hidden">
   <!-- BOTコメント(main) -->
   <transition-group
    class="comment-container"
@@ -12,29 +12,30 @@
    <div
     v-for="(message, index) in displayedComments"
     :key="message.id"
-    class="comment-item absolute w-full transition-all duration-300 ease-out"
+    class="absolute w-full transition-all duration-300 ease-out"
     :style="{
-     top: `${5 + index * 120}px`,
+     top: `${index * 120}px`,
      zIndex: displayedComments.length - index
     }"
    >
     <!-- コメント吹き出し -->
     <div
-     class="comment-block p-6 rounded-xl absolute left-1/2 transform -translate-x-1/2 w-[600px] min-w-[400px] max-w-[800px] opacity-100"
+     class="absolute left-1/2 -translate-x-1/2 transform w-full max-w-3xl min-w-md p-6 rounded-xl"
      :style="getCommentStyles(index, message)"
     >
-     <div class="name text-3xl mb-3" :style="{ color: message.color?.nameColor || '#000000' }">
+     <div class="mb-3 text-4xl" :style="{ color: message.color?.nameColor || '#000000' }">
       {{ message.name }}
      </div>
      <div
-      class="comment-text text-2xl break-words leading-relaxed"
+      class="text-3xl break-words leading-12"
       :style="{ color: message.color?.textColor || '#000000' }"
      >
       {{ message.comment }}
      </div>
-     <!-- 吹き出しの矢印 - 静的スタイル -->
+
+     <!-- 吹き出しの矢印 -->
      <div
-      class="absolute -bottom-5 left-1/2 transform -translate-x-1/2 w-0 h-0 arrow"
+      class="absolute w-0 h-0 -bottom-5 left-1/2 -translate-x-1/2 transform"
       :style="{
        borderLeft: '20px solid transparent',
        borderRight: '20px solid transparent',
@@ -47,14 +48,14 @@
     <!-- キャラクターアイコン -->
     <div
      v-if="message.profileImage"
-     class="avatar absolute w-96 h-96 rounded-full overflow-hidden bg-gray-200 left-1/2 transform -translate-x-1/2"
-     :style="{ ...getAvatarStyles(index), top: '400px', zIndex: 9999 }"
+     class="absolute left-1/2 -translate-x-1/2 transform w-80 h-80 rounded-full overflow-hidden bg-gray-200 z-40"
+     :style="{ ...getAvatarStyles(index), top: '350px' }"
     >
      <img
       :src="getImagePath(message.profileImage)"
       :alt="`${message.name}のアバター`"
       @error="handleImageError(message)"
-      class="block w-full h-full object-cover relative z-999"
+      class="w-full h-full object-cover"
      />
     </div>
    </div>

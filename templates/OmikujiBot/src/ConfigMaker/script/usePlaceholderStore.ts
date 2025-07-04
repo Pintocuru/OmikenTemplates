@@ -1,6 +1,5 @@
 // src/ConfigMaker/script/usePlaceholderStore.ts
 // プレースホルダー専用store
-import { computed } from 'vue';
 import { defineStore } from 'pinia';
 import { useOmikujiStore } from './useOmikujiStore';
 import { useRecordOperations } from './useRecordStore';
@@ -15,9 +14,6 @@ import type {
 export const usePlaceholderStore = defineStore('placeholder', () => {
  const baseOperations = useRecordOperations('placeholders');
  const omikujiStore = useOmikujiStore();
-
- // プレースホルダーの辞書型データを取得するためのcomputed
- const placeholders = computed(() => omikujiStore.data.placeholders);
 
  // プレースホルダーが存在するかチェック
  const checkPlaceholderExists = (id: string): boolean => {
@@ -106,7 +102,6 @@ export const usePlaceholderStore = defineStore('placeholder', () => {
 
  return {
   ...baseOperations,
-  placeholders,
   updatePlaceholderName,
   updatePlaceholderId,
   updatePlaceholderValues

@@ -34,7 +34,7 @@ import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
 
 // ストアを使用
 const characterStore = useCharacterStore();
-const charactersArray = computed(() => characterStore.rules);
+const charactersArray = computed(() => characterStore.rulesArray);
 
 // Props
 const props = defineProps<{

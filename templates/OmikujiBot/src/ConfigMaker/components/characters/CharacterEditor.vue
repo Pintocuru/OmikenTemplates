@@ -13,13 +13,13 @@
  <!-- 選択されたキャラクターの編集フォーム -->
  <div v-if="selectedCharacter">
   <!-- 基本情報 -->
-  <CharacterBasicInfo :character="selectedCharacter" @update="handleUpdate" />
+  <CharacterBasicInfo v-model="selectedCharacter" />
 
   <!-- 色設定 -->
-  <CharacterColorSettings :color="selectedCharacter.color" @update="handleColorUpdate" />
+  <CharacterColorSettings v-model="selectedCharacter.color" />
 
   <!-- 画像設定 -->
-  <CharacterImageSettings :images="selectedCharacter.image" @update="handleImageUpdate" />
+  <CharacterImageSettings v-model="selectedCharacter.image" />
  </div>
 </template>
 
@@ -49,34 +49,16 @@ const extendedStore = {
 provide('charactersRulesStore', extendedStore);
 
 // 計算プロパティ
-const charactersArray = computed(() => characterStore.rules);
-const selectedCharacter = computed(() => characterStore.selectedRule);
+const charactersArray = computed(() => characterStore.rulesArray);
 const characterCount = computed(() => Object.keys(charactersArray.value).length);
 
-// イベントハンドラー
-const handleUpdate = (updates: Partial<CharacterPresetType>) => {
- if (selectedCharacter.value) {
-  characterStore.update(selectedCharacter.value.id, updates);
+// v-modelを使用したselectedCharacterの実装
+const selectedCharacter = computed({
+ get: () => characterStore.selectedRule,
+ set: (value: CharacterPresetType | null) => {
+  if (value) {
+   characterStore.update(value.id, value);
+  }
  }
-};
-
-const handleColorUpdate = (colorUpdates: Partial<CharacterPresetType['color']>) => {
- if (selectedCharacter.value) {
-  const updatedColor = { ...selectedCharacter.value.color, ...colorUpdates };
-  characterStore.update(selectedCharacter.value.id, { color: updatedColor });
- }
-};
-
-const handleImageUpdate = (imageUpdates: Partial<CharacterPresetType['image']>) => {
- if (selectedCharacter.value) {
-  const updatedImage = { ...selectedCharacter.value.image, ...imageUpdates };
-  characterStore.update(selectedCharacter.value.id, { image: updatedImage });
- }
-};
-
-const handleTagsUpdate = (tags: string[]) => {
- if (selectedCharacter.value) {
-  characterStore.update(selectedCharacter.value.id, { tags });
- }
-};
+});
 </script>

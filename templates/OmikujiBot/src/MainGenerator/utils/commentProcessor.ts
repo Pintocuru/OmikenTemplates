@@ -13,8 +13,6 @@ import {
 import { drawOmikuji } from './PlayOmikuji';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
-const BOT_USER_ID = SETTINGS.BOT_USER_ID; // OmikujiBot に変更したい
-
 export class CommentProcessor {
  private readonly timeThreshold = 5; // これ以上経過した古いコメントは判定しない(秒)
  private readonly processingCooldownSeconds = 3; // 処理クールダウン時間
@@ -43,17 +41,19 @@ export class CommentProcessor {
   const botMessages: BotMessage[] = [];
 
   for (const comment of comments) {
+   console.log(comment.data.userId);
+   // これ以上経過した古いコメントは判定しない(秒)
    const secondsSinceComment = (currentTime - new Date(comment.data.timestamp).getTime()) / 1000;
    const isWithinTimeThreshold = secondsSinceComment <= this.timeThreshold;
-
    if (!isWithinTimeThreshold) continue;
 
-   if (comment.data.userId === BOT_USER_ID || comment.data.userId === SETTINGS.BOT_DEFAULT_NAME) {
+   if (comment.data.userId === SETTINGS.BOT_USER_ID) {
     const processedBotComment = this.processBotComment(comment);
     if (processedBotComment) {
      botMessages.push(processedBotComment);
     }
    } else {
+    console.log(comment);
     const cannotProcess = this.isWithinProcessingCooldown(currentTime);
 
     // ユーザーコメント処理の結果を取得してマージ

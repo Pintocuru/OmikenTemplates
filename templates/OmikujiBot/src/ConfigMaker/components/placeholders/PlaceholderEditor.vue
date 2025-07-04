@@ -23,7 +23,7 @@
       <!-- コピーボタン -->
       <CopyButton :value="`<<${selectedPlaceholder.id}>>`" title="IDをコピー" />
       <!-- 編集ボタン -->
-      <PlaceholderIdEditor :currentId="selectedPlaceholder.id" />
+      <PlaceholderIdEditor :currentId="selectedPlaceholder.id" mode="placeholder" />
      </div>
     </div>
 
@@ -135,7 +135,7 @@ const extendedStore = {
 provide('placeholdersRulesStore', extendedStore);
 
 // computed
-const placeholdersArray = computed(() => placeholderStore.rules);
+const placeholdersArray = computed(() => placeholderStore.rulesArray);
 const selectedPlaceholder = computed(() => placeholderStore.selectedRule);
 
 // 値の追加

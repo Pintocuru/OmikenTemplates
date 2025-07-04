@@ -46,7 +46,6 @@ export class PostMessage {
    await Promise.all(
     posts.map(async (post) => {
      const chara = this.getCharacterFromPost(post);
-     console.log(chara);
      await this.processPost(post, chara);
     })
    );
@@ -242,7 +241,7 @@ export class PostMessage {
   * @returns 画像のBase64データまたはURL
   */
  private getCharacterImagePath(chara: CharacterPreset, iconKey?: string): string {
-  // iconKeyが指定されていればそれを使用、なければ'Default'を使用
+  // iconKeyが指定されていればそれを使用、なければ'default'を使用
   const targetKey = (iconKey ?? 'default') as keyof CharacterImageSet;
   const charaImage = chara.image?.[targetKey];
 

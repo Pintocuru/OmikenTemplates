@@ -11,14 +11,13 @@
      type="url"
      class="input input-bordered input-sm w-full"
      :placeholder="`${emotion.label}の画像URL`"
-     :value="images[key as keyof typeof images]"
-     @input="(e) => handleImageUpdate(key, (e.target as HTMLInputElement).value)"
+     v-model="localImages[key]"
     />
 
     <!-- プレビュー表示 -->
     <img
-     v-if="images[key as keyof typeof images]"
-     :src="imageBaseUrl + images[key as keyof typeof images]"
+     v-if="localImages[key]"
+     :src="imageBaseUrl + localImages[key]"
      alt="画像プレビュー"
      class="mt-2 max-h-24 rounded border"
     />
@@ -28,17 +27,21 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
 
 const props = defineProps<{
- images: CharacterPresetType['image'];
+ modelValue: CharacterPresetType['image'];
 }>();
 
 const emit = defineEmits<{
- update: [updates: Partial<CharacterPresetType['image']>];
+ 'update:modelValue': [value: CharacterPresetType['image']];
 }>();
 
-const imageBaseUrl = import.meta.env.VITE_IMAGE_BASE_URL;
+const imageBaseUrl =
+ typeof import.meta !== 'undefined' && import.meta.env?.VITE_IMAGE_BASE_URL
+  ? import.meta.env.VITE_IMAGE_BASE_URL
+  : './Characters/';
 
 const emotionList = {
  default: { label: 'デフォルト' },
@@ -55,7 +58,11 @@ const emotionList = {
  sleepy: { label: '眠い' }
 };
 
-const handleImageUpdate = (emotion: string, value: string) => {
- emit('update', { [emotion]: value });
-};
+// v-modelを使用したlocalImagesの実装
+const localImages = computed({
+ get: () => props.modelValue,
+ set: (value: CharacterPresetType['image']) => {
+  emit('update:modelValue', value);
+ }
+});
 </script>

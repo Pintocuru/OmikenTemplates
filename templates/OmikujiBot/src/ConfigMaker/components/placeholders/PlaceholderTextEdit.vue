@@ -103,7 +103,7 @@ const placeholderName = ref('');
 const lineCount = ref(0);
 
 // 現在のプレースホルダーデータ
-const currentPlaceholder = computed(() => placeholderStore.placeholders[props.placeholderId]);
+const currentPlaceholder = computed(() => placeholderStore.rulesMap[props.placeholderId]);
 
 // 行をパースしてバリデーション
 const parseAndValidateLine = (line: string) => {

@@ -5,7 +5,7 @@ export const SETTINGS: SettingsTemplates = {
  isCreateService: true, // わんコメに自動で枠を作成してもいいか
  BASE_URL: 'http://localhost:11180/api', // わんコメのapi
  basicDelaySeconds: 1, // わんコメに投稿する際の基本遅延(秒)
- BOT_USER_ID: 'FirstCounter',
+ BOT_USER_ID: 'OmikujiBot',
  BOT_DEFAULT_NAME: 'おみくじBOT'
 };
 

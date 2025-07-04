@@ -46,7 +46,7 @@ provide('commentsRulesStore', extendedStore);
 
 // computed
 const selectedRule = computed(() => commentRulesStore.selectedRule);
-const rulesArray = computed(() => commentRulesStore.rules);
+const rulesArray = computed(() => commentRulesStore.rulesArray);
 
 // methods - 編集フォームで使用
 const updateSelectedRule = (updatedRule: CommentRuleType | TimerRuleType) => {

@@ -144,7 +144,7 @@ const getRandomValue = (placeholder: PlaceholderType) => {
 
 // 全プレースホルダーを取得
 const allPlaceholders = computed(() => {
- const placeholdersOld = Object.values(placeholderStore.placeholders || {});
+ const placeholdersOld = placeholderStore.rulesArray;
  const scriptPlaceholders = scriptPlaceholder.value || [];
  const placeholders = [
   ...Object.values(defaultPlaceholders),

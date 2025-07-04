@@ -1,9 +1,9 @@
 // src/MainGenerator/utils/processors/CommentRuleProcessor.ts
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { checkThresholdComment } from './ThresholdCommentChecker';
-import { BotMessage } from '@/types/types';
-import { SETTINGS } from '@common/settings';
 import { CommentRuleType, PostActionType, validateOmikujiData } from '@/types/OmikujiTypesSchema';
+import { BotMessage } from '@/types/types';
+import { checkThresholdComment } from './ThresholdCommentChecker';
+import { SETTINGS } from '@common/settings';
+import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 // omikujiData (元データが深すぎるのでwindowから引っ張る)
 const omikujiData = validateOmikujiData(window.omikujiData);
@@ -31,7 +31,7 @@ function createProcessingCooldownToast(ruleName: string): PostActionType[] {
  return [
   {
    characterKey: firstCharacter?.id,
-   iconKey: 'Default',
+   iconKey: 'default',
    delaySeconds: 0,
    wordParty: '',
    messageContent: '',

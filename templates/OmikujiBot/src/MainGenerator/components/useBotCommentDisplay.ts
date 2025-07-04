@@ -4,7 +4,7 @@ import { BotMessage } from '@/types/types';
 
 const DISPLAY_CONFIG = {
  INTERVAL: 250,
- BASE_LIFE_TIME: 10000,
+ BASE_LIFE_TIME: 9910000,
  THRESHOLD: 30,
  EXTRA_TIME_PER_CHAR: 100 // 文字数が多い場合は表示時間を延長
 } as const;
@@ -46,10 +46,13 @@ export const useBotCommentDisplay = (
   };
  };
 
+ const imageBaseUrl =
+  typeof import.meta !== 'undefined' && import.meta.env?.VITE_IMAGE_BASE_URL
+   ? import.meta.env.VITE_IMAGE_BASE_URL
+   : './Characters/';
+
  const getImagePath = (profileImage: string): string => {
-  return profileImage.startsWith('http') || profileImage.startsWith('/')
-   ? profileImage
-   : `/${profileImage}`;
+  return `${imageBaseUrl}${profileImage}`;
  };
 
  const handleImageError = (message: BotMessage) => {

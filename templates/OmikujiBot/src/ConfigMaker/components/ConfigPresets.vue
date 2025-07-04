@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useOmikujiStore } from '../script/useOmikujiStore';
 import { presets } from '../script/ConfigPresetsData';
 
@@ -79,9 +79,6 @@ const showModal = ref(false);
 const showErrorModal = ref(false);
 const isExporting = ref(false);
 const errorMessage = ref('');
-
-// Computed
-const currentData = computed(() => omikujiStore.data);
 
 // 現在の設定がプリセットと一致するか確認する関数
 const isActivePreset = (presetId: string) => {
@@ -153,7 +150,7 @@ const generateConfigFile = async (): Promise<boolean> => {
   const link = document.createElement('a');
 
   link.href = url;
-  link.download = 'config.js';
+  link.download = 'omikujiData.js'; // TODO:これは後で定数化して
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -176,12 +173,10 @@ const generateJSFileContent = (configData: string): string => {
 // このファイルはコンフィグエディターで生成されました。
 // 手動で編集する場合は、JSON形式の構文エラーにご注意ください。
 
-window.omikujiConfig = ${configData};
+const omikujiData = ${configData};
 
-// 設定が読み込まれたことを確認するためのフラグ
-window.omikujiConfigLoaded = true;
+if (typeof window !== 'undefined') window.omikujiData = omikujiData;
 
-console.log('Omikuji Config loaded:', new Date().toISOString());
 `;
 };
 

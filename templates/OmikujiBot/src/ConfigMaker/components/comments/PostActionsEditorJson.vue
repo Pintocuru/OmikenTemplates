@@ -71,7 +71,7 @@ import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
 
 // ストアを使用
 const characterStore = useCharacterStore();
-const charactersArray = computed(() => characterStore.rules);
+const charactersArray = computed(() => characterStore.rulesArray);
 
 // Props
 const props = defineProps<{
@@ -137,7 +137,7 @@ const validateAndApplyJson = () => {
     characterKey: typeof action.characterKey === 'string' ? action.characterKey : '',
     iconKey: typeof action.iconKey === 'string' ? action.iconKey : '',
     delaySeconds:
-     typeof action.delaySeconds === 'number' && action.delaySeconds >= 0 ? action.delaySeconds : 0,
+     typeof action.delaySeconds === 'number' && action.delaySeconds >= -1 ? action.delaySeconds : 0,
     wordParty: typeof action.wordParty === 'string' ? action.wordParty : '',
     messageContent: typeof action.messageContent === 'string' ? action.messageContent : '',
     messageToast: typeof action.messageToast === 'string' ? action.messageToast : ''

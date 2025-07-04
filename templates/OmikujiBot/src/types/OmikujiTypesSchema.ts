@@ -60,14 +60,15 @@ export const createDefaultCommentThreshold = () => ({
  comment: []
 });
 
-export const createDefaultPostAction = () => ({
- characterKey: '',
- iconKey: '',
- delaySeconds: 0,
- wordParty: '',
- messageContent: '',
- messageToast: ''
-});
+export const createDefaultPostAction = () =>
+ ({
+  characterKey: '',
+  iconKey: 'default', // リテラル型として推論させる
+  delaySeconds: 0,
+  wordParty: '',
+  messageContent: '',
+  messageToast: ''
+ }) as const;
 
 export const createDefaultOmikujiSet = () => ({
  name: '',
@@ -162,7 +163,8 @@ export function validateOmikujiData(input: unknown): OmikujiDataType {
 // Character関連のスキーマ
 // ======================
 
-export const CharacterEmotionSchema = z.enum([
+const EmotionIcons = [
+ 'default',
  'happy',
  'excited',
  'laughing',
@@ -174,7 +176,9 @@ export const CharacterEmotionSchema = z.enum([
  'wink',
  'singing',
  'sleepy'
-]);
+] as const;
+
+const CharacterEmotionSchema = z.enum(EmotionIcons);
 
 export const CharacterColorSchemeSchema = z
  .object({
@@ -269,8 +273,9 @@ export const CommentThresholdSchema = z
 export const PostActionSchema = z
  .object({
   characterKey: z.string().catch(''),
-  iconKey: z.string().catch(''),
-  delaySeconds: z.number().min(0).catch(0),
+  iconKey: CharacterEmotionSchema.catch('default'),
+  // SETTINGS.basicDelaySeconds の数値だけminはマイナス
+  delaySeconds: z.number().min(-1).catch(0),
   wordParty: z.string().catch(''),
   messageContent: z.string().catch(''),
   messageToast: z.string().catch('')

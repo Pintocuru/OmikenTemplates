@@ -7,7 +7,7 @@
   <!-- ダイアログ -->
   <div v-if="isDialogOpen" class="modal modal-open">
    <div class="modal-box">
-    <h3 class="font-bold text-lg">プレースホルダーID編集</h3>
+    <h3 class="font-bold text-lg">{{ dialogTitle }}ID編集</h3>
 
     <div class="py-4">
      <div class="form-control">
@@ -36,10 +36,35 @@
       </label>
      </div>
 
+     <!-- キャラクターモードの場合、使用箇所を表示 -->
+     <div v-if="mode === 'character' && characterUsage" class="mt-4">
+      <div class="alert alert-info">
+       <span class="text-sm">
+        📊 このキャラクターの使用状況:
+        <ul class="list-disc list-inside mt-2">
+         <li v-if="characterUsage.comments.length > 0">
+          コメントルール: {{ characterUsage.comments.length }}箇所
+         </li>
+         <li v-if="characterUsage.timers.length > 0">
+          タイマールール: {{ characterUsage.timers.length }}箇所
+         </li>
+         <li v-if="characterUsage.comments.length === 0 && characterUsage.timers.length === 0">
+          使用されていません
+         </li>
+        </ul>
+       </span>
+      </div>
+     </div>
+
      <div class="alert alert-warning mt-4">
       ⚠️
       <span class="text-sm">
-       IDを変更すると、このプレースホルダーを参照している他の設定も影響を受ける可能性があります。
+       IDを変更すると、この{{
+        mode === 'character' ? 'キャラクター' : 'プレースホルダー'
+       }}を参照している他の設定も影響を受ける可能性があります。
+       <span v-if="mode === 'character'">
+        <br />キャラクターの場合、コメントルールとタイマールールの投稿アクションも自動的に更新されます。
+       </span>
       </span>
      </div>
     </div>
@@ -60,39 +85,59 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
+import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
 
 // Props
 const props = defineProps<{
  currentId: string;
+ mode: 'placeholder' | 'character';
 }>();
 
-// piniaストアを使用
+// ストアを使用
+const characterStore = useCharacterStore();
 const placeholderStore = usePlaceholderStore();
 
 // リアクティブデータ
 const isDialogOpen = ref(false);
 const newId = ref('');
 const errorMessage = ref('');
+const characterUsage = ref<{ comments: string[]; timers: string[] } | null>(null);
 
 // computed
 const hasError = computed(() => errorMessage.value !== '');
 
+const dialogTitle = computed(() => {
+ return props.mode === 'character' ? 'キャラクター' : 'プレースホルダー';
+});
+
 // 既存のIDリストを取得（重複チェック用）
-const existingIds = computed(() => Object.keys(placeholderStore.placeholders));
+const existingIds = computed(() => {
+ if (props.mode === 'character') {
+  return Object.keys(characterStore.rulesMap);
+ } else {
+  return Object.keys(placeholderStore.rulesMap);
+ }
+});
 
 // メソッド
 const openDialog = () => {
  newId.value = props.currentId;
  errorMessage.value = '';
  isDialogOpen.value = true;
+
+ // キャラクターモードの場合、使用箇所を取得
+ if (props.mode === 'character') {
+  characterUsage.value = characterStore.getCharacterUsage(props.currentId);
+ }
 };
 
 const closeDialog = () => {
  isDialogOpen.value = false;
  newId.value = '';
  errorMessage.value = '';
+ characterUsage.value = null;
 };
 
 const validateId = () => {
@@ -128,8 +173,15 @@ const saveId = () => {
   return;
  }
 
- // Piniaストアで直接ID更新を実行
- const success = placeholderStore.updatePlaceholderId(props.currentId, newId.value.trim());
+ let success = false;
+
+ if (props.mode === 'character') {
+  // キャラクターストアで直接ID更新を実行
+  success = characterStore.updateCharacterId(props.currentId, newId.value.trim());
+ } else {
+  // プレースホルダーストアで直接ID更新を実行
+  success = placeholderStore.updatePlaceholderId(props.currentId, newId.value.trim());
+ }
 
  if (success) {
   closeDialog();
@@ -138,4 +190,14 @@ const saveId = () => {
   errorMessage.value = 'ID更新に失敗しました';
  }
 };
+
+// propsの変更を監視して、キャラクターの使用状況を更新
+watch(
+ () => props.currentId,
+ (newCurrentId) => {
+  if (props.mode === 'character' && isDialogOpen.value) {
+   characterUsage.value = characterStore.getCharacterUsage(newCurrentId);
+  }
+ }
+);
 </script>

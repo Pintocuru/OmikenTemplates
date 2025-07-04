@@ -12,7 +12,7 @@ export const useTimerRulesStore = defineStore('timerRules', () => {
  };
 
  const getActiveRules = () => {
-  return baseOperations.rules.value.filter((rule) => rule.isEnabled);
+  return baseOperations.rulesArray.value.filter((rule) => rule.isEnabled);
  };
 
  const getNextExecutionTime = (rule: TimerRuleType, lastExecutionTime?: Date) => {

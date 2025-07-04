@@ -2,7 +2,7 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import OneSDK from '@onecomme.com/onesdk';
-import '@assets/app.css';
+import '@assets/appMain.css';
 
 // createApp
 const app = createApp(App);

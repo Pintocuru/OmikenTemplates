@@ -8,26 +8,22 @@
     <label class="label">
      <span class="label-text">{{ label }}</span>
     </label>
-    <input
-     type="color"
-     class="input input-bordered h-12 w-full"
-     :value="color[key]"
-     @input="onInput($event, key)"
-    />
+    <input type="color" class="input input-bordered h-12 w-full" v-model="localColor[key]" />
    </div>
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
 
 const props = defineProps<{
- color: CharacterPresetType['color'];
+ modelValue: CharacterPresetType['color'];
 }>();
 
 const emit = defineEmits<{
- update: [updates: Partial<CharacterPresetType['color']>];
+ 'update:modelValue': [value: CharacterPresetType['color']];
 }>();
 
 // labelとキーを配列で管理
@@ -37,8 +33,11 @@ const fields = [
  { label: '背景色', key: 'backgroundColor' }
 ] as const;
 
-function onInput(event: Event, key: keyof CharacterPresetType['color']) {
- const target = event.target as HTMLInputElement | null;
- if (target) emit('update', { [key]: target.value });
-}
+// v-modelを使用したlocalColorの実装
+const localColor = computed({
+ get: () => props.modelValue,
+ set: (value: CharacterPresetType['color']) => {
+  emit('update:modelValue', value);
+ }
+});
 </script>

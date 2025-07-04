@@ -206,7 +206,7 @@ const getIconOptionsForAction = (action: PostActionType) => {
   if (emotion !== 'default') {
    const emotionKey = emotion as CharacterEmotion;
    options.push({
-    value: `${selectedCharacterKey}:${emotion}`,
+    value: `${emotion}`,
     label: `${character.name} (${emotionLabels[emotionKey] || emotion})`
    });
   }

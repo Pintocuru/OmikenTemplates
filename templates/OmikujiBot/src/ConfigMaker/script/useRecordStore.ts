@@ -39,7 +39,11 @@ export function useRecordOperations<C extends Category>(category: C) {
   return omikujiStore.data[category] as Record<string, CategoryTypeMap[C]>;
  };
 
- const rules = computed<CategoryTypeMap[C][]>(() =>
+ // Record型のデータ（キーがID、値がルールオブジェクト）
+ const rulesMap = computed<Record<string, CategoryTypeMap[C]>>(() => getData());
+
+ // 配列形式のデータ（ソート済み）
+ const rulesArray = computed<CategoryTypeMap[C][]>(() =>
   Object.values(getData()).sort((a, b) => a.order - b.order)
  );
 
@@ -127,7 +131,7 @@ export function useRecordOperations<C extends Category>(category: C) {
  };
 
  const reorder = (fromIndex: number, toIndex: number) => {
-  const ruleList = rules.value;
+  const ruleList = rulesArray.value;
   const ids = ruleList.map((rule) => rule.id);
   const [movedId] = ids.splice(fromIndex, 1);
   ids.splice(toIndex, 0, movedId);
@@ -141,7 +145,8 @@ export function useRecordOperations<C extends Category>(category: C) {
  };
 
  return {
-  rules,
+  rulesArray,
+  rulesMap,
   selectedRule,
   selectedRuleNested,
   add,
