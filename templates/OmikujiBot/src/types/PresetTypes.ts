@@ -1,20 +1,20 @@
-// src/types/PresetTypes.ts
+// src/types/PresetTypes.ts(変更前)
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { OmikujiData, PostAction, PostActionWordParty } from './OmikujiTypes';
 
 // ===== 共通型定義 =====
+
+/** 空のオブジェクト型（デフォルト値用） */
+export type EmptyObject = Record<string, never>;
 
 /**
  * 全てのプリセット項目の基底インターフェース
  * 共通の識別情報とメタデータを含む
  */
 export interface BasePresetItem {
- /** 一意識別子 */
- id: string;
- /** 人間が読める名前 */
- name: string;
- /** 機能の説明 */
- description: string;
+ id: string; // ID
+ name: string; // 名前
+ description: string; // 説明
 }
 
 /**
@@ -22,59 +22,29 @@ export interface BasePresetItem {
  * 配布・管理に必要な情報を含む
  */
 export interface PresetMetadata extends BasePresetItem {
- /** セマンティックバージョン (例: "1.0.0") */
- version: string;
- /** 作成者名 */
- author?: string;
- /** UI表示時の並び順 */
- order?: number;
- /** 検索・分類用タグ */
- tags: string[];
- /** サポート・ドキュメントURL */
- url?: string;
- /** プレビュー画像URL */
- banner?: string;
- /** ファイルシステム上のパス（Presetsディレクトリからの相対パス） */
- path?: string;
+ version: string; // プリセットのバージョン
+ author?: string; // 作成者名
+ order?: number; // UI表示時の並び順
+ tags: string[]; // 検索タグ
+ url?: string; // URL
+ banner?: string; // プレビュー画像
+ path?: string; // ファイルパス（Presetsディレクトリからの相対）
 }
-
-// ===== スクリプト関連のデフォルト型 =====
-
-/** スクリプト設定のデフォルト型 */
-export type DefaultSettings = Record<string, any>;
-
-/** 実行時パラメータのデフォルト型 */
-export type DefaultParams = Record<string, any>;
-
-/** プレースホルダーのデフォルト型 */
-export type DefaultPlaceholders = Record<string, string>;
-
-/** ゲーム拡張データのデフォルト型 */
-export type DefaultGameExtras = Record<string, any>;
 
 // ===== 基本プリセット型 =====
 
-/**
- * おみくじプリセット
- * おみくじデータと統合オプションを含む
- */
+/** おみくじプリセット */
 export interface OmikujiPreset extends PresetMetadata {
- /** おみくじの具体的なデータ */
  item: OmikujiData;
- /** 既存データとの統合方法 */
- isOverwrite?: boolean; // true: 既存を上書き, false: 既存に追加
 }
 
-/**
- * キャラクター表示プリセット
- * コメント投稿者の見た目をカスタマイズ
- */
+/** キャラクター表示プリセット */
 export interface CharacterPreset extends PresetMetadata {
  /** アイコン表示の有無 */
  isIconDisplay: boolean;
  /** 音声読み上げ時の名前（ひらがな等） */
  displayName?: string;
- /** わんコメの枠ID（nullの場合はコメントテスターでの投稿） */
+ /** わんコメの枠ID（nullの場合はデフォルト） */
  frameId: string | null;
  /** 表示色設定 */
  color: CharacterColorScheme;
@@ -82,35 +52,32 @@ export interface CharacterPreset extends PresetMetadata {
  image: CharacterImageSet;
 }
 
-/**
- * キャラクターの色設定
- */
+/** キャラクターの色設定 */
 export interface CharacterColorScheme {
  nameColor: string; // 名前表示色
  textColor: string; // コメント文字色
  backgroundColor: string; // フキダシの背景色
 }
 
-/**
- * キャラクターの画像設定
- * Defaultは必須、その他の状態画像は任意
- */
+/** キャラクターの画像設定 */
+export const CHARACTER_EMOTIONS = {
+ HAPPY: 'happy', // 喜び
+ EXCITED: 'excited', // ワクワク、盛り上がり
+ LAUGHING: 'laughing', // 爆笑している
+ BLUSHING: 'blushing', // 照れてる・嬉しい
+ SURPRISED: 'surprised', // 驚き
+ SAD: 'sad', // 悲しみ
+ ANGRY: 'angry', // 怒り
+ THINKING: 'thinking', // 考え中・困惑
+ WINK: 'wink', // 茶目っ気・軽い冗談
+ SINGING: 'singing', // 歌ってる
+ SLEEPY: 'sleepy' // 眠い・休憩中
+} as const;
+
 export type CharacterImageSet = {
  default: string;
 } & Partial<Record<CharacterEmotion, string>>;
-
-export type CharacterEmotion =
- | 'happy' // 喜び
- | 'excited' // ワクワク、盛り上がり
- | 'laughing' // 爆笑している
- | 'blushing' // 照れてる・嬉しい
- | 'surprised' // 驚き
- | 'sad' // 悲しみ
- | 'angry' // 怒り
- | 'thinking' // 考え中・困惑
- | 'wink' // 茶目っ気・軽い冗談
- | 'singing' // 歌ってる
- | 'sleepy'; // 眠い・休憩中
+export type CharacterEmotion = (typeof CHARACTER_EMOTIONS)[keyof typeof CHARACTER_EMOTIONS];
 
 // ===== スクリプトプリセット =====
 
@@ -123,67 +90,48 @@ export type CharacterEmotion =
  * @template TPlaceholders - プレースホルダーの型（デフォルト: Record<string, string>）
  * @template TGameExtras - ゲーム固有データの型（デフォルト: Record<string, any>）
  */
+type DefaultTypes = {
+ Settings: EmptyObject;
+ Params: EmptyObject;
+ Placeholders: EmptyObject;
+ Ranking: UserStatistics<EmptyObject>;
+ GameExtras: EmptyObject;
+};
+
 export interface ScriptPreset<
- TSettings extends DefaultSettings = DefaultSettings,
- TParams extends DefaultParams = DefaultParams,
- TPlaceholders extends DefaultPlaceholders = DefaultPlaceholders,
- TGameExtras extends DefaultGameExtras = DefaultGameExtras
+ TSettings extends object = DefaultTypes['Settings'],
+ TParams extends object = DefaultTypes['Params'],
+ TPlaceholders extends object = DefaultTypes['Placeholders'],
+ TRanking extends UserStatistics<object> = DefaultTypes['Ranking'],
+ TGameExtras extends object = DefaultTypes['GameExtras']
 > extends PresetMetadata {
  /** メイン実行クラス */
- execute: ScriptClass<TSettings, TParams, TPlaceholders, TGameExtras>;
- /** スクリプト設定のパラメータ */
+ execute: ScriptClass<TSettings, TParams, TPlaceholders, TRanking, TGameExtras>;
+ /** スクリプトの設定値 */
  settings: ParameterItem<TSettings>[];
- /** おみくじ実行時のパラメータ */
+ /** 実行時にユーザーが入力するパラメータ */
  params: ParameterItem<TParams>[];
  /** 動的置換用プレースホルダー */
  placeholders: ScriptPlaceholderItem<TPlaceholders>[];
- /** API設定（apiCallメソッドを使用する場合） */
- apiConfig?: ApiConfig;
-}
-
-/**
- * API設定
- */
-export interface ApiConfig {
- baseURL: string;
- timeout?: number;
- defaultHeaders?: Record<string, string>;
- retryCount?: number;
 }
 
 // ===== スクリプト実行クラス =====
 
-/**
- * スクリプトのメイン実行クラス
- * コメント受信時に呼び出される
- *
- * @template TSettings - 設定値の型
- * @template TParams - 実行時パラメータの型
- * @template TPlaceholders - プレースホルダーの型
- * @template TGameExtras - ゲーム固有データの型
- */
+// スクリプトのメイン実行クラス
 export interface ScriptClass<
- TSettings extends DefaultSettings = DefaultSettings,
- TParams extends DefaultParams = DefaultParams,
- TPlaceholders extends DefaultPlaceholders = DefaultPlaceholders,
- TGameExtras extends DefaultGameExtras = DefaultGameExtras
+ TSettings extends object = DefaultTypes['Settings'],
+ TParams extends object = DefaultTypes['Params'],
+ TPlaceholders extends object = DefaultTypes['Placeholders'],
+ TRanking extends UserStatistics<object> = DefaultTypes['Ranking'],
+ TGameExtras extends object = DefaultTypes['GameExtras']
 > {
- /**
-  * 初期化処理（オプション）
-  * スクリプト開始時に一度だけ実行される
-  */
+ /** 初期化処理 */
  setup(settings: TSettings): Promise<void> | void;
 
- /**
-  * メイン実行関数
-  * コメント受信時に呼び出される
-  */
- run(comment: Comment, params: TParams): ScriptResult<TPlaceholders>;
+ /** メイン実行関数 */
+ run(comment: Comment, params: TParams): ScriptResult<TPlaceholders, TRanking>;
 
- /**
-  * 外部API呼び出し関数（オプション）
-  * クラス内でREST APIを呼び出す場合に実装
-  */
+ /** 外部API呼び出し（オプション） */
  apiCall?(
   gameState: GameState<TGameExtras>,
   method: HttpMethod,
@@ -192,44 +140,45 @@ export interface ScriptClass<
   headers?: Record<string, string>
  ): Promise<ApiCallResult<TGameExtras>>;
 
- /**
-  * 終了処理（オプション）
-  * スクリプト終了時に実行される
-  */
+ /** 終了処理（オプション） */
  cleanup?(gameState: GameState<TGameExtras>): Promise<void> | void;
 }
 
 /**
  * HTTP メソッドの型定義
  */
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+export const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE'] as const;
+export type HttpMethod = (typeof HTTP_METHODS)[number];
 
 /**
  * スクリプト実行の結果
  */
-export interface ScriptResult<TPlaceholders extends DefaultPlaceholders = DefaultPlaceholders> {
+export interface ScriptResult<
+ TPlaceholders extends object = EmptyObject,
+ TRanking extends UserStatistics<object> = UserStatistics<EmptyObject>
+> {
  /** わんコメに投稿するコメント・WordParty */
- postActions: PostAction[] | PostActionWordParty[];
+ postActions: (PostAction | PostActionWordParty)[];
+
  /** runして出力されたプレースホルダー郡 */
  placeholders: TPlaceholders;
+
+ /** おみくじ結果のリスト */
+ rankingList: TRanking[] | null;
 }
 
 /**
  * API呼び出しの結果
  */
-export interface ApiCallResult<TGameExtras extends DefaultGameExtras = DefaultGameExtras> {
- /** 実行ステータス */
- status: 'success' | 'error';
- /** HTTPステータスコード */
- statusCode?: number;
- /** 更新されたゲーム状態 */
- gameState: GameState<TGameExtras>;
- /** 結果メッセージ */
- message: string;
- /** レスポンスデータ */
- data?: any;
- /** エラー詳細（status が 'error' の場合） */
+// API呼び出しの結果
+export interface ApiCallResult<TGameExtras extends object = EmptyObject> {
+ status: 'success' | 'error'; // 実行ステータス
+ statusCode?: number; // HTTPステータスコード
+ gameState: GameState<TGameExtras>; // ゲームデータ
+ message: string; // 結果メッセージ
+ data?: any; // レスポンスデータ
  error?: {
+  // エラー詳細
   code: string;
   details?: any;
  };
@@ -242,13 +191,8 @@ export interface ApiCallResult<TGameExtras extends DefaultGameExtras = DefaultGa
  */
 export type ParameterInputType = 'select' | 'number' | 'string' | 'boolean';
 
-/**
- * パラメータアイテム
- *
- * @template T - パラメータ設定全体の型
- */
-export interface ParameterItem<T extends Record<string, any> = Record<string, any>>
- extends BasePresetItem {
+/** パラメータアイテム */
+export interface ParameterItem<T extends object = EmptyObject> extends BasePresetItem {
  /** パラメータのキー */
  id: Extract<keyof T, string>;
  /** 入力タイプ */
@@ -268,8 +212,7 @@ export interface ParameterItem<T extends Record<string, any> = Record<string, an
  *
  * @template T - プレースホルダー設定全体の型
  */
-export interface ScriptPlaceholderItem<T extends DefaultPlaceholders = DefaultPlaceholders>
- extends BasePresetItem {
+export interface ScriptPlaceholderItem<T extends object = EmptyObject> extends BasePresetItem {
  /** プレースホルダーID */
  id: Extract<keyof T, string>;
  /** プレースホルダーの値 */
@@ -284,13 +227,16 @@ export interface ScriptPlaceholderItem<T extends DefaultPlaceholders = DefaultPl
  *
  * @template TExtras - ゲーム固有データの型
  */
-export type GameState<TExtras extends DefaultGameExtras = DefaultGameExtras> = {
+export type GameState<
+ TExtras extends object = EmptyObject,
+ TUserStats extends object = EmptyObject
+> = {
  /** 使用中のルールID */
  ruleId: string;
  /** 総おみくじ実行回数 */
  totalDraws: number;
  /** ユーザー別統計情報 */
- userStats: Record<string, UserStatistics>;
+ userStats: Record<string, UserStatistics<TUserStats>>;
  /** 参加ユーザーの履歴（時系列順） */
  currentUserIds: string[];
 } & TExtras;
@@ -298,51 +244,11 @@ export type GameState<TExtras extends DefaultGameExtras = DefaultGameExtras> = {
 /**
  * ユーザーの統計情報
  */
-export interface UserStatistics {
+export type UserStatistics<TExtras extends object = EmptyObject> = {
  /** ユーザーID */
  userId: string;
  /** 表示名 */
- name?: string;
+ name: string;
  /** このユーザーのおみくじ実行回数 */
  draws: number;
- /** 勝利回数（ゲームに勝利システムがある場合） */
- wins?: number;
- /** 獲得ポイント */
- points?: number;
- /** ユーザーの現在状態（ゲーム固有） */
- status?: string;
- /** 最終参加日時（ISO 8601形式） */
- lastPlayed?: string;
-}
-
-// ===== 便利な型エイリアス =====
-
-/**
- * 基本的なスクリプトプリセット（設定なし）
- */
-export type SimpleScriptPreset = ScriptPreset<{}, {}, {}, {}>;
-
-/**
- * 設定可能なスクリプトプリセット
- */
-export type ConfigurableScriptPreset<
- TSettings extends DefaultSettings = DefaultSettings,
- TGameExtras extends DefaultGameExtras = DefaultGameExtras
-> = ScriptPreset<TSettings, {}, {}, TGameExtras>;
-
-/**
- * 全機能スクリプトプリセット
- */
-export type FullScriptPreset<
- TSettings extends DefaultSettings = DefaultSettings,
- TParams extends DefaultParams = DefaultParams,
- TPlaceholders extends DefaultPlaceholders = DefaultPlaceholders,
- TGameExtras extends DefaultGameExtras = DefaultGameExtras
-> = ScriptPreset<TSettings, TParams, TPlaceholders, TGameExtras>;
-
-// ===== 統合型 =====
-
-/**
- * 全てのプリセット型の統合
- */
-export type AnyPreset = OmikujiPreset | CharacterPreset | ScriptPreset<any, any, any, any>;
+} & TExtras;

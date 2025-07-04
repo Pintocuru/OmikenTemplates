@@ -1,8 +1,6 @@
 // src/MainGenerator/utils/CommentProcessor.ts
 import { BotMessage } from '@/types/types';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { omikujiSampleData } from '@/omikujiSampleData';
-import { CommentRule, OmikujiSet } from '@/types/OmikujiTypes';
 import { PostMessage } from './PostMessage2';
 import { PlaceProcess } from './PlaceProcess2';
 import { ScriptManager } from './ScriptManager';
@@ -13,6 +11,10 @@ import {
 } from './CommentRuleProcessor';
 import { drawOmikuji } from './PlayOmikuji';
 import { SETTINGS } from '@common/settings';
+import { CommentRuleType, OmikujiSetType, validateOmikujiData } from '@/types/OmikujiTypesSchema';
+
+// OmikujiData
+const OmikujiData = validateOmikujiData(window.OmikujiData);
 
 const BOT_USER_ID = SETTINGS.BOT_USER_ID; // OmikujiBot に変更したい
 
@@ -27,9 +29,9 @@ export class CommentProcessor {
  private readonly scriptManager: ScriptManager;
 
  constructor() {
-  this.PostMessage = new PostMessage(charasSampleData);
-  this.placeProcess = new PlaceProcess(omikujiSampleData.placeholders);
-  this.scriptManager = new ScriptManager();
+  this.PostMessage = new PostMessage(OmikujiData.characters);
+  this.placeProcess = new PlaceProcess(OmikujiData.placeholders);
+  this.scriptManager = new ScriptManager(OmikujiData);
  }
 
  /**
@@ -80,7 +82,7 @@ export class CommentProcessor {
   */
  private processBotComment(comment: Comment): BotMessage | null {
   const checkId = comment.data.id;
-  const character = Object.values(charasSampleData).find((char) => checkId.includes(char.id));
+  const character = Object.values(OmikujiData.characters).find((char) => checkId.includes(char.id));
   if (!character) return null;
 
   return {
@@ -103,7 +105,7 @@ export class CommentProcessor {
   const generatedBotMessages: BotMessage[] = [];
 
   try {
-   const commentRules = omikujiSampleData.comments;
+   const commentRules = OmikujiData.comments;
 
    for (const rule of Object.values(commentRules)) {
     const result = processCommentRule(comment, rule, isDuplicateComment, cannotProcess);
@@ -119,7 +121,7 @@ export class CommentProcessor {
     }
 
     // 通常のおみくじ処理
-    const omikujiItem = drawOmikuji(rule.omikuji) as OmikujiSet;
+    const omikujiItem = drawOmikuji(rule.omikuji) as OmikujiSetType;
     if (!omikujiItem) continue;
 
     const omikujiBotMessages = this.executeOmikujiProcess(
@@ -144,8 +146,8 @@ export class CommentProcessor {
   */
  private executeOmikujiProcess(
   comment: Comment,
-  rule: CommentRule,
-  omikujiItem: OmikujiSet,
+  rule: CommentRuleType,
+  omikujiItem: OmikujiSetType,
   isDuplicateComment: boolean
  ): BotMessage[] {
   const generatedBotMessages: BotMessage[] = [];
@@ -196,7 +198,7 @@ export class CommentProcessor {
   */
  private processPlaceholdersWithScript(
   scriptPlaceholders: Record<string, string> | undefined,
-  omikujiItem: OmikujiSet
+  omikujiItem: OmikujiSetType
  ): BotMessage[] {
   try {
    // スクリプトのプレースホルダーを更新
@@ -221,7 +223,10 @@ export class CommentProcessor {
   * おみくじのみ処理（スクリプトなし）
   * @returns 生成されたBotMessage配列
   */
- private processOmikujiOnly(omikujiItem: OmikujiSet, isDuplicateComment: boolean): BotMessage[] {
+ private processOmikujiOnly(
+  omikujiItem: OmikujiSetType,
+  isDuplicateComment: boolean
+ ): BotMessage[] {
   try {
    const postActions = this.placeProcess.processOmikuji(omikujiItem);
 

@@ -52,7 +52,7 @@
           :value="getCurrentSettingValue(scriptId, settingDef.id, settingDef.defaultValue)"
           type="text"
           class="input input-bordered input-sm flex-1"
-          :placeholder="settingDef.defaultValue?.toString() || ''"
+          :placeholder="getSettingPlaceholder(settingDef.defaultValue) || ''"
           @input="
            (e) => updateScriptSetting(scriptId, settingDef.id, (e.target as HTMLInputElement).value)
           "
@@ -64,7 +64,7 @@
           :value="getCurrentSettingValue(scriptId, settingDef.id, settingDef.defaultValue)"
           type="number"
           class="input input-bordered input-sm flex-1"
-          :placeholder="settingDef.defaultValue?.toString() || '0'"
+          :placeholder="getSettingPlaceholder(settingDef.defaultValue) || '0'"
           :min="settingDef.min"
           :max="settingDef.max"
           @input="
@@ -110,7 +110,7 @@
           :value="getCurrentSettingValue(scriptId, settingDef.id, settingDef.defaultValue)"
           type="text"
           class="input input-bordered input-sm flex-1"
-          :placeholder="settingDef.defaultValue?.toString() || ''"
+          :placeholder="getSettingPlaceholder(settingDef.defaultValue) || ''"
           @input="
            (e) => updateScriptSetting(scriptId, settingDef.id, (e.target as HTMLInputElement).value)
           "
@@ -161,6 +161,14 @@ const updateScriptSetting = (scriptId: string, settingId: string, value: any) =>
  const currentSettings = { ...(scriptSettings.value[scriptId] || {}) };
  currentSettings[settingId] = value;
  scriptSettingsStore.updateItemInCategory('scriptSettings', scriptId, currentSettings);
+};
+
+const getSettingPlaceholder = (settingDef: any) => {
+ if (settingDef.defaultValue == null) return '';
+ if (typeof settingDef.defaultValue === 'string') return settingDef.defaultValue;
+ if (typeof settingDef.defaultValue === 'number') return settingDef.defaultValue.toString();
+ if (typeof settingDef.defaultValue === 'boolean') return settingDef.defaultValue.toString();
+ return String(settingDef.defaultValue);
 };
 
 // 設定値をデフォルトに戻す

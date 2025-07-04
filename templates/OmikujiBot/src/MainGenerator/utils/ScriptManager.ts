@@ -1,14 +1,15 @@
 // src/MainGenerator/utils/processors/ScriptManager.ts
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { CommentRule } from '@/types/OmikujiTypes';
+import { CommentRuleType, OmikujiDataType, TimerRuleType } from '@/types/OmikujiTypesSchema';
 import { ScriptClass } from '@/types/PresetTypes';
-import { omikujiSampleData } from '@/omikujiSampleData';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
+import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 export class ScriptManager {
- private readonly scriptInstances: Record<string, ScriptClass> = {};
+ private readonly scriptInstances: Record<string, ScriptClass<any, any, any, any, any>> = {};
+ OmikujiData: OmikujiDataType;
 
- constructor() {
+ constructor(OmikujiData: OmikujiDataType) {
+  this.OmikujiData = OmikujiData;
   this.initializeScripts();
  }
 
@@ -17,16 +18,32 @@ export class ScriptManager {
   */
  private initializeScripts(): void {
   try {
-   const commentRules: Record<string, CommentRule> = omikujiSampleData.comments;
+   const commentRules: Record<string, CommentRuleType> = this.OmikujiData.comments;
+   const timerRules: Record<string, TimerRuleType> = this.OmikujiData.timers;
 
    for (const rule of Object.values(commentRules)) {
-    const { scriptId, scriptParams: scriptSettings } = rule;
+    const { scriptId } = rule;
 
     if (scriptId && scriptGameMap[scriptId]) {
      const scriptInstance = scriptGameMap[scriptId].execute;
 
-     if (scriptSettings) {
-      scriptInstance.setup(scriptSettings);
+     if (this.OmikujiData.scriptSettings) {
+      // 型アサーションを使用して型の不整合を解決
+      scriptInstance.setup(this.OmikujiData.scriptSettings as any);
+     }
+
+     this.scriptInstances[scriptId] = scriptInstance;
+    }
+   }
+   for (const rule of Object.values(timerRules)) {
+    const { scriptId } = rule;
+
+    if (scriptId && scriptGameMap[scriptId]) {
+     const scriptInstance = scriptGameMap[scriptId].execute;
+
+     if (this.OmikujiData.scriptSettings) {
+      // 型アサーションを使用して型の不整合を解決
+      scriptInstance.setup(this.OmikujiData.scriptSettings as any);
      }
 
      this.scriptInstances[scriptId] = scriptInstance;
@@ -47,7 +64,7 @@ export class ScriptManager {
  /**
   * スクリプト実行
   */
- executeScript(comment: Comment, rule: CommentRule): any {
+ executeScript(comment: Comment, rule: CommentRuleType | TimerRuleType): any {
   const { scriptId } = rule;
 
   if (!scriptId || !scriptGameMap[scriptId]) {
@@ -61,8 +78,8 @@ export class ScriptManager {
   }
 
   try {
-   // TODO:rule.omikuji はparamsではない。必ずエラーになる
-   return scriptInstance.run(comment, rule.omikuji);
+   // 型アサーションを使用して型の不整合を解決
+   return scriptInstance.run(comment, (rule.scriptParams ?? {}) as any);
   } catch (error) {
    console.error(`スクリプト実行エラー (${scriptId}):`, error);
    return null;

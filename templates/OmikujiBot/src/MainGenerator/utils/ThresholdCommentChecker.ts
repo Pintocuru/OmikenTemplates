@@ -1,19 +1,27 @@
 // src/MainGenerator/utils/ThresholdCommentChecker.ts
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import {
- AccessConditionArray,
- CommentThreshold,
- CountCondition,
- GiftConditionArray,
- SyokenConditionArray,
- SyokenCondition,
- GiftCondition
-} from '@/types/OmikujiThresholdTypes';
+ CommentThresholdType,
+ CountConditionType,
+ SyokenConditionSchema,
+ AccessConditionSchema,
+ GiftConditionSchema
+} from '@/types/OmikujiTypesSchema';
+
+// Zodスキーマから推論された型のエイリアス
+type SyokenCondition = ReturnType<typeof SyokenConditionSchema.parse>;
+type AccessCondition = ReturnType<typeof AccessConditionSchema.parse>;
+type GiftCondition = ReturnType<typeof GiftConditionSchema.parse>;
+
+// 配列型のエイリアス
+type SyokenConditionArray = SyokenCondition[];
+type AccessConditionArray = AccessCondition[];
+type GiftConditionArray = GiftCondition[];
 
 /**
  * コメントが指定された閾値条件を満たすかチェックする
  */
-export function checkThresholdComment(comment: Comment, threshold: CommentThreshold): boolean {
+export function checkThresholdComment(comment: Comment, threshold: CommentThresholdType): boolean {
  // conditions配列のすべての条件が真である場合のみtrueを返す
  return threshold.conditions.every((conditionType) => {
   const conditionMap = {
@@ -34,17 +42,18 @@ export function checkThresholdComment(comment: Comment, threshold: CommentThresh
 function matchIsSyoken(comment: Comment, syoken: SyokenConditionArray = []): boolean {
  if (syoken.length === 0) return true; // 条件が空の場合はtrue
 
- const interval = comment.meta?.interval;
+ const interval = comment.meta?.interval ?? 0; // 前回のコメントからの経過時間
+ const tc = comment.meta?.tc || 1; // コメントをしたユーザーの配信でのコメント回数
 
  // 各条件を個別に定義
- const isSyoken = interval === 0 || interval === undefined;
- const isAgain = (interval ?? 0) > 7 * 24 * 60 * 60 * 1000;
- const isHi = !isSyoken && !isAgain;
+ const isSyoken = interval === 0;
+ const isAgain = interval > 7 * 24 * 60 * 60 * 1000; // 7日以上経過
+ const isHi = !isSyoken && !isAgain && tc === 1;
 
  const conditions: Record<SyokenCondition, boolean> = {
-  [SyokenCondition.SYOKEN]: isSyoken,
-  [SyokenCondition.AGAIN]: isAgain,
-  [SyokenCondition.HI]: isHi
+  1: isSyoken, // SYOKEN
+  2: isAgain, // AGAIN
+  3: isHi // HI
  };
 
  // syoken配列のいずれかの条件に一致すればtrue
@@ -110,11 +119,11 @@ function matchIsGift(comment: Comment, gift: GiftConditionArray = []): boolean {
  */
 function matchIsCount(
  comment: Comment,
- count: CountCondition = { comparison: 'max', unit: 'lc', value: 1 }
+ count: CountConditionType = { comparison: 'min', unit: 'lc', value: 1 }
 ): boolean {
  const { lc = 0, tc = 0 } = comment.meta ?? {};
 
- const unitMap: Record<CountCondition['unit'], number> = {
+ const unitMap: Record<CountConditionType['unit'], number> = {
   lc,
   tc
  };
@@ -155,33 +164,33 @@ function matchIsComment(comment: Comment, value: string[] = []): boolean {
 
 // ギフトの色を返す(Youtube基準)
 export const matchIsGiftHelper = (price?: number | null): GiftCondition => {
- if (!price || price <= 0) return GiftCondition.All;
+ if (!price || price <= 0) return 0; // All
 
- const giftRanges = new Map([
-  [200, GiftCondition.Blue],
-  [500, GiftCondition.LightBlue],
-  [1000, GiftCondition.Green],
-  [2000, GiftCondition.Yellow],
-  [5000, GiftCondition.Orange],
-  [10000, GiftCondition.Pink],
-  [20000, GiftCondition.Red],
-  [Infinity, GiftCondition.Purple]
- ]);
+ const giftRanges: [number, GiftCondition][] = [
+  [200, 1], // Blue
+  [500, 2], // LightBlue
+  [1000, 3], // Green
+  [2000, 4], // Yellow
+  [5000, 5], // Orange
+  [10000, 6], // Pink
+  [20000, 7], // Red
+  [Infinity, 8] // Purple
+ ];
 
  for (const [threshold, condition] of giftRanges) {
   if (price < threshold) return condition;
  }
- return GiftCondition.Purple;
+ return 8; // Purple
 };
 
 // 数値比較ヘルパー関数
-export const matchIsCountHelper = (valueNow: number, count: CountCondition): boolean => {
+export const matchIsCountHelper = (valueNow: number, count: CountConditionType): boolean => {
  const { comparison, value } = count;
 
  const comparisonStrategies = {
   loop: () => value !== 0 && valueNow % value === 0,
-  min: () => valueNow <= value,
-  max: () => valueNow >= value,
+  min: () => valueNow >= value, // 修正: min条件は「以上」であるべき
+  max: () => valueNow <= value, // 修正: max条件は「以下」であるべき
   equal: () => valueNow === value
  } as const;
 

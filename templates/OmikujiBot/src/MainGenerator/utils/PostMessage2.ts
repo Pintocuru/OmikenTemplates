@@ -1,7 +1,7 @@
 // src/Modules/api/PostMessage.ts
 // 250605_作り直し - コメント付与・効率化版
 
-import { CharacterPreset } from '@/types/PresetTypes';
+import { CharacterImageSet, CharacterPreset } from '@/types/PresetTypes';
 import {
  postSystemMessage,
  postWordParty,
@@ -243,7 +243,7 @@ export class PostMessage {
   */
  private getCharacterImagePath(chara: CharacterPreset, iconKey?: string): string {
   // iconKeyが指定されていればそれを使用、なければ'Default'を使用
-  const targetKey = iconKey ?? 'Default';
+  const targetKey = (iconKey ?? 'default') as keyof CharacterImageSet;
   const charaImage = chara.image?.[targetKey];
 
   if (charaImage) {
@@ -251,11 +251,11 @@ export class PostMessage {
   }
 
   // 指定されたキーの画像がない場合、Defaultキーの画像を試行
-  if (targetKey !== 'Default' && chara.image?.Default) {
+  if (targetKey !== 'default' && chara.image?.default) {
    console.warn(
     `キャラクター「${chara.name}」にアイコン「${targetKey}」が見つかりません。デフォルト画像を使用します。`
    );
-   return chara.image.Default;
+   return chara.image.default;
   }
 
   // どの画像も見つからない場合はデフォルト画像

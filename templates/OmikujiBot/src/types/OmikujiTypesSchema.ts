@@ -152,6 +152,13 @@ export const createDefaultOmikujiData = () => ({
 });
 
 // ======================
+// データ検証とデフォルト値適用のユーティリティ関数
+// ======================
+export function validateOmikujiData(input: unknown): OmikujiDataType {
+ return OmikujiDataSchema.parse(input);
+}
+
+// ======================
 // Character関連のスキーマ
 // ======================
 
