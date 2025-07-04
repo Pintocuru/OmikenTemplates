@@ -22,6 +22,10 @@ import ViewBotToast from './components/ViewBotToast.vue';
 import { CommentProcessor } from './utils/commentProcessor';
 import { GetUserComments } from '@common/subscribe/GetUserComments';
 import ErrorInitComponent from '@common/ErrorInitComponent.vue';
+import { validateOmikujiData } from '@/types/OmikujiTypesSchema';
+
+// omikujiData
+const omikujiData = validateOmikujiData(window.omikujiData);
 
 // リアクティブ変数
 const botMessages = ref<BotMessage[]>([]);
@@ -34,7 +38,7 @@ const config = getAppConfig();
 const { fetchComments } = GetUserComments(config);
 
 // CommentProcessorインスタンスを作成
-const processor = new CommentProcessor();
+const processor = new CommentProcessor(omikujiData);
 
 // メッセージを isToast で分離
 const normalMessages = computed(() => botMessages.value.filter((message) => !message.isToast));

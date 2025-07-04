@@ -1,7 +1,7 @@
 <!-- src/configMaker/components/TimerRuleEditor.vue -->
 <template>
  <!-- タブ部分 -->
- <RuleTabs :rules="rules" :selectedRule="selectedRule" ruleType="timers" />
+ <RuleTabs :rules="rulesArray" :selectedRule="selectedRule" ruleType="timers" />
 
  <!-- ルール編集エリア -->
  <div v-if="selectedRule">
@@ -42,7 +42,7 @@ provide('timersRulesStore', extendedStore);
 
 // computed
 const selectedRule = computed(() => timerRulesStore.selectedRule);
-const rules = computed(() => timerRulesStore.rules);
+const rulesArray = computed(() => timerRulesStore.rules);
 
 // methods - 編集フォームで使用
 const updateSelectedRule = (updatedRule: CommentRuleType | TimerRuleType) => {

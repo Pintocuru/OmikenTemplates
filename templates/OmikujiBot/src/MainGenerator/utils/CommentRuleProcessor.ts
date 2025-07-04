@@ -5,8 +5,9 @@ import { BotMessage } from '@/types/types';
 import { SETTINGS } from '@common/settings';
 import { CommentRuleType, PostActionType, validateOmikujiData } from '@/types/OmikujiTypesSchema';
 
-// OmikujiData
-const OmikujiData = validateOmikujiData(window.OmikujiData);
+// omikujiData (元データが深すぎるのでwindowから引っ張る)
+const omikujiData = validateOmikujiData(window.omikujiData);
+const characters = omikujiData.characters;
 
 /**
  * コメント重複時のPostAction調整
@@ -25,7 +26,7 @@ export function sanitizePostActionsForDuplicate(postActions: PostActionType[]): 
  * クールダウン中のトーストメッセージを生成
  */
 function createProcessingCooldownToast(ruleName: string): PostActionType[] {
- const firstCharacter = Object.values(OmikujiData.characters)[0];
+ const firstCharacter = Object.values(characters)[0];
 
  return [
   {
@@ -80,7 +81,7 @@ export function processCommentRule(
  * 指定されたキャラクターキーに対応するキャラクターデータを取得
  */
 function getCharacterInfo(characterKey: string) {
- return OmikujiData.characters[characterKey];
+ return characters[characterKey];
 }
 
 /**

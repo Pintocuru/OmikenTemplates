@@ -135,14 +135,18 @@
 
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue';
-import { createDefaultPostAction, type PostActionType } from '@/types/OmikujiTypesSchema';
+import {
+ CharacterPresetType,
+ createDefaultPostAction,
+ type PostActionType
+} from '@/types/OmikujiTypesSchema';
 import { type CharacterEmotion } from '@/types/PresetTypes';
-import { charactersMap } from '@/Characters/CharactersMap';
 import PlaceholderList from '@ConfigComponents/placeholders/PlaceholderList.vue';
 
 // Props
 const props = defineProps<{
  actions: PostActionType[];
+ charactersArray: CharacterPresetType[];
 }>();
 
 // Emits
@@ -156,8 +160,8 @@ const editingActions: Ref<PostActionType[]> = ref([]);
 
 // キャラクター選択肢
 const characterOptions = computed(() => {
- return Object.entries(charactersMap).map(([key, character]) => ({
-  value: key,
+ return props.charactersArray.map((character) => ({
+  value: character.id,
   label: character.name
  }));
 });
@@ -184,7 +188,7 @@ const getIconOptionsForAction = (action: PostActionType) => {
   return [];
  }
 
- const character = charactersMap[selectedCharacterKey];
+ const character = props.charactersArray.find((char) => char.id === selectedCharacterKey);
  if (!character) {
   return [];
  }

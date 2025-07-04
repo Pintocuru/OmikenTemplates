@@ -8,7 +8,7 @@
  </div>
 
  <!-- キャラクタータブ（複数の場合） -->
- <RuleTabs :rules="characters" :selectedRule="selectedCharacter" ruleType="characters" />
+ <RuleTabs :rules="charactersArray" :selectedRule="selectedCharacter" ruleType="characters" />
 
  <!-- 選択されたキャラクターの編集フォーム -->
  <div v-if="selectedCharacter">
@@ -32,7 +32,6 @@ import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
 import CharacterBasicInfo from './CharacterBasicInfo.vue';
 import CharacterColorSettings from './CharacterColorSettings.vue';
 import CharacterImageSettings from './CharacterImageSettings.vue';
-import CharacterTagManager from './CharacterTagManager.vue';
 import { Users } from 'lucide-vue-next';
 
 // ストアを使用
@@ -50,9 +49,9 @@ const extendedStore = {
 provide('charactersRulesStore', extendedStore);
 
 // 計算プロパティ
-const characters = computed(() => characterStore.rules);
+const charactersArray = computed(() => characterStore.rules);
 const selectedCharacter = computed(() => characterStore.selectedRule);
-const characterCount = computed(() => Object.keys(characters.value).length);
+const characterCount = computed(() => Object.keys(charactersArray.value).length);
 
 // イベントハンドラー
 const handleUpdate = (updates: Partial<CharacterPresetType>) => {

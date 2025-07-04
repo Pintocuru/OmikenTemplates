@@ -5,7 +5,7 @@ import { CommentThreshold } from './OmikujiThresholdTypes';
 // メインデータ構造
 // =============================================================================
 
-export type OmikujiData = {
+export type omikujiData = {
  comments: Record<string, CommentRule>; // コメントベースの抽選ルール
  timers: Record<string, TimerRule>; // 自動で投稿するの抽選ルール
  placeholders: Record<string, PlaceholderSource>; // プレースホルダー

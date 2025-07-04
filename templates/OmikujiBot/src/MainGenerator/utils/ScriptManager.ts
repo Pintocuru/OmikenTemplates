@@ -6,10 +6,10 @@ import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 export class ScriptManager {
  private readonly scriptInstances: Record<string, ScriptClass<any, any, any, any, any>> = {};
- OmikujiData: OmikujiDataType;
+ omikujiData: OmikujiDataType;
 
- constructor(OmikujiData: OmikujiDataType) {
-  this.OmikujiData = OmikujiData;
+ constructor(omikujiData: OmikujiDataType) {
+  this.omikujiData = omikujiData;
   this.initializeScripts();
  }
 
@@ -18,8 +18,8 @@ export class ScriptManager {
   */
  private initializeScripts(): void {
   try {
-   const commentRules: Record<string, CommentRuleType> = this.OmikujiData.comments;
-   const timerRules: Record<string, TimerRuleType> = this.OmikujiData.timers;
+   const commentRules: Record<string, CommentRuleType> = this.omikujiData.comments;
+   const timerRules: Record<string, TimerRuleType> = this.omikujiData.timers;
 
    for (const rule of Object.values(commentRules)) {
     const { scriptId } = rule;
@@ -27,9 +27,9 @@ export class ScriptManager {
     if (scriptId && scriptGameMap[scriptId]) {
      const scriptInstance = scriptGameMap[scriptId].execute;
 
-     if (this.OmikujiData.scriptSettings) {
+     if (this.omikujiData.scriptSettings) {
       // 型アサーションを使用して型の不整合を解決
-      scriptInstance.setup(this.OmikujiData.scriptSettings as any);
+      scriptInstance.setup(this.omikujiData.scriptSettings as any);
      }
 
      this.scriptInstances[scriptId] = scriptInstance;
@@ -41,9 +41,9 @@ export class ScriptManager {
     if (scriptId && scriptGameMap[scriptId]) {
      const scriptInstance = scriptGameMap[scriptId].execute;
 
-     if (this.OmikujiData.scriptSettings) {
+     if (this.omikujiData.scriptSettings) {
       // 型アサーションを使用して型の不整合を解決
-      scriptInstance.setup(this.OmikujiData.scriptSettings as any);
+      scriptInstance.setup(this.omikujiData.scriptSettings as any);
      }
 
      this.scriptInstances[scriptId] = scriptInstance;

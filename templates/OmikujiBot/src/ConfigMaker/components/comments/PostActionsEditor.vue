@@ -13,18 +13,28 @@
   </div>
 
   <!-- プレビュー表示 -->
-  <PostActionsPreview :actions="modelValue" />
+  <PostActionsPreview :actions="modelValue" :charactersArray="charactersArray" />
 
   <!-- 編集ダイアログ -->
-  <PostActionsEditDialog ref="dialog" :actions="modelValue" @update:actions="handleUpdate" />
+  <PostActionsEditDialog
+   ref="dialog"
+   :actions="modelValue"
+   :charactersArray="charactersArray"
+   @update:actions="handleUpdate"
+  />
  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref } from 'vue';
+import { computed, ref, type Ref } from 'vue';
 import { type PostActionType } from '@/types/OmikujiTypesSchema';
 import PostActionsPreview from './PostActionsPreview.vue';
 import PostActionsEditDialog from './PostActionsEditDialog.vue';
+import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
+
+// ストアを使用
+const characterStore = useCharacterStore();
+const charactersArray = computed(() => characterStore.rules);
 
 // Props
 const props = defineProps<{

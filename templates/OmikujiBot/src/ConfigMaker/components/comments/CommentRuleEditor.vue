@@ -1,7 +1,7 @@
 <!-- src/configMaker/components/CommentRuleEditor.vue -->
 <template>
  <!-- タブ部分 -->
- <RuleTabs :rules="rules" :selectedRule="selectedRule" ruleType="comments" />
+ <RuleTabs :rules="rulesArray" :selectedRule="selectedRule" ruleType="comments" />
 
  <!-- ルール編集エリア -->
  <div v-if="selectedRule">
@@ -46,7 +46,7 @@ provide('commentsRulesStore', extendedStore);
 
 // computed
 const selectedRule = computed(() => commentRulesStore.selectedRule);
-const rules = computed(() => commentRulesStore.rules);
+const rulesArray = computed(() => commentRulesStore.rules);
 
 // methods - 編集フォームで使用
 const updateSelectedRule = (updatedRule: CommentRuleType | TimerRuleType) => {

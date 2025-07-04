@@ -1,9 +1,8 @@
-// omikujiData のサンプルデータ
-import { OmikujiDataType } from './types/OmikujiTypesSchema';
-
-export const omikujiSampleData: OmikujiDataType = {
+// @ts-check
+/** @type {import('../src/types/OmikujiTypesSchema').OmikujiDataType} */
+const omikujiData = {
  comments: {
-  '1750735467199': {
+  1750735467199: {
    id: '1750735467199',
    name: 'おみくじ',
    description:
@@ -497,7 +496,7 @@ export const omikujiSampleData: OmikujiDataType = {
     backgroundColor: '#FF4081'
    },
    image: {
-    default: 'reimu/Default.webp',
+    default: 'reimu/Default.png',
     happy: 'reimu/joy01.png',
     excited: 'reimu/joy04.png',
     laughing: 'reimu/relax01.png',
@@ -545,3 +544,5 @@ export const omikujiSampleData: OmikujiDataType = {
   }
  }
 };
+
+if (typeof window !== 'undefined') window.omikujiData = omikujiData;

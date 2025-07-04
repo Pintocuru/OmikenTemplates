@@ -107,22 +107,20 @@ const defaultPlaceholders: PlaceholderType[] = [
 
 // 現在選択されているおみくじに外部スクリプトが使われているなら、そのプレースホルダーを取得する
 const scriptPlaceholder = computed((): PlaceholderType[] => {
- if (selectedRule.value && selectedRule.value?.scriptId !== null) {
-  const scriptPlaceholders = scriptGameMap[selectedRule.value.scriptId].placeholders;
+ if (!selectedRule.value?.scriptId) return [];
 
-  // ScriptPlaceholderItem[] を PlaceholderType[] に変換
-  return scriptPlaceholders.map(
+ const script = scriptGameMap[selectedRule.value.scriptId];
+ return (
+  script?.placeholders?.map(
    (item): PlaceholderType =>
     PlaceholderSchema.parse({
      id: item.id,
      name: item.name,
-     order: 0, // デフォルト値
+     order: 0,
      values: [{ content: item.value }]
     })
-  );
- }
-
- return [];
+  ) || []
+ );
 });
 
 // プレースホルダーが使用されているかを判定する関数

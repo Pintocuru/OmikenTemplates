@@ -21,6 +21,6 @@ export type BotMessage = {
 declare global {
  interface Window {
   CONFIG: ConfigUserType;
-  OmikujiData: OmikujiDataType;
+  omikujiData: OmikujiDataType;
  }
 }

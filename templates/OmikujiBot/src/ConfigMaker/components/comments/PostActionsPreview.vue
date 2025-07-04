@@ -42,19 +42,19 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { type PostActionType } from '@/types/OmikujiTypesSchema';
-import { charactersMap } from '@/Characters/CharactersMap';
+import { CharacterPresetType, type PostActionType } from '@/types/OmikujiTypesSchema';
 import { type CharacterEmotion } from '@/types/PresetTypes';
 
 // Props
 const props = defineProps<{
  actions: PostActionType[];
+ charactersArray: CharacterPresetType[];
 }>();
 
 // キャラクター選択肢
 const characterOptions = computed(() => {
- return Object.entries(charactersMap).map(([key, character]) => ({
-  value: key,
+ return props.charactersArray.map((character) => ({
+  value: character.id,
   label: character.name
  }));
 });
@@ -63,12 +63,12 @@ const characterOptions = computed(() => {
 const allIconOptions = computed(() => {
  const options: Array<{ value: string; label: string; characterKey: string }> = [];
 
- Object.entries(charactersMap).forEach(([characterKey, character]) => {
+ props.charactersArray.forEach((character) => {
   // デフォルト画像
   options.push({
-   value: `${characterKey}:default`,
+   value: `${character.id}:default`,
    label: `${character.name} (デフォルト)`,
-   characterKey
+   characterKey: character.id
   });
 
   // 感情別画像
@@ -90,9 +90,9 @@ const allIconOptions = computed(() => {
 
     const emotionKey = emotion as CharacterEmotion;
     options.push({
-     value: `${characterKey}:${emotion}`,
+     value: `${character.id}:${emotion}`,
      label: `${character.name} (${emotionLabels[emotionKey] || emotion})`,
-     characterKey
+     characterKey: character.id
     });
    }
   });

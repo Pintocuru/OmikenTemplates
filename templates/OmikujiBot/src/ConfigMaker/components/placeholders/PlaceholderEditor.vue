@@ -1,7 +1,7 @@
 <!-- src/configMaker/components/PlaceholderEditor.vue -->
 <template>
  <!-- タブ部分 -->
- <RuleTabs :rules="placeholders" :selectedRule="selectedPlaceholder" ruleType="placeholders" />
+ <RuleTabs :rules="placeholdersArray" :selectedRule="selectedPlaceholder" ruleType="placeholders" />
 
  <!-- プレースホルダー編集エリア -->
  <div v-if="selectedPlaceholder">
@@ -135,7 +135,7 @@ const extendedStore = {
 provide('placeholdersRulesStore', extendedStore);
 
 // computed
-const placeholders = computed(() => placeholderStore.rules);
+const placeholdersArray = computed(() => placeholderStore.rules);
 const selectedPlaceholder = computed(() => placeholderStore.selectedRule);
 
 // 値の追加

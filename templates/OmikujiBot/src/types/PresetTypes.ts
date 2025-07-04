@@ -1,6 +1,6 @@
 // src/types/PresetTypes.ts(変更前)
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { OmikujiData, PostAction, PostActionWordParty } from './OmikujiTypes';
+import { omikujiData, PostAction, PostActionWordParty } from './OmikujiTypes';
 
 // ===== 共通型定義 =====
 
@@ -35,7 +35,7 @@ export interface PresetMetadata extends BasePresetItem {
 
 /** おみくじプリセット */
 export interface OmikujiPreset extends PresetMetadata {
- item: OmikujiData;
+ item: omikujiData;
 }
 
 /** キャラクター表示プリセット */

@@ -36,25 +36,40 @@ export default () => {
  ];
 
  const copyPatterns = [
+  // TailwindCSS
   {
    from: path.resolve(dirname, `./assets/app.css`),
    to: path.resolve(dirname, `dist/scripts/app.css`)
   },
+  // おみくじを適用するConfig
   {
    from: path.resolve(dirname, `./assets/config.js`),
    to: path.resolve(dirname, `dist/config.js`)
   },
+  // おみくじデータConfig
+  {
+   from: path.resolve(dirname, `./assets/omikujiData.js`),
+   to: path.resolve(dirname, `dist/omikujiData.js`)
+  },
+  // readme
   {
    from: path.resolve(dirname, `./assets/readme.txt`),
    to: path.resolve(dirname, `dist/readme.txt`)
   },
+  // わんコメのテンプレート用情報
   {
    from: path.resolve(dirname, `./assets/template.json`),
    to: path.resolve(dirname, `dist/template.json`)
   },
+  // わんコメのテンプレート用サムネイル
   {
    from: path.resolve(dirname, `./assets/thumb.png`),
    to: path.resolve(dirname, `dist/thumb.png`)
+  },
+  // Charactersフォルダ
+  {
+   from: path.resolve(dirname, `./assets/Characters`),
+   to: path.resolve(dirname, `./dist/Characters`)
   }
  ];
 
@@ -81,8 +96,11 @@ export default () => {
    ...commonResolve,
    alias: {
     ...commonResolve.alias,
+    '@assets': path.resolve(dirname, 'assets'),
     '@': path.resolve(dirname, 'src'),
-    '@assets': path.resolve(dirname, 'assets')
+    '@Config': path.resolve(dirname, 'src/ConfigMaker'),
+    '@ConfigComponents': path.resolve(dirname, 'src/ConfigMaker/components'),
+    '@ConfigScript': path.resolve(dirname, 'src/ConfigMaker/script')
    }
   },
   module: {

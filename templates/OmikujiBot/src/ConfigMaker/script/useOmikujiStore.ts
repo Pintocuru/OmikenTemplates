@@ -1,21 +1,28 @@
 // src/ConfigMaker/script/useOmikujiStore.ts
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import { CategoryType, OmikujiDataSchema, OmikujiDataType } from '@/types/OmikujiTypesSchema';
-import { omikujiSampleData } from '@/omikujiSampleData';
+import {
+ CategoryType,
+ OmikujiDataSchema,
+ OmikujiDataType,
+ validateOmikujiData
+} from '@/types/OmikujiTypesSchema';
+
+// omikujiData
+const omikujiData = validateOmikujiData(window.omikujiData);
 
 export const useOmikujiStore = defineStore('omikuji', () => {
  // Core data
- const data = ref<OmikujiDataType>(omikujiSampleData);
+ const data = ref<OmikujiDataType>(omikujiData);
 
  // Navigation state
  const selectedCategory = ref<CategoryType>('comments');
  const selectedRuleId = ref<string | null>(null);
 
  // Data operations
- const loadData = (omikujiData: unknown) => {
+ const loadData = (loadData: unknown) => {
   try {
-   const parsed = OmikujiDataSchema.safeParse(omikujiData);
+   const parsed = OmikujiDataSchema.safeParse(loadData);
    if (parsed.success) {
     data.value = parsed.data;
     return { success: true, message: 'データを正常に読み込みました。' };
