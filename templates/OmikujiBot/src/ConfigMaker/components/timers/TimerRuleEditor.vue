@@ -24,7 +24,7 @@ import TimerIntervalEditor from './TimerIntervalEditor.vue';
 import OmikujiSetEditor from '@ConfigComponents/comments/OmikujiSetEditor.vue';
 import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
 import BaseSettingsEditor from '@ConfigComponents/comments/BaseSettingsEditor.vue';
-import { CommentRuleType, TimerRuleType } from '@/types/OmikujiTypesSchema';
+import { RuleType, TimerRuleType } from '@/types/OmikujiTypesSchema';
 
 // ストアを使用
 const timerRulesStore = useTimerRulesStore();
@@ -45,7 +45,7 @@ const selectedRule = computed(() => timerRulesStore.selectedRule);
 const rulesArray = computed(() => timerRulesStore.rulesArray);
 
 // methods - 編集フォームで使用
-const updateSelectedRule = (updatedRule: CommentRuleType | TimerRuleType) => {
+const updateSelectedRule = (updatedRule: RuleType) => {
  if (selectedRule.value && selectedRule.value.id) {
   timerRulesStore.update(selectedRule.value.id, updatedRule as TimerRuleType);
  }

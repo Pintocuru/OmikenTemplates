@@ -78,7 +78,7 @@
         @change="updateParam(setting.id, ($event.target as HTMLSelectElement).value)"
         class="select select-bordered w-full"
        >
-        <option v-for="option in setting.values" :key="option" :value="option">
+        <option v-for="(option, index) in setting.values" :key="index" :value="option">
          {{ option }}
         </option>
        </select>
@@ -155,16 +155,14 @@ const updateScriptId = (event: Event) => {
  const scriptId = target.value || null;
 
  let defaultScriptParams: Record<string, any> = {};
- let defaultRuntimeParams: Record<string, any> = {};
 
  // 選択されたスクリプトのデフォルト値を設定
  if (scriptId && scriptGameMap[scriptId]) {
   const script = scriptGameMap[scriptId];
 
-  // 実行時パラメータのデフォルト値
   if (script.params?.length) {
    script.params.forEach((param: ParameterItem) => {
-    defaultRuntimeParams[param.id] = param.defaultValue;
+    defaultScriptParams[param.id] = param.defaultValue;
    });
   }
  }
@@ -172,7 +170,7 @@ const updateScriptId = (event: Event) => {
  emit('update:modelValue', {
   ...props.modelValue,
   scriptId,
-  scriptParams: defaultScriptParams
+  scriptParams: defaultScriptParams // ← こちらを送信する
  });
 };
 

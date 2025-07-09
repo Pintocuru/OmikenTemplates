@@ -375,6 +375,7 @@ export type CategoryType = 'comments' | 'timers' | 'placeholders' | 'scriptSetti
 export type OmikujiDataType = z.infer<typeof OmikujiDataSchema>;
 export type CommentRuleType = z.infer<typeof CommentRuleSchema>;
 export type TimerRuleType = z.infer<typeof TimerRuleSchema>;
+export type RuleType = CommentRuleType | TimerRuleType;
 export type PlaceholderValueType = z.infer<typeof PlaceholderValueSchema>;
 export type PlaceholderType = z.infer<typeof PlaceholderSchema>;
 export type OmikujiSetType = z.infer<typeof OmikujiSetSchema>;

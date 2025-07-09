@@ -1,59 +1,60 @@
 // composables/useBotCommentDisplay.ts
 import { ref, computed, type Ref } from 'vue';
-import { BotMessage } from '@/types/types';
+import { BotMessage, SIZE_CONFIG, DisplaySize } from '@/types/types';
 
 const DISPLAY_CONFIG = {
  INTERVAL: 250,
  BASE_LIFE_TIME: 9910000,
  THRESHOLD: 30,
- EXTRA_TIME_PER_CHAR: 100 // 文字数が多い場合は表示時間を延長
+ EXTRA_TIME_PER_CHAR: 100
 } as const;
 
 export type DisplayMode = 'comment' | 'toast';
 
 export const useBotCommentDisplay = (
  botMessages: Ref<BotMessage[]>,
+ displaySize: Ref<DisplaySize>,
  mode: DisplayMode = 'comment'
 ) => {
  const displayedComments = ref<BotMessage[]>([]);
  const animationFrameId = ref<number>();
 
- const comments = computed(() => {
-  const allMessages = botMessages.value;
-  return allMessages.filter((message) => (mode === 'comment' ? !message.isToast : message.isToast));
- });
+ const comments = computed(() =>
+  botMessages.value.filter((message) => (mode === 'comment' ? !message.isToast : message.isToast))
+ );
 
- // スタイル計算を統一
+ // スタイル計算を統一・簡略化
  const getCommentStyles = (displayIndex: number, message: BotMessage) => {
   const backgroundColor = message.color?.backgroundColor || '#ffffff';
+  const brightness = mode === 'toast' ? 100 : Math.max(100 - displayIndex * 15, 30);
 
-  if (mode === 'toast') {
-   return { backgroundColor };
-  }
-
-  const brightness = Math.max(100 - displayIndex * 15, 30);
   return {
    backgroundColor,
-   filter: `brightness(${brightness}%)`
+   ...(mode === 'comment' && { filter: `brightness(${brightness}%)` })
   };
  };
 
- const getAvatarStyles = (displayIndex: number) => {
-  if (mode === 'toast') return {};
+ const getAvatarStyles = (displayIndex: number) =>
+  mode === 'toast' ? {} : { opacity: displayIndex === 0 ? '100%' : '0%' };
 
-  return {
-   opacity: displayIndex === 0 ? '100%' : '0%'
-  };
+ // サイズ関連のヘルパー関数（propsのdisplaySizeを使用）
+ const getTextSizeClasses = () => {
+  const size = displaySize.value;
+  return SIZE_CONFIG.text[size];
  };
 
- const imageBaseUrl =
-  typeof import.meta !== 'undefined' && import.meta.env?.VITE_IMAGE_BASE_URL
-   ? import.meta.env.VITE_IMAGE_BASE_URL
-   : './Characters/';
-
- const getImagePath = (profileImage: string): string => {
-  return `${imageBaseUrl}${profileImage}`;
+ const getIconSizeClasses = () => {
+  const size = displaySize.value;
+  return SIZE_CONFIG.icon[size];
  };
+
+ const getSpacing = () => {
+  const size = displaySize.value;
+  return SIZE_CONFIG.icon[size].spacing;
+ };
+
+ const imageBaseUrl = import.meta.env?.VITE_IMAGE_BASE_URL || './Characters/';
+ const getImagePath = (profileImage: string) => `${imageBaseUrl}${profileImage}`;
 
  const handleImageError = (message: BotMessage) => {
   console.error(`画像が読み込めません: ${message.profileImage}`, {
@@ -64,15 +65,12 @@ export const useBotCommentDisplay = (
   });
  };
 
- // トースト用の手動削除機能
  const removeItem = (messageId: string) => {
   const index = displayedComments.value.findIndex((item) => item.id === messageId);
-  if (index > -1) {
-   displayedComments.value.splice(index, 1);
-  }
+  if (index > -1) displayedComments.value.splice(index, 1);
  };
 
- // 表示制御ロジック
+ // 表示制御ロジック（コンパクト化）
  const useCommentDisplayControl = () => {
   let lastTime = 0;
   let processedMessageIds = new Set<string>();
@@ -80,20 +78,17 @@ export const useBotCommentDisplay = (
 
   const processNewComments = (now: number) => {
    if (now - lastTime <= DISPLAY_CONFIG.INTERVAL) return;
+
    const newComments = comments.value.filter((comment) => !processedMessageIds.has(comment.id));
    if (newComments.length === 0) return;
 
    lastTime = now;
 
-   // 新しいコメントを処理
    newComments.forEach((nextComment) => {
-    // 表示時間の計算（現在時刻を基準に設定）
-    let totalLifeTime: number;
-
     const commentLength = nextComment.comment?.length ?? 0;
     const extraTime =
      Math.max(commentLength - DISPLAY_CONFIG.THRESHOLD, 0) * DISPLAY_CONFIG.EXTRA_TIME_PER_CHAR;
-    totalLifeTime = DISPLAY_CONFIG.BASE_LIFE_TIME + extraTime;
+    const totalLifeTime = DISPLAY_CONFIG.BASE_LIFE_TIME + extraTime;
 
     displayedComments.value.unshift(nextComment);
     commentTimers.set(nextComment.id, Date.now() + totalLifeTime);
@@ -143,6 +138,9 @@ export const useBotCommentDisplay = (
   displayedComments,
   getCommentStyles,
   getAvatarStyles,
+  getTextSizeClasses,
+  getIconSizeClasses,
+  getSpacing,
   getImagePath,
   handleImageError,
   removeItem,

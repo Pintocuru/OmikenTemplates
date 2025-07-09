@@ -7,9 +7,9 @@ import GachaOmikuji from './GachaOmikuji.js';
 import StealEmAll from './StealEmAll.js';
 
 export const scriptGameMap: Record<string, ScriptPreset> = {
- BomberSpin,
- GouseiSuika,
- DwarfBomb,
- GachaOmikuji,
- StealEmAll
+ // BomberSpin,
+ GouseiSuika
+ // DwarfBomb,
+ // GachaOmikuji,
+ // StealEmAll
 };

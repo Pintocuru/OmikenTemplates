@@ -41,7 +41,6 @@ export class CommentProcessor {
   const botMessages: BotMessage[] = [];
 
   for (const comment of comments) {
-   console.log(comment.data.userId);
    // これ以上経過した古いコメントは判定しない(秒)
    const secondsSinceComment = (currentTime - new Date(comment.data.timestamp).getTime()) / 1000;
    const isWithinTimeThreshold = secondsSinceComment <= this.timeThreshold;
@@ -159,12 +158,12 @@ export class CommentProcessor {
 
    // デフォルトのプレースホルダー情報を入れる
    // user/lc(配信でのコメント数)/tc(個人の総コメント数)
-   const hogaMap: Record<string, string | number> = {
+   const hoggMap: Record<string, string | number> = {
     user: comment.data.displayName || comment.data.name,
     lc: comment.meta?.lc ?? 0,
     tc: comment.meta?.tc ?? 0
    };
-   this.placeProcess.updateResolvedValues(hogaMap);
+   this.placeProcess.updateResolvedValues(hoggMap);
 
    if (scriptResult) {
     // スクリプトの投稿アクション実行
@@ -252,5 +251,10 @@ export class CommentProcessor {
   */
  public reinitializeScripts(): void {
   this.scriptManager.reinitializeScripts();
+ }
+
+ // ランキングデータ取得
+ getRankingData(scriptId: string) {
+  return this.scriptManager.getRankingData(scriptId);
  }
 }

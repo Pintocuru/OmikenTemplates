@@ -1,7 +1,6 @@
 <!-- src/MainGenerator/components/ViewBotMessage.vue -->
 <template>
  <div class="relative w-full h-screen overflow-hidden">
-  <!-- BOTコメント(main) -->
   <transition-group
    class="comment-container"
    name="comment"
@@ -14,7 +13,7 @@
     :key="message.id"
     class="absolute w-full transition-all duration-300 ease-out"
     :style="{
-     top: `${index * 120}px`,
+     top: `${index * getSpacing()}px`,
      zIndex: displayedComments.length - index
     }"
    >
@@ -23,11 +22,16 @@
      class="absolute left-1/2 -translate-x-1/2 transform w-full max-w-3xl min-w-md p-6 rounded-xl"
      :style="getCommentStyles(index, message)"
     >
-     <div class="mb-3 text-4xl" :style="{ color: message.color?.nameColor || '#000000' }">
+     <div
+      class="mb-3"
+      :class="getTextSizeClasses().name"
+      :style="{ color: message.color?.nameColor || '#000000' }"
+     >
       {{ message.name }}
      </div>
      <div
-      class="text-3xl break-words leading-12"
+      class="break-words"
+      :class="[getTextSizeClasses().comment, getTextSizeClasses().lineHeight]"
       :style="{ color: message.color?.textColor || '#000000' }"
      >
       {{ message.comment }}
@@ -42,14 +46,18 @@
        borderTop: `20px solid ${message.color?.backgroundColor || '#ffffff'}`,
        filter: `brightness(${Math.max(100 - index * 15, 30)}%)`
       }"
-     ></div>
+     />
     </div>
 
     <!-- キャラクターアイコン -->
     <div
      v-if="message.profileImage"
-     class="absolute left-1/2 -translate-x-1/2 transform w-80 h-80 rounded-full overflow-hidden bg-gray-200 z-40"
-     :style="{ ...getAvatarStyles(index), top: '350px' }"
+     class="absolute left-1/2 -translate-x-1/2 transform rounded-full overflow-hidden bg-gray-200 z-40"
+     :class="getIconSizeClasses().size"
+     :style="{
+      ...getAvatarStyles(index),
+      top: getIconSizeClasses().top
+     }"
     >
      <img
       :src="getImagePath(message.profileImage)"
@@ -65,36 +73,32 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, toRef } from 'vue';
-import { BotMessage } from '@/types/types';
+import { BotMessage, DisplaySize } from '@/types/types';
 import { useBotCommentDisplay } from './useBotCommentDisplay';
 
 const props = defineProps<{
  botMessages: BotMessage[];
+ displaySize: DisplaySize;
 }>();
-
-const botMessagesRef = toRef(props, 'botMessages');
 
 const {
  displayedComments,
  getCommentStyles,
  getAvatarStyles,
+ getTextSizeClasses,
+ getIconSizeClasses,
+ getSpacing,
  getImagePath,
  handleImageError,
  start,
  stop
-} = useBotCommentDisplay(botMessagesRef);
+} = useBotCommentDisplay(toRef(props, 'botMessages'), toRef(props, 'displaySize'));
 
-onMounted(() => {
- start();
-});
-
-onUnmounted(() => {
- stop();
-});
+onMounted(start);
+onUnmounted(stop);
 </script>
 
 <style scoped>
-/* Vue transition - 下から上へのフェードイン、上へのフェードアウト */
 .comment-enter-active {
  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }

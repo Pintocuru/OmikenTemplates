@@ -1,11 +1,11 @@
-// src/types/PresetTypes.ts(変更前)
+// src/types/PresetTypes.ts
+// 250709_3更新
+// ParameterItem 変更
+import { Component } from 'vue';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { omikujiData, PostAction, PostActionWordParty } from './OmikujiTypes';
 
 // ===== 共通型定義 =====
-
-/** 空のオブジェクト型（デフォルト値用） */
-export type EmptyObject = Record<string, never>;
 
 /**
  * 全てのプリセット項目の基底インターフェース
@@ -91,12 +91,21 @@ export type CharacterEmotion = (typeof CHARACTER_EMOTIONS)[keyof typeof CHARACTE
  * @template TGameExtras - ゲーム固有データの型（デフォルト: Record<string, any>）
  */
 type DefaultTypes = {
- Settings: EmptyObject;
- Params: EmptyObject;
- Placeholders: EmptyObject;
- Ranking: UserStatistics<EmptyObject>;
- GameExtras: EmptyObject;
+ Settings: Record<string, Serializable>;
+ Params: Record<string, Serializable>;
+ Placeholders: Record<string, string>;
+ Ranking: UserStatistics<Record<string, Serializable>>;
+ GameExtras: Record<string, Serializable>;
 };
+
+export type Serializable =
+ | string
+ | number
+ | boolean
+ | null
+ | undefined
+ | Serializable[]
+ | { [key: string]: Serializable };
 
 export interface ScriptPreset<
  TSettings extends object = DefaultTypes['Settings'],
@@ -113,6 +122,8 @@ export interface ScriptPreset<
  params: ParameterItem<TParams>[];
  /** 動的置換用プレースホルダー */
  placeholders: ScriptPlaceholderItem<TPlaceholders>[];
+ /** 対応するVueコンポーネント */
+ component: Component | null;
 }
 
 // ===== スクリプト実行クラス =====
@@ -126,7 +137,7 @@ export interface ScriptClass<
  TGameExtras extends object = DefaultTypes['GameExtras']
 > {
  /** 初期化処理 */
- setup(settings: TSettings): Promise<void> | void;
+ setup(settings: TSettings): void;
 
  /** メイン実行関数 */
  run(comment: Comment, params: TParams): ScriptResult<TPlaceholders, TRanking>;
@@ -141,7 +152,7 @@ export interface ScriptClass<
  ): Promise<ApiCallResult<TGameExtras>>;
 
  /** 終了処理（オプション） */
- cleanup?(gameState: GameState<TGameExtras>): Promise<void> | void;
+ cleanup?(gameState: GameState<TGameExtras>): void;
 }
 
 /**
@@ -154,8 +165,8 @@ export type HttpMethod = (typeof HTTP_METHODS)[number];
  * スクリプト実行の結果
  */
 export interface ScriptResult<
- TPlaceholders extends object = EmptyObject,
- TRanking extends UserStatistics<object> = UserStatistics<EmptyObject>
+ TPlaceholders extends object = DefaultTypes['Placeholders'],
+ TRanking extends UserStatistics<object> = DefaultTypes['Ranking']
 > {
  /** わんコメに投稿するコメント・WordParty */
  postActions: (PostAction | PostActionWordParty)[];
@@ -171,7 +182,7 @@ export interface ScriptResult<
  * API呼び出しの結果
  */
 // API呼び出しの結果
-export interface ApiCallResult<TGameExtras extends object = EmptyObject> {
+export interface ApiCallResult<TGameExtras extends object = DefaultTypes['GameExtras']> {
  status: 'success' | 'error'; // 実行ステータス
  statusCode?: number; // HTTPステータスコード
  gameState: GameState<TGameExtras>; // ゲームデータ
@@ -192,27 +203,38 @@ export interface ApiCallResult<TGameExtras extends object = EmptyObject> {
 export type ParameterInputType = 'select' | 'number' | 'string' | 'boolean';
 
 /** パラメータアイテム */
-export interface ParameterItem<T extends object = EmptyObject> extends BasePresetItem {
- /** パラメータのキー */
- id: Extract<keyof T, string>;
- /** 入力タイプ */
- inputType: ParameterInputType;
- /** デフォルト値 */
- defaultValue: T[Extract<keyof T, string>];
- /** 選択肢（select型の場合） */
- values?: readonly T[Extract<keyof T, string>][];
- /** 最小値（number型の場合） */
- min?: number;
- /** 最大値（number型の場合） */
- max?: number;
-}
+export type ParameterItem<T extends object = DefaultTypes['Params'], K extends keyof T = keyof T> =
+ | ({
+    id: K;
+    inputType: 'select';
+    values: readonly T[K][];
+    defaultValue: T[K];
+   } & BasePresetItem)
+ | ({
+    id: K;
+    inputType: 'number';
+    defaultValue: T[K];
+    min?: number;
+    max?: number;
+   } & BasePresetItem)
+ | ({
+    id: K;
+    inputType: 'string';
+    defaultValue: T[K];
+   } & BasePresetItem)
+ | ({
+    id: K;
+    inputType: 'boolean';
+    defaultValue: T[K];
+   } & BasePresetItem);
 
 /**
  * プレースホルダーアイテム
  *
  * @template T - プレースホルダー設定全体の型
  */
-export interface ScriptPlaceholderItem<T extends object = EmptyObject> extends BasePresetItem {
+export interface ScriptPlaceholderItem<T extends object = DefaultTypes['Placeholders']>
+ extends BasePresetItem {
  /** プレースホルダーID */
  id: Extract<keyof T, string>;
  /** プレースホルダーの値 */
@@ -228,8 +250,8 @@ export interface ScriptPlaceholderItem<T extends object = EmptyObject> extends B
  * @template TExtras - ゲーム固有データの型
  */
 export type GameState<
- TExtras extends object = EmptyObject,
- TUserStats extends object = EmptyObject
+ TExtras extends object = DefaultTypes['GameExtras'],
+ TUserStats extends object = DefaultTypes['GameExtras']
 > = {
  /** 使用中のルールID */
  ruleId: string;
@@ -244,7 +266,7 @@ export type GameState<
 /**
  * ユーザーの統計情報
  */
-export type UserStatistics<TExtras extends object = EmptyObject> = {
+export type UserStatistics<TExtras extends object = DefaultTypes['GameExtras']> = {
  /** ユーザーID */
  userId: string;
  /** 表示名 */

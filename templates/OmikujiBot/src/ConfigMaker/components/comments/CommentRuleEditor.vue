@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { computed, provide } from 'vue';
-import { CommentRuleType, TimerRuleType } from '@/types/OmikujiTypesSchema';
+import { CommentRuleType, RuleType } from '@/types/OmikujiTypesSchema';
 import BaseSettingsEditor from './BaseSettingsEditor.vue';
 import CommentThresholdEditor from './CommentThresholdEditor.vue';
 import ExternalScriptEditor from './ExternalScriptEditor.vue';
@@ -49,7 +49,7 @@ const selectedRule = computed(() => commentRulesStore.selectedRule);
 const rulesArray = computed(() => commentRulesStore.rulesArray);
 
 // methods - 編集フォームで使用
-const updateSelectedRule = (updatedRule: CommentRuleType | TimerRuleType) => {
+const updateSelectedRule = (updatedRule: RuleType) => {
  if (selectedRule.value && selectedRule.value.id) {
   commentRulesStore.update(selectedRule.value.id, updatedRule as CommentRuleType);
  }

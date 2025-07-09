@@ -90,14 +90,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, toRaw } from 'vue';
-import { CommentRuleType, TimerRuleType } from '@/types/OmikujiTypesSchema';
+import { RuleType } from '@/types/OmikujiTypesSchema';
 
 const props = defineProps<{
- modelValue: CommentRuleType | TimerRuleType;
+ modelValue: RuleType;
 }>();
 
 const emit = defineEmits<{
- 'update:modelValue': [value: CommentRuleType | TimerRuleType];
+ 'update:modelValue': [value: RuleType];
 }>();
 
 // カラーピッカー関連
@@ -119,7 +119,7 @@ const presetColors = [
  '#000000' // Black
 ];
 
-const updateField = (field: keyof (CommentRuleType | TimerRuleType), event: Event) => {
+const updateField = (field: keyof RuleType, event: Event) => {
  const target = event.target as HTMLInputElement;
  const value = target.type === 'checkbox' ? target.checked : target.value;
 
@@ -138,7 +138,7 @@ const closeColorPicker = () => {
 };
 
 // カラー選択用のヘルパー関数
-const updateFieldValue = (field: keyof (CommentRuleType | TimerRuleType), value: any) => {
+const updateFieldValue = (field: keyof RuleType, value: any) => {
  emit('update:modelValue', {
   ...toRaw(props.modelValue),
   [field]: value

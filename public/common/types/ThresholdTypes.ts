@@ -1,4 +1,4 @@
-// src/types/OmikujiThresholdTypes.ts
+// common/types/ThresholdTypes.ts
 
 // ConfigUserの条件型
 export interface ConfigUserThreshold {
@@ -58,7 +58,7 @@ export const AccessCondition = {
  GUEST: 1,
  MEMBER: 2,
  MODERATOR: 3,
- ADMIN: 4
+ OWNER: 4
 } as const;
 export type AccessCondition = (typeof AccessCondition)[keyof typeof AccessCondition];
 export type AccessConditionArray = AccessCondition[];

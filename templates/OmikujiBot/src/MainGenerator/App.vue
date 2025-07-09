@@ -1,89 +1,126 @@
 <!-- src/MainGenerator/App.vue -->
 <template>
  <div v-if="isInitialized">
-  <!-- 通常のコメント表示 -->
-  <ViewBotMessage :botMessages="normalMessages" />
+  <!-- 表示モード切り替えに応じたコンポーネント表示 -->
+  <ViewBotMessage
+   v-if="currentDisplayMode === 'messages'"
+   :botMessages="normalMessages"
+   :displaySize="displaySize"
+  />
 
-  <!-- トースト表示 -->
+  <ViewUserVisits
+   v-else-if="currentDisplayMode === 'userVisits'"
+   :userVisitsData="userVisitsData"
+   ref="userVisitsRef"
+  />
+
+  <!-- 動的コンポーネント表示（propsを動的に渡す） -->
+  <component
+   v-else-if="currentDisplayMode === 'scriptGame' && currentScriptGameComponent"
+   :is="currentScriptGameComponent"
+   v-bind="currentScriptGameProps"
+   ref="scriptGameRef"
+  />
+
+  <!-- トースト表示（常時表示） -->
   <ViewBotToast :botMessages="toastMessages" />
+
+  <!-- 表示モード切り替えアイコン -->
+  <div
+   class="fixed bottom-5 right-5 w-12 h-12 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center cursor-pointer z-[1000] transition-all duration-300 hover:scale-110"
+   @click="nextDisplayMode"
+   @contextmenu.prevent="prevDisplayMode"
+  >
+   <img src="./icons/toggle-mode.svg" alt="表示モード切り替え" class="w-8 h-8 invert" />
+  </div>
+
+  <!-- スクリプトゲーム選択UI（scriptGameモード時のみ表示） -->
+  <div v-if="currentDisplayMode === 'scriptGame'" class="fixed top-5 left-5 flex gap-2 z-[1000]">
+   <button
+    v-for="(preset, key) in scriptGameMap"
+    :key="key"
+    @click="setScriptGameKey(key)"
+    :class="[
+     'px-3 py-1 rounded text-sm font-medium transition-colors',
+     currentScriptGameKey === key
+      ? 'bg-blue-500 text-white'
+      : 'bg-white/20 text-white hover:bg-white/30'
+    ]"
+   >
+    {{ key }}
+   </button>
+  </div>
  </div>
  <!-- わんコメが起動されていない場合のエラー表示 -->
- <div v-else>
-  <ErrorInitComponent :pluginUid="null" />
- </div>
+ <ErrorInitComponent v-else :pluginUid="null" />
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
-import { BotMessage } from '@/types/types';
+import { onMounted, ref } from 'vue';
+import { validateOmikujiData } from '@/types/OmikujiTypesSchema';
 import ViewBotMessage from './components/ViewBotMessage.vue';
 import ViewBotToast from './components/ViewBotToast.vue';
-import { CommentProcessor } from './utils/commentProcessor';
-import { GetUserComments } from '@common/subscribe/GetUserComments';
+import ViewUserVisits from './components/ViewUserVisits.vue';
+import { ConfigUserType } from '@common/types/ConfigTypes';
+import { GetUserVisits, ServiceVisitType } from '@common/subscribe/GetUserVisits';
 import ErrorInitComponent from '@common/ErrorInitComponent.vue';
-import { validateOmikujiData } from '@/types/OmikujiTypesSchema';
+
+// コンポーザブルのインポート
+import { useDisplayMode } from '@/MainGenerator/utils/useDisplayMode';
+import { useMessageHandler } from '@/MainGenerator/utils/useMessageHandler';
 
 // omikujiData
 const omikujiData = validateOmikujiData(window.omikujiData);
 
 // リアクティブ変数
-const botMessages = ref<BotMessage[]>([]);
 const isInitialized = ref(true);
+const userVisitsData = ref<Record<string, ServiceVisitType>>({});
+
+// コンポーザブルの使用
+const { normalMessages, toastMessages, processComments, processor } =
+ useMessageHandler(omikujiData);
+
+const {
+ currentDisplayMode,
+ currentScriptGameKey,
+ currentScriptGameComponent,
+ currentScriptGameProps,
+ scriptGameMap,
+ displaySize,
+ nextDisplayMode,
+ prevDisplayMode,
+ setScriptGameKey,
+ updateRankingData // 新しく追加
+} = useDisplayMode(omikujiData, processor);
+
+// コンポーネントのref
+const userVisitsRef = ref<InstanceType<typeof ViewUserVisits>>();
+const scriptGameRef = ref();
 
 // 設定の読み込み
-const config = window.CONFIG ?? {
- IS_DIFF_MODE: true, // 差分モードにするか(true:'diff',false:'all')
- ENABLED_SERVICES: 'all', // 通すプラットフォーム
- ALLOWED_IDS: [], // 通すユーザーIDリスト(!IDでネガティブ)
- ACCESS_LEVEL: 1, // 1:だれでも/2:メンバー/3:モデレーター/4:管理者
- IS_GIFT: false, // ギフトで有効にするか
- KEYWORDS: [] // isGiftがfalseなら、このコメントで判定(正規表現)
+const config: ConfigUserType = window.CONFIG ?? {
+ IS_DIFF_MODE: true,
+ ENABLED_SERVICES: 'all',
+ THRESHOLD: {
+  conditions: [],
+  user: [],
+  access: [],
+  gift: [],
+  comment: []
+ }
 };
 
 // GetUserVisitsコンポーザブルから取得
-const { fetchComments } = GetUserComments(config);
-
-// CommentProcessorインスタンスを作成
-const processor = new CommentProcessor(omikujiData);
-
-// メッセージを isToast で分離
-const normalMessages = computed(() => botMessages.value.filter((message) => !message.isToast));
-const toastMessages = computed(() => botMessages.value.filter((message) => message.isToast));
+const { fetchComments } = GetUserVisits(config);
 
 // 初期化処理
 onMounted(async () => {
- // 初期テーマを手動で設定
- // TODO:DaisyUiはこちらでは使わないので、これを消す
- document.documentElement.setAttribute('data-theme', 'light');
-
  try {
-  const isInit = await fetchComments((comments) => {
-   // コメントがリセットされたら、空にする
-   if (!comments.length) {
-    botMessages.value = [];
-    return;
-   }
-   // コメントを抽選結果付きで処理
-   const processedMessages = processor.processComments(comments);
-   // BotMessage[] のうち、delaySeconds に従って同時に追加
-   Promise.all(
-    processedMessages.map((message) => {
-     if (!message.delaySeconds) {
-      botMessages.value = [...botMessages.value, message];
-      return Promise.resolve();
-     }
-
-     const delay = message.delaySeconds * 1000;
-     return new Promise<void>((resolve) => {
-      setTimeout(() => {
-       if (!botMessages.value.some((c) => c.id === message.id)) {
-        botMessages.value = [...botMessages.value, message];
-       }
-       resolve();
-      }, delay);
-     });
-    })
-   );
+  const isInit = await fetchComments((userVisitsDataParam, comments) => {
+   userVisitsData.value = userVisitsDataParam;
+   processComments(comments);
+   // processComments の後にランキングデータを更新
+   updateRankingData();
   });
 
   isInitialized.value = isInit;
@@ -108,8 +145,5 @@ body {
 #App {
  height: 100%;
  width: 100%;
- flex-direction: column;
- display: flex;
- justify-content: flex-end;
 }
 </style>

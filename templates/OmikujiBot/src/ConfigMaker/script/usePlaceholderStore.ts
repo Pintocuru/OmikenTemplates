@@ -3,12 +3,11 @@
 import { defineStore } from 'pinia';
 import { useOmikujiStore } from './useOmikujiStore';
 import { useRecordOperations } from './useRecordStore';
-import type {
+import {
  PlaceholderValueType,
- CommentRuleType,
- TimerRuleType,
  OmikujiSetType,
- PostActionType
+ PostActionType,
+ RuleType
 } from '@/types/OmikujiTypesSchema';
 
 export const usePlaceholderStore = defineStore('placeholder', () => {
@@ -36,8 +35,8 @@ export const usePlaceholderStore = defineStore('placeholder', () => {
   });
 
   // コメントルールとタイマールールのcontent更新
-  const updateRuleActions = (rules: Record<string, CommentRuleType | TimerRuleType>) => {
-   Object.values(rules).forEach((rule: CommentRuleType | TimerRuleType) => {
+  const updateRuleActions = (rules: Record<string, RuleType>) => {
+   Object.values(rules).forEach((rule: RuleType) => {
     rule.omikuji.forEach((omikujiSet: OmikujiSetType) => {
      omikujiSet.postActions?.forEach((action: PostActionType) => {
       // messageContentとmessageToastの両方をチェック
