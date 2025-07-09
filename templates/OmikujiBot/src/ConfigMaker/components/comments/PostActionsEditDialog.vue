@@ -141,7 +141,7 @@ import {
  type PostActionType
 } from '@/types/OmikujiTypesSchema';
 import { type CharacterEmotion } from '@/types/PresetTypes';
-import PlaceholderList from '@ConfigComponents/placeholders/PlaceholderList.vue';
+import PlaceholderList from '@/ConfigMaker/components/placeholders/PlaceholderList.vue';
 
 // Props
 const props = defineProps<{

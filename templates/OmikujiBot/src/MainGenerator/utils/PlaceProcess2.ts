@@ -1,11 +1,11 @@
 // src/Modules/tasks/PlaceProcess2.ts
-import { drawOmikuji } from './PlayOmikuji';
 import {
  OmikujiSetType,
  PlaceholderType,
  PlaceholderValueType,
  PostActionType
 } from '@/types/OmikujiTypesSchema';
+import { drawOmikuji } from './PlayOmikuji';
 
 /**
  * プレースホルダー置換処理を行うクラス

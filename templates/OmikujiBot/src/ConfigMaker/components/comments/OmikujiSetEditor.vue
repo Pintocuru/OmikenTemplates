@@ -68,7 +68,6 @@
 <script setup lang="ts">
 import { OmikujiSetType, createDefaultOmikujiSet } from '@/types/OmikujiTypesSchema';
 import PostActionsEditorJson from './PostActionsEditorJson.vue';
-import { MessageCircle, Timer, Hash, Settings, Users } from 'lucide-vue-next';
 
 const props = defineProps<{ modelValue: OmikujiSetType[] }>();
 const emit = defineEmits<{ 'update:modelValue': [value: OmikujiSetType[]] }>();

@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, defineExpose } from 'vue';
-import { ServiceVisitType } from '@common/types/ServiceTypes';
+import { ServiceVisitType } from '@public/common/subscribe/GetUserVisits';
 
 // Props
 interface Props {

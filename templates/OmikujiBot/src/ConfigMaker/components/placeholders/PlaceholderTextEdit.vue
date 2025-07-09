@@ -85,8 +85,8 @@
 </template>
 
 <script setup lang="ts">
-import { PlaceholderValueSchema } from '@/types/OmikujiTypesSchema';
 import { ref, computed, watch } from 'vue';
+import { PlaceholderValueSchema } from '@/types/OmikujiTypesSchema';
 import { usePlaceholderStore } from '@/ConfigMaker/script/usePlaceholderStore';
 
 const props = defineProps<{

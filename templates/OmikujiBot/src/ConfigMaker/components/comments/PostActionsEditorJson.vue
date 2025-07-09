@@ -66,8 +66,8 @@ import { computed, ref, watch, type Ref } from 'vue';
 import { type PostActionType } from '@/types/OmikujiTypesSchema';
 import PostActionsPreview from './PostActionsPreview.vue';
 import PostActionsEditDialog from './PostActionsEditDialog.vue';
-import { toast } from 'vue-sonner';
 import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
+import { toast } from 'vue-sonner';
 
 // ストアを使用
 const characterStore = useCharacterStore();

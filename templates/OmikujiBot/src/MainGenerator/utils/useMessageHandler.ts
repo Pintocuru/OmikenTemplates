@@ -1,16 +1,16 @@
 // src/composables/useMessageHandler.ts
 import { ref, computed } from 'vue';
 import { BotMessage } from '@/types/types';
-import { CommentProcessor } from '../utils/commentProcessor';
+import { OmikujiDataType } from '@/types/OmikujiTypesSchema';
+import { CommentProcessor } from '@/MainGenerator/utils/commentProcessor';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
-export function useMessageHandler(omikujiData: any) {
+export function useMessageHandler(omikujiData: OmikujiDataType) {
  const botMessages = ref<BotMessage[]>([]);
  const processor = new CommentProcessor(omikujiData);
 
  // メッセージを isToast で分離
  const normalMessages = computed(() => botMessages.value.filter((message) => !message.isToast));
-
  const toastMessages = computed(() => botMessages.value.filter((message) => message.isToast));
 
  // コメント処理

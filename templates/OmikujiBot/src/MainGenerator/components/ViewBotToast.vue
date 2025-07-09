@@ -1,6 +1,6 @@
 <!-- src/MainGenerator/components/ViewBotToast.vue -->
 <template>
- <div class="toast-container fixed bottom-4 right-4 z-50">
+ <div class="toast-container fixed bottom-4 right-4 z-999">
   <transition-group name="toast" tag="div" appear>
    <div
     v-for="(message, index) in displayedComments"
@@ -57,14 +57,13 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, toRef } from 'vue';
-import { BotMessage } from '@/types/types';
+import { BotMessage, DisplaySize } from '@/types/types';
 import { useBotCommentDisplay } from './useBotCommentDisplay';
 
 const props = defineProps<{
  botMessages: BotMessage[];
+ displaySize: DisplaySize;
 }>();
-
-const botMessagesRef = toRef(props, 'botMessages');
 
 const {
  displayedComments,
@@ -74,7 +73,7 @@ const {
  removeItem,
  start,
  stop
-} = useBotCommentDisplay(botMessagesRef, 'toast');
+} = useBotCommentDisplay(toRef(props, 'botMessages'), toRef(props, 'displaySize'), 'toast');
 
 onMounted(() => {
  start();
@@ -133,22 +132,10 @@ onUnmounted(() => {
  transform: translateX(100%) scale(0.9);
 }
 
-/* フォント設定 */
-.name,
-.comment-text {
- font-family: 'Zen Maru Gothic', sans-serif;
-}
-
 /* テキストの折り返し制御 */
 .word-wrap {
  word-wrap: break-word;
  overflow-wrap: break-word;
  hyphens: auto;
-}
-
-/* ホバー効果 */
-.toast-item:hover {
- transform: scale(1.02);
- transition: transform 0.2s ease;
 }
 </style>

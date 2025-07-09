@@ -174,7 +174,7 @@ const H = new class {
   return s;
 })(T({ __name: "component", props: { settings: {}, userRanking: {}, displaySize: {} }, setup(t) {
   const e = t, s = function(l, d) {
-    const { delayMs: i, displayMs: r, immediate: f = !0, deep: p = !0 } = d, u = A(!1);
+    const { delayMs: i, displayMs: r, immediate: f = !1, deep: p = !0 } = d, u = A(!1);
     let h = null, k = null;
     const v = () => {
       h && (clearTimeout(h), h = null), k && (clearTimeout(k), k = null);

@@ -1,8 +1,8 @@
 // src/ConfigMaker/script/useCharacterStore.ts - キャラクター専用ストア
-import { defineStore } from 'pinia';
+import { CommentRuleType, TimerRuleType } from '@/types/OmikujiTypesSchema';
 import { useRecordOperations } from './useRecordStore';
 import { useOmikujiStore } from './useOmikujiStore';
-import { CommentRuleType, TimerRuleType } from '@/types/OmikujiTypesSchema';
+import { defineStore } from 'pinia';
 
 export const useCharacterStore = defineStore('characterRules', () => {
  const baseOperations = useRecordOperations('characters');

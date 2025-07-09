@@ -4,7 +4,7 @@ import { BotMessage, SIZE_CONFIG, DisplaySize } from '@/types/types';
 
 const DISPLAY_CONFIG = {
  INTERVAL: 250,
- BASE_LIFE_TIME: 9910000,
+ BASE_LIFE_TIME: 10000,
  THRESHOLD: 30,
  EXTRA_TIME_PER_CHAR: 100
 } as const;

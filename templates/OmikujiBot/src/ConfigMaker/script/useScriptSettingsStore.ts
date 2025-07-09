@@ -1,8 +1,8 @@
 // src/ConfigMaker/script/useScriptSettingsStore.ts
 // スクリプト設定専用ストア
 import { computed } from 'vue';
-import { defineStore } from 'pinia';
 import { useOmikujiStore } from './useOmikujiStore';
+import { defineStore } from 'pinia';
 
 export const useScriptSettingsStore = defineStore('scriptSettings', () => {
  const omikujiStore = useOmikujiStore();

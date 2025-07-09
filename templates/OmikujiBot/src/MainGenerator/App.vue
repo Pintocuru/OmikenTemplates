@@ -23,32 +23,47 @@
   />
 
   <!-- トースト表示（常時表示） -->
-  <ViewBotToast :botMessages="toastMessages" />
+  <ViewBotToast :botMessages="toastMessages" :displaySize="displaySize" />
+
+  <!-- 表示サイズ変更ボタン -->
+  <div
+   class="fixed bottom-5 right-20 w-12 h-12 bg-green-600/70 hover:bg-green-600/90 rounded-full flex items-center justify-center cursor-pointer z-50 transition-all duration-300 hover:scale-110"
+   @click="increaseDisplaySize"
+   @contextmenu.prevent="decreaseDisplaySize"
+   title="左クリック：サイズ拡大 / 右クリック：サイズ縮小"
+  >
+   <!-- TODO:lucide-vue-next を使って -->
+   <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="2"
+     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+    ></path>
+   </svg>
+  </div>
+
+  <!-- TODO:キャラクターにフキダシをつけるような時間経過で発生するやつを新設 -->
 
   <!-- 表示モード切り替えアイコン -->
   <div
-   class="fixed bottom-5 right-5 w-12 h-12 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center cursor-pointer z-[1000] transition-all duration-300 hover:scale-110"
-   @click="nextDisplayMode"
-   @contextmenu.prevent="prevDisplayMode"
+   class="fixed bottom-5 right-5 w-12 h-12 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center cursor-pointer z-50 transition-all duration-300 hover:scale-110"
+   @click="handleDisplayModeClick"
+   @contextmenu.prevent="handleDisplayModeRightClick"
+   title="左クリック：次のモード / 右クリック：前のモード"
   >
+   <!-- TODO:キャラクターを使って可愛く仕上げたい -->
    <img src="./icons/toggle-mode.svg" alt="表示モード切り替え" class="w-8 h-8 invert" />
   </div>
 
-  <!-- スクリプトゲーム選択UI（scriptGameモード時のみ表示） -->
-  <div v-if="currentDisplayMode === 'scriptGame'" class="fixed top-5 left-5 flex gap-2 z-[1000]">
-   <button
-    v-for="(preset, key) in scriptGameMap"
-    :key="key"
-    @click="setScriptGameKey(key)"
-    :class="[
-     'px-3 py-1 rounded text-sm font-medium transition-colors',
-     currentScriptGameKey === key
-      ? 'bg-blue-500 text-white'
-      : 'bg-white/20 text-white hover:bg-white/30'
-    ]"
-   >
-    {{ key }}
-   </button>
+  <!-- スクリプトゲーム選択時の追加情報表示 -->
+  <div
+   v-if="currentDisplayMode === 'scriptGame' && availableScriptIds.length > 1"
+   class="fixed bottom-5 left-5 bg-black/70 text-white px-3 py-2 rounded-lg text-sm z-50"
+  >
+   {{ currentScriptGameKey }} ({{ availableScriptIds.indexOf(currentScriptGameKey) + 1 }}/{{
+    availableScriptIds.length
+   }})
   </div>
  </div>
  <!-- わんコメが起動されていない場合のエラー表示 -->
@@ -58,16 +73,15 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { validateOmikujiData } from '@/types/OmikujiTypesSchema';
-import ViewBotMessage from './components/ViewBotMessage.vue';
-import ViewBotToast from './components/ViewBotToast.vue';
-import ViewUserVisits from './components/ViewUserVisits.vue';
-import { ConfigUserType } from '@common/types/ConfigTypes';
-import { GetUserVisits, ServiceVisitType } from '@common/subscribe/GetUserVisits';
-import ErrorInitComponent from '@common/ErrorInitComponent.vue';
-
-// コンポーザブルのインポート
+import ViewBotMessage from '@/MainGenerator/components/ViewBotMessage.vue';
+import ViewBotToast from '@/MainGenerator/components/ViewBotToast.vue';
+import ViewUserVisits from '@/MainGenerator/components/ViewUserVisits.vue';
 import { useDisplayMode } from '@/MainGenerator/utils/useDisplayMode';
 import { useMessageHandler } from '@/MainGenerator/utils/useMessageHandler';
+import { ConfigUserType } from '@public/common/types/ConfigTypes';
+import { GetUserVisits, ServiceVisitType } from '@public/common/subscribe/GetUserVisits';
+import ErrorInitComponent from '@public/common/ErrorInitComponent.vue';
+import { Users } from 'lucide-vue-next';
 
 // omikujiData
 const omikujiData = validateOmikujiData(window.omikujiData);
@@ -77,7 +91,7 @@ const isInitialized = ref(true);
 const userVisitsData = ref<Record<string, ServiceVisitType>>({});
 
 // コンポーザブルの使用
-const { normalMessages, toastMessages, processComments, processor } =
+const { normalMessages, toastMessages, processComments, processor, clearMessages } =
  useMessageHandler(omikujiData);
 
 const {
@@ -85,17 +99,46 @@ const {
  currentScriptGameKey,
  currentScriptGameComponent,
  currentScriptGameProps,
- scriptGameMap,
  displaySize,
+ availableScriptIds,
  nextDisplayMode,
  prevDisplayMode,
- setScriptGameKey,
- updateRankingData // 新しく追加
+ nextScriptGame,
+ prevScriptGame,
+ increaseDisplaySize,
+ decreaseDisplaySize,
+ updateRankingData
 } = useDisplayMode(omikujiData, processor);
 
 // コンポーネントのref
 const userVisitsRef = ref<InstanceType<typeof ViewUserVisits>>();
 const scriptGameRef = ref();
+
+// 表示モード切り替えのクリックハンドラー
+const handleDisplayModeClick = () => {
+ // 切替時はメッセージをクリア
+ clearMessages();
+ if (currentDisplayMode.value === 'scriptGame' && availableScriptIds.value.length > 1) {
+  // scriptGameモードで複数のスクリプトがある場合は、スクリプトを切り替え
+  nextScriptGame();
+ } else {
+  // 通常の表示モード切り替え
+  nextDisplayMode();
+ }
+};
+
+// 表示モード切り替えの右クリックハンドラー
+const handleDisplayModeRightClick = () => {
+ // 切替時はメッセージをクリア
+ clearMessages();
+ if (currentDisplayMode.value === 'scriptGame' && availableScriptIds.value.length > 1) {
+  // scriptGameモードで複数のスクリプトがある場合は、スクリプトを切り替え
+  prevScriptGame();
+ } else {
+  // 通常の表示モード切り替え
+  prevDisplayMode();
+ }
+};
 
 // 設定の読み込み
 const config: ConfigUserType = window.CONFIG ?? {
@@ -119,7 +162,7 @@ onMounted(async () => {
   const isInit = await fetchComments((userVisitsDataParam, comments) => {
    userVisitsData.value = userVisitsDataParam;
    processComments(comments);
-   // processComments の後にランキングデータを更新
+   // ランキングデータ更新フラグ
    updateRankingData();
   });
 

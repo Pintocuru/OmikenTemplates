@@ -99,7 +99,7 @@
             updateScriptSetting(scriptId, settingDef.id, (e.target as HTMLSelectElement).value)
           "
          >
-          <option v-for="option in settingDef.values" :key="option" :value="option">
+          <option v-for="(option, index) in settingDef.values" :key="index" :value="option">
            {{ option }}
           </option>
          </select>
@@ -136,9 +136,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import { useScriptSettingsStore } from '@/ConfigMaker/script/useScriptSettingsStore';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
-import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
-import { useScriptSettingsStore } from '@ConfigScript/useScriptSettingsStore';
 import { Settings, RotateCcw } from 'lucide-vue-next';
 
 // store

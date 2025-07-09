@@ -1,7 +1,7 @@
 // src/ConfigMaker/script/useCommentRulesStore.ts
 // 簡略化されたコメントルールストア
-import { defineStore } from 'pinia';
 import { useRecordOperations } from './useRecordStore';
+import { defineStore } from 'pinia';
 
 export const useCommentRulesStore = defineStore('commentRules', () => {
  const baseOperations = useRecordOperations('comments');

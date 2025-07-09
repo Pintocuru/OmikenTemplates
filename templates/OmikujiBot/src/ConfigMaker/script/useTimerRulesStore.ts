@@ -1,7 +1,7 @@
 // src/ConfigMaker/script/useTimerRulesStore.ts - 簡略化されたタイマールールストア
-import { defineStore } from 'pinia';
 import { TimerRuleType } from '@/types/OmikujiTypesSchema';
 import { useRecordOperations } from './useRecordStore';
+import { defineStore } from 'pinia';
 
 export const useTimerRulesStore = defineStore('timerRules', () => {
  const baseOperations = useRecordOperations('timers');

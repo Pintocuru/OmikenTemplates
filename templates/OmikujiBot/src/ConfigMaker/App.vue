@@ -60,13 +60,13 @@
 
 <script setup lang="ts">
 import { CategoryType } from '@/types/OmikujiTypesSchema';
-import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
-import ConfigPresets from '@ConfigComponents/ConfigPresets.vue';
-import CommentRuleEditor from '@ConfigComponents/comments/CommentRuleEditor.vue';
-import TimerRuleEditor from '@ConfigComponents/timers/TimerRuleEditor.vue';
-import PlaceholderEditor from '@ConfigComponents/placeholders/PlaceholderEditor.vue';
-import ScriptSettingsEditor from '@ConfigComponents/ScriptSettingsEditor.vue';
-import CharacterEditor from '@ConfigComponents/characters/CharacterEditor.vue';
+import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import ConfigPresets from '@/ConfigMaker/components/ConfigPresets.vue';
+import CommentRuleEditor from '@/ConfigMaker/components/comments/CommentRuleEditor.vue';
+import TimerRuleEditor from '@/ConfigMaker/components/timers/TimerRuleEditor.vue';
+import PlaceholderEditor from '@/ConfigMaker/components/placeholders/PlaceholderEditor.vue';
+import ScriptSettingsEditor from '@/ConfigMaker/components/ScriptSettingsEditor.vue';
+import CharacterEditor from '@/ConfigMaker/components/characters/CharacterEditor.vue';
 import { storeToRefs } from 'pinia';
 import { Toaster } from 'vue-sonner';
 import { MessageCircle, Timer, Hash, Settings, Users } from 'lucide-vue-next';

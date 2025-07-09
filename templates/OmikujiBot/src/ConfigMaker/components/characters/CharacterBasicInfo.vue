@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
-import PlaceholderIdEditor from '@ConfigComponents/placeholders/PlaceholderIdEditor.vue';
+import PlaceholderIdEditor from '@/ConfigMaker/components/placeholders/PlaceholderIdEditor.vue';
 
 const props = defineProps<{
  modelValue: CharacterPresetType;

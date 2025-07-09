@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
+import { usePlaceholderStore } from '@/ConfigMaker/script/usePlaceholderStore';
 import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
 
 // Props

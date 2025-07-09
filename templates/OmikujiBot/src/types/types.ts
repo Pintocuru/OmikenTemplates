@@ -1,5 +1,5 @@
 // src/types.ts
-import { ConfigUserType } from '@common/types/ConfigTypes';
+import { ConfigUserType } from '@public/common/types/ConfigTypes';
 import { CharacterColorScheme } from './PresetTypes';
 import { OmikujiDataType } from './OmikujiTypesSchema';
 

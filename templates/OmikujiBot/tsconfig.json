@@ -8,26 +8,14 @@
   ],
   "outDir": "./dist", // 出力先ディレクトリ
   "paths": {
-   "@type": [
-    "../../public/type.ts"
-   ],
-   "@common/*": [
-    "../../public/common/*"
+   "@public/*": [
+    "../../public/*"
    ],
    "@assets/*": [
     "./assets/*"
    ],
    "@/*": [
     "./src/*"
-   ],
-   "@Config/*": [
-    "./src/ConfigMaker/*"
-   ],
-   "@ConfigComponents/*": [
-    "./src/ConfigMaker/components/*"
-   ],
-   "@ConfigScript/*": [
-    "./src/ConfigMaker/script/*"
    ],
   }
  },

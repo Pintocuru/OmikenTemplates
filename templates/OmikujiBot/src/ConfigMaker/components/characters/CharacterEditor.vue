@@ -25,10 +25,10 @@
 
 <script setup lang="ts">
 import { computed, provide } from 'vue';
-import { useCharacterStore } from '@ConfigScript/useCharacterStore';
-import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
+import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
+import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
 import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
-import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
+import RuleTabs from '@/ConfigMaker/components/parts/RuleTabs.vue';
 import CharacterBasicInfo from './CharacterBasicInfo.vue';
 import CharacterColorSettings from './CharacterColorSettings.vue';
 import CharacterImageSettings from './CharacterImageSettings.vue';

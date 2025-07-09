@@ -65,10 +65,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { PlaceholderSchema, PlaceholderType, PostActionType } from '@/types/OmikujiTypesSchema';
-import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
-import { useCommentRulesStore } from '@ConfigScript/useCommentRulesStore';
 import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
-import CopyButton from '@ConfigComponents/parts/CopyButton.vue';
+import { usePlaceholderStore } from '@/ConfigMaker/script/usePlaceholderStore';
+import { useCommentRulesStore } from '@/ConfigMaker/script/useCommentRulesStore';
+import CopyButton from '@/ConfigMaker/components/parts/CopyButton.vue';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 
 // Props

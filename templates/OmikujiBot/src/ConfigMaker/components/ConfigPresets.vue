@@ -68,8 +68,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useOmikujiStore } from '../script/useOmikujiStore';
-import { presets } from '../script/ConfigPresetsData';
+import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import { presets } from '@/ConfigMaker/script/ConfigPresetsData';
 
 // Stores
 const omikujiStore = useOmikujiStore();

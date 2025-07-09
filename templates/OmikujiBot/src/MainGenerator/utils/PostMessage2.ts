@@ -1,17 +1,13 @@
 // src/Modules/api/PostMessage.ts
-// 250605_作り直し - コメント付与・効率化版
+// 250709_エイリアス変更
 
-import { CharacterImageSet, CharacterPreset } from '@/types/PresetTypes';
-import {
- postSystemMessage,
- postWordParty,
- postComment
-} from '../../../../../public/common/api/PostOneComme';
-import { ServiceAPI } from '../../../../../public/common/api/ServiceAPI';
-import { SETTINGS } from '../../../../../public/common/settings';
-import { Service } from '@onecomme.com/onesdk/types/Service';
 import { PostAction, PostActionWordParty } from '@/types/OmikujiTypes';
-import { SendCommentType } from '@type';
+import { CharacterImageSet, CharacterPreset } from '@/types/PresetTypes';
+import { postSystemMessage, postWordParty, postComment } from '@public/common/api/PostOneComme';
+import { ServiceAPI } from '@public/common/api/ServiceAPI';
+import { SETTINGS } from '@public/common/settings';
+import { SendCommentType } from '@public/type';
+import { Service } from '@onecomme.com/onesdk/types/Service';
 
 /**
  * メッセージ投稿を管理するクラス

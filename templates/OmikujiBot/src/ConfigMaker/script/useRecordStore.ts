@@ -1,6 +1,5 @@
 // src/ConfigMaker/script/useRecordStore.ts - 共通ルールストア
 import { computed } from 'vue';
-import { useOmikujiStore } from './useOmikujiStore';
 import {
  CharacterPresetType,
  CommentRuleType,
@@ -11,6 +10,7 @@ import {
  PlaceholderType,
  TimerRuleType
 } from '@/types/OmikujiTypesSchema';
+import { useOmikujiStore } from './useOmikujiStore';
 
 // 共通のルール操作を提供するコンポーザブル
 type Category = 'comments' | 'timers' | 'placeholders' | 'characters';

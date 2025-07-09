@@ -1,8 +1,8 @@
 // src/MainGenerator/utils/processors/CommentRuleProcessor.ts
-import { CommentRuleType, PostActionType, validateOmikujiData } from '@/types/OmikujiTypesSchema';
 import { BotMessage } from '@/types/types';
+import { CommentRuleType, PostActionType, validateOmikujiData } from '@/types/OmikujiTypesSchema';
 import { checkThresholdComment } from './ThresholdCommentChecker';
-import { SETTINGS } from '@common/settings';
+import { SETTINGS } from '@public/common/settings';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 // omikujiData (元データが深すぎるのでwindowから引っ張る)

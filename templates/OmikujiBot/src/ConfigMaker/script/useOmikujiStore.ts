@@ -1,12 +1,12 @@
 // src/ConfigMaker/script/useOmikujiStore.ts
 import { ref } from 'vue';
-import { defineStore } from 'pinia';
 import {
  CategoryType,
  OmikujiDataSchema,
  OmikujiDataType,
  validateOmikujiData
 } from '@/types/OmikujiTypesSchema';
+import { defineStore } from 'pinia';
 
 // omikujiData
 const omikujiData = validateOmikujiData(window.omikujiData);
