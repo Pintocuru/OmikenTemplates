@@ -1,4 +1,4 @@
-// composables/useBotCommentDisplay.ts
+// composables/useBotMessage.ts
 import { ref, computed, type Ref } from 'vue';
 import { BotMessage, SIZE_CONFIG, DisplaySize } from '@/types/types';
 

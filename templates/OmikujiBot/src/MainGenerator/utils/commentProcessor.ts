@@ -148,15 +148,9 @@ export class CommentProcessor {
     isDuplicateComment = true;
 
     // コメント条件を含むルールが処理された場合のみクールダウンを更新
-    if (isCommentBased) {
-     hasCommentBasedRule = true;
-    }
+    if (isCommentBased) hasCommentBasedRule = true;
    }
-
-   // コメント条件を含むルールが処理された場合のみクールダウンを更新
-   if (hasCommentBasedRule) {
-    this.lastProcessedTime = currentTime;
-   }
+   if (hasCommentBasedRule) this.lastProcessedTime = currentTime;
   } catch (error) {
    console.error('ユーザーコメント処理エラー:', error);
   }
@@ -198,12 +192,12 @@ export class CommentProcessor {
   * デフォルトのプレースホルダー情報を設定
   */
  private setupDefaultPlaceholders(comment: Comment): void {
-  const hoggMap: Record<string, string | number> = {
+  // TODO:ここにMETAデータを取得できないか？
+  this.placeProcess.updateResolvedValues({
    user: comment.data.displayName || comment.data.name,
    lc: comment.meta?.lc ?? 0,
    tc: comment.meta?.tc ?? 0
-  };
-  this.placeProcess.updateResolvedValues(hoggMap);
+  });
  }
 
  /**

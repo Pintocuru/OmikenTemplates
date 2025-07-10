@@ -74,7 +74,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, toRef } from 'vue';
 import { BotMessage, DisplaySize } from '@/types/types';
-import { useBotCommentDisplay } from './useBotCommentDisplay';
+import { useBotCommentDisplay } from './useBotMessage';
 
 const props = defineProps<{
  botMessages: BotMessage[];

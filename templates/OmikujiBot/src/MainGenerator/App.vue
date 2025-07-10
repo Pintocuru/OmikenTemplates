@@ -27,43 +27,22 @@
 
   <!-- 表示サイズ変更ボタン -->
   <div
-   class="fixed bottom-5 right-20 w-12 h-12 bg-green-600/70 hover:bg-green-600/90 rounded-full flex items-center justify-center cursor-pointer z-50 transition-all duration-300 hover:scale-110"
+   class="fixed bottom-2 right-18 w-12 h-12 bg-green-600/70 hover:bg-green-600/90 rounded-full flex items-center justify-center cursor-pointer z-50 transition-all duration-300 hover:scale-110"
    @click="increaseDisplaySize"
    @contextmenu.prevent="decreaseDisplaySize"
    title="左クリック：サイズ拡大 / 右クリック：サイズ縮小"
   >
-   <!-- TODO:lucide-vue-next を使って -->
-   <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path
-     stroke-linecap="round"
-     stroke-linejoin="round"
-     stroke-width="2"
-     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-    ></path>
-   </svg>
+   <ZoomIn class="w-6 h-6 text-white" />
   </div>
-
-  <!-- TODO:キャラクターにフキダシをつけるような時間経過で発生するやつを新設 -->
 
   <!-- 表示モード切り替えアイコン -->
   <div
-   class="fixed bottom-5 right-5 w-12 h-12 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center cursor-pointer z-50 transition-all duration-300 hover:scale-110"
+   class="fixed bottom-2 right-2 w-12 h-12 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center cursor-pointer z-50 transition-all duration-300 hover:scale-110"
    @click="handleDisplayModeClick"
    @contextmenu.prevent="handleDisplayModeRightClick"
    title="左クリック：次のモード / 右クリック：前のモード"
   >
-   <!-- TODO:キャラクターを使って可愛く仕上げたい -->
-   <img src="./icons/toggle-mode.svg" alt="表示モード切り替え" class="w-8 h-8 invert" />
-  </div>
-
-  <!-- スクリプトゲーム選択時の追加情報表示 -->
-  <div
-   v-if="currentDisplayMode === 'scriptGame' && availableScriptIds.length > 1"
-   class="fixed bottom-5 left-5 bg-black/70 text-white px-3 py-2 rounded-lg text-sm z-50"
-  >
-   {{ currentScriptGameKey }} ({{ availableScriptIds.indexOf(currentScriptGameKey) + 1 }}/{{
-    availableScriptIds.length
-   }})
+   <Monitor class="w-7 h-7 text-white" />
   </div>
  </div>
  <!-- わんコメが起動されていない場合のエラー表示 -->
@@ -81,7 +60,7 @@ import { useMessageHandler } from '@/MainGenerator/utils/useMessageHandler';
 import { ConfigUserType } from '@public/common/types/ConfigTypes';
 import { GetUserVisits, ServiceVisitType } from '@public/common/subscribe/GetUserVisits';
 import ErrorInitComponent from '@public/common/ErrorInitComponent.vue';
-import { Users } from 'lucide-vue-next';
+import { ZoomIn, Monitor } from 'lucide-vue-next';
 
 // omikujiData
 const omikujiData = validateOmikujiData(window.omikujiData);
@@ -96,7 +75,6 @@ const { normalMessages, toastMessages, processComments, processor, clearMessages
 
 const {
  currentDisplayMode,
- currentScriptGameKey,
  currentScriptGameComponent,
  currentScriptGameProps,
  displaySize,
