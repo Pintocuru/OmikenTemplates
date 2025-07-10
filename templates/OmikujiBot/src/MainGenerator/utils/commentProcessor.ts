@@ -1,35 +1,40 @@
 // src/MainGenerator/utils/CommentProcessor.ts
 import { BotMessage } from '@/types/types';
 import { CommentRuleType, OmikujiDataType, OmikujiSetType } from '@/types/OmikujiTypesSchema';
+import { isWithinProcessingCooldown, isWithinTimeThreshold } from './CommentProcessorCooldown';
 import { PostMessage } from './PostMessage2';
 import { PlaceProcess } from './PlaceProcess2';
 import { ScriptManager } from './ScriptManager';
 import {
- generateToastsFromActions,
+ BotMessageGenerator,
  processCommentRule,
  sanitizePostActionsForDuplicate
-} from './CommentRuleProcessor';
+} from './CommentProcessorToast';
 import { drawOmikuji } from './PlayOmikuji';
 import { SETTINGS } from '@public/common/settings';
+import { GetMetas } from '@public/common/subscribe/GetMetas';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { PostAction, PostActionWordParty } from '@/types/OmikujiTypes';
+import { ServiceMeta } from '@onecomme.com/onesdk/types/Service';
+import { ScriptResult } from '@/types/PresetTypes';
 
 export class CommentProcessor {
- private readonly timeThreshold = 5; // これ以上経過した古いコメントは判定しない(秒)
- private readonly processingCooldownSeconds = 3; // 処理クールダウン時間
- private lastProcessedTime: number = 0;
+ private lastProcessedTime: number = 0; // クールタイム管理
+ private currentServiceMeta: ServiceMeta | null = null; // Metaデータ管理
 
  // 依存関係
- public readonly PostMessage: PostMessage;
- public readonly placeProcess: PlaceProcess;
+ private readonly PostMessage: PostMessage;
+ private readonly placeProcess: PlaceProcess;
  private readonly scriptManager: ScriptManager;
- omikujiData: OmikujiDataType;
+ private readonly omikujiData: OmikujiDataType;
+ private readonly BotMessageGenerator: BotMessageGenerator;
 
  constructor(omikujiData: OmikujiDataType) {
   this.omikujiData = omikujiData;
   this.PostMessage = new PostMessage(omikujiData.characters);
   this.placeProcess = new PlaceProcess(omikujiData.placeholders);
   this.scriptManager = new ScriptManager(omikujiData);
+  this.BotMessageGenerator = new BotMessageGenerator(omikujiData.characters);
+  this.initializeMetaFetcher();
  }
 
  /**
@@ -43,11 +48,11 @@ export class CommentProcessor {
 
   for (const comment of comments) {
    // 古いコメントをスキップ
-   if (!this.isWithinTimeThreshold(comment, currentTime)) continue;
+   if (!isWithinTimeThreshold(comment.data.timestamp, currentTime)) continue;
 
    const processedMessages =
     comment.data.userId === SETTINGS.BOT_USER_ID
-     ? this.processBotComment(comment)
+     ? this.BotMessageGenerator.processBotComment(comment)
      : this.processUserComment(comment, currentTime);
 
    if (processedMessages) {
@@ -61,75 +66,41 @@ export class CommentProcessor {
  }
 
  /**
-  * 時間閾値内かどうかをチェック
-  */
- private isWithinTimeThreshold(comment: Comment, currentTime: number): boolean {
-  const secondsSinceComment = (currentTime - new Date(comment.data.timestamp).getTime()) / 1000;
-  return secondsSinceComment <= this.timeThreshold;
- }
-
- /**
-  * 処理のクールダウン時間内かどうかをチェック
-  */
- private isWithinProcessingCooldown(currentTime: number): boolean {
-  return (currentTime - this.lastProcessedTime) / 1000 < this.processingCooldownSeconds;
- }
-
- /**
-  * BOTコメントの処理
-  */
- private processBotComment(comment: Comment): BotMessage | null {
-  const character = Object.values(this.omikujiData.characters).find((char) =>
-   comment.data.id.includes(char.id)
-  );
-
-  if (!character) return null;
-
-  return {
-   id: comment.data.id,
-   name: comment.data.name,
-   profileImage: comment.data.profileImage,
-   timestamp: comment.data.timestamp,
-   comment: comment.data.comment,
-   isToast: false,
-   color: character.color
-  };
- }
-
- /**
   * ユーザーコメントの処理
   */
  private processUserComment(comment: Comment, currentTime: number): BotMessage[] {
   const botMessages: BotMessage[] = [];
   let isDuplicateComment = false;
   let hasCommentBasedRule = false; // コメント条件を含むルールがあるかどうか
+  const firstCharacterId = Object.keys(this.omikujiData.characters)[0];
 
   try {
-   const commentRules = this.omikujiData.comments;
+   // orderの順番に並べる
+   const sortedRules = Object.values(this.omikujiData.comments).sort((a, b) => a.order - b.order);
 
-   for (const rule of Object.values(commentRules)) {
+   for (const rule of sortedRules) {
     const isCommentBased = rule.threshold.conditions.includes('comment');
-    const isWithinCooldown = this.isWithinProcessingCooldown(currentTime);
+    const isWithinCooldown = isWithinProcessingCooldown(currentTime, this.lastProcessedTime);
 
     // コメント条件を含むルールの場合のクールダウン処理
     if (isCommentBased && isWithinCooldown) {
-     const result = processCommentRule(comment, rule, isDuplicateComment, true);
+     const result = processCommentRule(comment, rule, firstCharacterId, isDuplicateComment, true);
      if (result.success && result.toastActions) {
-      const toastBotMessages = generateToastsFromActions(result.toastActions);
-      botMessages.push(...toastBotMessages);
+      const toast = this.BotMessageGenerator.generateToasts(result.toastActions);
+      botMessages.push(...toast);
       isDuplicateComment = true;
      }
      continue;
     }
 
     // 通常のルール処理
-    const result = processCommentRule(comment, rule, isDuplicateComment, false);
+    const result = processCommentRule(comment, rule, firstCharacterId, isDuplicateComment, false);
     if (!result.success) continue;
 
     // Toast専用の処理（クールダウン中やその他の理由）
     if (result.toastActions) {
-     const toastBotMessages = generateToastsFromActions(result.toastActions);
-     botMessages.push(...toastBotMessages);
+     const toast = this.BotMessageGenerator.generateToasts(result.toastActions);
+     botMessages.push(...toast);
      isDuplicateComment = true;
      continue;
     }
@@ -175,11 +146,7 @@ export class CommentProcessor {
    const scriptResult = this.scriptManager.executeScript(comment, rule);
 
    return scriptResult
-    ? this.processPlaceholdersWithScript(
-       scriptResult.placeholders,
-       omikujiItem,
-       scriptResult.postActions
-      )
+    ? this.processPlaceholdersWithScript(scriptResult, omikujiItem)
     : this.processOmikujiOnly(omikujiItem, isDuplicateComment);
   } catch (error) {
    console.error('おみくじプロセス実行エラー:', error);
@@ -192,11 +159,12 @@ export class CommentProcessor {
   * デフォルトのプレースホルダー情報を設定
   */
  private setupDefaultPlaceholders(comment: Comment): void {
-  // TODO:ここにMETAデータを取得できないか？
   this.placeProcess.updateResolvedValues({
    user: comment.data.displayName || comment.data.name,
    lc: comment.meta?.lc ?? 0,
-   tc: comment.meta?.tc ?? 0
+   tc: comment.meta?.tc ?? 0,
+   viewer: this.currentServiceMeta?.viewer ?? 0,
+   upVote: this.currentServiceMeta?.upVote ?? 0
   });
  }
 
@@ -204,27 +172,22 @@ export class CommentProcessor {
   * プレースホルダー処理（スクリプト結果付き）
   */
  private processPlaceholdersWithScript(
-  scriptPlaceholders: Record<string, string> | undefined,
-  omikujiItem: OmikujiSetType,
-  postActions: (PostAction | PostActionWordParty)[]
+  scriptResult: ScriptResult,
+  omikujiItem: OmikujiSetType
  ): BotMessage[] {
   try {
    // スクリプトのプレースホルダーを更新
-   if (scriptPlaceholders) {
-    this.placeProcess.updateResolvedValues(scriptPlaceholders);
-   }
+   this.placeProcess.updateResolvedValues(scriptResult.placeholders);
 
    // スクリプトの投稿アクション実行
-   if (postActions?.length > 0) {
-    this.PostMessage.post(postActions);
-   }
+   this.PostMessage.post(scriptResult.postActions);
 
    // おみくじのプレースホルダーを解決し、わんコメに投稿
-   const omikujiPostActions = this.placeProcess.processOmikuji(omikujiItem);
-   this.PostMessage.post(omikujiPostActions);
+   const postActions = this.placeProcess.processOmikuji(omikujiItem);
+   this.PostMessage.post(postActions);
 
    // Toast処理とBotMessage取得
-   return generateToastsFromActions(omikujiPostActions);
+   return this.BotMessageGenerator.generateToasts(postActions);
   } finally {
    // プレースホルダーをクリア（必ずクリアする）
    this.placeProcess.clearResolvedValues();
@@ -251,8 +214,9 @@ export class CommentProcessor {
    }
 
    // Toast処理とBotMessage取得
-   return generateToastsFromActions(postActions);
+   return this.BotMessageGenerator.generateToasts(postActions);
   } finally {
+   // プレースホルダーをクリア
    this.placeProcess.clearResolvedValues();
   }
  }
@@ -260,7 +224,7 @@ export class CommentProcessor {
  /**
   * スクリプトの再初期化
   */
- public reinitializeScripts(): void {
+ reinitializeScripts(): void {
   this.scriptManager.reinitializeScripts();
  }
 
@@ -269,5 +233,16 @@ export class CommentProcessor {
   */
  getRankingData(scriptId: string) {
   return this.scriptManager.getRankingData(scriptId);
+ }
+
+ /**
+  * メタデータフェッチャーの初期化とポーリング開始
+  */
+ private initializeMetaFetcher(): void {
+  const metaFetcher = GetMetas(); // 0番目のサービスメタを取得
+  metaFetcher.fetchMeta((meta) => {
+   this.currentServiceMeta = meta;
+   console.log('Updated Service Meta:', this.currentServiceMeta); // デバッグ用
+  });
  }
 }

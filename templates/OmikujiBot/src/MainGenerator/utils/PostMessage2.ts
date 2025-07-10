@@ -37,9 +37,8 @@ export class PostMessage {
   try {
    // 枠情報を事前に取得（全投稿で共有）
    await this.refreshServices();
-   console.log(posts);
 
-   // 全ての投稿を並行処理で実行（Promise.allで効率化）
+   // 全ての投稿を並行処理で実行
    await Promise.all(
     posts.map(async (post) => {
      const chara = this.getCharacterFromPost(post);

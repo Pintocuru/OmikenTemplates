@@ -1,4 +1,5 @@
 // src/types/OmikujiTypesSchema.ts
+// 250710_CharacterImageType の追加
 import { z } from 'zod';
 
 // ======================
@@ -385,4 +386,5 @@ export type CountConditionType = z.infer<typeof CountConditionSchema>;
 export type CharacterPresetType = z.infer<typeof CharacterPresetSchema>;
 export type CharacterColorSchemeType = z.infer<typeof CharacterColorSchemeSchema>;
 export type CharacterImageSetType = z.infer<typeof CharacterImageSetSchema>;
+export type CharacterImageType = z.infer<typeof CharacterEmotionSchema>;
 export type CharacterEmotionType = z.infer<typeof CharacterEmotionSchema>;
