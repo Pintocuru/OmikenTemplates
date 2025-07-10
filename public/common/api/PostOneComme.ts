@@ -128,6 +128,25 @@ function delayFetchPost(
  delaySeconds: number,
  errorMessage: string
 ): Promise<void> {
+ // test
+ /**
+  *
+  * 
+  * TODO:fetch ではなく、OneSDK.post を使ってラクをしたい
+  * OneSDK.post　に　headers　は不要
+  await OneSDK.post('http://localhost:11180/api/comments', {
+  service: { id: '26c434d4-db3b-4975-9061-093cf7cdb5b2' },
+  comment: {
+   userId: 'BotUserIDname',
+   id: Date.now() + Math.random().toString().slice(2, 12),
+   name: 'test',
+   comment: '',
+   profileImage: ''
+  }
+ });
+
+  */
+
  return new Promise((resolve, reject) => {
   // 遅延実行のセットアップ
   setTimeout(

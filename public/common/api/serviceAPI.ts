@@ -59,13 +59,11 @@ export class ServiceAPI {
 
    // わんコメAPIにPOSTリクエストを送信
    const response = await OneSDK.post(this.servicesURL, {
-    data: {
-     id: frameId,
-     name: `おみくじBOT:${name}`, // おみくじBOT用の命名規則
-     speech: true, // 音声読み上げを有効にする
-     color: this.color2RGB(color) // HEXカラーをRGB形式に変換
-    },
-    headers: { 'Content-Type': 'application/json' }
+    // @ts-ignore OneSDK.post の型の不具合
+    id: frameId,
+    name: `おみくじBOT:${name}`,
+    speech: true,
+    color: this.color2RGB(color)
    });
 
    // レスポンスデータの存在確認

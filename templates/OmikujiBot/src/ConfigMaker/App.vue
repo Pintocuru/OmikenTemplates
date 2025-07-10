@@ -4,8 +4,11 @@
   <h1 class="text-2xl font-bold mb-6 text-center text-primary">おみくじBot コンフィグエディター</h1>
 
   <!-- アクションボタンとプリセット -->
-  <div class="mb-4">
-   <ConfigPresets />
+  <div class="flex flex-wrap justify-between items-center mb-2 gap-4 min-w-0">
+   <!-- インポート機能 -->
+   <ConfigImport />
+   <!-- エクスポート機能 -->
+   <ConfigExport />
   </div>
 
   <!-- ナビゲーションタブ -->
@@ -14,7 +17,7 @@
     v-for="(tab, key) in navigationTabs"
     :key="key"
     :class="['tab', selectedCategory === key ? 'tab-active' : '', 'flex items-center gap-2']"
-    @click="selectCategory(key as CategoryType)"
+    @click="omikujiStore.selectCategory(key)"
    >
     <component :is="tab.icon" class="w-4 h-4" />
     {{ tab.label }}
@@ -61,7 +64,8 @@
 <script setup lang="ts">
 import { CategoryType } from '@/types/OmikujiTypesSchema';
 import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
-import ConfigPresets from '@/ConfigMaker/components/ConfigPresets.vue';
+import ConfigImport from '@/ConfigMaker/components/presets/ConfigImport.vue';
+import ConfigExport from '@/ConfigMaker/components/presets/ConfigExport.vue';
 import CommentRuleEditor from '@/ConfigMaker/components/comments/CommentRuleEditor.vue';
 import TimerRuleEditor from '@/ConfigMaker/components/timers/TimerRuleEditor.vue';
 import PlaceholderEditor from '@/ConfigMaker/components/placeholders/PlaceholderEditor.vue';
@@ -75,7 +79,6 @@ const omikujiStore = useOmikujiStore();
 
 // storeToRefsを使って反応性を保持
 const { selectedCategory, data } = storeToRefs(omikujiStore);
-const { selectCategory } = omikujiStore;
 
 // ナビゲーションタブの設定
 const navigationTabs = {
@@ -87,7 +90,7 @@ const navigationTabs = {
 } as const;
 
 // カテゴリごとのアイテム数を取得
-const getCategoryItemCount = (category: string): number => {
+const getCategoryItemCount = (category: CategoryType): number => {
  switch (category) {
   case 'comments':
    return Object.keys(data.value.comments).length;

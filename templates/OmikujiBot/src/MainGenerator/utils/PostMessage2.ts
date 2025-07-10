@@ -8,6 +8,7 @@ import { ServiceAPI } from '@public/common/api/ServiceAPI';
 import { SETTINGS } from '@public/common/settings';
 import { SendCommentType } from '@public/type';
 import { Service } from '@onecomme.com/onesdk/types/Service';
+import OneSDK from '@onecomme.com/onesdk';
 
 /**
  * メッセージ投稿を管理するクラス

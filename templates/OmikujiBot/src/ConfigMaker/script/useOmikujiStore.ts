@@ -92,7 +92,11 @@ export const useOmikujiStore = defineStore('omikuji', () => {
  // Navigation
  const selectCategory = (category: CategoryType) => {
   selectedCategory.value = category;
-  selectedRuleId.value = null;
+
+  const items = getCategoryItems<any>(category);
+  const firstId = Object.keys(items)[0] ?? null;
+
+  selectedRuleId.value = firstId;
  };
 
  const selectRule = (id: string) => {
