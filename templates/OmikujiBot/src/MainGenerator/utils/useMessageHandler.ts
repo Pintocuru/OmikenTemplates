@@ -1,33 +1,26 @@
 // src/composables/useMessageHandler.ts
-import { ref, computed } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import { BotMessage } from '@/types/types';
 import { OmikujiDataType } from '@/types/OmikujiTypesSchema';
 import { CommentProcessor } from '@/MainGenerator/utils/commentProcessor';
+import { TimerProcessor } from '@/MainGenerator/utils/timerProcessor';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 export function useMessageHandler(omikujiData: OmikujiDataType) {
  const botMessages = ref<BotMessage[]>([]);
  const processor = new CommentProcessor(omikujiData);
+ const timerProcessor = new TimerProcessor(omikujiData);
 
  // メッセージを isToast で分離
  const normalMessages = computed(() => botMessages.value.filter((message) => !message.isToast));
  const toastMessages = computed(() => botMessages.value.filter((message) => message.isToast));
 
- // コメント処理
- const processComments = (comments: Comment[]) => {
-  if (!comments.length) {
-   botMessages.value = [];
-   return;
-  }
+ // メッセージ処理の共通ロジック
+ const processMessages = (processedMessages: BotMessage[]) => {
+  if (!processedMessages.length) return;
 
-  const processedMessages = processor.processComments(comments);
   Promise.all(
    processedMessages.map((message) => {
-    if (!message.delaySeconds) {
-     botMessages.value = [...botMessages.value, message];
-     return Promise.resolve();
-    }
-
     const delay = message.delaySeconds * 1000;
     return new Promise<void>((resolve) => {
      setTimeout(() => {
@@ -41,10 +34,41 @@ export function useMessageHandler(omikujiData: OmikujiDataType) {
   );
  };
 
+ // コメント処理
+ const processComments = (comments: Comment[]) => {
+  if (!comments.length) {
+   botMessages.value = [];
+   return;
+  }
+
+  const processedMessages = processor.processComments(comments);
+  processMessages(processedMessages);
+ };
+
+ // タイマーベースのメッセージ処理
+ const processTimerMessages = (processedMessages: BotMessage[]) => {
+  processMessages(processedMessages);
+ };
+
+ // タイマー開始
+ const startTimers = () => {
+  timerProcessor.startTimers(processTimerMessages);
+ };
+
+ // タイマー停止
+ const stopTimers = () => {
+  timerProcessor.stopTimers();
+ };
+
  // メッセージをクリア
  const clearMessages = () => {
   botMessages.value = [];
  };
+
+ // コンポーネントアンマウント時にタイマーを停止
+ onUnmounted(() => {
+  stopTimers();
+ });
 
  return {
   // 状態
@@ -55,6 +79,9 @@ export function useMessageHandler(omikujiData: OmikujiDataType) {
 
   // アクション
   processComments,
+  processTimerMessages,
+  startTimers,
+  stopTimers,
   clearMessages
  };
 }

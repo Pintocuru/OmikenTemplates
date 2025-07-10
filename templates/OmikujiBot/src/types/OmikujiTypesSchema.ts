@@ -1,5 +1,5 @@
 // src/types/OmikujiTypesSchema.ts
-// 250710_CharacterImageType の追加
+// 250710_3 timerのscript 使用不可の仕様変更
 import { z } from 'zod';
 
 // ======================
@@ -115,6 +115,7 @@ export const createDefaultTimerRule = () => ({
  scriptParams: null,
  ruleType: 'timers' as const,
  intervalSeconds: 60,
+ isBaseZero: false,
  omikuji: [createDefaultOmikujiSet()]
 });
 
@@ -335,8 +336,6 @@ const BaseRuleCommonSchema = z.object({
   .string()
   .regex(/^#[0-9A-Fa-f]{6}$/)
   .catch('#3B82F6'),
- scriptId: z.union([z.string(), z.null()]).catch(null),
- scriptParams: z.union([z.record(z.any()), z.null()]).catch(null),
  omikuji: z.array(OmikujiSetSchema).catch([createDefaultOmikujiSet()])
 });
 
@@ -344,7 +343,9 @@ export const CommentRuleSchema = z
  .object({
   ...BaseRuleCommonSchema.shape,
   ruleType: z.literal('comments').catch('comments'),
-  threshold: CommentThresholdSchema
+  threshold: CommentThresholdSchema,
+  scriptId: z.union([z.string(), z.null()]).catch(null),
+  scriptParams: z.union([z.record(z.any()), z.null()]).catch(null)
  })
  .catch(createDefaultCommentRule);
 
@@ -352,7 +353,8 @@ export const TimerRuleSchema = z
  .object({
   ...BaseRuleCommonSchema.shape,
   ruleType: z.literal('timers').catch('timers'),
-  intervalSeconds: z.number().min(1).catch(60)
+  intervalSeconds: z.number().min(5).catch(60),
+  isBaseZero: z.boolean().catch(false)
  })
  .catch(createDefaultTimerRule);
 

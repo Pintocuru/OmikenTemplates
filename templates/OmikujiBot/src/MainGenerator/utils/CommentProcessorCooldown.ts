@@ -9,10 +9,18 @@ export function isWithinTimeThreshold(timestamp: string, currentTime: number): b
  return secondsSinceComment <= timeThreshold;
 }
 
-// 処理のクールダウン時間内かどうかをチェック
-export function isWithinProcessingCooldown(
- currentTime: number,
- lastProcessedTime: number
-): boolean {
- return (currentTime - lastProcessedTime) / 1000 < processingCooldownSeconds;
+export class CommentProcessorCooldown {
+ private lastProcessedTime: number = 0;
+
+ isWithinCooldown(currentTime: number): boolean {
+  return (currentTime - this.lastProcessedTime) / 1000 < processingCooldownSeconds;
+ }
+
+ updateLastProcessedTime(time: number): void {
+  this.lastProcessedTime = time;
+ }
+
+ getLastProcessedTime(): number {
+  return this.lastProcessedTime;
+ }
 }

@@ -9,7 +9,7 @@
   <BaseSettingsEditor :modelValue="selectedRule" @update:modelValue="updateSelectedRule" />
 
   <!-- タイマー設定セクション -->
-  <TimerIntervalEditor v-model="selectedRule.intervalSeconds" />
+  <TimerIntervalEditor v-model="selectedRule" />
 
   <!-- おみくじ設定セクション -->
   <OmikujiSetEditor v-model="selectedRule.omikuji" />

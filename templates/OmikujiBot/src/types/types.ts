@@ -12,7 +12,7 @@ export type BotMessage = {
  comment: string; // コメント
  isToast: boolean; // 通常表示かトースト表示か
  color: CharacterColorScheme; // カラー
- delaySeconds?: number; // 投稿までの遅延時間（秒）
+ delaySeconds: number; // 投稿までの遅延時間（秒）
 };
 
 export type DisplaySize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';

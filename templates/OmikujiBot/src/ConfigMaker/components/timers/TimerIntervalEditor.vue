@@ -17,33 +17,45 @@
     <label class="label">
      <span class="label-text font-medium">実行間隔</span>
      <span class="label-text-alt text-sm text-gray-500">
-      {{ formatInterval(modelValue) }}
+      {{ formatInterval(modelValue.intervalSeconds) }}
      </span>
     </label>
-    <select
-     :value="modelValue"
-     @change="applyPreset(($event.target as HTMLSelectElement).value)"
-     class="select select-bordered w-full"
-    >
+    <select v-model="intervalSeconds" class="select select-bordered w-full">
      <option v-for="preset in intervalPresets" :key="preset.value" :value="preset.value">
       {{ preset.label }}
      </option>
     </select>
+   </div>
+
+   <!-- isBaseZero トグル -->
+   <div class="form-control">
+    <label class="label cursor-pointer justify-start gap-2">
+     <input type="checkbox" class="toggle toggle-primary" v-model="isBaseZero" />
+     <span class="label-text font-medium">基準時刻を0秒に固定</span>
+     <span
+      class="label-text-alt cursor-help"
+      title="有効にすると、タイマーは分や時間の切り替わりタイミング（0分0秒を基準）で実行されます。無効の場合は設定した間隔で実行されます。"
+     >
+      ℹ️
+     </span>
+    </label>
    </div>
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
-// Props
+import { computed } from 'vue';
+import type { TimerRuleType } from '@/types/OmikujiTypesSchema';
+
 const props = defineProps<{
- modelValue: number;
+ modelValue: {
+  intervalSeconds: number;
+  isBaseZero: boolean;
+ };
 }>();
 
-// Emits
-const emit = defineEmits<{
- 'update:modelValue': [value: number];
-}>();
+const emit = defineEmits(['update:modelValue']);
 
 // プリセット定義
 const intervalPresets = [
@@ -58,13 +70,38 @@ const intervalPresets = [
  { label: '1時間', value: 3600 }
 ];
 
-// メソッド
-const applyPreset = (value: string) => {
- const presetValue = parseInt(value);
- if (!isNaN(presetValue)) {
-  emit('update:modelValue', presetValue);
+// 個別のプロパティをcomputedで管理
+/**
+ * TODO:
+ * ! TimerRuleEditor.vue:12 [Vue warn] Write operation failed: computed value is readonly
+ */
+const intervalSeconds = computed({
+ get() {
+  return props.modelValue.intervalSeconds;
+ },
+ set(value) {
+  emit('update:modelValue', {
+   ...props.modelValue,
+   intervalSeconds: Number(value)
+  });
  }
-};
+});
+
+/**
+ * TODO:
+ * ! TimerRuleEditor.vue:12 [Vue warn] Write operation failed: computed value is readonly
+ */
+const isBaseZero = computed({
+ get() {
+  return props.modelValue.isBaseZero;
+ },
+ set(value) {
+  emit('update:modelValue', {
+   ...props.modelValue,
+   isBaseZero: value
+  });
+ }
+});
 
 const formatInterval = (seconds: number) => {
  if (seconds < 60) {

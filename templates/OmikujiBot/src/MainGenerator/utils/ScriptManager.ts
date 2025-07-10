@@ -1,10 +1,5 @@
 // src/MainGenerator/utils/processors/ScriptManager.ts
-import {
- CommentRuleType,
- OmikujiDataType,
- RuleType,
- TimerRuleType
-} from '@/types/OmikujiTypesSchema';
+import { CommentRuleType, OmikujiDataType, TimerRuleType } from '@/types/OmikujiTypesSchema';
 import { ScriptClass, ScriptResult, UserStatistics, GameState } from '@/types/PresetTypes';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
@@ -29,15 +24,9 @@ export class ScriptManager {
  private initializeScripts(): void {
   try {
    const commentRules: Record<string, CommentRuleType> = this.omikujiData.comments;
-   const timerRules: Record<string, TimerRuleType> = this.omikujiData.timers;
 
    // コメントルールの処理
    for (const rule of Object.values(commentRules)) {
-    this.initializeScript(rule.scriptId);
-   }
-
-   // タイマールールの処理
-   for (const rule of Object.values(timerRules)) {
     this.initializeScript(rule.scriptId);
    }
   } catch (error) {
@@ -81,8 +70,6 @@ export class ScriptManager {
 
    // ランキングデータの初期化
    this.rankingData[scriptId] = [];
-
-   console.log(`スクリプト初期化完了: ${scriptId}`);
   } catch (error) {
    console.error(`スクリプト初期化エラー (${scriptId}):`, error);
   }
@@ -105,7 +92,7 @@ export class ScriptManager {
  /**
   * スクリプト実行
   */
- executeScript(comment: Comment, rule: RuleType): ScriptResult | null {
+ executeScript(comment: Comment, rule: CommentRuleType): ScriptResult | null {
   const { scriptId } = rule;
 
   if (!scriptId || !scriptGameMap[scriptId]) {

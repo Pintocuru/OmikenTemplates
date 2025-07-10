@@ -102,6 +102,16 @@ const defaultPlaceholders: PlaceholderType[] = [
   id: 'tc',
   name: '個人の総コメント数',
   values: [{ content: '(個人コメント数)' }]
+ }),
+ PlaceholderSchema.parse({
+  id: 'viewer',
+  name: '現在の枠の視聴ユーザー数',
+  values: [{ content: '(視聴ユーザー数)' }]
+ }),
+ PlaceholderSchema.parse({
+  id: 'upVote',
+  name: '現在の枠の高評価数',
+  values: [{ content: '(高評価数)' }]
  })
 ];
 
@@ -156,7 +166,9 @@ const allPlaceholders = computed(() => {
  const priorityOrder: Record<string, number> = {
   user: 1,
   lc: 2,
-  tc: 3
+  tc: 3,
+  viewer: 4,
+  upVote: 5
  };
 
  // スクリプトプレースホルダーのIDセットを作成

@@ -92,7 +92,8 @@ export class BotMessageGenerator {
    timestamp: comment.data.timestamp,
    comment: comment.data.comment,
    isToast: false,
-   color: character.color
+   color: character.color,
+   delaySeconds: 0
   };
  }
 

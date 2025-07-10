@@ -70,7 +70,7 @@ const isInitialized = ref(true);
 const userVisitsData = ref<Record<string, ServiceVisitType>>({});
 
 // コンポーザブルの使用
-const { normalMessages, toastMessages, processComments, processor, clearMessages } =
+const { normalMessages, toastMessages, processComments, processor, clearMessages, startTimers } =
  useMessageHandler(omikujiData);
 
 const {
@@ -145,6 +145,8 @@ onMounted(async () => {
   });
 
   isInitialized.value = isInit;
+  // タイマー開始
+  if (isInit) startTimers();
  } catch (error) {
   console.error('初期化エラー:', error);
   isInitialized.value = false;
