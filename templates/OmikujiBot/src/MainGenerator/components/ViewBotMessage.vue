@@ -52,11 +52,12 @@
     <!-- キャラクターアイコン -->
     <div
      v-if="message.profileImage"
-     class="absolute left-1/2 -translate-x-1/2 transform rounded-full overflow-hidden bg-gray-200 z-40"
+     class="absolute left-1/2 -translate-x-1/2 transform rounded-full overflow-hidden z-40"
      :class="getIconSizeClasses().size"
      :style="{
       ...getAvatarStyles(index),
-      top: getIconSizeClasses().top
+      top: getIconSizeClasses().top,
+      backgroundColor: message.color?.backgroundColor || '#ccc'
      }"
     >
      <img

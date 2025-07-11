@@ -59,9 +59,19 @@
 
  <!-- トースト通知コンポーネント -->
  <Toaster :expand="true" :richColors="true" :visibleToasts="5" />
+
+ <!-- スクロールで表示されるTOPへ戻るボタン -->
+ <button
+  v-show="showScrollTopButton"
+  @click="scrollToTop"
+  class="fixed bottom-6 right-6 z-999 btn btn-circle btn-primary p-1 shadow-lg transition-opacity duration-300"
+ >
+  <ArrowUp class="w-12 h-12" />
+ </button>
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
 import { CategoryType } from '@/types/OmikujiTypesSchema';
 import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
 import ConfigImport from '@/ConfigMaker/components/presets/ConfigImport.vue';
@@ -73,9 +83,21 @@ import ScriptSettingsEditor from '@/ConfigMaker/components/ScriptSettingsEditor.
 import CharacterEditor from '@/ConfigMaker/components/characters/CharacterEditor.vue';
 import { storeToRefs } from 'pinia';
 import { Toaster } from 'vue-sonner';
-import { MessageCircle, Timer, Hash, Settings, Users } from 'lucide-vue-next';
+import { MessageCircle, Timer, Hash, Settings, Users, ArrowUp } from 'lucide-vue-next';
 
 const omikujiStore = useOmikujiStore();
+
+const showScrollTopButton = ref(false);
+
+// スクロールイベントでボタンの表示制御
+const handleScroll = () => {
+ showScrollTopButton.value = window.scrollY > 300; // 300px以上スクロールで表示
+};
+
+// スクロールトップ処理
+const scrollToTop = () => {
+ window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 // storeToRefsを使って反応性を保持
 const { selectedCategory, data } = storeToRefs(omikujiStore);
@@ -94,4 +116,9 @@ const getCategoryItemCount = (category: CategoryType): number => {
  const items = data.value[category];
  return items ? Object.keys(items).length : 0;
 };
+
+// マウント時にリスナー登録
+onMounted(() => {
+ window.addEventListener('scroll', handleScroll);
+});
 </script>
