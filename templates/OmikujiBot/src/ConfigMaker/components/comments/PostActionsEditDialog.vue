@@ -59,12 +59,8 @@
           <span class="label-text text-xs">🎨 アイコン</span>
          </label>
          <select v-model="action.iconKey" class="select select-bordered select-sm w-full">
-          <option
-           v-for="icon in getIconOptionsForAction(action)"
-           :key="icon.value"
-           :value="icon.value"
-          >
-           {{ icon.label }}
+          <option v-for="(icon, index) in CHARACTER_EMOTIONS" :key="index" :value="icon">
+           {{ emotionLabels[icon] }}
           </option>
          </select>
         </div>
@@ -135,12 +131,8 @@
 
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue';
-import {
- CharacterPresetType,
- createDefaultPostAction,
- type PostActionType
-} from '@/types/OmikujiTypesSchema';
-import { type CharacterEmotion } from '@/types/PresetTypes';
+import { CharacterPresetType, PostActionSchema, PostActionType } from '@/types/OmikujiTypesSchema';
+import { emotionLabels, CHARACTER_EMOTIONS } from '@/types/PresetTypes';
 import PlaceholderList from '@/ConfigMaker/components/placeholders/PlaceholderList.vue';
 
 // Props
@@ -166,55 +158,6 @@ const characterOptions = computed(() => {
  }));
 });
 
-// 感情ラベルマップ
-const emotionLabels: Record<CharacterEmotion, string> = {
- happy: '喜び',
- excited: 'ワクワク',
- laughing: '爆笑',
- blushing: '照れ',
- surprised: '驚き',
- sad: '悲しみ',
- angry: '怒り',
- thinking: '考え中',
- wink: '茶目っ気',
- singing: '歌',
- sleepy: '眠い'
-};
-
-// 特定のアクションに対するアイコン選択肢を取得
-const getIconOptionsForAction = (action: PostActionType) => {
- const selectedCharacterKey = action.characterKey;
- if (!selectedCharacterKey) {
-  return [];
- }
-
- const character = props.charactersArray.find((char) => char.id === selectedCharacterKey);
- if (!character) {
-  return [];
- }
-
- const options: Array<{ value: string; label: string }> = [];
-
- // デフォルト画像
- options.push({
-  value: `${selectedCharacterKey}:default`,
-  label: `${character.name} (デフォルト)`
- });
-
- // 感情別画像
- Object.keys(character.image).forEach((emotion) => {
-  if (emotion !== 'default') {
-   const emotionKey = emotion as CharacterEmotion;
-   options.push({
-    value: `${emotion}`,
-    label: `${character.name} (${emotionLabels[emotionKey] || emotion})`
-   });
-  }
- });
-
- return options;
-};
-
 // Dialog methods
 const open = () => {
  editingActions.value = JSON.parse(JSON.stringify(props.actions));
@@ -233,7 +176,9 @@ const saveActions = () => {
 
 // Action management methods
 const addAction = () => {
- editingActions.value.push(createDefaultPostAction());
+ const characterId = props.charactersArray[0]?.id ?? '';
+ const newAction = PostActionSchema.parse({ characterKey: characterId });
+ editingActions.value.push(newAction);
 };
 
 const removeAction = (index: number) => {

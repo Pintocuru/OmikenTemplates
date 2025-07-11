@@ -1,13 +1,13 @@
 // src/ConfigMaker/script/useRecordStore.ts - 共通ルールストア
 import { computed } from 'vue';
 import {
+ CharacterPresetSchema,
  CharacterPresetType,
+ CommentRuleSchema,
  CommentRuleType,
- createDefaultCharacter,
- createDefaultCommentRule,
- createDefaultPlaceholder,
- createDefaultTimerRule,
+ PlaceholderSchema,
  PlaceholderType,
+ TimerRuleSchema,
  TimerRuleType
 } from '@/types/OmikujiTypesSchema';
 import { useOmikujiStore } from './useOmikujiStore';
@@ -28,10 +28,10 @@ export function useRecordOperations<C extends Category>(category: C) {
  const factoryMap: {
   [K in Category]: () => CategoryTypeMap[K];
  } = {
-  comments: createDefaultCommentRule,
-  timers: createDefaultTimerRule,
-  placeholders: createDefaultPlaceholder,
-  characters: createDefaultCharacter
+  comments: () => CommentRuleSchema.parse({}),
+  timers: () => TimerRuleSchema.parse({}),
+  placeholders: () => PlaceholderSchema.parse({}),
+  characters: () => CharacterPresetSchema.parse({})
  };
 
  // データ取得

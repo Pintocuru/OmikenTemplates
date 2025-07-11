@@ -1,158 +1,16 @@
 // src/types/OmikujiTypesSchema.ts
-// 250710_3 timerのscript 使用不可の仕様変更
+// 250711_1　.default('')の導入とデフォルト値を入れる関数の削除
 import { z } from 'zod';
+import { SETTINGS } from '@public/common/settings';
 
 // ======================
-// デフォルト値生成関数
+// ユーティリティ関数
 // ======================
 
 // ID生成ユーティリティ
 export const generateId = () => {
  return '' + Date.now();
 };
-
-// デフォルトキャラクターを作成
-export const createDefaultCharacter = () => ({
- id: '',
- name: '',
- description: '',
- version: '1.0.0',
- author: '',
- order: 0,
- tags: [],
- url: '',
- path: '',
- isIconDisplay: true,
- displayName: '',
- frameId: null,
- color: {
-  nameColor: '#000000',
-  textColor: '#000000',
-  backgroundColor: '#FFFFFF'
- },
- image: {
-  default: '',
-  happy: '',
-  excited: '',
-  laughing: '',
-  blushing: '',
-  surprised: '',
-  sad: '',
-  angry: '',
-  thinking: '',
-  wink: '',
-  singing: '',
-  sleepy: ''
- }
-});
-
-export const createDefaultCountCondition = () => ({
- comparison: 'min' as const,
- unit: 'lc' as const,
- value: 1
-});
-
-export const createDefaultCommentThreshold = () => ({
- conditions: [],
- syoken: [],
- access: [],
- gift: [],
- count: createDefaultCountCondition(),
- comment: []
-});
-
-export const createDefaultPostAction = () =>
- ({
-  characterKey: '',
-  iconKey: 'default', // リテラル型として推論させる
-  delaySeconds: 0,
-  wordParty: '',
-  messageContent: '',
-  messageToast: ''
- }) as const;
-
-export const createDefaultOmikujiSet = () => ({
- name: '',
- description: '',
- weight: 1,
- postActions: []
-});
-
-export const createDefaultPlaceholderValue = () => ({
- weight: 1,
- content: ''
-});
-
-export const createDefaultPlaceholder = () => ({
- id: generateId(),
- name: '',
- order: 9999,
- values: [createDefaultPlaceholderValue()]
-});
-
-export const createDefaultCommentRule = () => ({
- id: generateId(),
- name: '',
- description: '',
- isEnabled: true,
- order: 0,
- editorColor: '#3B82F6',
- scriptId: null,
- scriptParams: null,
- ruleType: 'comments' as const,
- threshold: createDefaultCommentThreshold(),
- omikuji: [createDefaultOmikujiSet()]
-});
-
-export const createDefaultTimerRule = () => ({
- id: generateId(),
- name: '',
- description: '',
- isEnabled: true,
- order: 0,
- editorColor: '#10B981',
- scriptId: null,
- scriptParams: null,
- ruleType: 'timers' as const,
- intervalSeconds: 60,
- isBaseZero: false,
- omikuji: [createDefaultOmikujiSet()]
-});
-
-export const createDefaultCharacterColorScheme = () => ({
- nameColor: '#000000',
- textColor: '#000000',
- backgroundColor: '#FFFFFF'
-});
-
-export const createDefaultCharacterImageSet = () => ({
- default: ''
-});
-
-export const createDefaultCharacterPreset = () => ({
- id: generateId(),
- name: '',
- description: '',
- version: '1.0.0',
- author: '',
- order: 0,
- tags: [],
- url: '',
- path: '',
- isIconDisplay: true,
- displayName: '',
- frameId: null,
- color: createDefaultCharacterColorScheme(),
- image: createDefaultCharacterImageSet()
-});
-
-export const createDefaultOmikujiData = () => ({
- comments: {},
- timers: {},
- placeholders: {},
- scriptSettings: {},
- characters: {}
-});
 
 // ======================
 // データ検証とデフォルト値適用のユーティリティ関数
@@ -182,49 +40,43 @@ const EmotionIcons = [
 
 const CharacterEmotionSchema = z.enum(EmotionIcons);
 
-export const CharacterColorSchemeSchema = z
- .object({
-  nameColor: z.string().catch('#000000'),
-  textColor: z.string().catch('#000000'),
-  backgroundColor: z.string().catch('#FFFFFF')
- })
- .catch(createDefaultCharacterColorScheme);
+export const CharacterColorSchemeSchema = z.object({
+ nameColor: z.string().default('#000000').catch('#000000'),
+ textColor: z.string().default('#000000').catch('#000000'),
+ backgroundColor: z.string().default('#FFFFFF').catch('#FFFFFF')
+});
 
-export const CharacterImageSetSchema = z
- .object({
-  default: z.string().catch(''),
-  happy: z.string().optional(),
-  excited: z.string().optional(),
-  laughing: z.string().optional(),
-  blushing: z.string().optional(),
-  surprised: z.string().optional(),
-  sad: z.string().optional(),
-  angry: z.string().optional(),
-  thinking: z.string().optional(),
-  wink: z.string().optional(),
-  singing: z.string().optional(),
-  sleepy: z.string().optional()
- })
- .catch(createDefaultCharacterImageSet);
+export const CharacterImageSetSchema = z.object({
+ default: z.string().default('').catch(''),
+ happy: z.string().default('').catch(''),
+ excited: z.string().default('').catch(''),
+ laughing: z.string().default('').catch(''),
+ blushing: z.string().default('').catch(''),
+ surprised: z.string().default('').catch(''),
+ sad: z.string().default('').catch(''),
+ angry: z.string().default('').catch(''),
+ thinking: z.string().default('').catch(''),
+ wink: z.string().default('').catch(''),
+ singing: z.string().default('').catch(''),
+ sleepy: z.string().default('').catch('')
+});
 
-export const CharacterPresetSchema = z
- .object({
-  id: z.string().catch(''),
-  name: z.string().catch(''),
-  description: z.string().catch(''),
-  version: z.string().catch('1.0.0'),
-  author: z.string().optional(),
-  order: z.number().min(0).catch(0),
-  tags: z.array(z.string().catch('')).catch([]),
-  url: z.string().optional(),
-  path: z.string().optional(),
-  isIconDisplay: z.boolean().catch(true),
-  displayName: z.string().optional(),
-  frameId: z.union([z.string(), z.null()]).catch(null),
-  color: CharacterColorSchemeSchema,
-  image: CharacterImageSetSchema
- })
- .catch(createDefaultCharacterPreset);
+export const CharacterPresetSchema = z.object({
+ id: z.string().default('').catch(''),
+ name: z.string().default('').catch(''),
+ description: z.string().default('').catch(''),
+ version: z.string().default('1.0.0').catch('1.0.0'),
+ author: z.string().default('').catch(''),
+ order: z.number().min(0).default(0).catch(0),
+ tags: z.array(z.string().default('').catch('')).default([]).catch([]),
+ url: z.string().default('').catch(''),
+ path: z.string().default('').catch(''),
+ isIconDisplay: z.boolean().default(true).catch(true),
+ displayName: z.string().default('').catch(''),
+ frameId: z.union([z.string(), z.null()]).default(null).catch(null),
+ color: CharacterColorSchemeSchema,
+ image: CharacterImageSetSchema
+});
 
 // ======================
 // Threshold関連のスキーマ
@@ -232,144 +84,140 @@ export const CharacterPresetSchema = z
 
 export const CommentConditionTypesSchema = z
  .enum(['syoken', 'access', 'gift', 'count', 'comment'])
+ .default('syoken')
  .catch('syoken');
 
 export const SyokenConditionSchema = z
  .enum(['1', '2', '3'])
  .transform((val) => parseInt(val))
+ .default('1')
  .catch(1);
 
 export const AccessConditionSchema = z
  .enum(['1', '2', '3', '4'])
  .transform((val) => parseInt(val))
+ .default('1')
  .catch(1);
 
 export const GiftConditionSchema = z
  .enum(['0', '1', '2', '3', '4', '5', '6', '7', '8'])
  .transform((val) => parseInt(val))
+ .default('0')
  .catch(0);
 
-export const CountConditionSchema = z
- .object({
-  comparison: z.enum(['min', 'max', 'equal', 'loop']).catch('min'),
-  unit: z.enum(['lc', 'tc']).catch('lc'),
-  value: z.number().min(0).catch(1)
- })
- .catch(createDefaultCountCondition);
+export const CountConditionSchema = z.object({
+ comparison: z.enum(['min', 'max', 'equal', 'loop']).default('min').catch('min'),
+ unit: z.enum(['lc', 'tc']).default('lc').catch('lc'),
+ value: z.number().min(0).default(1).catch(1)
+});
 
-export const CommentThresholdSchema = z
- .object({
-  conditions: z.array(CommentConditionTypesSchema).catch([]),
-  syoken: z.array(SyokenConditionSchema).catch([]),
-  access: z.array(AccessConditionSchema).catch([]),
-  gift: z.array(GiftConditionSchema).catch([]),
-  count: CountConditionSchema,
-  comment: z.array(z.string().catch('')).catch([])
- })
- .catch(createDefaultCommentThreshold);
+export const CommentThresholdSchema = z.object({
+ conditions: z.array(CommentConditionTypesSchema).default([]).catch([]),
+ syoken: z.array(SyokenConditionSchema).default([]).catch([]),
+ access: z.array(AccessConditionSchema).default([]).catch([]),
+ gift: z.array(GiftConditionSchema).default([]).catch([]),
+ count: CountConditionSchema,
+ comment: z.array(z.string().default('').catch('')).default([]).catch([])
+});
 
 // ======================
 // Post Action関連のスキーマ
 // ======================
 
-export const PostActionSchema = z
- .object({
-  characterKey: z.string().catch(''),
-  iconKey: CharacterEmotionSchema.catch('default'),
-  // SETTINGS.basicDelaySeconds の数値だけminはマイナス
-  delaySeconds: z.number().min(-1).catch(0),
-  wordParty: z.string().catch(''),
-  messageContent: z.string().catch(''),
-  messageToast: z.string().catch('')
- })
- .catch(createDefaultPostAction);
+export const PostActionSchema = z.object({
+ characterKey: z.string().default('').catch(''),
+ iconKey: CharacterEmotionSchema.default('default').catch('default'),
+ delaySeconds: z
+  .number()
+  .min(SETTINGS.basicDelaySeconds * -1)
+  .default(0)
+  .catch(0),
+ wordParty: z.string().default('').catch(''),
+ messageContent: z.string().default('').catch(''),
+ messageToast: z.string().default('').catch('')
+});
 
-export const PostActionWordPartySchema = z
- .object({
-  delaySeconds: z.number().min(0).catch(0),
-  wordParty: z.string().catch('')
- })
- .catch(() => ({ delaySeconds: 0, wordParty: '' }));
+export const PostActionWordPartySchema = z.object({
+ delaySeconds: z.number().min(0).default(0).catch(0),
+ wordParty: z.string().default('').catch('')
+});
 
 // ======================
 // Placeholder関連のスキーマ
 // ======================
 
-export const PlaceholderValueSchema = z
- .object({
-  weight: z.number().min(0).catch(1),
-  content: z.string().catch('')
- })
- .catch(createDefaultPlaceholderValue);
+export const PlaceholderValueSchema = z.object({
+ weight: z.number().min(0).default(1).catch(1),
+ content: z.string().default('').catch('')
+});
 
-export const PlaceholderSchema = z
- .object({
-  id: z.string().catch(''),
-  name: z.string().catch(''),
-  order: z.number().min(0).catch(0),
-  values: z.array(PlaceholderValueSchema).catch([createDefaultPlaceholderValue()])
- })
- .catch(createDefaultPlaceholder);
+export const PlaceholderSchema = z.object({
+ id: z.string().default('').catch(''),
+ name: z.string().default('').catch(''),
+ order: z.number().min(0).default(9999).catch(9999),
+ values: z.array(PlaceholderValueSchema).default([]).catch([])
+});
 
 // ======================
 // Omikuji関連のスキーマ
 // ======================
-export const OmikujiSetSchema = z
- .object({
-  name: z.string().catch(''),
-  description: z.string().catch(''),
-  weight: z.number().min(0).catch(1),
-  postActions: z.array(PostActionSchema).catch([])
- })
- .catch(createDefaultOmikujiSet);
+export const OmikujiSetSchema = z.object({
+ name: z.string().default('').catch(''),
+ description: z.string().default('').catch(''),
+ weight: z.number().min(0).default(1).catch(1),
+ postActions: z.array(PostActionSchema).default([]).catch([])
+});
 
 // ======================
 // Rule関連のスキーマ
 // ======================
 const BaseRuleCommonSchema = z.object({
- id: z.string().catch(''),
- name: z.string().catch(''),
- description: z.string().catch(''),
- isEnabled: z.boolean().catch(true),
- order: z.number().min(0).catch(0),
+ id: z.string().default('').catch(''),
+ name: z.string().default('').catch(''),
+ description: z.string().default('').catch(''),
+ isEnabled: z.boolean().default(true).catch(true),
+ order: z.number().min(0).default(0).catch(0),
  editorColor: z
   .string()
   .regex(/^#[0-9A-Fa-f]{6}$/)
+  .default('#3B82F6')
   .catch('#3B82F6'),
- omikuji: z.array(OmikujiSetSchema).catch([createDefaultOmikujiSet()])
+ omikuji: z.array(OmikujiSetSchema).default([]).catch([])
 });
 
-export const CommentRuleSchema = z
- .object({
-  ...BaseRuleCommonSchema.shape,
-  ruleType: z.literal('comments').catch('comments'),
-  threshold: CommentThresholdSchema,
-  scriptId: z.union([z.string(), z.null()]).catch(null),
-  scriptParams: z.union([z.record(z.any()), z.null()]).catch(null)
- })
- .catch(createDefaultCommentRule);
+export const CommentRuleSchema = z.object({
+ ...BaseRuleCommonSchema.shape,
+ ruleType: z.literal('comments').default('comments').catch('comments'),
+ threshold: CommentThresholdSchema,
+ scriptId: z.union([z.string(), z.null()]).default(null).catch(null),
+ scriptParams: z
+  .union([z.record(z.any()), z.null()])
+  .default(null)
+  .catch(null)
+});
 
-export const TimerRuleSchema = z
- .object({
-  ...BaseRuleCommonSchema.shape,
-  ruleType: z.literal('timers').catch('timers'),
-  intervalSeconds: z.number().min(5).catch(60),
-  isBaseZero: z.boolean().catch(false)
- })
- .catch(createDefaultTimerRule);
+export const TimerRuleSchema = z.object({
+ ...BaseRuleCommonSchema.shape,
+ ruleType: z.literal('timers').default('timers').catch('timers'),
+ intervalSeconds: z
+  .number()
+  .min(5)
+  .max(60 * 60)
+  .default(60 * 5)
+  .catch(60 * 5),
+ isBaseZero: z.boolean().default(false).catch(false)
+});
 
 // ======================
 // メインデータ構造のスキーマ
 // ======================
-export const OmikujiDataSchema = z
- .object({
-  comments: z.record(z.string(), CommentRuleSchema).catch({}),
-  timers: z.record(z.string(), TimerRuleSchema).catch({}),
-  placeholders: z.record(z.string(), PlaceholderSchema).catch({}),
-  scriptSettings: z.record(z.string(), z.record(z.string(), z.any())).catch({}),
-  characters: z.record(z.string(), CharacterPresetSchema).catch({})
- })
- .catch(createDefaultOmikujiData);
+export const OmikujiDataSchema = z.object({
+ comments: z.record(z.string(), CommentRuleSchema).default({}).catch({}),
+ timers: z.record(z.string(), TimerRuleSchema).default({}).catch({}),
+ placeholders: z.record(z.string(), PlaceholderSchema).default({}).catch({}),
+ scriptSettings: z.record(z.string(), z.record(z.string(), z.any())).default({}).catch({}),
+ characters: z.record(z.string(), CharacterPresetSchema).default({}).catch({})
+});
 
 // ======================
 // 型エクスポート

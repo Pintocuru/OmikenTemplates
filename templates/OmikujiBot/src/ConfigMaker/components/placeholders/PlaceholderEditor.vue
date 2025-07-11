@@ -111,7 +111,7 @@
 
 <script setup lang="ts">
 import { computed, provide } from 'vue';
-import { createDefaultPlaceholderValue } from '@/types/OmikujiTypesSchema';
+import { PlaceholderValueSchema } from '@/types/OmikujiTypesSchema';
 import PlaceholderIdEditor from './PlaceholderIdEditor.vue';
 import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
 import PlaceholderPreview from './PlaceholderPreview.vue';
@@ -141,7 +141,7 @@ const selectedPlaceholder = computed(() => placeholderStore.selectedRule);
 // 値の追加
 const addValue = () => {
  if (!selectedPlaceholder.value) return;
- selectedPlaceholder.value.values.push(createDefaultPlaceholderValue());
+ selectedPlaceholder.value.values.push(PlaceholderValueSchema.parse({}));
 };
 
 // 値の削除

@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { OmikujiSetType, createDefaultOmikujiSet } from '@/types/OmikujiTypesSchema';
+import { OmikujiSetSchema, OmikujiSetType } from '@/types/OmikujiTypesSchema';
 import PostActionsEditorJson from './PostActionsEditorJson.vue';
 
 const props = defineProps<{ modelValue: OmikujiSetType[] }>();
@@ -80,7 +80,7 @@ const updateOmikuji = (index: number, key: keyof OmikujiSetType, value: any) => 
 };
 
 const addOmikuji = () => {
- emit('update:modelValue', [...props.modelValue, createDefaultOmikujiSet()]);
+ emit('update:modelValue', [...props.modelValue, OmikujiSetSchema.parse({})]);
 };
 
 const removeOmikuji = (index: number) => {

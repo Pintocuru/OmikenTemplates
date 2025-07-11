@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { CharacterPresetType, type PostActionType } from '@/types/OmikujiTypesSchema';
-import { type CharacterEmotion } from '@/types/PresetTypes';
+import { emotionLabels, type CharacterEmotion } from '@/types/PresetTypes';
 
 // Props
 const props = defineProps<{
@@ -59,56 +59,13 @@ const characterOptions = computed(() => {
  }));
 });
 
-// アイコン選択肢（全キャラクターの全感情を含む）
-const allIconOptions = computed(() => {
- const options: Array<{ value: string; label: string; characterKey: string }> = [];
-
- props.charactersArray.forEach((character) => {
-  // デフォルト画像
-  options.push({
-   value: `${character.id}:default`,
-   label: `${character.name} (デフォルト)`,
-   characterKey: character.id
-  });
-
-  // 感情別画像
-  Object.keys(character.image).forEach((emotion) => {
-   if (emotion !== 'default') {
-    const emotionLabels: Record<CharacterEmotion, string> = {
-     happy: '喜び',
-     excited: 'ワクワク',
-     laughing: '爆笑',
-     blushing: '照れ',
-     surprised: '驚き',
-     sad: '悲しみ',
-     angry: '怒り',
-     thinking: '考え中',
-     wink: '茶目っ気',
-     singing: '歌',
-     sleepy: '眠い'
-    };
-
-    const emotionKey = emotion as CharacterEmotion;
-    options.push({
-     value: `${character.id}:${emotion}`,
-     label: `${character.name} (${emotionLabels[emotionKey] || emotion})`,
-     characterKey: character.id
-    });
-   }
-  });
- });
-
- return options;
-});
-
 // ヘルパー関数
 const getCharacterLabel = (key: string): string => {
  const option = characterOptions.value.find((opt) => opt.value === key);
  return option ? option.label : key;
 };
 
-const getIconLabel = (key: string): string => {
- const option = allIconOptions.value.find((opt) => opt.value === key);
- return option ? option.label : key;
+const getIconLabel = (key: CharacterEmotion): string => {
+ return emotionLabels[key] || key;
 };
 </script>
