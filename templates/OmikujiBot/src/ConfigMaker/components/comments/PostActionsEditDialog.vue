@@ -2,6 +2,10 @@
 <template>
  <dialog ref="dialogRef" class="modal">
   <div class="modal-box max-w-max">
+   <!-- 保存・キャンセルボタン -->
+   <div class="mb-4">
+    <ModalFooterActions :on-cancel="closeDialog" :on-save="saveActions" />
+   </div>
    <!-- プレースホルダーリスト表示 -->
    <PlaceholderList :actions="editingActions" />
 
@@ -120,11 +124,8 @@
      </div>
     </div>
    </div>
-
-   <div class="modal-action">
-    <button @click="closeDialog" class="btn btn-ghost">キャンセル</button>
-    <button @click="saveActions" class="btn btn-primary">保存</button>
-   </div>
+   <!-- 保存・キャンセルボタン -->
+   <ModalFooterActions :on-cancel="closeDialog" :on-save="saveActions" />
   </div>
  </dialog>
 </template>
@@ -133,6 +134,7 @@
 import { ref, computed, type Ref } from 'vue';
 import { CharacterPresetType, PostActionSchema, PostActionType } from '@/types/OmikujiTypesSchema';
 import { emotionLabels, CHARACTER_EMOTIONS } from '@/types/PresetTypes';
+import ModalFooterActions from '@/ConfigMaker/components/parts/ModalFooterActions.vue';
 import PlaceholderList from '@/ConfigMaker/components/placeholders/PlaceholderList.vue';
 
 // Props

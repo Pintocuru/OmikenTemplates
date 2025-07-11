@@ -6,10 +6,10 @@
  <!-- ルール編集エリア -->
  <div v-if="selectedRule">
   <!-- 基本設定セクション -->
-  <BaseSettingsEditor :modelValue="selectedRule" @update:modelValue="updateSelectedRule" />
+  <BaseSettingsEditor v-model="selectedRule" />
 
   <!-- 外部スクリプト設定セクション -->
-  <ExternalScriptEditor :modelValue="selectedRule" @update:modelValue="updateSelectedRule" />
+  <ExternalScriptEditor v-model="selectedRule" />
 
   <!-- 条件設定セクション -->
   <CommentThresholdEditor v-model="selectedRule.threshold" />
@@ -45,7 +45,14 @@ const extendedStore = {
 provide('commentsRulesStore', extendedStore);
 
 // computed
-const selectedRule = computed(() => commentRulesStore.selectedRule);
+const selectedRule = computed({
+ get: () => commentRulesStore.selectedRule,
+ set: (newValue: RuleType) => {
+  if (commentRulesStore.selectedRule && commentRulesStore.selectedRule.id) {
+   commentRulesStore.update(commentRulesStore.selectedRule.id, newValue as CommentRuleType);
+  }
+ }
+});
 const rulesArray = computed(() => commentRulesStore.rulesArray);
 
 // methods - 編集フォームで使用

@@ -46,7 +46,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { TimerRuleType } from '@/types/OmikujiTypesSchema';
 
 const props = defineProps<{
  modelValue: {
@@ -71,35 +70,17 @@ const intervalPresets = [
 ];
 
 // 個別のプロパティをcomputedで管理
-/**
- * TODO:
- * ! TimerRuleEditor.vue:12 [Vue warn] Write operation failed: computed value is readonly
- */
 const intervalSeconds = computed({
- get() {
-  return props.modelValue.intervalSeconds;
- },
- set(value) {
-  emit('update:modelValue', {
-   ...props.modelValue,
-   intervalSeconds: Number(value)
-  });
+ get: () => props.modelValue.intervalSeconds,
+ set: (value) => {
+  emit('update:modelValue', { ...props.modelValue, intervalSeconds: Number(value) });
  }
 });
 
-/**
- * TODO:
- * ! TimerRuleEditor.vue:12 [Vue warn] Write operation failed: computed value is readonly
- */
 const isBaseZero = computed({
- get() {
-  return props.modelValue.isBaseZero;
- },
- set(value) {
-  emit('update:modelValue', {
-   ...props.modelValue,
-   isBaseZero: value
-  });
+ get: () => props.modelValue.isBaseZero,
+ set: (value) => {
+  emit('update:modelValue', { ...props.modelValue, isBaseZero: value });
  }
 });
 

@@ -6,7 +6,7 @@
  <!-- ルール編集エリア -->
  <div v-if="selectedRule">
   <!-- 基本設定セクション -->
-  <BaseSettingsEditor :modelValue="selectedRule" @update:modelValue="updateSelectedRule" />
+  <BaseSettingsEditor v-model="selectedRule" />
 
   <!-- タイマー設定セクション -->
   <TimerIntervalEditor v-model="selectedRule" />
@@ -41,13 +41,13 @@ const extendedStore = {
 provide('timersRulesStore', extendedStore);
 
 // computed
-const selectedRule = computed(() => timerRulesStore.selectedRule);
-const rulesArray = computed(() => timerRulesStore.rulesArray);
-
-// methods - 編集フォームで使用
-const updateSelectedRule = (updatedRule: RuleType) => {
- if (selectedRule.value && selectedRule.value.id) {
-  timerRulesStore.update(selectedRule.value.id, updatedRule as TimerRuleType);
+const selectedRule = computed({
+ get: () => timerRulesStore.selectedRule,
+ set: (newValue: RuleType) => {
+  if (timerRulesStore.selectedRule && timerRulesStore.selectedRule.id) {
+   timerRulesStore.update(timerRulesStore.selectedRule.id, newValue as TimerRuleType);
+  }
  }
-};
+});
+const rulesArray = computed(() => timerRulesStore.rulesArray);
 </script>

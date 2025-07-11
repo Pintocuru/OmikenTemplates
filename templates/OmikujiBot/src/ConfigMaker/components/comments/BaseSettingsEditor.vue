@@ -26,28 +26,18 @@
          class="w-6 h-6 rounded-full border-2 block"
          :class="modelValue.editorColor === color ? 'border-white' : 'border-gray-400'"
          :style="{ backgroundColor: color }"
-         @click="selectColor(color)"
+         @click="editorColor = color"
         ></button>
        </div>
       </div>
-      <input
-       type="color"
-       :value="modelValue.editorColor"
-       @input="updateColor($event)"
-       class="w-full h-8 cursor-pointer"
-      />
+      <input type="color" v-model="editorColor" class="w-full h-8 cursor-pointer" />
      </div>
     </div>
     <span>基本設定</span>
    </div>
    <!-- ルール有効スイッチ -->
    <label class="cursor-pointer flex items-center gap-2">
-    <input
-     type="checkbox"
-     :checked="modelValue.isEnabled"
-     @change="updateField('isEnabled', $event)"
-     class="toggle toggle-primary"
-    />
+    <input type="checkbox" v-model="isEnabled" class="toggle toggle-primary" />
     <span class="text-sm">ルールを有効にする</span>
    </label>
   </div>
@@ -61,8 +51,7 @@
     </label>
     <input
      type="text"
-     :value="modelValue.name"
-     @input="updateField('name', $event)"
+     v-model="name"
      placeholder="ルール名を入力"
      class="input input-bordered w-full"
     />
@@ -75,8 +64,7 @@
     </label>
     <input
      type="text"
-     :value="modelValue.description"
-     @input="updateField('description', $event)"
+     v-model="description"
      placeholder="ルールの説明を入力"
      class="input input-bordered w-full"
     />
@@ -89,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, toRaw } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { RuleType } from '@/types/OmikujiTypesSchema';
 
 const props = defineProps<{
@@ -119,15 +107,36 @@ const presetColors = [
  '#000000' // Black
 ];
 
-const updateField = (field: keyof RuleType, event: Event) => {
- const target = event.target as HTMLInputElement;
- const value = target.type === 'checkbox' ? target.checked : target.value;
+// 各プロパティに対する書き込み可能な computed プロパティを作成
+// これらの computed プロパティが、v-model のインターフェースとして機能します。
 
- emit('update:modelValue', {
-  ...toRaw(props.modelValue),
-  [field]: value
- });
-};
+const name = computed({
+ get: () => props.modelValue.name,
+ set: (value) => {
+  emit('update:modelValue', { ...props.modelValue, name: value });
+ }
+});
+
+const description = computed({
+ get: () => props.modelValue.description,
+ set: (value) => {
+  emit('update:modelValue', { ...props.modelValue, description: value });
+ }
+});
+
+const isEnabled = computed({
+ get: () => props.modelValue.isEnabled,
+ set: (value) => {
+  emit('update:modelValue', { ...props.modelValue, isEnabled: value });
+ }
+});
+
+const editorColor = computed({
+ get: () => props.modelValue.editorColor,
+ set: (value) => {
+  emit('update:modelValue', { ...props.modelValue, editorColor: value });
+ }
+});
 
 const toggleColorPicker = () => {
  showColorPicker.value = !showColorPicker.value;
@@ -135,24 +144,6 @@ const toggleColorPicker = () => {
 
 const closeColorPicker = () => {
  showColorPicker.value = false;
-};
-
-// カラー選択用のヘルパー関数
-const updateFieldValue = (field: keyof RuleType, value: any) => {
- emit('update:modelValue', {
-  ...toRaw(props.modelValue),
-  [field]: value
- });
-};
-
-const selectColor = (color: string) => {
- updateFieldValue('editorColor', color);
- closeColorPicker();
-};
-
-const updateColor = (event: Event) => {
- const target = event.target as HTMLInputElement;
- updateFieldValue('editorColor', target.value);
 };
 
 // ESCキーでカラーピッカーを閉じる

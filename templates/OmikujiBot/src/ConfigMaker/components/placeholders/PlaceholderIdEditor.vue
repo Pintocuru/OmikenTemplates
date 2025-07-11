@@ -69,16 +69,11 @@
      </div>
     </div>
 
-    <div class="modal-action">
-     <button @click="closeDialog" class="btn btn-ghost">キャンセル</button>
-     <button
-      @click="saveId"
-      class="btn btn-primary"
-      :disabled="hasError || !newId.trim() || newId === currentId"
-     >
-      保存
-     </button>
-    </div>
+    <ModalFooterActions
+     :on-cancel="closeDialog"
+     :on-save="saveId"
+     :disabled="hasError || !newId.trim() || newId === currentId"
+    />
    </div>
   </div>
  </div>
@@ -86,6 +81,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import ModalFooterActions from '@/ConfigMaker/components/parts/ModalFooterActions.vue';
 import { usePlaceholderStore } from '@/ConfigMaker/script/usePlaceholderStore';
 import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
 

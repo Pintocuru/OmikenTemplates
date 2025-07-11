@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/RuleFilter.vue -->
+<!-- src/configMaker/components/parts/RuleFilter.vue -->
 <template>
  <div class="mb-4">
   <div class="relative">

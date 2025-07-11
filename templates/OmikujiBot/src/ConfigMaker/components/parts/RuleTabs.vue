@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/RuleTabs.vue -->
+<!-- src/configMaker/components/parts/RuleTabs.vue -->
 <template>
  <div class="space-y-4">
   <!-- フィルターコンポーネント -->

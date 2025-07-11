@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/RuleContextMenu.vue -->
+<!-- src/configMaker/components/parts/RuleContextMenu.vue -->
 <template>
  <!-- 右クリックコンテキストメニュー -->
  <div

@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/RuleTabItem.vue -->
+<!-- src/configMaker/components/parts/RuleTabItem.vue -->
 <template>
  <div
   class="relative group"

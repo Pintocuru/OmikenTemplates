@@ -136,12 +136,12 @@
     </div>
    </div>
 
-   <div class="modal-action mt-6">
-    <button class="btn btn-ghost" @click="cancelImportProcess">キャンセル</button>
-    <button class="btn btn-primary" @click="executeImportProcess" :disabled="!hasEnabledCategories">
-     読み込み実行
-    </button>
-   </div>
+   <ModalFooterActions
+    :on-cancel="cancelImportProcess"
+    :on-save="executeImportProcess"
+    :saveName="'読み込み実行'"
+    :disabled="!hasEnabledCategories"
+   />
   </div>
  </div>
 
@@ -159,10 +159,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
-import { useJsonImportOrchestrator } from '@/ConfigMaker/script/useJsonImportOrchestrator';
 import type { CategoryType } from '@/types/OmikujiTypesSchema';
 import type { ImportMode } from '@/ConfigMaker/script/useImportPreviewManager';
+import ModalFooterActions from '@/ConfigMaker/components/parts/ModalFooterActions.vue';
+import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import { useJsonImportOrchestrator } from '@/ConfigMaker/script/useJsonImportOrchestrator';
 
 // Store
 const omikujiStore = useOmikujiStore();

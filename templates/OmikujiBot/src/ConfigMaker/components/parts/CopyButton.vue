@@ -1,4 +1,4 @@
-<!-- src/components/CopyButton.vue -->
+<!-- src/configMaker/components/parts/CopyButton.vue -->
 <template>
  <button @click="handleCopy" :title="title" :disabled="disabled || isLoading">
   <span class="btn btn-sm btn-outline hover:btn-primary transition-colors">

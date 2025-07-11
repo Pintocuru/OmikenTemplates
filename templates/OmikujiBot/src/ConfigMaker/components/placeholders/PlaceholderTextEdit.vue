@@ -69,16 +69,11 @@
      </div>
     </div>
 
-    <div class="modal-action">
-     <button @click="closeModal" class="btn btn-ghost">❌ キャンセル</button>
-     <button
-      @click="saveContent"
-      class="btn btn-primary"
-      :disabled="hasErrors || validItemsCount === 0"
-     >
-      💾 保存 ({{ validItemsCount }}項目)
-     </button>
-    </div>
+    <ModalFooterActions
+     :on-cancel="closeModal"
+     :on-save="saveContent"
+     :disabled="hasErrors || validItemsCount === 0"
+    />
    </div>
   </div>
  </div>
@@ -87,6 +82,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { PlaceholderValueSchema } from '@/types/OmikujiTypesSchema';
+import ModalFooterActions from '@/ConfigMaker/components/parts/ModalFooterActions.vue';
 import { usePlaceholderStore } from '@/ConfigMaker/script/usePlaceholderStore';
 
 const props = defineProps<{

@@ -91,19 +91,7 @@ const navigationTabs = {
 
 // カテゴリごとのアイテム数を取得
 const getCategoryItemCount = (category: CategoryType): number => {
- switch (category) {
-  case 'comments':
-   return Object.keys(data.value.comments).length;
-  case 'timers':
-   return Object.keys(data.value.timers).length;
-  case 'placeholders':
-   return Object.keys(data.value.placeholders).length;
-  case 'scriptSettings':
-   return Object.keys(data.value.scriptSettings).length;
-  case 'characters':
-   return Object.keys(data.value.characters).length;
-  default:
-   return 0;
- }
+ const items = data.value[category];
+ return items ? Object.keys(items).length : 0;
 };
 </script>
