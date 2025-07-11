@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/PostActionsPreview.vue -->
+<!-- src/configMaker/components/comments/PostActionsPreview.vue -->
 <template>
  <div class="bg-base-200 rounded p-3 text-sm">
   <div v-if="actions.length === 0" class="text-gray-500 italic">

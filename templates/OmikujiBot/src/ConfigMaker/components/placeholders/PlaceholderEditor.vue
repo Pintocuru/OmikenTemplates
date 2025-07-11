@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/PlaceholderEditor.vue -->
+<!-- src/configMaker/components/placeholders/PlaceholderEditor.vue -->
 <template>
  <!-- タブ部分 -->
  <RuleTabs :rules="placeholdersArray" :selectedRule="selectedPlaceholder" ruleType="placeholders" />

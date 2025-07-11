@@ -3,7 +3,7 @@
  <div class="toast-container fixed bottom-6 right-6 z-999">
   <transition-group name="toast" tag="div" appear>
    <div
-    v-for="(message, index) in displayedComments"
+    v-for="(message, index) in displayedComments.slice().reverse()"
     :key="message.id"
     class="toast-item flex items-start p-3 rounded-2xl shadow-lg backdrop-blur-sm mb-3"
     :style="{
@@ -25,6 +25,14 @@
       @error="handleImageError(message)"
       class="w-full h-full object-cover"
      />
+    </div>
+    <!-- プロフィール画像がない場合の代替アイコン -->
+    <div
+     v-else
+     class="avatar flex-shrink-0 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 mr-3"
+     :class="sizeConfig.avatar"
+    >
+     <Info :size="24" />
     </div>
 
     <!-- メッセージ内容 -->
@@ -63,6 +71,7 @@
 import { computed, onMounted, onUnmounted, toRef } from 'vue';
 import { BotMessage, DisplaySize } from '@/types/types';
 import { useBotCommentDisplay } from './useBotMessage';
+import { Info } from 'lucide-vue-next';
 
 // サイズ設定の定数
 const SIZE_CONFIG = {
@@ -148,7 +157,7 @@ onUnmounted(stop);
 }
 
 .toast-move {
- transition: transform 0.4s ease;
+ transition: transform 0.2s ease;
 }
 
 /* 右からスライドイン */

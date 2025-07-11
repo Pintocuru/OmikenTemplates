@@ -1,4 +1,4 @@
-<!-- src/apps/configMaker/components/CharacterEditor.vue -->
+<!-- src/configMaker/components/characters/CharacterEditor.vue -->
 <template>
  <!-- キャラクターがない場合 -->
  <div v-if="characterCount === 0" class="text-center py-8 text-gray-500">
@@ -19,7 +19,10 @@
   <CharacterColorSettings v-model="selectedCharacter.color" />
 
   <!-- 画像設定 -->
-  <CharacterImageSettings v-model="selectedCharacter.image" />
+  <CharacterImageSettings
+   v-if="selectedCharacter.isIconDisplay"
+   v-model="selectedCharacter.image"
+  />
  </div>
 </template>
 

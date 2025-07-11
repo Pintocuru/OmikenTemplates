@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/BaseSettingsEditor.vue -->
+<!-- src/configMaker/components/comments/BaseSettingsEditor.vue -->
 <template>
  <div class="card bg-base-300 mt-4">
   <!-- ヘッダー（タイトル＋右上スイッチ） -->

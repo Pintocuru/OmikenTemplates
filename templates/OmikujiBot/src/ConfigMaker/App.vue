@@ -1,4 +1,4 @@
-<!-- src/apps/configMaker/App.vue -->
+<!-- src/configMaker/App.vue -->
 <template>
  <div class="p-4 max-w-6xl mx-auto">
   <h1 class="text-2xl font-bold mb-6 text-center text-primary">おみくじBot コンフィグエディター</h1>
@@ -79,7 +79,7 @@ import ConfigExport from '@/ConfigMaker/components/presets/ConfigExport.vue';
 import CommentRuleEditor from '@/ConfigMaker/components/comments/CommentRuleEditor.vue';
 import TimerRuleEditor from '@/ConfigMaker/components/timers/TimerRuleEditor.vue';
 import PlaceholderEditor from '@/ConfigMaker/components/placeholders/PlaceholderEditor.vue';
-import ScriptSettingsEditor from '@/ConfigMaker/components/ScriptSettingsEditor.vue';
+import ScriptSettingsEditor from '@/ConfigMaker/components/scripts/ScriptSettingsEditor.vue';
 import CharacterEditor from '@/ConfigMaker/components/characters/CharacterEditor.vue';
 import { storeToRefs } from 'pinia';
 import { Toaster } from 'vue-sonner';

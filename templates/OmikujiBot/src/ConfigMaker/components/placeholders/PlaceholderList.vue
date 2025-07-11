@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/PlaceholderList.vue -->
+<!-- src/configMaker/components/placeholders/PlaceholderList.vue -->
 <template>
  <div class="card bg-base-300">
   <h3 class="card-title bg-primary text-lg p-2 pl-4 rounded-t text-white">プレースホルダー一覧</h3>

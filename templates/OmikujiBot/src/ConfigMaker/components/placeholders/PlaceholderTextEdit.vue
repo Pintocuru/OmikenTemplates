@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/PlaceholderTextEdit.vue -->
+<!-- src/configMaker/components/placeholders/PlaceholderTextEdit.vue -->
 <template>
  <div>
   <!-- テキストエディットボタン -->

@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/ExternalScriptEditor.vue -->
+<!-- src/configMaker/components/comments/ExternalScriptEditor.vue -->
 <template>
  <div class="card bg-base-300 mt-4">
   <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">外部スクリプト設定</div>

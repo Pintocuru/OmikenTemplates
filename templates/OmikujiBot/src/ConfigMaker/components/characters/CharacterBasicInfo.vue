@@ -1,4 +1,4 @@
-<!-- src/apps/configMaker/components/CharacterBasicInfo.vue -->
+<!-- src/configMaker/components/characters/CharacterBasicInfo.vue -->
 <template>
  <div class="card bg-base-300 mt-4">
   <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">基本情報</div>
@@ -23,11 +23,14 @@
     <label class="label-text">{{ field.label }}</label>
     <input type="text" class="input input-bordered w-full" v-model="localCharacter[field.key]" />
    </div>
-
+  </div>
+  <div class="grid grid-cols-1 gap-4 p-4">
    <!-- チェックボックス -->
    <div class="form-control flex-row items-center gap-2 mt-2">
     <input type="checkbox" class="checkbox" v-model="localCharacter.isIconDisplay" />
-    <label class="label-text">アイコン表示</label>
+    <label class="label-text text-base pl-3"
+     >アイコン表示を表示する(OFFの場合、アイコンの画像設定ができません)</label
+    >
    </div>
   </div>
  </div>

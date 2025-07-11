@@ -1,4 +1,4 @@
-<!-- src/apps/configMaker/components/CharacterImageSettings.vue -->
+<!-- src/configMaker/components/characters/CharacterImageSettings.vue -->
 <template>
  <div class="card bg-base-300 mt-4">
   <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">画像設定</div>

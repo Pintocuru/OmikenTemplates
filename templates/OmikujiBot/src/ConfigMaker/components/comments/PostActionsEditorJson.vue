@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/PostActionsEditorJson.vue -->
+<!-- src/configMaker/components/comments/PostActionsEditorJson.vue -->
 <template>
  <div class="form-control">
   <div class="flex justify-between items-center mb-1">

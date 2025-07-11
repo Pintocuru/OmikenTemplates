@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/PlaceholderIdEditor.vue -->
+<!-- src/configMaker/components/placeholders/PlaceholderIdEditor.vue -->
 <template>
  <div>
   <!-- IDエディタボタン -->

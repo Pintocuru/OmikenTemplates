@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/TimerRuleEditor.vue -->
+<!-- src/configMaker/components/timers/TimerRuleEditor.vue -->
 <template>
  <!-- タブ部分 -->
  <RuleTabs :rules="rulesArray" :selectedRule="selectedRule" ruleType="timers" />

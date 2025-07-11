@@ -1,7 +1,14 @@
-<!-- src/configMaker/components/OmikujiSetEditor.vue -->
+<!-- src/configMaker/components/comments/OmikujiSetEditor.vue -->
 <template>
  <div class="card bg-base-300 mt-4">
-  <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">おみくじ設定</div>
+  <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t flex justify-between items-center">
+   <span>おみくじ設定</span>
+   <!-- キャラクター一括変更ボタン -->
+   <CharacterBulkChanger
+    :model-value="modelValue"
+    @update:model-value="$emit('update:modelValue', $event)"
+   />
+  </div>
   <div class="card-body p-3">
    <!-- おみくじセットコンポーネント -->
    <div v-for="(omikuji, index) in modelValue" :key="index" class="card bg-base-100 p-3">
@@ -68,9 +75,14 @@
 <script setup lang="ts">
 import { OmikujiSetSchema, OmikujiSetType } from '@/types/OmikujiTypesSchema';
 import PostActionsEditorJson from './PostActionsEditorJson.vue';
+import CharacterBulkChanger from './CharacterBulkChanger.vue';
 
-const props = defineProps<{ modelValue: OmikujiSetType[] }>();
-const emit = defineEmits<{ 'update:modelValue': [value: OmikujiSetType[]] }>();
+const props = defineProps<{
+ modelValue: OmikujiSetType[];
+}>();
+const emit = defineEmits<{
+ 'update:modelValue': [value: OmikujiSetType[]];
+}>();
 
 // 統合された更新関数
 const updateOmikuji = (index: number, key: keyof OmikujiSetType, value: any) => {

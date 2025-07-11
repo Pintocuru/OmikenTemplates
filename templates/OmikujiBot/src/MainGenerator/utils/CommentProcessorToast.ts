@@ -88,7 +88,7 @@ export class BotMessageGenerator {
   return {
    id: comment.data.id,
    name: comment.data.name,
-   profileImage: comment.data.profileImage,
+   profileImage: character.isIconDisplay ? comment.data.profileImage : null,
    timestamp: comment.data.timestamp,
    comment: comment.data.comment,
    isToast: false,
@@ -108,7 +108,9 @@ export class BotMessageGenerator {
   return {
    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
    name: character?.name ?? '',
-   profileImage: this.getCharacterIcon(character, postAction.iconKey),
+   profileImage: character.isIconDisplay
+    ? this.getCharacterIcon(character, postAction.iconKey)
+    : null,
    timestamp: new Date().toISOString(),
    comment: postAction.messageToast,
    isToast: true,
@@ -121,15 +123,18 @@ export class BotMessageGenerator {
   * キャラクターアイコンの取得
   * 指定されたアイコンキーに対応するアイコンを取得し、存在しない場合はデフォルトアイコンを返す
   */
- private getCharacterIcon(character: CharacterPresetType, iconKey: CharacterImageType): string {
+ private getCharacterIcon(
+  character: CharacterPresetType,
+  iconKey: CharacterImageType
+ ): string | null {
   const iconMap = character?.image;
-  if (!iconMap) return '';
+  if (!iconMap) return null;
 
-  // 指定されたアイコンキーが存在する場合
-  if (iconMap[iconKey]) return iconMap[iconKey];
+  const iconValue = iconMap[iconKey];
+  if (iconValue && iconValue !== '') return iconValue;
 
-  // デフォルトアイコンにフォールバック
-  return iconMap['default'] || '';
+  const defaultIcon = iconMap['default'];
+  return defaultIcon && defaultIcon !== '' ? defaultIcon : null;
  }
 
  /**

@@ -1,4 +1,4 @@
-<!-- src/apps/configMaker/components/presets/ConfigImport.vue -->
+<!-- src/configMaker/components/presets/ConfigImport.vue -->
 <template>
  <div class="flex-1 min-w-80">
   <span class="font-medium mr-2">設定読み込み:</span>

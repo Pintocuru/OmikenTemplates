@@ -1,4 +1,4 @@
-<!-- src/apps/configMaker/components/presets/ConfigExport.vue -->
+<!-- src/configMaker/components/presets/ConfigExport.vue -->
 <template>
  <div class="flex flex-wrap gap-2">
   <button @click="exportConfig" class="btn btn-primary" :disabled="isExporting">

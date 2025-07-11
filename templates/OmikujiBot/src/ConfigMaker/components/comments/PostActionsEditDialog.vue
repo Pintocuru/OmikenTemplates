@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/PostActionsEditDialog.vue -->
+<!-- src/configMaker/components/comments/PostActionsEditDialog.vue -->
 <template>
  <dialog ref="dialogRef" class="modal">
   <div class="modal-box max-w-max">

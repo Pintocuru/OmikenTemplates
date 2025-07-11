@@ -1,4 +1,4 @@
-<!-- src/apps/configMaker/components/CharacterTagManager.vue -->
+<!-- src/configMaker/components/characters/CharacterTagManager.vue -->
 <template>
  <div class="card bg-base-300 mt-4">
   <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">タグ設定</div>

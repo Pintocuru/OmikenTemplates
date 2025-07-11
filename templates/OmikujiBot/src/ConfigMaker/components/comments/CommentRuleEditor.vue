@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/CommentRuleEditor.vue -->
+<!-- src/configMaker/components/comments/CommentRuleEditor.vue -->
 <template>
  <!-- タブ部分 -->
  <RuleTabs :rules="rulesArray" :selectedRule="selectedRule" ruleType="comments" />
