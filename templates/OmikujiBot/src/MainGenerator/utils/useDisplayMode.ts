@@ -34,13 +34,6 @@ export function useDisplayMode(omikujiData: OmikujiDataType, processor: CommentP
    }
   });
 
-  // timersから scriptId を収集
-  Object.values(omikujiData.timers).forEach((timer) => {
-   if (timer.scriptId && scriptGameMap[timer.scriptId]) {
-    scriptIds.add(timer.scriptId);
-   }
-  });
-
   return Array.from(scriptIds);
  });
 

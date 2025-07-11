@@ -1,6 +1,6 @@
 // composables/useBotMessage.ts
 import { ref, computed, type Ref } from 'vue';
-import { BotMessage, SIZE_CONFIG, DisplaySize } from '@/types/types';
+import { BotMessage } from '@/types/types';
 
 const DISPLAY_CONFIG = {
  INTERVAL: 250,
@@ -13,7 +13,6 @@ export type DisplayMode = 'comment' | 'toast';
 
 export const useBotCommentDisplay = (
  botMessages: Ref<BotMessage[]>,
- displaySize: Ref<DisplaySize>,
  mode: DisplayMode = 'comment'
 ) => {
  const displayedComments = ref<BotMessage[]>([]);
@@ -22,36 +21,6 @@ export const useBotCommentDisplay = (
  const comments = computed(() =>
   botMessages.value.filter((message) => (mode === 'comment' ? !message.isToast : message.isToast))
  );
-
- // スタイル計算を統一・簡略化
- const getCommentStyles = (displayIndex: number, message: BotMessage) => {
-  const backgroundColor = message.color?.backgroundColor || '#ffffff';
-  const brightness = mode === 'toast' ? 100 : Math.max(100 - displayIndex * 15, 30);
-
-  return {
-   backgroundColor,
-   ...(mode === 'comment' && { filter: `brightness(${brightness}%)` })
-  };
- };
-
- const getAvatarStyles = (displayIndex: number) =>
-  mode === 'toast' ? {} : { opacity: displayIndex === 0 ? '100%' : '0%' };
-
- // サイズ関連のヘルパー関数（propsのdisplaySizeを使用）
- const getTextSizeClasses = () => {
-  const size = displaySize.value;
-  return SIZE_CONFIG.text[size];
- };
-
- const getIconSizeClasses = () => {
-  const size = displaySize.value;
-  return SIZE_CONFIG.icon[size];
- };
-
- const getSpacing = () => {
-  const size = displaySize.value;
-  return SIZE_CONFIG.icon[size].spacing;
- };
 
  const imageBaseUrl = import.meta.env?.VITE_IMAGE_BASE_URL || './Characters/';
  const getImagePath = (profileImage: string) => `${imageBaseUrl}${profileImage}`;
@@ -70,7 +39,7 @@ export const useBotCommentDisplay = (
   if (index > -1) displayedComments.value.splice(index, 1);
  };
 
- // 表示制御ロジック（コンパクト化）
+ // 表示制御ロジック
  const useCommentDisplayControl = () => {
   let lastTime = 0;
   let processedMessageIds = new Set<string>();
@@ -136,11 +105,6 @@ export const useBotCommentDisplay = (
 
  return {
   displayedComments,
-  getCommentStyles,
-  getAvatarStyles,
-  getTextSizeClasses,
-  getIconSizeClasses,
-  getSpacing,
   getImagePath,
   handleImageError,
   removeItem,

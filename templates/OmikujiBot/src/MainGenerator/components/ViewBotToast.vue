@@ -1,22 +1,22 @@
 <!-- src/MainGenerator/components/ViewBotToast.vue -->
 <template>
- <div class="toast-container fixed bottom-6 right-6 z-999">
+ <div class="toast-container fixed bottom-4 right-4 z-999">
   <transition-group name="toast" tag="div" appear>
    <div
     v-for="(message, index) in displayedComments.slice().reverse()"
     :key="message.id"
-    class="toast-item flex items-start p-3 rounded-2xl shadow-lg backdrop-blur-sm mb-3"
+    class="flex flex-row-reverse items-start w-full p-1 mt-1 rounded-sm shadow-lg backdrop-blur-sm cursor-pointer hover:opacity-80 transition-opacity"
     :style="{
-     ...getCommentStyles(index, message),
-     width: sizeConfig.width,
+     backgroundColor: message.color?.backgroundColor || '#ffffff',
      maxWidth: sizeConfig.width,
-     minWidth: sizeConfig.minWidth
+     width: '100%'
     }"
+    @click="removeItem(message.id)"
    >
     <!-- アイコン -->
     <div
      v-if="message.profileImage"
-     class="avatar flex-shrink-0 rounded-full overflow-hidden bg-gray-200 mr-3"
+     class="avatar flex-shrink-0 rounded-full overflow-hidden bg-gray-200"
      :class="sizeConfig.avatar"
     >
      <img
@@ -36,32 +36,20 @@
     </div>
 
     <!-- メッセージ内容 -->
-    <div class="flex-1 min-w-0 overflow-hidden">
+    <div class="flex-1 min-w-0 px-1 overflow-hidden">
      <div
-      class="name font-bold mb-1"
-      :class="[sizeConfig.text, sizeConfig.lineHeight]"
-      :style="{ color: message.color?.nameColor || '#000000' }"
-     >
-      {{ message.name }}
-     </div>
-     <div
-      class="comment-text"
-      :class="[sizeConfig.text, sizeConfig.lineHeight]"
-      :style="{ color: message.color?.textColor || '#000000' }"
+      class="break-words"
+      :class="[sizeConfig.text]"
+      :style="{
+       color: message.color?.textColor || '#000000',
+       wordBreak: 'break-word',
+       overflowWrap: 'break-word',
+       hyphens: 'auto'
+      }"
      >
       {{ message.comment }}
      </div>
     </div>
-
-    <!-- 閉じるボタン -->
-    <button
-     @click="removeItem(message.id)"
-     class="flex-shrink-0 ml-2 px-3 py-1 rounded-full hover:bg-black/10 transition-colors self-start"
-     :class="sizeConfig.text"
-     :style="{ color: message.color?.textColor || '#666666' }"
-    >
-     ✕
-    </button>
    </div>
   </transition-group>
  </div>
@@ -73,43 +61,13 @@ import { BotMessage, DisplaySize } from '@/types/types';
 import { useBotCommentDisplay } from './useBotMessage';
 import { Info } from 'lucide-vue-next';
 
-// サイズ設定の定数
+// サイズ設定の定数（OBS用により狭く調整）
 const SIZE_CONFIG = {
- xs: {
-  text: 'text-sm',
-  lineHeight: 'leading-5',
-  avatar: 'w-8 h-8',
-  width: '280px',
-  minWidth: '220px'
- },
- sm: {
-  text: 'text-base',
-  lineHeight: 'leading-6',
-  avatar: 'w-10 h-10',
-  width: '340px',
-  minWidth: '260px'
- },
- md: {
-  text: 'text-lg',
-  lineHeight: 'leading-7',
-  avatar: 'w-12 h-12',
-  width: '400px',
-  minWidth: '300px'
- },
- lg: {
-  text: 'text-xl',
-  lineHeight: 'leading-8',
-  avatar: 'w-14 h-14',
-  width: '460px',
-  minWidth: '340px'
- },
- xl: {
-  text: 'text-2xl',
-  lineHeight: 'leading-9',
-  avatar: 'w-16 h-16',
-  width: '520px',
-  minWidth: '380px'
- }
+ xs: { text: 'text-xs leading-tight', avatar: 'w-6 h-6', width: '250px' },
+ sm: { text: 'text-sm leading-tight', avatar: 'w-8 h-8', width: '300px' },
+ md: { text: 'text-base leading-tight', avatar: 'w-10 h-10', width: '340px' },
+ lg: { text: 'text-lg leading-tight', avatar: 'w-12 h-12', width: '380px' },
+ xl: { text: 'text-xl leading-tight', avatar: 'w-14 h-14', width: '420px' }
 } as const;
 
 const props = defineProps<{
@@ -117,15 +75,8 @@ const props = defineProps<{
  displaySize: DisplaySize;
 }>();
 
-const {
- displayedComments,
- getCommentStyles,
- getImagePath,
- handleImageError,
- removeItem,
- start,
- stop
-} = useBotCommentDisplay(toRef(props, 'botMessages'), toRef(props, 'displaySize'), 'toast');
+const { displayedComments, getImagePath, handleImageError, removeItem, start, stop } =
+ useBotCommentDisplay(toRef(props, 'botMessages'), 'toast');
 
 // サイズ設定の取得
 const sizeConfig = computed(() => SIZE_CONFIG[props.displaySize]);
@@ -139,13 +90,8 @@ onUnmounted(stop);
 .toast-container {
  display: flex;
  flex-direction: column-reverse; /* 新しいトーストを下に表示 */
- max-height: calc(100vh - 8rem);
- pointer-events: none; /* コンテナ自体はクリックを無効化 */
-}
-
-.toast-item {
- pointer-events: all; /* トーストアイテムはクリック可能 */
- transform-origin: right center;
+ max-width: 100vw; /* ビューポート幅を超えないように制限 */
+ box-sizing: border-box;
 }
 
 .toast-enter-active {

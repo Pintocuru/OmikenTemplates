@@ -11,10 +11,6 @@ export function useMessageHandler(omikujiData: OmikujiDataType) {
  const processor = new CommentProcessor(omikujiData);
  const timerProcessor = new TimerProcessor(omikujiData);
 
- // メッセージを isToast で分離
- const normalMessages = computed(() => botMessages.value.filter((message) => !message.isToast));
- const toastMessages = computed(() => botMessages.value.filter((message) => message.isToast));
-
  // メッセージ処理の共通ロジック
  const processMessages = (processedMessages: BotMessage[]) => {
   if (!processedMessages.length) return;
@@ -73,8 +69,6 @@ export function useMessageHandler(omikujiData: OmikujiDataType) {
  return {
   // 状態
   botMessages,
-  normalMessages,
-  toastMessages,
   processor,
 
   // アクション

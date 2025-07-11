@@ -4,7 +4,7 @@
   <!-- 表示モード切り替えに応じたコンポーネント表示 -->
   <ViewBotMessage
    v-if="currentDisplayMode === 'messages'"
-   :botMessages="normalMessages"
+   :botMessages="botMessages"
    :displaySize="displaySize"
   />
 
@@ -23,7 +23,7 @@
   />
 
   <!-- トースト表示（常時表示） -->
-  <ViewBotToast :botMessages="toastMessages" :displaySize="displaySize" />
+  <ViewBotToast :botMessages="botMessages" :displaySize="displaySize" />
 
   <!-- 表示サイズ変更ボタン -->
   <div
@@ -70,7 +70,7 @@ const isInitialized = ref(true);
 const userVisitsData = ref<Record<string, ServiceVisitType>>({});
 
 // コンポーザブルの使用
-const { normalMessages, toastMessages, processComments, processor, clearMessages, startTimers } =
+const { botMessages, processComments, processor, clearMessages, startTimers } =
  useMessageHandler(omikujiData);
 
 const {

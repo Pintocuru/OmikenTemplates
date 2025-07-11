@@ -13,25 +13,29 @@
     :key="message.id"
     class="absolute w-full transition-all duration-300 ease-out"
     :style="{
-     top: `${index * getSpacing()}px`,
+     top: `${index * sizeConfig.spacing}px`,
      zIndex: displayedComments.length - index
     }"
    >
     <!-- コメント吹き出し -->
     <div
-     class="absolute left-1/2 -translate-x-1/2 transform w-full max-w-3xl min-w-md p-6 rounded-xl"
-     :style="getCommentStyles(index, message)"
+     class="absolute left-1/2 -translate-x-1/2 transform w-full max-w-3xl p-4 rounded-xl"
+     :style="{
+      backgroundColor: message.color?.backgroundColor || '#ffffff',
+      filter: `brightness(${getBrightness(index)}%)`
+     }"
     >
      <div
-      class="mb-3"
-      :class="getTextSizeClasses().name"
+      v-if="message.name !== ''"
+      class="mb-0"
+      :class="sizeConfig.text"
       :style="{ color: message.color?.nameColor || '#000000' }"
      >
       {{ message.name }}
      </div>
      <div
       class="break-words"
-      :class="[getTextSizeClasses().comment, getTextSizeClasses().lineHeight]"
+      :class="sizeConfig.text"
       :style="{ color: message.color?.textColor || '#000000' }"
      >
       {{ message.comment }}
@@ -44,7 +48,7 @@
        borderLeft: '20px solid transparent',
        borderRight: '20px solid transparent',
        borderTop: `20px solid ${message.color?.backgroundColor || '#ffffff'}`,
-       filter: `brightness(${Math.max(100 - index * 15, 30)}%)`
+       filter: `brightness(${getBrightness(index)}%)`
       }"
      />
     </div>
@@ -53,10 +57,10 @@
     <div
      v-if="message.profileImage"
      class="absolute left-1/2 -translate-x-1/2 transform rounded-full overflow-hidden z-40"
-     :class="getIconSizeClasses().size"
+     :class="sizeConfig.avatar"
      :style="{
-      ...getAvatarStyles(index),
-      top: getIconSizeClasses().top,
+      opacity: index === 0 ? '100%' : '0%',
+      top: sizeConfig.avatarTop,
       backgroundColor: message.color?.backgroundColor || '#ccc'
      }"
     >
@@ -73,27 +77,34 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, toRef } from 'vue';
+import { computed, onMounted, onUnmounted, toRef } from 'vue';
 import { BotMessage, DisplaySize } from '@/types/types';
 import { useBotCommentDisplay } from './useBotMessage';
+
+// サイズ設定の定数
+const SIZE_CONFIG = {
+ xs: { text: 'text-md', avatar: 'w-32 h-32', avatarTop: '160px', spacing: 20 },
+ sm: { text: 'text-lg', avatar: 'w-48 h-48', avatarTop: '200px', spacing: 40 },
+ md: { text: 'text-xl', avatar: 'w-64 h-64', avatarTop: '240px', spacing: 60 },
+ lg: { text: 'text-2xl', avatar: 'w-80 h-80', avatarTop: '280px', spacing: 80 },
+ xl: { text: 'text-3xl', avatar: 'w-96 h-96', avatarTop: '320px', spacing: 100 }
+} as const;
 
 const props = defineProps<{
  botMessages: BotMessage[];
  displaySize: DisplaySize;
 }>();
 
-const {
- displayedComments,
- getCommentStyles,
- getAvatarStyles,
- getTextSizeClasses,
- getIconSizeClasses,
- getSpacing,
- getImagePath,
- handleImageError,
- start,
- stop
-} = useBotCommentDisplay(toRef(props, 'botMessages'), toRef(props, 'displaySize'));
+const { displayedComments, getImagePath, handleImageError, start, stop } = useBotCommentDisplay(
+ toRef(props, 'botMessages'),
+ 'comment'
+);
+
+// サイズ設定の取得
+const sizeConfig = computed(() => SIZE_CONFIG[props.displaySize]);
+
+// brightness計算
+const getBrightness = (index: number) => Math.max(100 - index * 15, 30);
 
 onMounted(start);
 onUnmounted(stop);
@@ -131,10 +142,5 @@ onUnmounted(stop);
 .avatar {
  will-change: transform, opacity;
  transition: opacity 0.4s ease-in-out;
-}
-
-* {
- backface-visibility: hidden;
- -webkit-backface-visibility: hidden;
 }
 </style>
