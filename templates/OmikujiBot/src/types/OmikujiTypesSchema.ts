@@ -23,7 +23,7 @@ export function validateOmikujiData(input: unknown): OmikujiDataType {
 // Character関連のスキーマ
 // ======================
 
-const EmotionIcons = [
+export const EmotionIcons = [
  'default',
  'happy',
  'excited',
@@ -123,7 +123,6 @@ export const CommentThresholdSchema = z.object({
 // ======================
 // Post Action関連のスキーマ
 // ======================
-
 export const PostActionSchema = z.object({
  characterKey: z.string().default('').catch(''),
  iconKey: CharacterEmotionSchema.default('default').catch('default'),

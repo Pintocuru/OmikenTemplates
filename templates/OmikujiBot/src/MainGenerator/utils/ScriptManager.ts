@@ -1,5 +1,5 @@
 // src/MainGenerator/utils/processors/ScriptManager.ts
-import { CommentRuleType, OmikujiDataType, TimerRuleType } from '@/types/OmikujiTypesSchema';
+import { CommentRuleType, OmikujiDataType } from '@/types/OmikujiTypesSchema';
 import { ScriptClass, ScriptResult, UserStatistics, GameState } from '@/types/PresetTypes';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
@@ -7,8 +7,7 @@ import { Comment } from '@onecomme.com/onesdk/types/Comment';
 export class ScriptManager {
  private readonly scriptInstances: Record<string, ScriptClass> = {};
  private readonly gameStates: Record<string, GameState> = {};
-
- omikujiData: OmikujiDataType;
+ private readonly omikujiData: OmikujiDataType;
 
  // ランキングデータを適切な型で管理
  private rankingData: Record<string, UserStatistics[]> = {};
@@ -23,11 +22,28 @@ export class ScriptManager {
   */
  private initializeScripts(): void {
   try {
-   const commentRules: Record<string, CommentRuleType> = this.omikujiData.comments;
+   for (const scriptId of this.getAvailableScriptIds()) {
+    // すでに初期化済みならスキップ
+    if (this.scriptInstances[scriptId]) continue;
 
-   // コメントルールの処理
-   for (const rule of Object.values(commentRules)) {
-    this.initializeScript(rule.scriptId);
+    const scriptInstance = scriptGameMap[scriptId].execute;
+
+    // 初期化処理
+    scriptInstance.setup(this.omikujiData.scriptSettings[scriptId]);
+
+    // インスタンスを保存
+    this.scriptInstances[scriptId] = scriptInstance;
+
+    // ゲーム状態の初期化
+    this.gameStates[scriptId] = {
+     ruleId: scriptId,
+     totalDraws: 0,
+     userStats: {},
+     currentUserIds: []
+    };
+
+    // ランキングデータの初期化
+    this.rankingData[scriptId] = [];
    }
   } catch (error) {
    console.error('スクリプト初期化エラー:', error);
@@ -35,44 +51,18 @@ export class ScriptManager {
  }
 
  /**
-  * 個別スクリプトの初期化
+  * omikujiData 内で使用されている有効な scriptId の一覧を返す
   */
- private initializeScript(scriptId: string | null): void {
-  if (!scriptId || !scriptGameMap[scriptId]) {
-   return;
-  }
+ getAvailableScriptIds(): string[] {
+  const scriptIds = new Set<string>();
 
-  // 既に初期化済みの場合はスキップ
-  if (this.scriptInstances[scriptId]) {
-   return;
-  }
+  Object.values(this.omikujiData.comments).forEach((comment) => {
+   if (comment.scriptId && scriptGameMap[comment.scriptId]) {
+    scriptIds.add(comment.scriptId);
+   }
+  });
 
-  const scriptPreset = scriptGameMap[scriptId];
-  const scriptInstance = scriptPreset.execute;
-
-  try {
-   // 設定値の取得（スクリプト固有の設定があれば使用）
-   const settings = this.omikujiData.scriptSettings[scriptId] || {};
-
-   // 初期化処理 - EmptyObjectの場合は空オブジェクトとしてキャスト
-   scriptInstance.setup(settings);
-
-   // インスタンスを保存
-   this.scriptInstances[scriptId] = scriptInstance;
-
-   // ゲーム状態の初期化
-   this.gameStates[scriptId] = {
-    ruleId: scriptId,
-    totalDraws: 0,
-    userStats: {},
-    currentUserIds: []
-   };
-
-   // ランキングデータの初期化
-   this.rankingData[scriptId] = [];
-  } catch (error) {
-   console.error(`スクリプト初期化エラー (${scriptId}):`, error);
-  }
+  return Array.from(scriptIds);
  }
 
  /**
@@ -95,9 +85,7 @@ export class ScriptManager {
  executeScript(comment: Comment, rule: CommentRuleType): ScriptResult | null {
   const { scriptId } = rule;
 
-  if (!scriptId || !scriptGameMap[scriptId]) {
-   return null;
-  }
+  if (!scriptId || !scriptGameMap[scriptId]) return null;
 
   const scriptInstance = this.getScriptInstance(scriptId);
   if (!scriptInstance) {
@@ -106,17 +94,12 @@ export class ScriptManager {
   }
 
   try {
-   // スクリプトパラメータの取得
-   const params = rule.scriptParams || {};
-
-   // スクリプト実行 - EmptyObjectの場合は空オブジェクトとしてキャスト
-   const result = scriptInstance.run(comment, params);
+   // スクリプト実行
+   const result = scriptInstance.run(comment, rule.scriptParams || {});
 
    // ランキングデータの更新
-   if (result && result.rankingList) {
+   if (result && result.rankingList && result.isGameStateUpdated) {
     this.rankingData[scriptId] = result.rankingList;
-
-    // ゲーム状態の更新
     this.updateGameState(scriptId, result.rankingList);
    }
 

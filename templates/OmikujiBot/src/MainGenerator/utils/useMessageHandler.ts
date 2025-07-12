@@ -1,15 +1,19 @@
 // src/composables/useMessageHandler.ts
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import { BotMessage } from '@/types/types';
-import { OmikujiDataType } from '@/types/OmikujiTypesSchema';
-import { CommentProcessor } from '@/MainGenerator/utils/commentProcessor';
+import { OmikujiDataType, PostActionType } from '@/types/OmikujiTypesSchema';
+import { ScriptManager } from '@/MainGenerator/utils/ScriptManager';
+import { CommentProcessor } from '@/MainGenerator/utils/CommentProcessor';
 import { TimerProcessor } from '@/MainGenerator/utils/timerProcessor';
+import { CharacterCollector } from '@/MainGenerator/utils/CharacterCollector';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 export function useMessageHandler(omikujiData: OmikujiDataType) {
  const botMessages = ref<BotMessage[]>([]);
- const processor = new CommentProcessor(omikujiData);
+ const scriptManager = new ScriptManager(omikujiData);
+ const commentProcessor = new CommentProcessor(omikujiData, scriptManager);
  const timerProcessor = new TimerProcessor(omikujiData);
+ const characterCollector = new CharacterCollector(omikujiData);
 
  // メッセージ処理の共通ロジック
  const processMessages = (processedMessages: BotMessage[]) => {
@@ -30,6 +34,11 @@ export function useMessageHandler(omikujiData: OmikujiDataType) {
   );
  };
 
+ // テストコメント表示
+ const testComments = (postAction: PostActionType) => {
+  const processedMessages = characterCollector.generateTestMessage(postAction);
+ };
+
  // コメント処理
  const processComments = (comments: Comment[]) => {
   if (!comments.length) {
@@ -37,7 +46,7 @@ export function useMessageHandler(omikujiData: OmikujiDataType) {
    return;
   }
 
-  const processedMessages = processor.processComments(comments);
+  const processedMessages = commentProcessor.processComments(comments);
   processMessages(processedMessages);
  };
 
@@ -69,7 +78,8 @@ export function useMessageHandler(omikujiData: OmikujiDataType) {
  return {
   // 状態
   botMessages,
-  processor,
+  scriptManager,
+  characterCollector,
 
   // アクション
   processComments,

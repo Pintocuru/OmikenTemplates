@@ -116,9 +116,7 @@ defineExpose({
  scrollToBottom
 });
 
-onMounted(() => {
- console.log('ViewUserVisits component mounted');
-});
+onMounted(() => {});
 </script>
 
 <style scoped>

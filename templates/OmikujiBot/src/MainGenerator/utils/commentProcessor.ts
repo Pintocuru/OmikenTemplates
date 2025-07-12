@@ -1,22 +1,23 @@
-// src/MainGenerator/utils/CommentProcessor.ts (修正版)
+// src/MainGenerator/utils/CommentProcessor.ts
 import { BotMessage } from '@/types/types';
 import { OmikujiDataType } from '@/types/OmikujiTypesSchema';
-import { UserCommentProcessor } from './UserCommentProcessor';
-import { isWithinTimeThreshold } from './CommentProcessorCooldown';
-import { BotMessageGenerator } from './CommentProcessorToast';
+import { UserCommentProcessor } from '@/MainGenerator/utils/UserCommentProcessor';
+import { isWithinTimeThreshold } from '@/MainGenerator/utils/CommentProcessorCooldown';
+import { BotMessageGenerator } from '@/MainGenerator/utils/CommentProcessorToast';
+import { ScriptManager } from '@/MainGenerator/utils/ScriptManager';
 import { SETTINGS } from '@public/common/settings';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { ServiceMeta } from '@onecomme.com/onesdk/types/Service';
 import { GetMetas } from '@public/common/subscribe/GetMetas';
 
 export class CommentProcessor {
- serviceMeta: ServiceMeta | null = null; // Metaデータ管理
+ private serviceMeta: ServiceMeta | null = null; // Metaデータ管理
  private readonly BotMessageGenerator: BotMessageGenerator;
  private readonly userCommentProcessor: UserCommentProcessor;
 
- constructor(omikujiData: OmikujiDataType) {
+ constructor(omikujiData: OmikujiDataType, scriptManager: ScriptManager) {
   this.BotMessageGenerator = new BotMessageGenerator(omikujiData.characters);
-  this.userCommentProcessor = new UserCommentProcessor(omikujiData);
+  this.userCommentProcessor = new UserCommentProcessor(omikujiData, scriptManager);
   this.initializeMetaFetcher();
  }
 
@@ -45,13 +46,6 @@ export class CommentProcessor {
    }
   }
   return botMessages;
- }
-
- /**
-  * ランキングデータ取得 (UserCommentProcessor 経由で呼び出す)
-  */
- getRankingData(scriptId: string) {
-  return this.userCommentProcessor.getRankingData(scriptId);
  }
 
  /**

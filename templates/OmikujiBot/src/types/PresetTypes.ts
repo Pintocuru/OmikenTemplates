@@ -1,6 +1,5 @@
 // src/types/PresetTypes.ts
-// 250709_3更新
-// ParameterItem 変更
+// 250712_1 ScriptResult 変更 isGameStateUpdated 追加
 import { Component } from 'vue';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { omikujiData, PostAction, PostActionWordParty } from './OmikujiTypes';
@@ -61,7 +60,6 @@ export interface CharacterColorScheme {
 
 /** キャラクターの画像設定 */
 export const CHARACTER_EMOTIONS = {
- DEFAULT: 'default', // 基本
  HAPPY: 'happy', // 喜び
  EXCITED: 'excited', // ワクワク、盛り上がり
  LAUGHING: 'laughing', // 爆笑している
@@ -75,24 +73,10 @@ export const CHARACTER_EMOTIONS = {
  SLEEPY: 'sleepy' // 眠い・休憩中
 } as const;
 
-// 感情ラベルマップ
-export const emotionLabels: Record<CharacterEmotion, string> = {
- default: 'デフォルト',
- happy: '喜び',
- excited: 'ワクワク',
- laughing: '爆笑',
- blushing: '照れ',
- surprised: '驚き',
- sad: '悲しみ',
- angry: '怒り',
- thinking: '考え中',
- wink: '茶目っ気',
- singing: '歌',
- sleepy: '眠い'
-};
-
+export type CharacterImageSet = {
+ default: string;
+} & Partial<Record<CharacterEmotion, string>>;
 export type CharacterEmotion = (typeof CHARACTER_EMOTIONS)[keyof typeof CHARACTER_EMOTIONS];
-export type CharacterImageSet = Record<CharacterEmotion, string>;
 
 // ===== スクリプトプリセット =====
 
@@ -191,6 +175,8 @@ export interface ScriptResult<
 
  /** おみくじ結果のリスト */
  rankingList: TRanking[] | null;
+
+ isGameStateUpdated: boolean; // rankingList を更新するか
 }
 
 /**

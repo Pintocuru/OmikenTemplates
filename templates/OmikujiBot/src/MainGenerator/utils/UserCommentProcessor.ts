@@ -25,12 +25,12 @@ export class UserCommentProcessor {
  private readonly omikujiData: OmikujiDataType;
  private readonly BotMessageGenerator: BotMessageGenerator;
 
- constructor(omikujiData: OmikujiDataType) {
+ constructor(omikujiData: OmikujiDataType, scriptManager: ScriptManager) {
   this.omikujiData = omikujiData;
   this.cooldownClass = new CommentProcessorCooldown();
   this.PostMessage = new PostMessage(omikujiData.characters);
   this.placeProcess = new PlaceProcess(omikujiData.placeholders);
-  this.scriptManager = new ScriptManager(omikujiData);
+  this.scriptManager = scriptManager;
   this.BotMessageGenerator = new BotMessageGenerator(omikujiData.characters);
  }
 
@@ -174,12 +174,5 @@ export class UserCommentProcessor {
   } finally {
    this.placeProcess.clearResolvedValues();
   }
- }
-
- /**
-  * ランキングデータ取得
-  */
- getRankingData(scriptId: string) {
-  return this.scriptManager.getRankingData(scriptId);
  }
 }

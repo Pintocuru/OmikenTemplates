@@ -296,8 +296,7 @@ const omikujiData = {
    },
    scriptId: 'GouseiSuika',
    scriptParams: {
-    mode: 'スイカゲーム',
-    enableCount: 5
+    mode: 'スイカゲーム'
    }
   },
   1752163393851: {
@@ -1035,7 +1034,8 @@ const omikujiData = {
  scriptSettings: {
   GouseiSuika: {
    rankingLimit: 5,
-   isParty: true
+   isParty: true,
+   enableCount: 5
   }
  },
  characters: {

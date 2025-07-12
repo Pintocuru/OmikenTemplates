@@ -1,45 +1,55 @@
 // src/composables/useDisplayMode.ts
-import { ref, computed } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import { DisplaySize } from '@/types/types';
 import { OmikujiDataType } from '@/types/OmikujiTypesSchema';
-import { CommentProcessor } from '@/MainGenerator/utils/commentProcessor';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
+import { ScriptManager } from './ScriptManager';
 
 export type DisplayMode = 'messages' | 'userVisits' | 'scriptGame';
 
-export function useDisplayMode(omikujiData: OmikujiDataType, processor: CommentProcessor) {
+export function useDisplayMode(
+ omikujiData: OmikujiDataType,
+ scriptManager: ScriptManager,
+ clearMessages?: () => void
+) {
  const displayModes: DisplayMode[] = ['messages', 'userVisits', 'scriptGame'];
  const currentDisplayModeIndex = ref(0);
+ const currentScriptGameKey = ref<string>('');
+ const displaySize = ref<DisplaySize>('md');
+ const forceRender = ref(0); // リアクティブ更新用
 
  // 現在の表示モード
  const currentDisplayMode = computed(() => displayModes[currentDisplayModeIndex.value]);
 
- // スクリプトゲーム選択管理
- const currentScriptGameKey = ref<string>('');
+ // ScriptManagerから直接アクティブなスクリプトIDを取得
+ const availableScriptIds = computed(() => scriptManager.getActiveScripts());
 
- // 表示サイズ管理
- const displaySize = ref<DisplaySize>('md');
-
- // ランキングデータ更新トリガー用
- const rankingUpdateTrigger = ref(0);
-
- // omikujiDataから実際に使用されているscriptIdを取得
- const availableScriptIds = computed(() => {
-  const scriptIds = new Set<string>();
-
-  // commentsから scriptId を収集
-  Object.values(omikujiData.comments).forEach((comment) => {
-   if (comment.scriptId && scriptGameMap[comment.scriptId]) {
-    scriptIds.add(comment.scriptId);
-   }
-  });
-
-  return Array.from(scriptIds);
+ // 現在のスクリプトゲームコンポーネント
+ const currentScriptGameComponent = computed(() => {
+  const scriptKey = currentScriptGameKey.value;
+  if (!scriptKey || !scriptGameMap[scriptKey]) return null;
+  return scriptGameMap[scriptKey].component;
  });
 
- // 現在選択中のscriptIdを初期化・更新
+ // 現在のスクリプトゲームのprops（リアクティブに更新される）
+ const currentScriptGameProps = computed(() => {
+  forceRender.value;
+  const scriptKey = currentScriptGameKey.value;
+  if (!scriptKey || !scriptGameMap[scriptKey]) return {};
+
+  // ScriptManagerから最新のランキングデータを取得
+  const rankingData = scriptManager.getRankingData(scriptKey);
+
+  return {
+   settings: omikujiData.scriptSettings?.[scriptKey] || {},
+   userRanking: rankingData || [],
+   displaySize: displaySize.value
+  };
+ });
+
+ // 現在のスクリプトゲームキーを初期化する関数
  const initializeCurrentScriptGameKey = () => {
-  const available = availableScriptIds.value;
+  const available = scriptManager.getActiveScripts();
   if (available.length > 0) {
    if (!currentScriptGameKey.value || !available.includes(currentScriptGameKey.value)) {
     currentScriptGameKey.value = available[0];
@@ -48,35 +58,25 @@ export function useDisplayMode(omikujiData: OmikujiDataType, processor: CommentP
    currentScriptGameKey.value = '';
   }
  };
+ initializeCurrentScriptGameKey();
 
- // 現在のスクリプトゲームコンポーネントを取得
- const currentScriptGameComponent = computed(() => {
-  initializeCurrentScriptGameKey();
-
-  if (!currentScriptGameKey.value || !scriptGameMap[currentScriptGameKey.value]) {
-   return null;
+ // 表示モード切り替え（メッセージクリア付き）
+ const switchToNextMode = () => {
+  clearMessages?.();
+  if (currentDisplayMode.value === 'scriptGame' && availableScriptIds.value.length > 1) {
+   nextScriptGame();
+  } else {
+   nextDisplayMode();
   }
-  return scriptGameMap[currentScriptGameKey.value].component;
- });
+ };
 
- // 現在のスクリプトゲームのpropsを取得
- const currentScriptGameProps = computed(() => {
-  if (!currentScriptGameKey.value || !scriptGameMap[currentScriptGameKey.value]) {
-   return {};
+ const switchToPrevMode = () => {
+  clearMessages?.();
+  if (currentDisplayMode.value === 'scriptGame' && availableScriptIds.value.length > 1) {
+   prevScriptGame();
+  } else {
+   prevDisplayMode();
   }
-  const scriptId = currentScriptGameKey.value;
-  rankingUpdateTrigger.value; // 更新トリガー用
-
-  return {
-   settings: omikujiData.scriptSettings?.[scriptId] || {},
-   userRanking: processor.getRankingData(scriptId) || [],
-   displaySize: displaySize.value
-  };
- });
-
- // ランキングデータを更新する関数
- const updateRankingData = () => {
-  rankingUpdateTrigger.value++;
  };
 
  // 表示モード切り替え関数
@@ -133,6 +133,10 @@ export function useDisplayMode(omikujiData: OmikujiDataType, processor: CommentP
   displaySize.value = size;
  };
 
+ const forceUpdate = () => {
+  forceRender.value++;
+ };
+
  return {
   // 状態
   currentDisplayMode,
@@ -144,6 +148,8 @@ export function useDisplayMode(omikujiData: OmikujiDataType, processor: CommentP
   availableScriptIds,
 
   // アクション
+  switchToNextMode,
+  switchToPrevMode,
   nextDisplayMode,
   prevDisplayMode,
   setScriptGameKey,
@@ -152,6 +158,6 @@ export function useDisplayMode(omikujiData: OmikujiDataType, processor: CommentP
   setDisplaySize,
   increaseDisplaySize,
   decreaseDisplaySize,
-  updateRankingData
+  forceUpdate
  };
 }
