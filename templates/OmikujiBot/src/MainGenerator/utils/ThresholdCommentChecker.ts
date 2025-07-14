@@ -1,5 +1,5 @@
 // src/MainGenerator/utils/ThresholdCommentChecker.ts
-import { Comment } from '@onecomme.com/onesdk';
+import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import {
  AccessCondition,
  CommentThresholdType,

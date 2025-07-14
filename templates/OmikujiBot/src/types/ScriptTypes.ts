@@ -1,7 +1,7 @@
 // src/types/ScriptTypes.ts
 // 250714_1　全編改変
 import { DefineComponent } from 'vue';
-import { Comment } from '@onecomme.com/onesdk';
+import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 // ===== 共通型定義 =====
 

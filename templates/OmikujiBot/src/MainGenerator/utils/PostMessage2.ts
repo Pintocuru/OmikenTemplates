@@ -1,12 +1,11 @@
 // src/Modules/api/PostMessage.ts
 // 250709_エイリアス変更
-
 import { CharacterEmotionType, CharacterType, PostAction, PostActionWordParty } from '@type/';
 import { SendCommentType } from '@public/type';
 import { postSystemMessage, postWordParty, postComment } from '@public/common/api/PostOneComme';
 import { ServiceAPI } from '@public/common/api/ServiceAPI';
 import { SETTINGS } from '@public/common/settings';
-import { Service } from '@onecomme.com/onesdk';
+import { Service } from '@onecomme.com/onesdk/types/Service';
 
 /**
  * メッセージ投稿を管理するクラス

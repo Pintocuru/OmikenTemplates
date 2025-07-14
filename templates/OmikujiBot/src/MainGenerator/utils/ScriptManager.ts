@@ -2,7 +2,7 @@
 import { CommentRuleType, OmikujiDataType } from '@type/';
 import { ScriptClass, ScriptResult, UserStatsType, GameState } from '@type/';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
-import { Comment } from '@onecomme.com/onesdk';
+import { Comment } from '@onecomme.com/onesdk/types/Comment';
 
 export class ScriptManager {
  private readonly scriptInstances: Record<string, ScriptClass> = {};

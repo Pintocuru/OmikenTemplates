@@ -11,8 +11,8 @@ import {
  sanitizePostActionsForDuplicate
 } from './CommentProcessorToast'; // 依存オブジェクト & ヘルパー関数
 import { drawOmikuji } from './PlayOmikuji'; // ヘルパー関数
-import { ServiceMeta } from '@onecomme.com/onesdk';
-import { Comment } from '@onecomme.com/onesdk';
+import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { ServiceMeta } from '@onecomme.com/onesdk/types/Service';
 
 export class UserCommentProcessor {
  private serviceMeta: ServiceMeta | null = null; // Metaデータ管理

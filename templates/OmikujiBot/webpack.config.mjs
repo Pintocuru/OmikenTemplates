@@ -96,6 +96,7 @@ export default () => {
    ...commonResolve,
    alias: {
     ...commonResolve.alias,
+    '@type': path.resolve(dirname, 'src/types/types.ts'),
     '@assets': path.resolve(dirname, 'assets'),
     '@': path.resolve(dirname, 'src'),
     '@Config': path.resolve(dirname, 'src/ConfigMaker'),

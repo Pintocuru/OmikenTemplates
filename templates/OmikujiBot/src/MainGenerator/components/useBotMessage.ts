@@ -1,6 +1,6 @@
 // composables/useBotMessage.ts
 import { ref, computed, type Ref } from 'vue';
-import { BotMessage } from '@/types/types';
+import { BotMessage } from '@type/';
 
 const DISPLAY_CONFIG = {
  INTERVAL: 250,

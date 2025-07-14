@@ -1,12 +1,6 @@
 // src/composables/useDisplayMode.ts
 import { ref, computed } from 'vue';
-import {
- DisplaySize,
- OmikujiDataType,
- ScriptComponentPropsType,
- ScriptComponentType,
- UserStatsType
-} from '@type/';
+import { DisplaySize, OmikujiDataType, ScriptComponentPropsType } from '@type/';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 import { ScriptManager } from './ScriptManager';
 

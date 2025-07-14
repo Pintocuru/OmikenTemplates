@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue';
-import { BotMessage, characterEmotions, DisplaySize } from '@/types/types';
+import { BotMessage, characterEmotions, DisplaySize } from '@type/';
 import {
  CharacterType,
  CharacterImageType,

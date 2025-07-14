@@ -1,5 +1,5 @@
 // src/MainGenerator/utils/CharacterCollector.ts
-import { BotMessage } from '@/types/types';
+import { BotMessage } from '@type/';
 import { CharacterType, OmikujiDataType, OmikujiSetType, PostActionType } from '@type/';
 
 export class CharacterCollector {

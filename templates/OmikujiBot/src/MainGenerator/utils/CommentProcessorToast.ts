@@ -1,9 +1,9 @@
 // src/MainGenerator/utils/CommentProcessorToast.ts
-import { BotMessage } from '@/types/types';
+import { BotMessage } from '@type/';
 import { CommentRuleType, PostActionType } from '@type/';
 import { checkThresholdComment } from './ThresholdCommentChecker';
 import { SETTINGS } from '@public/common/settings';
-import { Comment } from '@onecomme.com/onesdk';
+import { Comment } from '@onecomme.com/onesdk/types/Comment';
 import { CharacterEmotionType, CharacterType } from '@type/';
 
 /**

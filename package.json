@@ -14,7 +14,7 @@
   "templates/*"
  ],
  "dependencies": {
-  "@onecomme.com/onesdk": "^8.0.0-beta.6",
+  "@onecomme.com/onesdk": "^7.0.0",
   "@tailwindcss/postcss7-compat": "^2.2.17",
   "@tailwindcss/vite": "^4.0.15",
   "@vitejs/plugin-vue": "^5.2.1",

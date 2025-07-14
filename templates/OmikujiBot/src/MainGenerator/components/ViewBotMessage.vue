@@ -78,7 +78,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, toRef } from 'vue';
-import { BotMessage, DisplaySize } from '@/types/types';
+import { BotMessage, DisplaySize } from '@type/';
 import { useBotCommentDisplay } from './useBotMessage';
 
 // サイズ設定の定数

@@ -1,5 +1,5 @@
 // src/MainGenerator/utils/CommentProcessor.ts
-import { BotMessage } from '@/types/types';
+import { BotMessage } from '@type/';
 import { OmikujiDataType } from '@type/';
 import { UserCommentProcessor } from '@/MainGenerator/utils/UserCommentProcessor';
 import { isWithinTimeThreshold } from '@/MainGenerator/utils/CommentProcessorCooldown';
@@ -7,7 +7,8 @@ import { BotMessageGenerator } from '@/MainGenerator/utils/CommentProcessorToast
 import { ScriptManager } from '@/MainGenerator/utils/ScriptManager';
 import { SETTINGS } from '@public/common/settings';
 import { GetMetas } from '@public/common/subscribe/GetMetas';
-import { Comment, ServiceMeta } from '@onecomme.com/onesdk';
+import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { ServiceMeta } from '@onecomme.com/onesdk/types/Service';
 
 export class CommentProcessor {
  private serviceMeta: ServiceMeta | null = null; // Metaデータ管理

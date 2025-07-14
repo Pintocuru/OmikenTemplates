@@ -2,8 +2,8 @@
 import { ConfigUserType } from '../types/ConfigTypes';
 import { GetUserComments } from './GetUserComments';
 import { ServiceAPI } from '../api/ServiceAPI';
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { Service, ServiceType } from '@onecomme.com/onesdk/types/Service';
+import { Comment } from '@onecomme.com/onesdk';
+import { Service, ServiceType } from '@onecomme.com/onesdk';
 
 // サービスごとの結果の型定義
 export interface ServiceVisitType {

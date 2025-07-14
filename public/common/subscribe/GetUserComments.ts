@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { ConfigUserType } from '../types/ConfigTypes';
 import { AccessCondition, GiftCondition } from '../types/ThresholdTypes';
 import { GetComments } from './GetComments';
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { Comment } from '@onecomme.com/onesdk';
 import emojiRegex from 'emoji-regex';
 
 export function GetUserComments(config: ConfigUserType, isFirstComment: boolean = false) {
