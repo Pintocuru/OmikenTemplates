@@ -26,13 +26,13 @@
       <span class="text-info font-medium">💬 Message:</span>
       <span class="ml-1">{{ action.messageContent }}</span>
      </div>
-     <div v-if="action.wordParty" class="text-sm">
-      <span class="text-accent font-medium">🎉 Party:</span>
-      <span class="ml-1">{{ action.wordParty }}</span>
-     </div>
      <div v-if="action.messageToast" class="text-sm">
       <span class="text-warning font-medium">🍞 Toast:</span>
       <span class="ml-1">{{ action.messageToast }}</span>
+     </div>
+     <div v-if="action.wordParty" class="text-sm">
+      <span class="text-accent font-medium">🎉 Party:</span>
+      <span class="ml-1">{{ action.wordParty }}</span>
      </div>
     </div>
    </div>

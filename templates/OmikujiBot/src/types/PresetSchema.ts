@@ -1,8 +1,9 @@
 // src/types/PresetTypes.ts
-// 250713_1 emotionLabels 新規が消えてたので修正
-import { Component } from 'vue';
+// 250714_1 Zodを前提にするように変更
+import { z } from 'zod';
+import { DefineComponent } from 'vue';
 import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { omikujiData, PostAction, PostActionWordParty } from './OmikujiTypes';
+import { PostAction, PostActionWordParty } from './OmikujiTypes';
 
 // ===== 共通型定義 =====
 
@@ -15,6 +16,20 @@ export interface BasePresetItem {
  name: string; // 名前
  description: string; // 説明
 }
+
+// 基本のスキーマ
+export const BaseSchema = z.object({
+ id: z.string().default('').catch(''),
+ name: z.string().default('').catch(''),
+ description: z.string().default('').catch(''),
+ isEnabled: z.boolean().default(true).catch(true),
+ order: z.number().min(0).default(0).catch(0),
+ editorColor: z
+  .string()
+  .regex(/^#[0-9A-Fa-f]{6}$/)
+  .default('#3B82F6')
+  .catch('#3B82F6')
+});
 
 /**
  * プリセットの共通メタデータ
@@ -30,13 +45,9 @@ export interface PresetMetadata extends BasePresetItem {
  path?: string; // ファイルパス（Presetsディレクトリからの相対）
 }
 
-// ===== 基本プリセット型 =====
-
-/** おみくじプリセット */
-export interface OmikujiPreset extends PresetMetadata {
- item: omikujiData;
-}
-
+// ======================
+// Character関連のスキーマ
+// ======================
 /** キャラクター表示プリセット */
 export interface CharacterPreset extends PresetMetadata {
  /** アイコン表示の有無 */
@@ -48,7 +59,7 @@ export interface CharacterPreset extends PresetMetadata {
  /** 表示色設定 */
  color: CharacterColorScheme;
  /** 状態別画像セット */
- image: CharacterImageSet;
+ image: Record<CharacterEmotion, string>;
 }
 
 /** キャラクターの色設定 */
@@ -59,20 +70,22 @@ export interface CharacterColorScheme {
 }
 
 /** キャラクターの画像設定 */
-export const CHARACTER_EMOTIONS = {
- DEFAULT: 'default', // 基本
- HAPPY: 'happy', // 喜び
- EXCITED: 'excited', // ワクワク、盛り上がり
- LAUGHING: 'laughing', // 爆笑している
- BLUSHING: 'blushing', // 照れてる・嬉しい
- SURPRISED: 'surprised', // 驚き
- SAD: 'sad', // 悲しみ
- ANGRY: 'angry', // 怒り
- THINKING: 'thinking', // 考え中・困惑
- WINK: 'wink', // 茶目っ気・軽い冗談
- SINGING: 'singing', // 歌ってる
- SLEEPY: 'sleepy' // 眠い・休憩中
-} as const;
+export const characterEmotions = [
+ 'default', // 基本
+ 'happy', // 喜び
+ 'excited', // ワクワク、盛り上がり
+ 'laughing', // 爆笑している
+ 'blushing', // 照れてる・嬉しい
+ 'surprised', // 驚き
+ 'sad', // 悲しみ
+ 'angry', // 怒り
+ 'thinking', // 考え中・困惑
+ 'wink', // 茶目っ気・軽い冗談
+ 'singing', // 歌ってる
+ 'sleepy' // 眠い・休憩中
+] as const;
+export type CharacterEmotion = (typeof characterEmotions)[number];
+export const CharacterEmotionSchema = z.enum(characterEmotions);
 
 // 感情ラベルマップ
 export const emotionLabels: Record<CharacterEmotion, string> = {
@@ -90,8 +103,42 @@ export const emotionLabels: Record<CharacterEmotion, string> = {
  sleepy: '眠い'
 };
 
-export type CharacterEmotion = (typeof CHARACTER_EMOTIONS)[keyof typeof CHARACTER_EMOTIONS];
-export type CharacterImageSet = Record<CharacterEmotion, string>;
+export const CharacterColorSchemeSchema = z.object({
+ nameColor: z.string().default('#000000').catch('#000000'),
+ textColor: z.string().default('#000000').catch('#000000'),
+ backgroundColor: z.string().default('#FFFFFF').catch('#FFFFFF')
+});
+
+export const CharacterImageSetSchema = z.object({
+ default: z.string().default('').catch(''),
+ happy: z.string().default('').catch(''),
+ excited: z.string().default('').catch(''),
+ laughing: z.string().default('').catch(''),
+ blushing: z.string().default('').catch(''),
+ surprised: z.string().default('').catch(''),
+ sad: z.string().default('').catch(''),
+ angry: z.string().default('').catch(''),
+ thinking: z.string().default('').catch(''),
+ wink: z.string().default('').catch(''),
+ singing: z.string().default('').catch(''),
+ sleepy: z.string().default('').catch('')
+});
+
+export const CharacterPresetSchema = z.object({
+ ...BaseSchema.shape,
+ version: z.string().default('1.0.0').catch('1.0.0'),
+ author: z.string().default('').catch(''),
+ tags: z.array(z.string().default('').catch('')).default([]).catch([]),
+ url: z.string().default('').catch(''),
+ path: z.string().default('').catch(''),
+ isIconDisplay: z.boolean().default(true).catch(true),
+ displayName: z.string().default('').catch(''),
+ frameId: z.union([z.string(), z.null()]).default(null).catch(null),
+ color: CharacterColorSchemeSchema,
+ image: CharacterImageSetSchema
+});
+export type CharacterImageType = z.infer<typeof CharacterImageSetSchema>;
+export type CharacterPresetType = z.infer<typeof CharacterPresetSchema>;
 
 // ===== スクリプトプリセット =====
 
@@ -104,32 +151,18 @@ export type CharacterImageSet = Record<CharacterEmotion, string>;
  * @template TPlaceholders - プレースホルダーの型（デフォルト: Record<string, string>）
  * @template TGameExtras - ゲーム固有データの型（デフォルト: Record<string, any>）
  */
-type DefaultTypes = {
- Settings: Record<string, Serializable>;
- Params: Record<string, Serializable>;
- Placeholders: Record<string, string>;
- Ranking: UserStatistics<Record<string, Serializable>>;
- GameExtras: Record<string, Serializable>;
-};
+type DefaultTypes = Record<string, Serializable>;
 
-export type Serializable =
- | string
- | number
- | boolean
- | null
- | undefined
- | Serializable[]
- | { [key: string]: Serializable };
+export type Serializable = string | number | boolean | null | undefined;
 
 export interface ScriptPreset<
- TSettings extends object = DefaultTypes['Settings'],
- TParams extends object = DefaultTypes['Params'],
- TPlaceholders extends object = DefaultTypes['Placeholders'],
- TRanking extends UserStatistics<object> = DefaultTypes['Ranking'],
- TGameExtras extends object = DefaultTypes['GameExtras']
+ TSettings extends object = DefaultTypes,
+ TParams extends object = DefaultTypes,
+ TPlaceholders extends object = DefaultTypes,
+ TGameExtras extends object = DefaultTypes
 > extends PresetMetadata {
  /** メイン実行クラス */
- execute: ScriptClass<TSettings, TParams, TPlaceholders, TRanking, TGameExtras>;
+ execute: ScriptClass<TSettings, TParams, TPlaceholders, TGameExtras>;
  /** スクリプトの設定値 */
  settings: ParameterItem<TSettings>[];
  /** 実行時にユーザーが入力するパラメータ */
@@ -137,33 +170,26 @@ export interface ScriptPreset<
  /** 動的置換用プレースホルダー */
  placeholders: ScriptPlaceholderItem<TPlaceholders>[];
  /** 対応するVueコンポーネント */
- component: Component | null;
+ component: ScriptComponentType<TSettings> | null;
 }
 
 // ===== スクリプト実行クラス =====
 
 // スクリプトのメイン実行クラス
 export interface ScriptClass<
- TSettings extends object = DefaultTypes['Settings'],
- TParams extends object = DefaultTypes['Params'],
- TPlaceholders extends object = DefaultTypes['Placeholders'],
- TRanking extends UserStatistics<object> = DefaultTypes['Ranking'],
- TGameExtras extends object = DefaultTypes['GameExtras']
+ TSettings extends object = DefaultTypes,
+ TParams extends object = DefaultTypes,
+ TPlaceholders extends object = DefaultTypes,
+ TGameExtras extends object = DefaultTypes
 > {
  /** 初期化処理 */
  setup(settings: TSettings): void;
 
  /** メイン実行関数 */
- run(comment: Comment, params: TParams): ScriptResult<TPlaceholders, TRanking>;
+ run(comment: Comment, params: TParams): ScriptResult<TPlaceholders>;
 
- /** 外部API呼び出し（オプション） */
- apiCall?(
-  gameState: GameState<TGameExtras>,
-  method: HttpMethod,
-  endpoint: string,
-  body?: any,
-  headers?: Record<string, string>
- ): Promise<ApiCallResult<TGameExtras>>;
+ /** gameState取得する */
+ getGameState(): GameState<TGameExtras> | null;
 
  /** 終了処理（オプション） */
  cleanup?(gameState: GameState<TGameExtras>): void;
@@ -178,37 +204,12 @@ export type HttpMethod = (typeof HTTP_METHODS)[number];
 /**
  * スクリプト実行の結果
  */
-export interface ScriptResult<
- TPlaceholders extends object = DefaultTypes['Placeholders'],
- TRanking extends UserStatistics<object> = DefaultTypes['Ranking']
-> {
+export interface ScriptResult<TPlaceholders extends object = DefaultTypes> {
  /** わんコメに投稿するコメント・WordParty */
  postActions: (PostAction | PostActionWordParty)[];
 
  /** runして出力されたプレースホルダー郡 */
  placeholders: TPlaceholders;
-
- /** おみくじ結果のリスト */
- rankingList: TRanking[] | null;
-
- isGameStateUpdated: boolean; // rankingList を更新するか
-}
-
-/**
- * API呼び出しの結果
- */
-// API呼び出しの結果
-export interface ApiCallResult<TGameExtras extends object = DefaultTypes['GameExtras']> {
- status: 'success' | 'error'; // 実行ステータス
- statusCode?: number; // HTTPステータスコード
- gameState: GameState<TGameExtras>; // ゲームデータ
- message: string; // 結果メッセージ
- data?: any; // レスポンスデータ
- error?: {
-  // エラー詳細
-  code: string;
-  details?: any;
- };
 }
 
 // ===== パラメータ関連 =====
@@ -219,7 +220,7 @@ export interface ApiCallResult<TGameExtras extends object = DefaultTypes['GameEx
 export type ParameterInputType = 'select' | 'number' | 'string' | 'boolean';
 
 /** パラメータアイテム */
-export type ParameterItem<T extends object = DefaultTypes['Params'], K extends keyof T = keyof T> =
+export type ParameterItem<T extends object = DefaultTypes, K extends keyof T = keyof T> =
  | ({
     id: K;
     inputType: 'select';
@@ -249,8 +250,7 @@ export type ParameterItem<T extends object = DefaultTypes['Params'], K extends k
  *
  * @template T - プレースホルダー設定全体の型
  */
-export interface ScriptPlaceholderItem<T extends object = DefaultTypes['Placeholders']>
- extends BasePresetItem {
+export interface ScriptPlaceholderItem<T extends object = DefaultTypes> extends BasePresetItem {
  /** プレースホルダーID */
  id: Extract<keyof T, string>;
  /** プレースホルダーの値 */
@@ -265,28 +265,47 @@ export interface ScriptPlaceholderItem<T extends object = DefaultTypes['Placehol
  *
  * @template TExtras - ゲーム固有データの型
  */
-export type GameState<
- TExtras extends object = DefaultTypes['GameExtras'],
- TUserStats extends object = DefaultTypes['GameExtras']
-> = {
+export type GameState<TExtras extends object = DefaultTypes> = {
  /** 使用中のルールID */
  ruleId: string;
  /** 総おみくじ実行回数 */
  totalDraws: number;
- /** ユーザー別統計情報 */
- userStats: Record<string, UserStatistics<TUserStats>>;
  /** 参加ユーザーの履歴（時系列順） */
  currentUserIds: string[];
+ /** ユーザー別統計情報 */
+ userStats: Record<string, UserStatistics>;
+ // ランキング
+ userRankings?: UserStatistics[];
 } & TExtras;
 
 /**
  * ユーザーの統計情報
  */
-export type UserStatistics<TExtras extends object = DefaultTypes['GameExtras']> = {
+export type UserStatistics = {
  /** ユーザーID */
  userId: string;
  /** 表示名 */
  name: string;
  /** このユーザーのおみくじ実行回数 */
  draws: number;
-} & TExtras;
+
+ // 文字列で表現するランキング用の表示項目（UI向け）
+ itemValue1?: string;
+ itemValue2?: string;
+ itemValue3?: string;
+ priority?: number; // 表示の優先度
+
+ // 数値ベースの統計値（ロジック・ソート・分析向け）
+ wins?: number; // 勝利回数
+ points?: number; // 今回獲得ポイント
+ totalPoints?: number; // 総獲得ポイント
+ rank?: number; // 順位
+ rate?: number; // 勝率（例：0.75なら75%）
+};
+
+// props型定義付き
+export type ScriptComponentType<T extends object = DefaultTypes> = DefineComponent<{
+ settings: T;
+ userRankings: UserStatistics[];
+ displaySize: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+}>;

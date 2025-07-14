@@ -1,8 +1,6 @@
 // src/ConfigMaker/script/useRecordStore.ts - 共通ルールストア
 import { computed } from 'vue';
 import {
- CharacterPresetSchema,
- CharacterPresetType,
  CommentRuleSchema,
  CommentRuleType,
  PlaceholderSchema,
@@ -10,6 +8,7 @@ import {
  TimerRuleSchema,
  TimerRuleType
 } from '@/types/OmikujiTypesSchema';
+import { CharacterPresetSchema, CharacterPresetType } from '@/types/PresetSchema';
 import { useOmikujiStore } from './useOmikujiStore';
 
 // 共通のルール操作を提供するコンポーザブル
@@ -22,19 +21,24 @@ type CategoryTypeMap = {
  characters: CharacterPresetType;
 };
 
+// スキーママップ - factoryMapと統合
+const categoryConfig = {
+ comments: { schema: CommentRuleSchema, defaultName: 'コメントルール' },
+ timers: { schema: TimerRuleSchema, defaultName: 'タイマールール' },
+ placeholders: { schema: PlaceholderSchema, defaultName: 'プレースホルダー' },
+ characters: { schema: CharacterPresetSchema, defaultName: 'キャラクター設定' }
+} as const;
+
 export function useRecordOperations<C extends Category>(category: C) {
  const omikujiStore = useOmikujiStore();
+ const config = categoryConfig[category];
 
- const factoryMap: {
-  [K in Category]: () => CategoryTypeMap[K];
- } = {
-  comments: () => CommentRuleSchema.parse({}),
-  timers: () => TimerRuleSchema.parse({}),
-  placeholders: () => PlaceholderSchema.parse({}),
-  characters: () => CharacterPresetSchema.parse({})
+ // 統合されたファクトリー関数
+ const createRecord = (): CategoryTypeMap[C] => {
+  return config.schema.parse({}) as CategoryTypeMap[C];
  };
 
- // データ取得
+ // データ取得（共通化）
  const getData = (): Record<string, CategoryTypeMap[C]> => {
   return omikujiStore.data[category] as Record<string, CategoryTypeMap[C]>;
  };
@@ -73,15 +77,15 @@ export function useRecordOperations<C extends Category>(category: C) {
    }
   });
 
+ // 統合されたCRUD操作
  const add = (): string => {
-  const createDefault = factoryMap[category];
-  const newRule = createDefault();
+  const newRule = createRecord();
   const id = `${Date.now()}`;
   const data = getData();
   const count = Object.keys(data).length;
 
   newRule.id = id;
-  newRule.name = `新しいデータ ${count + 1}`;
+  newRule.name = `新しい${config.defaultName} ${count + 1}`;
   newRule.order = count;
 
   data[id] = newRule;

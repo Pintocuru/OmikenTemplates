@@ -7,19 +7,52 @@ import { ScriptManager } from './ScriptManager';
 
 export type DisplayMode = 'messages' | 'userVisits' | 'scriptGame';
 
+// 全てのモードを統合した管理システム
+interface ModeItem {
+ type: DisplayMode;
+ scriptKey?: string; // scriptGameの場合のみ使用
+}
+
 export function useDisplayMode(
  omikujiData: OmikujiDataType,
  scriptManager: ScriptManager,
  clearMessages?: () => void
 ) {
- const displayModes: DisplayMode[] = ['messages', 'userVisits', 'scriptGame'];
- const currentDisplayModeIndex = ref(0);
- const currentScriptGameKey = ref<string>('');
  const displaySize = ref<DisplaySize>('md');
  const forceRender = ref(0); // リアクティブ更新用
+ const currentModeIndex = ref(0);
+
+ // 全てのモードアイテムを動的に構築
+ const allModeItems = computed((): ModeItem[] => {
+  const items: ModeItem[] = [{ type: 'messages' }, { type: 'userVisits' }];
+
+  // アクティブなスクリプトゲームを追加
+  const activeScripts = scriptManager.getActiveScripts();
+  activeScripts.forEach((scriptKey) => {
+   items.push({ type: 'scriptGame', scriptKey });
+  });
+
+  return items;
+ });
+
+ // 現在のモードアイテム
+ const currentModeItem = computed(() => {
+  const items = allModeItems.value;
+  if (items.length === 0) return { type: 'messages' as DisplayMode };
+
+  // インデックスが範囲外の場合は最初に戻る
+  if (currentModeIndex.value >= items.length) {
+   currentModeIndex.value = 0;
+  }
+
+  return items[currentModeIndex.value];
+ });
 
  // 現在の表示モード
- const currentDisplayMode = computed(() => displayModes[currentDisplayModeIndex.value]);
+ const currentDisplayMode = computed(() => currentModeItem.value.type);
+
+ // 現在のスクリプトゲームキー
+ const currentScriptGameKey = computed(() => currentModeItem.value.scriptKey || '');
 
  // ScriptManagerから直接アクティブなスクリプトIDを取得
  const availableScriptIds = computed(() => scriptManager.getActiveScripts());
@@ -47,71 +80,45 @@ export function useDisplayMode(
   };
  });
 
- // 現在のスクリプトゲームキーを初期化する関数
- const initializeCurrentScriptGameKey = () => {
-  const available = scriptManager.getActiveScripts();
-  if (available.length > 0) {
-   if (!currentScriptGameKey.value || !available.includes(currentScriptGameKey.value)) {
-    currentScriptGameKey.value = available[0];
-   }
-  } else {
-   currentScriptGameKey.value = '';
-  }
- };
- initializeCurrentScriptGameKey();
-
- // 表示モード切り替え（メッセージクリア付き）
+ // 次のモードに切り替え
  const switchToNextMode = () => {
   clearMessages?.();
-  if (currentDisplayMode.value === 'scriptGame' && availableScriptIds.value.length > 1) {
-   nextScriptGame();
-  } else {
-   nextDisplayMode();
-  }
+  const items = allModeItems.value;
+  if (items.length === 0) return;
+
+  currentModeIndex.value = (currentModeIndex.value + 1) % items.length;
  };
 
+ // 前のモードに切り替え
  const switchToPrevMode = () => {
   clearMessages?.();
-  if (currentDisplayMode.value === 'scriptGame' && availableScriptIds.value.length > 1) {
-   prevScriptGame();
-  } else {
-   prevDisplayMode();
+  const items = allModeItems.value;
+  if (items.length === 0) return;
+
+  currentModeIndex.value = (currentModeIndex.value - 1 + items.length) % items.length;
+ };
+
+ // 特定のモードに直接切り替え
+ const switchToMode = (mode: DisplayMode, scriptKey?: string) => {
+  clearMessages?.();
+  const items = allModeItems.value;
+
+  const targetIndex = items.findIndex((item) => {
+   if (item.type !== mode) return false;
+   if (mode === 'scriptGame' && scriptKey) {
+    return item.scriptKey === scriptKey;
+   }
+   return true;
+  });
+
+  if (targetIndex !== -1) {
+   currentModeIndex.value = targetIndex;
   }
  };
 
- // 表示モード切り替え関数
- const nextDisplayMode = () => {
-  currentDisplayModeIndex.value = (currentDisplayModeIndex.value + 1) % displayModes.length;
- };
-
- const prevDisplayMode = () => {
-  currentDisplayModeIndex.value =
-   (currentDisplayModeIndex.value - 1 + displayModes.length) % displayModes.length;
- };
-
- // スクリプトゲーム選択
+ // 特定のスクリプトゲームに切り替え
  const setScriptGameKey = (key: string) => {
-  currentScriptGameKey.value = key;
- };
-
- // 次のスクリプトゲームに切り替え
- const nextScriptGame = () => {
-  const available = availableScriptIds.value;
-  if (available.length <= 1) return;
-
-  const currentIndex = available.indexOf(currentScriptGameKey.value);
-  const nextIndex = (currentIndex + 1) % available.length;
-  currentScriptGameKey.value = available[nextIndex];
- };
-
- // 前のスクリプトゲームに切り替え
- const prevScriptGame = () => {
-  const available = availableScriptIds.value;
-  if (available.length <= 1) return;
-
-  const currentIndex = available.indexOf(currentScriptGameKey.value);
-  const prevIndex = (currentIndex - 1 + available.length) % available.length;
-  currentScriptGameKey.value = available[prevIndex];
+  switchToMode('scriptGame', key);
  };
 
  // 表示サイズ変更
@@ -137,6 +144,17 @@ export function useDisplayMode(
   forceRender.value++;
  };
 
+ // 現在のモード情報を取得（デバッグ用）
+ const getCurrentModeInfo = () => {
+  const items = allModeItems.value;
+  return {
+   currentIndex: currentModeIndex.value,
+   totalModes: items.length,
+   currentMode: currentModeItem.value,
+   allModes: items
+  };
+ };
+
  return {
   // 状態
   currentDisplayMode,
@@ -150,14 +168,12 @@ export function useDisplayMode(
   // アクション
   switchToNextMode,
   switchToPrevMode,
-  nextDisplayMode,
-  prevDisplayMode,
+  switchToMode,
   setScriptGameKey,
-  nextScriptGame,
-  prevScriptGame,
   setDisplaySize,
   increaseDisplaySize,
   decreaseDisplaySize,
-  forceUpdate
+  forceUpdate,
+  getCurrentModeInfo // デバッグ用
  };
 }

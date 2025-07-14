@@ -1,4 +1,5 @@
 // src/types/OmikujiThresholdTypes.ts
+// 250714_1 AccessCondition の変更
 
 // ConfigUserの条件型
 export interface ConfigUserThreshold {
@@ -55,13 +56,23 @@ export type SyokenConditionArray = SyokenCondition[];
 
 // access:ユーザーの役職 1:一般ユーザー/2:メンバー/3:モデレーター/4:管理者
 export const AccessCondition = {
- GUEST: 1,
- MEMBER: 2,
- MODERATOR: 3,
- ADMIN: 4
+ BASIC: 'basic', // 無料の一般ユーザー
+ MEMBER: 'member', // メンバーシップ加入者
+ SUBSCRIBER: 'subscriber', // サブスク登録者
+ PREMIUM: 'premium', // プレミアム会員
+ MODERATOR: 'moderator', // モデレーター
+ OWNER: 'owner' // 配信者かつ管理者
 } as const;
 export type AccessCondition = (typeof AccessCondition)[keyof typeof AccessCondition];
 export type AccessConditionArray = AccessCondition[];
+export const AccessConditionLabels: Record<AccessCondition, string> = {
+ basic: '一般ユーザー',
+ member: 'メンバーシップ加入者',
+ subscriber: 'サブスク登録者',
+ premium: 'プレミアム会員',
+ moderator: 'モデレーター',
+ owner: '配信者'
+};
 
 // gift:ギフトのRank
 export const GiftCondition = {

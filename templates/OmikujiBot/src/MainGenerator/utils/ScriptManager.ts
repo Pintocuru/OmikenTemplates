@@ -135,34 +135,6 @@ export class ScriptManager {
  }
 
  /**
-  * API呼び出し実行
-  */
- executeApiCall(
-  scriptId: string,
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
-  endpoint: string,
-  body?: any,
-  headers?: Record<string, string>
- ): any {
-  const scriptInstance = this.getScriptInstance(scriptId);
-  const gameState = this.getGameState(scriptId);
-
-  if (!scriptInstance || !gameState || !scriptInstance.apiCall) {
-   throw new Error(`API呼び出しが利用できません: ${scriptId}`);
-  }
-
-  try {
-   // API呼び出し（実際のAPIコールはローカルでは行わない想定）
-   // この部分は実装に応じて調整が必要
-   console.warn(`API呼び出しはローカル環境では実行されません: ${scriptId}`);
-   return null;
-  } catch (error) {
-   console.error(`API呼び出しエラー (${scriptId}):`, error);
-   throw error;
-  }
- }
-
- /**
   * スクリプトの再初期化
   */
  reinitializeScripts(): void {
