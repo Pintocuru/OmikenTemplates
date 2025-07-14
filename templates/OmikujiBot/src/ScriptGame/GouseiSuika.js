@@ -1,21 +1,24 @@
-import { ref as N, watch as A, onUnmounted as L, defineComponent as T, computed as P, createElementBlock as x, openBlock as b, Fragment as C, createCommentVNode as U, createElementVNode as h, unref as F, normalizeClass as m, toDisplayString as y, renderList as V } from "vue";
-const j = ["announceMessage", "totalDraws", "winsRank", "totalPoints"], _ = [{ id: "message", name: "標準メッセージ", description: "デフォルトのスイカジェネレーターの返答", value: "userの得点は1500!" }, { id: "points", name: "ポイント", description: "スイカジェネレーターの得点を返します", value: "1500" }, ...[{ id: "announceMessage", name: "アナウンス", description: "ランキングの順位を表示します", value: "userさんの順位は、4位だよ。" }, { id: "totalDraws", name: "このおみくじをした回数", description: "この配信でのおみくじした回数を返します", value: "10" }, { id: "winsCount", name: "勝利数(勝ち負けがある場合)", description: "コメントしたユーザーの、配信枠内での勝数を返します", value: "2" }, { id: "winsRank", name: "ユーザーの順位", description: "パラメータのランキングモードを参照し、配信枠内での順位を数値で返します", value: "4" }, { id: "winsRate", name: "ユーザーの勝率(%)", description: "コメントしたユーザーの、配信枠内での勝率を返します", value: "20.0" }, { id: "totalPoints", name: "ユーザーの総得点", description: "コメントしたユーザーの、配信枠内での総得点を返します", value: "100" }].filter((t) => j.includes(t.id))];
-function I(t, e) {
-  return { ruleId: t, totalDraws: 0, userStats: {}, currentUserIds: [], ...e };
+import { ref as N, watch as A, onUnmounted as L, defineComponent as T, computed as R, createElementBlock as x, openBlock as b, Fragment as C, createCommentVNode as j, createElementVNode as h, unref as F, normalizeClass as m, toDisplayString as y, renderList as V } from "vue";
+const G = ["announceMessage", "totalDraws", "winsRank", "totalPoints"], _ = [{ id: "message", name: "標準メッセージ", description: "デフォルトのスイカジェネレーターの返答", value: "userの得点は1500!" }, { id: "points", name: "ポイント", description: "スイカジェネレーターの得点を返します", value: "1500" }, ...[{ id: "announceMessage", name: "アナウンス", description: "ランキングの順位を表示します", value: "userさんの順位は、4位だよ。" }, { id: "totalDraws", name: "このおみくじをした回数", description: "この配信でのおみくじした回数を返します", value: "10" }, { id: "winsCount", name: "勝利数(勝ち負けがある場合)", description: "コメントしたユーザーの、配信枠内での勝数を返します", value: "2" }, { id: "winsRank", name: "ユーザーの順位", description: "パラメータのランキングモードを参照し、配信枠内での順位を数値で返します", value: "4" }, { id: "winsRate", name: "ユーザーの勝率(%)", description: "コメントしたユーザーの、配信枠内での勝率を返します", value: "20.0" }, { id: "totalPoints", name: "ユーザーの総得点", description: "コメントしたユーザーの、配信枠内での総得点を返します", value: "100" }].filter((t) => G.includes(t.id))];
+function $(t) {
+  return { ruleId: t, totalDraws: 0, userStats: {}, currentUserIds: [] };
 }
 const B = new class {
   settings = { rankMode: "wins" };
-  gameState = I("LogRank");
+  gameState = $("LogRank");
   setup(t) {
-    this.settings = t, this.gameState = I("LogRank"), this.gameState.userRecords || (this.gameState.userRecords = {});
+    this.settings = t, this.gameState.userRecords || (this.gameState.userRecords = {});
   }
   run(t, e) {
     try {
-      const s = t.data.userId, a = this.updateUserStats(s, t.data.name, e), n = this.generateRankings(a, e, s), d = a[s], i = e.enableCount > 0 && ((d == null ? void 0 : d.draws) || 0) > e.enableCount;
-      return i || (this.gameState = { ...this.gameState, userStats: a, rankings: n }), { placeholders: this.createPlaceholders(a[s], n, s, e), postActions: [], rankingList: n, isGameStateUpdated: !i };
+      const s = t.data.userId, a = this.updateUserStats(s, t.data.name, e), n = this.generateRankings(a, e, s), d = a[s];
+      return e.enableCount > 0 && ((d == null ? void 0 : d.draws) || 0) > e.enableCount || (this.gameState = { ...this.gameState, userStats: a, userRankings: n }), { placeholders: this.createPlaceholders(a[s], n, s, e), postActions: [] };
     } catch (s) {
       throw console.error("Game execution error:", s), new Error("ゲーム実行中にエラーが発生しました");
     }
+  }
+  getGameState() {
+    return this.gameState;
   }
   updateUserStats(t, e, s) {
     const { isWin: a, getPoint: n } = s, { rankMode: d } = this.settings;
@@ -23,8 +26,8 @@ const B = new class {
       this.gameState.userRecords || (this.gameState.userRecords = {}), this.gameState.userRecords[t] || (this.gameState.userRecords[t] = []);
       const i = { userId: t, name: e, draws: 1, wins: a ? 1 : 0, points: n, totalPoints: n, rank: 0, rate: 0 };
       this.gameState.userRecords[t].push(i);
-      const r = { userId: t, name: e, draws: this.gameState.userRecords[t].length, wins: a ? 1 : 0, points: n, totalPoints: this.gameState.userRecords[t].reduce((c, o) => c + o.points, 0), rank: 0, rate: 0 };
-      return { ...this.gameState.userStats, [t]: r };
+      const o = { userId: t, name: e, draws: this.gameState.userRecords[t].length, wins: a ? 1 : 0, points: n, totalPoints: this.gameState.userRecords[t].reduce((c, l) => c + (l.points ?? 0), 0), rank: 0, rate: 0 };
+      return { ...this.gameState.userStats, [t]: o };
     }
     {
       const i = { ...this.gameState.userStats[t] ?? { userId: t, name: e, draws: 0, wins: 0, points: 0, totalPoints: 0, rank: 0, rate: 0 } };
@@ -35,46 +38,46 @@ const B = new class {
     var a;
     const { rankMode: n } = this.settings;
     if (n === "point") {
-      const o = [];
+      const l = [];
       this.gameState.userRecords && Object.values(this.gameState.userRecords).forEach((g) => {
-        o.push(...g);
+        l.push(...g);
       });
-      const l = o.sort((g, p) => (p.points ?? 0) - (g.points ?? 0)).map((g, p) => ({ ...g, rank: p + 1 })), u = ((a = this.gameState.userRecords) == null ? void 0 : a[s]) || [];
+      const r = l.sort((g, p) => (p.points ?? 0) - (g.points ?? 0)).map((g, p) => ({ ...g, rank: p + 1 })), u = ((a = this.gameState.userRecords) == null ? void 0 : a[s]) || [];
       if (u.length > 0) {
-        const g = u[u.length - 1], p = l.findIndex((f) => f.userId === s && f.points === g.points);
+        const g = u[u.length - 1], p = r.findIndex((f) => f.userId === s && f.points === g.points);
         if (p !== -1) {
-          const [f] = l.splice(p, 1);
-          l.unshift(f);
+          const [f] = r.splice(p, 1);
+          r.unshift(f);
         }
       }
-      return l;
+      return r;
     }
-    const d = this.createRankingEntries(t), i = n === "rate" ? "rate" : "wins", r = d.sort((o, l) => (l[i] ?? 0) - (o[i] ?? 0)).map((o, l) => ({ ...o, rank: l + 1 })), c = r.findIndex((o) => o.userId === s);
+    const d = this.createRankingEntries(t), i = n === "rate" ? "rate" : "wins", o = d.sort((l, r) => (r[i] ?? 0) - (l[i] ?? 0)).map((l, r) => ({ ...l, rank: r + 1 })), c = o.findIndex((l) => l.userId === s);
     if (c > 0) {
-      const [o] = r.splice(c, 1);
-      r.unshift(o);
+      const [l] = o.splice(c, 1);
+      o.unshift(l);
     }
-    return r;
+    return o;
   }
   createRankingEntries(t) {
-    const e = this.gameState.rankings || [];
+    const e = this.gameState.userRankings || [];
     return Object.entries(t).map(([s, a]) => {
-      const n = e.find((o) => o.userId === s), d = a.draws ?? (n == null ? void 0 : n.draws) ?? 0, i = a.wins ?? (n == null ? void 0 : n.wins) ?? 0, r = a.points ?? (n == null ? void 0 : n.points) ?? 0, c = a.totalPoints ?? (n == null ? void 0 : n.totalPoints) ?? 0;
-      return { userId: s, name: a.name || "Unknown", draws: d, wins: i, points: r, totalPoints: c, rank: a.rank ?? (n == null ? void 0 : n.rank) ?? 0, rate: d > 0 ? i / d * 100 : 0 };
+      const n = e.find((l) => l.userId === s), d = a.draws ?? (n == null ? void 0 : n.draws) ?? 0, i = a.wins ?? (n == null ? void 0 : n.wins) ?? 0, o = a.points ?? (n == null ? void 0 : n.points) ?? 0, c = a.totalPoints ?? (n == null ? void 0 : n.totalPoints) ?? 0;
+      return { userId: s, name: a.name || "Unknown", draws: d, wins: i, points: o, totalPoints: c, rank: a.rank ?? (n == null ? void 0 : n.rank) ?? 0, rate: d > 0 ? i / d * 100 : 0 };
     });
   }
   createPlaceholders(t, e, s, a) {
     var n;
-    const { rankMode: d } = this.settings, i = t.draws ?? 0, r = a.enableCount > 0 && i > a.enableCount;
+    const { rankMode: d } = this.settings, i = t.draws ?? 0, o = a.enableCount > 0 && i > a.enableCount;
     if (d === "point") {
-      const l = ((n = this.gameState.userRecords) == null ? void 0 : n[s]) || [], u = l[l.length - 1];
+      const r = ((n = this.gameState.userRecords) == null ? void 0 : n[s]) || [], u = r[r.length - 1];
       if (u) {
         const g = this.calculateRank(u, e, s);
-        return { announceMessage: r ? `${u.name}さんは上限を超えているから、参考記録だよ。` : `${u.name}さんの${u.points}は、${g}位だよ。`, winsCount: String(u.wins ?? 0), winsRank: g, winsRate: "0.0", totalDraws: String(l.length), totalPoints: String(t.totalPoints ?? 0) };
+        return { announceMessage: o ? `${u.name}さんは上限を超えているから、参考記録だよ。` : `${u.name}さんの${u.points}は、${g}位だよ。`, winsCount: String(u.wins ?? 0), winsRank: g, winsRate: "0.0", totalDraws: String(r.length), totalPoints: String(t.totalPoints ?? 0) };
       }
     }
-    const c = this.calculateRank(t, e, s), o = i > 0 ? ((t.wins || 0) / i * 100).toFixed(1) : "0.0";
-    return { announceMessage: r ? `${t.name}さんは上限を超えているから、参考記録だよ。` : `${t.name}さんの順位は、${c}位だよ。`, winsCount: String(t.wins ?? 0), winsRank: c, winsRate: o, totalDraws: String(i), totalPoints: String(t.totalPoints ?? 0) };
+    const c = this.calculateRank(t, e, s), l = i > 0 ? ((t.wins || 0) / i * 100).toFixed(1) : "0.0";
+    return { announceMessage: o ? `${t.name}さんは上限を超えているから、参考記録だよ。` : `${t.name}さんの順位は、${c}位だよ。`, winsCount: String(t.wins ?? 0), winsRank: c, winsRate: l, totalDraws: String(i), totalPoints: String(t.totalPoints ?? 0) };
   }
   calculateRank(t, e, s) {
     if (this.settings.rankMode === "point") {
@@ -84,7 +87,7 @@ const B = new class {
     const a = e.findIndex((n) => n.userId === s);
     return a >= 0 ? String(a + 1) : "不明";
   }
-}(), D = "Unknown", R = { MIN: 0.7, MAX: 1.3 }, E = 3, $ = 1, G = 8.5, O = 2, W = 6;
+}(), D = "Unknown", P = { MIN: 0.7, MAX: 1.3 }, I = 3, E = 1, O = 8.5, U = 2, W = 6;
 class z {
   gameConfig;
   totalPoints = 0;
@@ -96,7 +99,7 @@ class z {
     return this.playSmallItems(), this.playBigItems(), { points: this.calculateFinalScore(), postArray: this.postArray };
   }
   initializeEffects() {
-    this.postArray = [{ delaySeconds: $, wordParty: "🍒" }, { delaySeconds: G, wordParty: "!パパッ" }];
+    this.postArray = [{ delaySeconds: E, wordParty: "🍒" }, { delaySeconds: O, wordParty: "!パパッ" }];
   }
   playSmallItems() {
     this.gameConfig.small.forEach((e) => {
@@ -105,7 +108,7 @@ class z {
     });
   }
   playBigItems() {
-    let e = E;
+    let e = I;
     for (; e > 0; ) {
       const s = this.selectBigItem();
       s && (this.totalPoints += s.points, e -= s.damage ?? 0, this.addEffect(s.party)), this.addRandomEffects();
@@ -122,17 +125,17 @@ class z {
     });
   }
   shouldAddRandomEffect(e) {
-    return E - e > Math.random() * W;
+    return I - e > Math.random() * W;
   }
   addEmojiEffects(e, s) {
-    const a = Math.floor(s / O);
+    const a = Math.floor(s / U);
     for (let n = 0; n < a; n++) this.addEffect(e);
   }
   addEffect(e) {
-    this.postArray.push({ delaySeconds: $, wordParty: e });
+    this.postArray.push({ delaySeconds: E, wordParty: e });
   }
   calculateFinalScore() {
-    const e = R.MIN + Math.random() * (R.MAX - R.MIN);
+    const e = P.MIN + Math.random() * (P.MAX - P.MIN);
     return Math.ceil(this.totalPoints * e);
   }
 }
@@ -152,13 +155,17 @@ class X {
 }
 const H = new class {
   settings = { rankingLimit: 10, isParty: !0, enableCount: 5 };
+  gameState = $("GouseiSuika");
   LogRank = B;
   setup(t) {
-    this.settings = t, this.LogRank.setup({ rankMode: "point" });
+    this.settings = { ...this.settings, ...t }, this.LogRank.setup({ rankMode: "point" });
   }
   run(t, e) {
     const { mode: s } = e, { isParty: a, enableCount: n } = this.settings, d = this.executeGame(s), i = this.LogRank.run(t, { enableCount: n, isWin: !1, getPoint: d.points });
-    return { postActions: a ? d.postArray : [], placeholders: { ...i.placeholders, message: this.createResultMessage(t, d.points), points: String(d.points) }, rankingList: i.rankingList, isGameStateUpdated: i.isGameStateUpdated };
+    return this.gameState = this.LogRank.getGameState(), { postActions: a ? d.postArray : [], placeholders: { ...i.placeholders, message: this.createResultMessage(t, d.points), points: String(d.points) } };
+  }
+  getGameState() {
+    return this.gameState;
   }
   executeGame(t) {
     const e = q[t];
@@ -172,9 +179,9 @@ const H = new class {
   const s = t.__vccOpts || t;
   for (const [a, n] of e) s[a] = n;
   return s;
-})(T({ __name: "component", props: { settings: {}, userRanking: {}, displaySize: {} }, setup(t) {
-  const e = t, s = function(r, c) {
-    const { delayMs: o, displayMs: l, immediate: u = !1, deep: g = !0 } = c, p = N(!1);
+})(T({ __name: "component", props: { settings: {}, userRankings: {}, displaySize: {} }, setup(t) {
+  const e = t, s = function(o, c) {
+    const { delayMs: l, displayMs: r, immediate: u = !1, deep: g = !0 } = c, p = N(!1);
     let f = null, k = null;
     const v = () => {
       f && (clearTimeout(f), f = null), k && (clearTimeout(k), k = null);
@@ -182,10 +189,10 @@ const H = new class {
       v(), p.value = !1, f = setTimeout(() => {
         p.value = !0, k = setTimeout(() => {
           p.value = !1;
-        }, l);
-      }, o);
+        }, r);
+      }, l);
     };
-    return A(r, (S) => {
+    return A(o, (S) => {
       (Array.isArray(S) ? S.length > 0 : S) && M();
     }, { immediate: u, deep: g }), L(() => {
       v();
@@ -194,15 +201,15 @@ const H = new class {
     }, manualHide: () => {
       v(), p.value = !1;
     }, clearTimers: v };
-  }(() => e.userRanking, { delayMs: 4500, displayMs: 5e3 }), a = P(() => J[e.displaySize]), n = P(() => {
-    const r = e.userRanking[0] || null, c = [...e.userRanking].sort((o, l) => l.points - o.points);
-    return { showResult: !!r, result: { score: (r == null ? void 0 : r.points) || 0, name: (r == null ? void 0 : r.name) || "プレイヤー" }, rankPlayers: c.slice(0, e.settings.rankingLimit), totalCount: e.userRanking.length, totalPoint: e.userRanking.reduce((o, l) => o + l.points, 0) };
-  }), d = P(() => {
-    const r = n.value;
-    return r.totalCount > 0 ? Math.round(r.totalPoint / r.totalCount) : 0;
-  }), i = (r) => {
+  }(() => e.userRankings, { delayMs: 4500, displayMs: 5e3 }), a = R(() => J[e.displaySize]), n = R(() => {
+    const o = e.userRankings[0] || null, c = [...e.userRankings].sort((l, r) => (r == null ? void 0 : r.points) ?? 0 - ((l == null ? void 0 : l.points) ?? 0));
+    return { showResult: !!o, result: { score: (o == null ? void 0 : o.points) || 0, name: (o == null ? void 0 : o.name) || "プレイヤー" }, rankPlayers: c.slice(0, e.settings.rankingLimit), totalCount: e.userRankings.length, totalPoint: e.userRankings.reduce((l, r) => l + ((r == null ? void 0 : r.points) ?? 0), 0) };
+  }), d = R(() => {
+    const o = n.value;
+    return o.totalCount > 0 ? Math.round(o.totalPoint / o.totalCount) : 0;
+  }), i = (o) => {
     const c = "flex items-center font-bold rounded-lg shadow-sm";
-    switch (r) {
+    switch (o) {
       case 0:
         return `${c} text-amber-800 bg-gradient-to-r from-amber-200 to-amber-100 border-l-4 border-amber-400 ${a.value.container.itemPadding}`;
       case 1:
@@ -213,8 +220,8 @@ const H = new class {
         return `${c} text-gray-700 bg-gradient-to-r from-gray-100 to-gray-50 border-l-4 border-gray-300 ${a.value.container.itemPadding}`;
     }
   };
-  return (r, c) => (b(), x(C, null, [F(s).isVisible.value ? (b(), x("div", { key: 0, class: m(["rounded-full mx-auto relative whitespace-nowrap flex flex-col justify-center items-center -mb-8", "bg-gradient-to-br from-blue-50 to-blue-100 shadow-2xl border-4 border-blue-200", "bubble-animation shadow-blue-200/50", a.value.scoreCircle]) }, [h("div", { class: m(["font-bold text-blue-900 font-rocknroll", a.value.text.large]) }, "スコア", 2), h("div", { class: m(["font-bold font-mochiy bg-gradient-to-b from-amber-300 to-amber-600 bg-clip-text text-transparent", a.value.text.xlarge]) }, y(n.value.result.score), 3), h("div", { class: m(["mt-2 font-bold text-blue-900 font-rocknroll", a.value.text.large]) }, y(n.value.result.name), 3)], 2)) : U("", !0), h("div", { class: m(["bg-amber-50 border-4 border-amber-400 rounded-3xl font-rocknroll", a.value.container.padding]) }, [h("div", { class: m(["text-center mb-2 text-amber-800 font-bold drop-shadow-lg", a.value.text.large]) }, " 🍉スイカランキング🍉 ", 2), h("div", K, [h("ul", Q, [(b(!0), x(C, null, V(n.value.rankPlayers, (o, l) => (b(), x("li", { key: l, class: m(i(l)) }, [l < 3 ? (b(), x("img", { key: 0, src: `img/image_${l + 1}.png`, alt: `${l + 1}位`, class: m(["inline-block rounded-full border-2 border-white shadow-md", a.value.rankingImage, a.value.container.imageMargin]) }, null, 10, Y)) : (b(), x("span", { key: 1, class: m(["inline-block font-bold text-center rounded-lg bg-gray-200 text-gray-700", a.value.rankingNumber, a.value.container.imageMargin]) }, y(l + 1), 3)), h("span", Z, [h("span", { class: m(["font-bold mr-2", a.value.text.medium]) }, y(o.points), 3), h("span", { class: m(["text-gray-600", a.value.text.medium]) }, "(" + y(o.name) + ")", 3)])], 2))), 128))])]), h("div", { class: m(["p-0 m-0 flex justify-center items-center w-full text-gray-600 mt-2", a.value.text.small]) }, " 平均: " + y(d.value) + "pt (" + y(n.value.totalCount) + "回 / 総計" + y(n.value.totalPoint) + "pt) ", 3)], 2)], 64));
-} }), [["__scopeId", "data-v-e070a716"]]) };
+  return (o, c) => (b(), x(C, null, [F(s).isVisible.value ? (b(), x("div", { key: 0, class: m(["rounded-full mx-auto relative whitespace-nowrap flex flex-col justify-center items-center -mb-8", "bg-gradient-to-br from-blue-50 to-blue-100 shadow-2xl border-4 border-blue-200", "bubble-animation shadow-blue-200/50", a.value.scoreCircle]) }, [h("div", { class: m(["font-bold text-blue-900 font-rocknroll", a.value.text.large]) }, "スコア", 2), h("div", { class: m(["font-bold font-mochiy bg-gradient-to-b from-amber-300 to-amber-600 bg-clip-text text-transparent", a.value.text.xlarge]) }, y(n.value.result.score), 3), h("div", { class: m(["mt-2 font-bold text-blue-900 font-rocknroll", a.value.text.large]) }, y(n.value.result.name), 3)], 2)) : j("", !0), h("div", { class: m(["bg-amber-50 border-4 border-amber-400 rounded-3xl font-rocknroll", a.value.container.padding]) }, [h("div", { class: m(["text-center mb-2 text-amber-800 font-bold drop-shadow-lg", a.value.text.large]) }, " 🍉スイカランキング🍉 ", 2), h("div", K, [h("ul", Q, [(b(!0), x(C, null, V(n.value.rankPlayers, (l, r) => (b(), x("li", { key: r, class: m(i(r)) }, [r < 3 ? (b(), x("img", { key: 0, src: `img/image_${r + 1}.png`, alt: `${r + 1}位`, class: m(["inline-block rounded-full border-2 border-white shadow-md", a.value.rankingImage, a.value.container.imageMargin]) }, null, 10, Y)) : (b(), x("span", { key: 1, class: m(["inline-block font-bold text-center rounded-lg bg-gray-200 text-gray-700", a.value.rankingNumber, a.value.container.imageMargin]) }, y(r + 1), 3)), h("span", Z, [h("span", { class: m(["font-bold mr-2", a.value.text.medium]) }, y(l.points), 3), h("span", { class: m(["text-gray-600", a.value.text.medium]) }, "(" + y(l.name) + ")", 3)])], 2))), 128))])]), h("div", { class: m(["p-0 m-0 flex justify-center items-center w-full text-gray-600 mt-2", a.value.text.small]) }, " 平均: " + y(d.value) + "pt (" + y(n.value.totalCount) + "回 / 総計" + y(n.value.totalPoint) + "pt) ", 3)], 2)], 64));
+} }), [["__scopeId", "data-v-e7d98acf"]]) };
 export {
   te as default
 };

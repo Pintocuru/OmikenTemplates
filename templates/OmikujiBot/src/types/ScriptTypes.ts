@@ -74,7 +74,7 @@ export type ParameterItem<
  id: K;
  inputType: ParameterInputType;
  defaultValue: T[K];
- values?: T[K] extends readonly (infer U)[] ? readonly U[] : never;
+ values?: ReadonlyArray<T[K]>;
  min?: number;
  max?: number;
 };
@@ -93,6 +93,7 @@ export type GameState = {
  totalDraws: number; // 総おみくじ実行回数
  currentUserIds: string[]; // 参加ユーザーの履歴（時系列順）
  userStats: Record<string, UserStatsType>; // ユーザー別統計情報
+ userRecords?: Record<string, UserStatsType[]>; // ポイントモード用の複数記録
  userRankings?: UserStatsType[]; // ランキング
 };
 
