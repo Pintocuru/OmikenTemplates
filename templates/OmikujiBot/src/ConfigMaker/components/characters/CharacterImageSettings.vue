@@ -28,15 +28,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
-import { emotionLabels } from '@/types/PresetTypes';
+import type { CharacterType } from '@type/';
+import { emotionLabels } from '@type/';
 
 const props = defineProps<{
- modelValue: CharacterPresetType['image'];
+ modelValue: CharacterType['image'];
 }>();
 
 const emit = defineEmits<{
- 'update:modelValue': [value: CharacterPresetType['image']];
+ 'update:modelValue': [value: CharacterType['image']];
 }>();
 
 const imageBaseUrl =
@@ -47,7 +47,7 @@ const imageBaseUrl =
 // v-modelを使用したlocalImagesの実装
 const localImages = computed({
  get: () => props.modelValue,
- set: (value: CharacterPresetType['image']) => {
+ set: (value: CharacterType['image']) => {
   emit('update:modelValue', value);
  }
 });

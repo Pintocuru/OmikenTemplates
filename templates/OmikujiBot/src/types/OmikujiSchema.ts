@@ -1,36 +1,15 @@
 // src/types/OmikujiSchema.ts
-// 250714_1　OmikujiThresholdSchema を分離
+// 250714_1　全編改変
 import { z } from 'zod';
+import { BaseSchema } from './commonSchema';
+import { CommentThresholdSchema } from './ThresholdSchema';
+import { CharacterEmotionSchema, CharacterSchema } from './CharacterSchema';
 import { SETTINGS } from '@public/common/settings';
-import { CommentThresholdSchema } from './OmikujiThresholdSchema';
-import { CharacterEmotionSchema, CharacterPresetSchema } from './PresetSchema';
-
-// ユーティリティ関数
-
-// ID生成ユーティリティ
-export const generateId = () => {
- return '' + Date.now();
-};
 
 // データ検証とデフォルト値適用のユーティリティ関数
-
 export function validateOmikujiData(input: unknown): OmikujiDataType {
  return OmikujiDataSchema.parse(input);
 }
-
-// 基本のスキーマ
-export const BaseSchema = z.object({
- id: z.string().default('').catch(''),
- name: z.string().default('').catch(''),
- description: z.string().default('').catch(''),
- isEnabled: z.boolean().default(true).catch(true),
- order: z.number().min(0).default(0).catch(0),
- editorColor: z
-  .string()
-  .regex(/^#[0-9A-Fa-f]{6}$/)
-  .default('#3B82F6')
-  .catch('#3B82F6')
-});
 
 // Post Action関連のスキーマ
 
@@ -59,7 +38,6 @@ export const PlaceholderValueSchema = z.object({
  content: z.string().default('').catch('')
 });
 
-// BaseSchema は不使用(description isEnabled は使わないので)
 export const PlaceholderSchema = z.object({
  id: z.string().default('').catch(''),
  name: z.string().default('').catch(''),
@@ -85,6 +63,8 @@ export const OmikujiSetSchema = z.object({
 
 const BaseRuleCommonSchema = z.object({
  ...BaseSchema.shape,
+ description: z.string().default('').catch(''),
+ isEnabled: z.boolean().default(true).catch(true),
  editorColor: z
   .string()
   .regex(/^#[0-9A-Fa-f]{6}$/)
@@ -123,7 +103,7 @@ export const OmikujiDataSchema = z.object({
  timers: z.record(z.string(), TimerRuleSchema).default({}).catch({}),
  placeholders: z.record(z.string(), PlaceholderSchema).default({}).catch({}),
  scriptSettings: z.record(z.string(), z.record(z.string(), z.any())).default({}).catch({}),
- characters: z.record(z.string(), CharacterPresetSchema).default({}).catch({})
+ characters: z.record(z.string(), CharacterSchema).default({}).catch({})
 });
 
 // 型エクスポート

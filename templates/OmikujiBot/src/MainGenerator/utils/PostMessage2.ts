@@ -1,14 +1,12 @@
 // src/Modules/api/PostMessage.ts
 // 250709_エイリアス変更
 
-import { PostAction, PostActionWordParty } from '@/types/OmikujiTypes';
-import { CharacterImageSet, CharacterPreset } from '@/types/PresetTypes';
+import { CharacterEmotionType, CharacterType, PostAction, PostActionWordParty } from '@type/';
+import { SendCommentType } from '@public/type';
 import { postSystemMessage, postWordParty, postComment } from '@public/common/api/PostOneComme';
 import { ServiceAPI } from '@public/common/api/ServiceAPI';
 import { SETTINGS } from '@public/common/settings';
-import { SendCommentType } from '@public/type';
-import { Service } from '@onecomme.com/onesdk/types/Service';
-import OneSDK from '@onecomme.com/onesdk';
+import { Service } from '@onecomme.com/onesdk';
 
 /**
  * メッセージ投稿を管理するクラス
@@ -25,7 +23,7 @@ export class PostMessage {
   * コンストラクタ
   * @param Charas キャラクタープリセットのマップ（キーはcharacterKey）
   */
- constructor(private readonly Charas: Record<string, CharacterPreset> = {}) {
+ constructor(private readonly Charas: Record<string, CharacterType> = {}) {
   this.serviceAPI = new ServiceAPI();
  }
 
@@ -64,7 +62,7 @@ export class PostMessage {
   * @param post 投稿アクション
   * @returns キャラクタープリセット（存在しない場合はundefined）
   */
- private getCharacterFromPost(post: PostAction | PostActionWordParty): CharacterPreset | undefined {
+ private getCharacterFromPost(post: PostAction | PostActionWordParty): CharacterType | undefined {
   // PostActionWordPartyの場合はcharacterKeyが存在しない
   if (!('characterKey' in post)) {
    return undefined;
@@ -81,7 +79,7 @@ export class PostMessage {
   */
  private async processPost(
   post: PostAction | PostActionWordParty,
-  chara?: CharacterPreset
+  chara?: CharacterType
  ): Promise<void> {
   const { delaySeconds = 0 } = post;
 
@@ -106,7 +104,7 @@ export class PostMessage {
   * @param chara キャラクタープリセット
   * @returns サービス作成が必要な場合true
   */
- private shouldCreateService(chara: CharacterPreset): boolean {
+ private shouldCreateService(chara: CharacterType): boolean {
   return chara.isIconDisplay && SETTINGS.isCreateService && chara.frameId !== null;
  }
 
@@ -115,7 +113,7 @@ export class PostMessage {
   * 存在しない場合は新規作成し、サービス一覧を更新
   * @param chara キャラクタープリセット
   */
- private async ensureServiceExists(chara: CharacterPreset): Promise<void> {
+ private async ensureServiceExists(chara: CharacterType): Promise<void> {
   if (!chara.frameId) return;
 
   // 既存サービスまたは作成済みかチェック
@@ -170,7 +168,7 @@ export class PostMessage {
   */
  private async postMessage(
   post: PostAction,
-  chara: CharacterPreset | undefined,
+  chara: CharacterType | undefined,
   delaySeconds: number
  ): Promise<void> {
   if (chara && chara.frameId !== '') {
@@ -209,7 +207,7 @@ export class PostMessage {
   * @returns わんコメ投稿リクエスト
   * @throws frameIdが存在しない場合
   */
- private createCommentRequest(post: PostAction, chara: CharacterPreset): SendCommentType {
+ private createCommentRequest(post: PostAction, chara: CharacterType): SendCommentType {
   if (!chara.frameId || chara.frameId === '') {
    throw new Error(`キャラクター「${chara.name}」にframeIdが設定されていません`);
   }
@@ -237,9 +235,9 @@ export class PostMessage {
   * @param iconKey アイコンキー（オプション）
   * @returns 画像のBase64データまたはURL
   */
- private getCharacterImagePath(chara: CharacterPreset, iconKey?: string): string {
+ private getCharacterImagePath(chara: CharacterType, iconKey?: string): string {
   // iconKeyが指定されていればそれを使用、なければ'default'を使用
-  const targetKey = (iconKey ?? 'default') as keyof CharacterImageSet;
+  const targetKey = (iconKey ?? 'default') as CharacterEmotionType;
   const charaImage = chara.image?.[targetKey];
 
   if (charaImage) {

@@ -7,8 +7,8 @@ import {
  PlaceholderType,
  TimerRuleSchema,
  TimerRuleType
-} from '@/types/OmikujiTypesSchema';
-import { CharacterPresetSchema, CharacterPresetType } from '@/types/PresetSchema';
+} from '@type/';
+import { CharacterSchema, CharacterType } from '@type/';
 import { useOmikujiStore } from './useOmikujiStore';
 
 // 共通のルール操作を提供するコンポーザブル
@@ -18,7 +18,7 @@ type CategoryTypeMap = {
  comments: CommentRuleType;
  timers: TimerRuleType;
  placeholders: PlaceholderType;
- characters: CharacterPresetType;
+ characters: CharacterType;
 };
 
 // スキーママップ - factoryMapと統合
@@ -26,7 +26,7 @@ const categoryConfig = {
  comments: { schema: CommentRuleSchema, defaultName: 'コメントルール' },
  timers: { schema: TimerRuleSchema, defaultName: 'タイマールール' },
  placeholders: { schema: PlaceholderSchema, defaultName: 'プレースホルダー' },
- characters: { schema: CharacterPresetSchema, defaultName: 'キャラクター設定' }
+ characters: { schema: CharacterSchema, defaultName: 'キャラクター設定' }
 } as const;
 
 export function useRecordOperations<C extends Category>(category: C) {

@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { PlaceholderValueType } from '@/types/OmikujiTypesSchema';
+import { PlaceholderValueType } from '@type/';
 import { drawOmikuji } from '@/MainGenerator/utils/PlayOmikuji';
 
 const props = defineProps<{

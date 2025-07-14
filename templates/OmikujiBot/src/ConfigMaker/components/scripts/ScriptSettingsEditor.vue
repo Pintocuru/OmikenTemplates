@@ -71,7 +71,7 @@ import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
 import { useScriptSettingsStore } from '@/ConfigMaker/script/useScriptSettingsStore';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 import { Settings, RotateCcw } from 'lucide-vue-next';
-import { ParameterInputType, ScriptPreset } from '@/types/PresetTypes';
+import { ParameterInputType, ScriptPreset } from '@type/';
 
 // Store
 const scriptSettingsStore = useScriptSettingsStore();

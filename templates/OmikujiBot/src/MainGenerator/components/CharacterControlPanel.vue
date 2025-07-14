@@ -59,7 +59,7 @@
 
      <!-- キャラクター画像 -->
      <img
-      :src="getImagePath((character.image as CharacterImageSetType)[currentExpressions[index]])"
+      :src="getImagePath((character.image as CharacterImageType)[currentExpressions[index]])"
       :alt="`${character.name}のアバター`"
       class="w-full h-full object-cover transition-all duration-500"
       :class="[isMenuVisible && index === 0 ? 'brightness-110' : 'brightness-100']"
@@ -87,20 +87,19 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue';
-import { BotMessage, DisplaySize } from '@/types/types';
+import { BotMessage, characterEmotions, DisplaySize } from '@/types/types';
 import {
- CharacterPresetType,
- CharacterImageSetType,
+ CharacterType,
+ CharacterImageType,
  CharacterEmotionType,
- EmotionIcons,
  PostActionType,
  PostActionSchema
-} from '@/types/OmikujiTypesSchema';
+} from '@type/';
 import { ZoomIn, Monitor } from 'lucide-vue-next';
 
 // Props
 const props = defineProps<{
- characters: CharacterPresetType[];
+ characters: CharacterType[];
  displaySize: DisplaySize;
  switchToNextMode: () => void;
  switchToPrevMode: () => void;
@@ -186,7 +185,7 @@ const startExpressionCycle = () => {
 
    if (changeChance) {
     // 'default'以外の表情をランダムに選択
-    const nonDefaultEmotions = EmotionIcons.filter((emotion) => emotion !== 'default');
+    const nonDefaultEmotions = characterEmotions.filter((emotion) => emotion !== 'default');
     const randomEmotion = nonDefaultEmotions[Math.floor(Math.random() * nonDefaultEmotions.length)];
     currentExpressions.value[index] = randomEmotion;
    } else {
@@ -224,7 +223,7 @@ const handleMenuMouseEnter = () => {
 };
 
 // キャラクタークリック時の処理
-const handleCharacterClick = (character: CharacterPresetType, isToast: boolean) => {
+const handleCharacterClick = (character: CharacterType, isToast: boolean) => {
  try {
   // PostActionSchemaを使用してテストメッセージ用のデータを作成
   const postAction = PostActionSchema.parse({

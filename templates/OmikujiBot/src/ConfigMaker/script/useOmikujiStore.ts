@@ -1,11 +1,6 @@
 // src/ConfigMaker/script/useOmikujiStore.ts
 import { ref } from 'vue';
-import {
- CategoryType,
- OmikujiDataSchema,
- OmikujiDataType,
- validateOmikujiData
-} from '@/types/OmikujiTypesSchema';
+import { CategoryType, OmikujiDataSchema, OmikujiDataType, validateOmikujiData } from '@type/';
 import { defineStore } from 'pinia';
 
 // omikujiData

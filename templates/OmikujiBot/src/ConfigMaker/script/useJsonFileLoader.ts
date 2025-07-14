@@ -1,6 +1,6 @@
 // composables/useJsonFileLoader.ts
 import { ref } from 'vue';
-import { OmikujiDataSchema, type OmikujiDataType } from '@/types/OmikujiTypesSchema';
+import { OmikujiDataSchema, type OmikujiDataType } from '@type/';
 
 /**
  * JSONファイルの読み込みを担当するComposable

@@ -30,7 +30,7 @@
 import { computed, provide } from 'vue';
 import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
 import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
-import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
+import type { CharacterType } from '@type/';
 import RuleTabs from '@/ConfigMaker/components/parts/RuleTabs.vue';
 import CharacterBasicInfo from './CharacterBasicInfo.vue';
 import CharacterColorSettings from './CharacterColorSettings.vue';
@@ -58,7 +58,7 @@ const characterCount = computed(() => Object.keys(charactersArray.value).length)
 // v-modelを使用したselectedCharacterの実装
 const selectedCharacter = computed({
  get: () => characterStore.selectedRule,
- set: (value: CharacterPresetType | null) => {
+ set: (value: CharacterType | null) => {
   if (value) {
    characterStore.update(value.id, value);
   }

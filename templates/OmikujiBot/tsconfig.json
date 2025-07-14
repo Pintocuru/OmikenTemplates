@@ -8,6 +8,9 @@
   ],
   "outDir": "./dist", // 出力先ディレクトリ
   "paths": {
+   "@type/": [
+    "./src/types/types.ts"
+   ],
    "@public/*": [
     "../../public/*"
    ],
@@ -16,6 +19,15 @@
    ],
    "@/*": [
     "./src/*"
+   ],
+   "@Config/*": [
+    "./src/ConfigMaker/*"
+   ],
+   "@ConfigComponents/*": [
+    "./src/ConfigMaker/components/*"
+   ],
+   "@ConfigScript/*": [
+    "./src/ConfigMaker/script/*"
    ],
   }
  },

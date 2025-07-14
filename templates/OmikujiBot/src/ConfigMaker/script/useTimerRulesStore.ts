@@ -1,5 +1,5 @@
 // src/ConfigMaker/script/useTimerRulesStore.ts - 簡略化されたタイマールールストア
-import { TimerRuleType } from '@/types/OmikujiTypesSchema';
+import { TimerRuleType } from '@type/';
 import { useRecordOperations } from './useRecordStore';
 import { defineStore } from 'pinia';
 

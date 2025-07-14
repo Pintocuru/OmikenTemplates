@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
   publicDir: path.resolve(__dirname, '../../public'),
   resolve: {
    alias: {
+    '@type': path.resolve(__dirname, 'src/types/types.ts'),
     '@assets': path.resolve(__dirname, 'assets'),
     '@': path.resolve(__dirname, 'src'),
     '@Config': path.resolve(__dirname, 'src/ConfigMaker'),

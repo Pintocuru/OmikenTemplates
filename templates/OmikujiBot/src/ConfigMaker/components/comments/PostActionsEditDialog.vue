@@ -63,7 +63,7 @@
           <span class="label-text text-xs">🎨 アイコン</span>
          </label>
          <select v-model="action.iconKey" class="select select-bordered select-sm w-full">
-          <option v-for="(icon, index) in CHARACTER_EMOTIONS" :key="index" :value="icon">
+          <option v-for="(icon, index) in characterEmotions" :key="index" :value="icon">
            {{ emotionLabels[icon] }}
           </option>
          </select>
@@ -132,15 +132,15 @@
 
 <script setup lang="ts">
 import { ref, computed, type Ref } from 'vue';
-import { CharacterPresetType, PostActionSchema, PostActionType } from '@/types/OmikujiTypesSchema';
-import { emotionLabels, CHARACTER_EMOTIONS } from '@/types/PresetTypes';
+import { CharacterType, PostActionSchema, PostActionType } from '@type/';
+import { emotionLabels, characterEmotions } from '@type/';
 import ModalFooterActions from '@/ConfigMaker/components/parts/ModalFooterActions.vue';
 import PlaceholderList from '@/ConfigMaker/components/placeholders/PlaceholderList.vue';
 
 // Props
 const props = defineProps<{
  actions: PostActionType[];
- charactersArray: CharacterPresetType[];
+ charactersArray: CharacterType[];
 }>();
 
 // Emits

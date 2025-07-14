@@ -1,6 +1,6 @@
 // composables/useJsonImportOrchestrator.ts
 import { ref, computed } from 'vue';
-import type { OmikujiDataType, CategoryType } from '@/types/OmikujiTypesSchema';
+import type { OmikujiDataType, CategoryType } from '@type/';
 import { useJsonFileLoader } from './useJsonFileLoader';
 import { useImportPreviewManager, CategoryImportConfig } from './useImportPreviewManager';
 import { useDataMerger } from './useDataMerger';

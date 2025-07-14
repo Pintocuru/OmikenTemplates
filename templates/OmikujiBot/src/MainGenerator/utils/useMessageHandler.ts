@@ -1,12 +1,12 @@
 // src/composables/useMessageHandler.ts
 import { ref, onUnmounted } from 'vue';
 import { BotMessage } from '@/types/types';
-import { OmikujiDataType, PostActionType } from '@/types/OmikujiTypesSchema';
+import { OmikujiDataType, PostActionType } from '@type/';
 import { ScriptManager } from '@/MainGenerator/utils/ScriptManager';
 import { CommentProcessor } from '@/MainGenerator/utils/CommentProcessor';
 import { TimerProcessor } from '@/MainGenerator/utils/timerProcessor';
 import { CharacterCollector } from '@/MainGenerator/utils/CharacterCollector';
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { Comment } from '@onecomme.com/onesdk';
 
 export function useMessageHandler(omikujiData: OmikujiDataType) {
  const botMessages = ref<BotMessage[]>([]);

@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import { reactive, computed, ref, inject } from 'vue';
-import { CategoryType } from '@/types/OmikujiTypesSchema';
+import { CategoryType } from '@type/';
 import RuleTabItem from './RuleTabItem.vue';
 import RuleContextMenu from './RuleContextMenu.vue';
 import RuleFilter from './RuleFilter.vue';

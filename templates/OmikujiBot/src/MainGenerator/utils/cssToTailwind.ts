@@ -1,5 +1,5 @@
 // src/utils/cssToTailwind.ts
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { Comment } from '@onecomme.com/onesdk';
 import OneSDK from '@onecomme.com/onesdk';
 
 /**

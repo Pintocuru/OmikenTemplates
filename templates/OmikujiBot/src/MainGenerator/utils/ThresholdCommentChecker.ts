@@ -1,12 +1,12 @@
 // src/MainGenerator/utils/ThresholdCommentChecker.ts
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { Comment } from '@onecomme.com/onesdk';
 import {
  AccessCondition,
  CommentThresholdType,
  CountConditionType,
  GiftCondition,
  SyokenCondition
-} from '@/types/OmikujiTypesSchema';
+} from '@type/';
 
 /**
  * コメントが指定された閾値条件を満たすかチェックする

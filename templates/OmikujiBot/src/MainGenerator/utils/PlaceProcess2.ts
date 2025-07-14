@@ -1,10 +1,5 @@
 // src/Modules/tasks/PlaceProcess2.ts
-import {
- OmikujiSetType,
- PlaceholderType,
- PlaceholderValueType,
- PostActionType
-} from '@/types/OmikujiTypesSchema';
+import { OmikujiSetType, PlaceholderType, PlaceholderValueType, PostActionType } from '@type/';
 import { drawOmikuji } from './PlayOmikuji';
 
 /**
@@ -25,7 +20,7 @@ export class PlaceProcess {
  /**
   * 解決済みプレースホルダーを追加/更新
   */
- updateResolvedValues(data: Record<string, string | number>): void {
+ updateResolvedValues(data: Record<string, string | number | boolean>): void {
   Object.assign(this.resolvedValues, data);
  }
 

@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, type Ref } from 'vue';
-import { type PostActionType } from '@/types/OmikujiTypesSchema';
+import { type PostActionType } from '@type/';
 import PostActionsPreview from './PostActionsPreview.vue';
 import PostActionsEditDialog from './PostActionsEditDialog.vue';
 import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';

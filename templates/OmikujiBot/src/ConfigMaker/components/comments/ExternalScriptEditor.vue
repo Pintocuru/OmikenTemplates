@@ -92,8 +92,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { CommentRuleType } from '@/types/OmikujiTypesSchema';
-import type { ParameterItem, ScriptPreset } from '@/types/PresetTypes';
+import type { CommentRuleType } from '@type/';
+import type { ParameterItem, ScriptPreset } from '@type/';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 
 const props = defineProps<{

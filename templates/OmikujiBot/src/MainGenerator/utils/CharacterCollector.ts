@@ -1,11 +1,6 @@
 // src/MainGenerator/utils/CharacterCollector.ts
 import { BotMessage } from '@/types/types';
-import {
- CharacterPresetType,
- OmikujiDataType,
- OmikujiSetType,
- PostActionType
-} from '@/types/OmikujiTypesSchema';
+import { CharacterType, OmikujiDataType, OmikujiSetType, PostActionType } from '@type/';
 
 export class CharacterCollector {
  private readonly omikujiData: OmikujiDataType;
@@ -46,7 +41,7 @@ export class CharacterCollector {
  /**
   * 使用されているキャラクターデータを取得する
   */
- getUsedCharacterData(): Record<string, CharacterPresetType> {
+ getUsedCharacterData(): Record<string, CharacterType> {
   const keys = this.collectCharacterKeys();
   const characters = this.omikujiData.characters;
   return Object.fromEntries(
@@ -59,7 +54,7 @@ export class CharacterCollector {
  /**
   * 使用されているキャラクターのプリセットを配列で取得する
   */
- getUsedCharacterPresets(): CharacterPresetType[] {
+ getUsedCharacterPresets(): CharacterType[] {
   return Object.values(this.getUsedCharacterData()).sort((a, b) => a.order - b.order);
  }
 

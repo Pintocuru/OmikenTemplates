@@ -1,10 +1,10 @@
 // src/MainGenerator/utils/CommentProcessorToast.ts
 import { BotMessage } from '@/types/types';
-import { CommentRuleType, PostActionType } from '@/types/OmikujiTypesSchema';
+import { CommentRuleType, PostActionType } from '@type/';
 import { checkThresholdComment } from './ThresholdCommentChecker';
 import { SETTINGS } from '@public/common/settings';
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { CharacterEmotion, CharacterPresetType } from '@/types/PresetSchema';
+import { Comment } from '@onecomme.com/onesdk';
+import { CharacterEmotionType, CharacterType } from '@type/';
 
 /**
  * コメント重複時のPostAction調整
@@ -66,9 +66,9 @@ export function processCommentRule(
 }
 
 export class BotMessageGenerator {
- private characters: Record<string, CharacterPresetType>;
+ private characters: Record<string, CharacterType>;
 
- constructor(characters: Record<string, CharacterPresetType>) {
+ constructor(characters: Record<string, CharacterType>) {
   this.characters = characters;
  }
 
@@ -119,10 +119,7 @@ export class BotMessageGenerator {
   * キャラクターアイコンの取得
   * 指定されたアイコンキーに対応するアイコンを取得し、存在しない場合はデフォルトアイコンを返す
   */
- private getCharacterIcon(
-  character: CharacterPresetType,
-  iconKey: CharacterEmotion
- ): string | null {
+ private getCharacterIcon(character: CharacterType, iconKey: CharacterEmotionType): string | null {
   const iconMap = character?.image;
   if (!iconMap) return null;
 

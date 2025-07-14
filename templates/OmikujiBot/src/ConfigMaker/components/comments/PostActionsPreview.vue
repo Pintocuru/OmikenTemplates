@@ -42,13 +42,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { CharacterPresetType, type PostActionType } from '@/types/OmikujiTypesSchema';
-import { emotionLabels, type CharacterEmotion } from '@/types/PresetTypes';
+import { CharacterType, type PostActionType } from '@type/';
+import { emotionLabels, CharacterEmotionType } from '@type/';
 
 // Props
 const props = defineProps<{
  actions: PostActionType[];
- charactersArray: CharacterPresetType[];
+ charactersArray: CharacterType[];
 }>();
 
 // キャラクター選択肢
@@ -65,7 +65,7 @@ const getCharacterLabel = (key: string): string => {
  return option ? option.label : key;
 };
 
-const getIconLabel = (key: CharacterEmotion): string => {
+const getIconLabel = (key: CharacterEmotionType): string => {
  return emotionLabels[key] || key;
 };
 </script>

@@ -189,12 +189,12 @@ import {
  giftConditionLabels,
  SyokenCondition,
  syokenConditionLabels,
- ThresholdCommentCondition,
- thresholdCommentConditionLabels,
+ CommentThresholdCondition,
+ commentThresholdConditionLabels,
  countComparisonConditionLabels,
  countUnitConditionLabels,
  type CommentThresholdType
-} from '@/types/OmikujiThresholdSchema';
+} from '@type/';
 
 const props = defineProps<{ modelValue: CommentThresholdType }>();
 const emit = defineEmits<{ 'update:modelValue': [value: CommentThresholdType] }>();
@@ -208,7 +208,7 @@ const createOptions = <T extends string>(labels: Record<T, string>) =>
   label: string;
  }>;
 
-const conditionTypes = createOptions(thresholdCommentConditionLabels);
+const conditionTypes = createOptions(commentThresholdConditionLabels);
 const syokenOptions = createOptions(syokenConditionLabels);
 const accessOptions = createOptions(accessConditionLabels);
 const giftOptions = createOptions(giftConditionLabels);
@@ -226,7 +226,7 @@ const toggleInArray = <T,>(array: T[], value: T): T[] => {
 };
 
 // Handlers
-const toggleCondition = (condition: ThresholdCommentCondition) => {
+const toggleCondition = (condition: CommentThresholdCondition) => {
  updateModelValue({
   conditions: toggleInArray(props.modelValue.conditions, condition)
  });

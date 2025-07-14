@@ -1,11 +1,11 @@
 // src/MainGenerator/utils/timerProcessor.ts
 import { BotMessage } from '@/types/types';
-import { OmikujiDataType, OmikujiSetType, TimerRuleType } from '@/types/OmikujiTypesSchema';
+import { OmikujiDataType, OmikujiSetType, TimerRuleType } from '@type/';
 import { BotMessageGenerator } from './CommentProcessorToast';
 import { drawOmikuji } from './PlayOmikuji';
 import { PlaceProcess } from './PlaceProcess2';
 import { PostMessage } from './PostMessage2';
-import { ServiceMeta } from '@onecomme.com/onesdk/types/Service';
+import { ServiceMeta } from '@onecomme.com/onesdk';
 import { GetMetas } from '@public/common/subscribe/GetMetas';
 
 interface TimerState {

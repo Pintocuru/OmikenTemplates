@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { PlaceholderSchema, PlaceholderType, PostActionType } from '@/types/OmikujiTypesSchema';
+import { PlaceholderSchema, PlaceholderType, PostActionType, ScriptPreset } from '@type/';
 import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
 import { usePlaceholderStore } from '@/ConfigMaker/script/usePlaceholderStore';
 import { useCommentRulesStore } from '@/ConfigMaker/script/useCommentRulesStore';
@@ -121,7 +121,7 @@ const scriptPlaceholder = computed((): PlaceholderType[] => {
 
  const script = scriptGameMap[selectedRule.value.scriptId];
  return (
-  script?.placeholders?.map(
+  script.placeholders?.map(
    (item): PlaceholderType =>
     PlaceholderSchema.parse({
      id: item.id,

@@ -72,7 +72,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { CategoryType } from '@/types/OmikujiTypesSchema';
+import { CategoryType } from '@type/';
 import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
 import ConfigImport from '@/ConfigMaker/components/presets/ConfigImport.vue';
 import ConfigExport from '@/ConfigMaker/components/presets/ConfigExport.vue';

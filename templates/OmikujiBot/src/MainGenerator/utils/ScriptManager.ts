@@ -1,8 +1,8 @@
 // src/MainGenerator/utils/processors/ScriptManager.ts
-import { CommentRuleType, OmikujiDataType } from '@/types/OmikujiTypesSchema';
-import { ScriptClass, ScriptResult, UserStatistics, GameState } from '@/types/PresetTypes';
+import { CommentRuleType, OmikujiDataType } from '@type/';
+import { ScriptClass, ScriptResult, UserStatsType, GameState } from '@type/';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
+import { Comment } from '@onecomme.com/onesdk';
 
 export class ScriptManager {
  private readonly scriptInstances: Record<string, ScriptClass> = {};
@@ -10,7 +10,7 @@ export class ScriptManager {
  private readonly omikujiData: OmikujiDataType;
 
  // ランキングデータを適切な型で管理
- private rankingData: Record<string, UserStatistics[]> = {};
+ private rankingData: Record<string, UserStatsType[]> = {};
 
  constructor(omikujiData: OmikujiDataType) {
   this.omikujiData = omikujiData;
@@ -98,9 +98,10 @@ export class ScriptManager {
    const result = scriptInstance.run(comment, rule.scriptParams || {});
 
    // ランキングデータの更新
-   if (result && result.rankingList && result.isGameStateUpdated) {
-    this.rankingData[scriptId] = result.rankingList;
-    this.updateGameState(scriptId, result.rankingList);
+   const rankingList = scriptInstance.getGameState()?.userRankings;
+   if (rankingList) {
+    this.rankingData[scriptId] = rankingList;
+    this.updateGameState(scriptId, rankingList);
    }
 
    return result;
@@ -113,7 +114,7 @@ export class ScriptManager {
  /**
   * ゲーム状態の更新
   */
- private updateGameState(scriptId: string, rankingList: UserStatistics[]): void {
+ private updateGameState(scriptId: string, rankingList: UserStatsType[]): void {
   const gameState = this.gameStates[scriptId];
   if (!gameState) return;
 
@@ -177,21 +178,21 @@ export class ScriptManager {
  /**
   * ランキングデータ取得
   */
- getRankingData(scriptId: string): UserStatistics[] | null {
+ getRankingData(scriptId: string): UserStatsType[] | null {
   return this.rankingData[scriptId] || null;
  }
 
  /**
   * 全てのランキングデータを取得
   */
- getAllRankingData(): Record<string, UserStatistics[]> {
+ getAllRankingData(): Record<string, UserStatsType[]> {
   return { ...this.rankingData };
  }
 
  /**
   * 特定ユーザーの統計情報を取得
   */
- getUserStatistics(scriptId: string, userId: string): UserStatistics | null {
+ getUserStatistics(scriptId: string, userId: string): UserStatsType | null {
   const gameState = this.getGameState(scriptId);
   return gameState?.userStats[userId] || null;
  }

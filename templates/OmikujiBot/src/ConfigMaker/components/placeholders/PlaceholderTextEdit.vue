@@ -81,7 +81,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { PlaceholderValueSchema } from '@/types/OmikujiTypesSchema';
+import { PlaceholderValueSchema } from '@type/';
 import ModalFooterActions from '@/ConfigMaker/components/parts/ModalFooterActions.vue';
 import { usePlaceholderStore } from '@/ConfigMaker/script/usePlaceholderStore';
 

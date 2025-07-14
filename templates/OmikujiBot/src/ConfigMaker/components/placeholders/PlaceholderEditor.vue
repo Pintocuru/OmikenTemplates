@@ -111,7 +111,7 @@
 
 <script setup lang="ts">
 import { computed, provide } from 'vue';
-import { PlaceholderValueSchema } from '@/types/OmikujiTypesSchema';
+import { PlaceholderValueSchema } from '@type/';
 import PlaceholderIdEditor from './PlaceholderIdEditor.vue';
 import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
 import PlaceholderPreview from './PlaceholderPreview.vue';

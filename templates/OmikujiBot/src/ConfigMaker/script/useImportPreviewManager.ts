@@ -1,10 +1,6 @@
 // composables/useImportPreviewManager.ts
 import { ref, computed } from 'vue';
-import {
- validateOmikujiData,
- type OmikujiDataType,
- type CategoryType
-} from '@/types/OmikujiTypesSchema';
+import { validateOmikujiData, type OmikujiDataType, type CategoryType } from '@type/';
 
 export type ImportMode = 'replace' | 'merge' | 'add-only' | 'skip';
 

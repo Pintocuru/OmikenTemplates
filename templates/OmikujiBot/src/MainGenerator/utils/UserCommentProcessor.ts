@@ -1,7 +1,6 @@
 // src/MainGenerator/utils/UserCommentProcessor.ts
-import { Comment } from '@onecomme.com/onesdk/types/Comment';
-import { BotMessage } from '@/types/types';
-import { CommentRuleType, OmikujiDataType, OmikujiSetType } from '@/types/OmikujiTypesSchema';
+import { BotMessage, ScriptResult } from '@type/'; // スクリプト結果型
+import { CommentRuleType, OmikujiDataType, OmikujiSetType } from '@type/';
 import { CommentProcessorCooldown } from './CommentProcessorCooldown'; // 既存のヘルパー関数
 import { PostMessage } from './PostMessage2'; // 依存オブジェクト
 import { PlaceProcess } from './PlaceProcess2'; // 依存オブジェクト
@@ -12,8 +11,8 @@ import {
  sanitizePostActionsForDuplicate
 } from './CommentProcessorToast'; // 依存オブジェクト & ヘルパー関数
 import { drawOmikuji } from './PlayOmikuji'; // ヘルパー関数
-import { ScriptResult } from '@/types/PresetTypes'; // スクリプト結果型
-import { ServiceMeta } from '@onecomme.com/onesdk/types/Service';
+import { ServiceMeta } from '@onecomme.com/onesdk';
+import { Comment } from '@onecomme.com/onesdk';
 
 export class UserCommentProcessor {
  private serviceMeta: ServiceMeta | null = null; // Metaデータ管理

@@ -16,14 +16,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
+import type { CharacterType } from '@type/';
 
 const props = defineProps<{
- modelValue: CharacterPresetType['color'];
+ modelValue: CharacterType['color'];
 }>();
 
 const emit = defineEmits<{
- 'update:modelValue': [value: CharacterPresetType['color']];
+ 'update:modelValue': [value: CharacterType['color']];
 }>();
 
 // labelとキーを配列で管理
@@ -36,7 +36,7 @@ const fields = [
 // v-modelを使用したlocalColorの実装
 const localColor = computed({
  get: () => props.modelValue,
- set: (value: CharacterPresetType['color']) => {
+ set: (value: CharacterType['color']) => {
   emit('update:modelValue', value);
  }
 });

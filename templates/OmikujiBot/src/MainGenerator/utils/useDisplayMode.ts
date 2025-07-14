@@ -1,7 +1,12 @@
 // src/composables/useDisplayMode.ts
-import { ref, computed, watchEffect } from 'vue';
-import { DisplaySize } from '@/types/types';
-import { OmikujiDataType } from '@/types/OmikujiTypesSchema';
+import { ref, computed } from 'vue';
+import {
+ DisplaySize,
+ OmikujiDataType,
+ ScriptComponentPropsType,
+ ScriptComponentType,
+ UserStatsType
+} from '@type/';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 import { ScriptManager } from './ScriptManager';
 
@@ -65,17 +70,25 @@ export function useDisplayMode(
  });
 
  // 現在のスクリプトゲームのprops（リアクティブに更新される）
- const currentScriptGameProps = computed(() => {
+ const currentScriptGameProps = computed((): ScriptComponentPropsType => {
   forceRender.value;
   const scriptKey = currentScriptGameKey.value;
-  if (!scriptKey || !scriptGameMap[scriptKey]) return {};
+
+  // デフォルト値を設定
+  if (!scriptKey || !scriptGameMap[scriptKey]) {
+   return {
+    settings: {},
+    userRankings: [],
+    displaySize: displaySize.value
+   };
+  }
 
   // ScriptManagerから最新のランキングデータを取得
   const rankingData = scriptManager.getRankingData(scriptKey);
 
   return {
    settings: omikujiData.scriptSettings?.[scriptKey] || {},
-   userRanking: rankingData || [],
+   userRankings: rankingData || [],
    displaySize: displaySize.value
   };
  });

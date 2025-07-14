@@ -1,5 +1,5 @@
 // composables/useDataMerger.ts
-import type { OmikujiDataType, CategoryType } from '@/types/OmikujiTypesSchema';
+import type { OmikujiDataType, CategoryType } from '@type/';
 import type { ImportPreview } from './useImportPreviewManager';
 
 /**
@@ -39,9 +39,6 @@ export const useDataMerger = () => {
       }
      });
      break;
-    case 'skip':
-     // スキップの場合は何もしない（既にreturnで処理済み）
-     return;
    }
 
    result[category] = mergedItems as any; // 最終的に unknown → any にダウンキャスト

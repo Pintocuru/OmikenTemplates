@@ -1,22 +1,24 @@
-// src/types/OmikujiThresholdSchema.ts
+// src/types/ThresholdSchema.ts
+// 250714_1　全編改変
 import { z } from 'zod';
 
-// ======================
-// Threshold関連のスキーマ
-// ======================
+/**
+ * 各種 Threshold
+ */
 
-// 総合
-export const thresholdCommentCondition = ['comment', 'syoken', 'access', 'gift', 'count'] as const;
-export type ThresholdCommentCondition = (typeof thresholdCommentCondition)[number];
-export const thresholdCommentConditionLabels: Record<ThresholdCommentCondition, string> = {
+// condition
+export const commentThresholdCondition = ['comment', 'syoken', 'access', 'gift', 'count'] as const;
+export type CommentThresholdCondition = (typeof commentThresholdCondition)[number];
+export const commentThresholdConditionLabels: Record<CommentThresholdCondition, string> = {
  comment: 'コメントワード',
  syoken: '初見判定ちゃん',
  access: 'ユーザーの役職',
  gift: 'ギフト',
  count: 'コメント数'
 };
-export const ThresholdCommentConditionSchema = z
- .enum(thresholdCommentCondition)
+
+export const CommentThresholdConditionSchema = z
+ .enum(commentThresholdCondition)
  .default('comment')
  .catch('comment');
 
@@ -65,14 +67,14 @@ export const giftCondition = [
 export type GiftCondition = (typeof giftCondition)[number];
 export const giftConditionLabels: Record<GiftCondition, string> = {
  all: '全て', // 全て(メンバー加入含む)
- blue: '200円未満', // 200円未満
- lightBlue: '200-499円', // 200円〜499円
- green: '500-999円', // 500円〜999円
- yellow: '1000-1999円', // 1,000円〜1,999円
- orange: '2000-4999円', // 2,000円〜4,999円
- pink: '5000-9999円', // 5,000円〜9,999円
- red: '10000円-19999円', // 10,000円以上
- purple: '20000円-' // 20,000円以上
+ blue: '200円未満',
+ lightBlue: '200-499円',
+ green: '500-999円',
+ yellow: '1000-1999円',
+ orange: '2000-4999円',
+ pink: '5000-9999円',
+ red: '10000円-19999円',
+ purple: '20000円以上'
 };
 export const GiftConditionSchema = z.enum(giftCondition).default('all').catch('all');
 
@@ -98,15 +100,43 @@ export const CountConditionSchema = z.object({
  unit: z.enum(countUnitCondition).default('lc').catch('lc'),
  value: z.number().min(0).default(1).catch(1)
 });
-
 export type CountConditionType = z.infer<typeof CountConditionSchema>;
 
+/**
+ * Comment Threshold
+ */
 export const CommentThresholdSchema = z.object({
- conditions: z.array(ThresholdCommentConditionSchema).default([]).catch([]),
+ conditions: z.array(CommentThresholdConditionSchema).default([]).catch([]),
  syoken: z.array(SyokenConditionSchema).default([]).catch([]),
  access: z.array(AccessConditionSchema).default([]).catch([]),
  gift: z.array(GiftConditionSchema).default([]).catch([]),
  count: CountConditionSchema.default({}),
- comment: z.array(z.string().default('').catch('')).default([]).catch([])
+ comment: z.array(z.string()).default([]).catch([])
 });
 export type CommentThresholdType = z.infer<typeof CommentThresholdSchema>;
+
+/**
+ * ConfigUser Threshold
+ */
+
+// condition
+export const configUserCondition = ['user', 'access', 'gift', 'comment'] as const;
+export type ConfigUserCondition = (typeof configUserCondition)[number];
+export const ConfigUserConditionLabels: Record<ConfigUserCondition, string> = {
+ user: 'ユーザー',
+ access: 'ユーザーの役職',
+ gift: 'ギフト',
+ comment: 'コメントワード'
+};
+
+export const ConfigUserConditionSchema = z.enum(configUserCondition).catch('comment');
+
+// ConfigUserThreshold のスキーマ本体
+export const ConfigUserThresholdSchema = z.object({
+ conditions: z.array(ConfigUserConditionSchema).default([]).catch([]),
+ user: z.array(z.string()).default([]).catch([]), // "!ID" による除外はバリデーション側で対応
+ access: z.array(AccessConditionSchema).default([]).catch([]),
+ gift: z.array(GiftConditionSchema).default([]).catch([]),
+ comment: z.array(z.string()).default([]).catch([])
+});
+export type ConfigUserThresholdType = z.infer<typeof ConfigUserThresholdSchema>;

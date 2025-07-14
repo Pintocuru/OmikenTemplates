@@ -1,7 +1,9 @@
 // src/types.ts
+import { OmikujiDataType } from './OmikujiSchema';
+import { CharacterColorType } from './CharacterSchema';
 import { ConfigUserType } from '@public/common/types/ConfigTypes';
-import { CharacterColorScheme } from './PresetTypes';
-import { OmikujiDataType } from './OmikujiTypesSchema';
+
+// ---
 
 // BotMessage Commentを大幅に略したもの
 export type BotMessage = {
@@ -11,7 +13,7 @@ export type BotMessage = {
  timestamp: string; // 投稿日時
  comment: string; // コメント
  isToast: boolean; // 通常表示かトースト表示か
- color: CharacterColorScheme; // カラー
+ color: CharacterColorType; // カラー
  delaySeconds: number; // 投稿までの遅延時間（秒）
 };
 
@@ -26,3 +28,9 @@ declare global {
   omikujiData: OmikujiDataType;
  }
 }
+
+// 各型定義の公開
+export * from './CharacterSchema';
+export * from './OmikujiSchema';
+export * from './ScriptTypes';
+export * from './ThresholdSchema';

@@ -1,5 +1,5 @@
 // scriptGame/ScriptGameMap.ts
-import { ScriptPreset } from '@/types/PresetTypes.js';
+import { ScriptPreset } from '@type/';
 import BomberSpin from './BomberSpin.js';
 import './BomberSpin.css';
 import GouseiSuika from './GouseiSuika.js';

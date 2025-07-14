@@ -1,5 +1,5 @@
 // src/ConfigMaker/script/useCharacterStore.ts - キャラクター専用ストア
-import { CommentRuleType, TimerRuleType } from '@/types/OmikujiTypesSchema';
+import { CommentRuleType, TimerRuleType } from '@type/';
 import { useRecordOperations } from './useRecordStore';
 import { useOmikujiStore } from './useOmikujiStore';
 import { defineStore } from 'pinia';

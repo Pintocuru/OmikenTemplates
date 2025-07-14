@@ -78,7 +78,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { RuleType } from '@/types/OmikujiTypesSchema';
+import { RuleType } from '@type/';
 
 const props = defineProps<{
  modelValue: RuleType;

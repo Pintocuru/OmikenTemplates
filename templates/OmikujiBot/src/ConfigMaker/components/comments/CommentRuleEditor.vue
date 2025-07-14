@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { computed, provide } from 'vue';
-import { CommentRuleType, RuleType } from '@/types/OmikujiTypesSchema';
+import { CommentRuleType, RuleType } from '@type/';
 import BaseSettingsEditor from './BaseSettingsEditor.vue';
 import CommentThresholdEditor from './CommentThresholdEditor.vue';
 import ExternalScriptEditor from './ExternalScriptEditor.vue';

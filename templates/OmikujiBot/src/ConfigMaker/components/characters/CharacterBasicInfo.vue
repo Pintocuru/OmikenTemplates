@@ -38,15 +38,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { CharacterPresetType } from '@/types/OmikujiTypesSchema';
+import type { CharacterType } from '@type/';
 import PlaceholderIdEditor from '@/ConfigMaker/components/placeholders/PlaceholderIdEditor.vue';
 
 const props = defineProps<{
- modelValue: CharacterPresetType;
+ modelValue: CharacterType;
 }>();
 
 const emit = defineEmits<{
- 'update:modelValue': [value: CharacterPresetType];
+ 'update:modelValue': [value: CharacterType];
 }>();
 
 // 共通フィールド定義
@@ -61,7 +61,7 @@ const fields = [
 // v-modelを使用したlocalCharacterの実装
 const localCharacter = computed({
  get: () => props.modelValue,
- set: (value: CharacterPresetType) => {
+ set: (value: CharacterType) => {
   emit('update:modelValue', value);
  }
 });

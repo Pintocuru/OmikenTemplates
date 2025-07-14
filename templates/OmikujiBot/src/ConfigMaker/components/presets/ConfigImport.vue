@@ -159,7 +159,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import type { CategoryType } from '@/types/OmikujiTypesSchema';
+import type { CategoryType } from '@type/';
 import type { ImportMode } from '@/ConfigMaker/script/useImportPreviewManager';
 import ModalFooterActions from '@/ConfigMaker/components/parts/ModalFooterActions.vue';
 import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';

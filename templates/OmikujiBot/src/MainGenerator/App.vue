@@ -44,7 +44,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { validateOmikujiData } from '@/types/OmikujiTypesSchema';
+import { validateOmikujiData } from '@type/';
+import { BotMessage } from '@type/';
 import ViewBotMessage from '@/MainGenerator/components/ViewBotMessage.vue';
 import ViewBotToast from '@/MainGenerator/components/ViewBotToast.vue';
 import ViewUserVisits from '@/MainGenerator/components/ViewUserVisits.vue';
@@ -54,7 +55,6 @@ import { useMessageHandler } from '@/MainGenerator/utils/useMessageHandler';
 import { ConfigUserType } from '@public/common/types/ConfigTypes';
 import { GetUserVisits, ServiceVisitType } from '@public/common/subscribe/GetUserVisits';
 import ErrorInitComponent from '@public/common/ErrorInitComponent.vue';
-import { BotMessage } from '@/types/types';
 
 // omikujiData
 const omikujiData = validateOmikujiData(window.omikujiData);

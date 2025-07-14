@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { OmikujiSetSchema, OmikujiSetType } from '@/types/OmikujiTypesSchema';
+import { OmikujiSetSchema, OmikujiSetType } from '@type/';
 import PostActionsEditorJson from './PostActionsEditorJson.vue';
 import CharacterBulkChanger from './CharacterBulkChanger.vue';
 
