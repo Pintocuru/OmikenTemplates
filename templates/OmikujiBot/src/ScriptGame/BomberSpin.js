@@ -1,4 +1,4 @@
-import { ref as T, watch as N, onUnmounted as W, defineComponent as A, computed as M, createElementBlock as S, openBlock as R, Fragment as C, createCommentVNode as B, createElementVNode as c, unref as E, normalizeClass as x, toDisplayString as b, renderList as L } from "vue";
+import { ref as T, watch as N, onUnmounted as W, defineComponent as A, computed as M, createElementBlock as S, openBlock as R, Fragment as $, createCommentVNode as B, createElementVNode as g, unref as E, normalizeClass as x, toDisplayString as b, renderList as L } from "vue";
 const O = ["announceMessage", "totalDraws", "winsRank", "totalPoints"], j = [{ id: "message", name: "標準メッセージ", description: "デフォルトの返答", value: "userのセブンスピン!1/4/8000!合計$8004枚獲得!" }, { id: "symbol", name: "シンボル", description: "当選した図柄を返します", value: "セブン" }, { id: "payout", name: "獲得したポイント", description: "獲得したポイントを返します", value: "8004" }, ...[{ id: "announceMessage", name: "アナウンス", description: "ランキングの順位を表示します", value: "userさんの順位は、4位だよ。" }, { id: "totalDraws", name: "このおみくじをした回数", description: "この配信でのおみくじした回数を返します", value: "10" }, { id: "winsCount", name: "勝利数(勝ち負けがある場合)", description: "コメントしたユーザーの、配信枠内での勝数を返します", value: "2" }, { id: "winsRank", name: "ユーザーの順位", description: "パラメータのランキングモードを参照し、配信枠内での順位を数値で返します", value: "4" }, { id: "winsRate", name: "ユーザーの勝率(%)", description: "コメントしたユーザーの、配信枠内での勝率を返します", value: "20.0" }, { id: "totalPoints", name: "ユーザーの総得点", description: "コメントしたユーザーの、配信枠内での総得点を返します", value: "100" }].filter((e) => O.includes(e.id))];
 function I(e) {
   return { ruleId: e, totalDraws: 0, userStats: {}, currentUserIds: [] };
@@ -11,8 +11,8 @@ const V = new class {
   }
   run(e, n) {
     try {
-      const s = e.data.userId, t = this.updateUserStats(s, e.data.name, n), a = this.generateRankings(t, n, s), o = t[s];
-      return n.enableCount > 0 && ((o == null ? void 0 : o.draws) || 0) > n.enableCount || (this.gameState = { ...this.gameState, userStats: t, userRankings: a }), { placeholders: this.createPlaceholders(t[s], a, s, n), postActions: [] };
+      const s = e.data.userId, t = this.updateUserStats(s, e.data.name, n), a = this.generateRankings(t, n, s), i = t[s];
+      return n.enableCount > 0 && ((i == null ? void 0 : i.draws) || 0) > n.enableCount || (this.gameState = { ...this.gameState, userStats: t, userRankings: a }), { placeholders: this.createPlaceholders(t[s], a, s, n), postActions: [] };
     } catch (s) {
       throw console.error("Game execution error:", s), new Error("ゲーム実行中にエラーが発生しました");
     }
@@ -21,13 +21,13 @@ const V = new class {
     return this.gameState;
   }
   updateUserStats(e, n, s) {
-    const { isWin: t, getPoint: a } = s, { rankMode: o } = this.settings;
-    if (o === "point") {
+    const { isWin: t, getPoint: a } = s, { rankMode: i } = this.settings;
+    if (i === "point") {
       this.gameState.userRecords || (this.gameState.userRecords = {}), this.gameState.userRecords[e] || (this.gameState.userRecords[e] = []);
       const r = { userId: e, name: n, draws: 1, wins: t ? 1 : 0, points: a, totalPoints: a, rank: 0, rate: 0 };
       this.gameState.userRecords[e].push(r);
-      const m = { userId: e, name: n, draws: this.gameState.userRecords[e].length, wins: t ? 1 : 0, points: a, totalPoints: this.gameState.userRecords[e].reduce((i, l) => i + (l.points ?? 0), 0), rank: 0, rate: 0 };
-      return { ...this.gameState.userStats, [e]: m };
+      const c = { userId: e, name: n, draws: this.gameState.userRecords[e].length, wins: t ? 1 : 0, points: a, totalPoints: this.gameState.userRecords[e].reduce((o, l) => o + (l.points ?? 0), 0), rank: 0, rate: 0 };
+      return { ...this.gameState.userStats, [e]: c };
     }
     {
       const r = { ...this.gameState.userStats[e] ?? { userId: e, name: n, draws: 0, wins: 0, points: 0, totalPoints: 0, rank: 0, rate: 0 } };
@@ -39,12 +39,12 @@ const V = new class {
     const { rankMode: a } = this.settings;
     if (a === "point") {
       const l = [];
-      this.gameState.userRecords && Object.values(this.gameState.userRecords).forEach((g) => {
-        l.push(...g);
+      this.gameState.userRecords && Object.values(this.gameState.userRecords).forEach((m) => {
+        l.push(...m);
       });
-      const u = l.sort((g, h) => (h.points ?? 0) - (g.points ?? 0)).map((g, h) => ({ ...g, rank: h + 1 })), d = ((t = this.gameState.userRecords) == null ? void 0 : t[s]) || [];
+      const u = l.sort((m, h) => (h.points ?? 0) - (m.points ?? 0)).map((m, h) => ({ ...m, rank: h + 1 })), d = ((t = this.gameState.userRecords) == null ? void 0 : t[s]) || [];
       if (d.length > 0) {
-        const g = d[d.length - 1], h = u.findIndex((p) => p.userId === s && p.points === g.points);
+        const m = d[d.length - 1], h = u.findIndex((p) => p.userId === s && p.points === m.points);
         if (h !== -1) {
           const [p] = u.splice(h, 1);
           u.unshift(p);
@@ -52,37 +52,37 @@ const V = new class {
       }
       return u;
     }
-    const o = this.createRankingEntries(e), r = a === "rate" ? "rate" : "wins", m = o.sort((l, u) => (u[r] ?? 0) - (l[r] ?? 0)).map((l, u) => ({ ...l, rank: u + 1 })), i = m.findIndex((l) => l.userId === s);
-    if (i > 0) {
-      const [l] = m.splice(i, 1);
-      m.unshift(l);
+    const i = this.createRankingEntries(e), r = a === "rate" ? "rate" : "wins", c = i.sort((l, u) => (u[r] ?? 0) - (l[r] ?? 0)).map((l, u) => ({ ...l, rank: u + 1 })), o = c.findIndex((l) => l.userId === s);
+    if (o > 0) {
+      const [l] = c.splice(o, 1);
+      c.unshift(l);
     }
-    return m;
+    return c;
   }
   createRankingEntries(e) {
     const n = this.gameState.userRankings || [];
     return Object.entries(e).map(([s, t]) => {
-      const a = n.find((l) => l.userId === s), o = t.draws ?? (a == null ? void 0 : a.draws) ?? 0, r = t.wins ?? (a == null ? void 0 : a.wins) ?? 0, m = t.points ?? (a == null ? void 0 : a.points) ?? 0, i = t.totalPoints ?? (a == null ? void 0 : a.totalPoints) ?? 0;
-      return { userId: s, name: t.name || "Unknown", draws: o, wins: r, points: m, totalPoints: i, rank: t.rank ?? (a == null ? void 0 : a.rank) ?? 0, rate: o > 0 ? r / o * 100 : 0 };
+      const a = n.find((l) => l.userId === s), i = t.draws ?? (a == null ? void 0 : a.draws) ?? 0, r = t.wins ?? (a == null ? void 0 : a.wins) ?? 0, c = t.points ?? (a == null ? void 0 : a.points) ?? 0, o = t.totalPoints ?? (a == null ? void 0 : a.totalPoints) ?? 0;
+      return { userId: s, name: t.name || "Unknown", draws: i, wins: r, points: c, totalPoints: o, rank: t.rank ?? (a == null ? void 0 : a.rank) ?? 0, rate: i > 0 ? r / i * 100 : 0 };
     });
   }
   createPlaceholders(e, n, s, t) {
     var a;
-    const { rankMode: o } = this.settings, r = e.draws ?? 0, m = t.enableCount > 0 && r > t.enableCount;
-    if (o === "point") {
+    const { rankMode: i } = this.settings, r = e.draws ?? 0, c = t.enableCount > 0 && r > t.enableCount;
+    if (i === "point") {
       const u = ((a = this.gameState.userRecords) == null ? void 0 : a[s]) || [], d = u[u.length - 1];
       if (d) {
-        const g = this.calculateRank(d, n, s);
-        return { announceMessage: m ? `${d.name}さんは上限を超えているから、参考記録だよ。` : `${d.name}さんの${d.points}は、${g}位だよ。`, winsCount: String(d.wins ?? 0), winsRank: g, winsRate: "0.0", totalDraws: String(u.length), totalPoints: String(e.totalPoints ?? 0) };
+        const m = this.calculateRank(d, n, s);
+        return { announceMessage: c ? `${d.name}さんは上限を超えているから、参考記録だよ。` : `${d.name}さんの${d.points}は、${m}位だよ。`, winsCount: String(d.wins ?? 0), winsRank: m, winsRate: "0.0", totalDraws: String(u.length), totalPoints: String(e.totalPoints ?? 0) };
       }
     }
-    const i = this.calculateRank(e, n, s), l = r > 0 ? ((e.wins || 0) / r * 100).toFixed(1) : "0.0";
-    return { announceMessage: m ? `${e.name}さんは上限を超えているから、参考記録だよ。` : `${e.name}さんの順位は、${i}位だよ。`, winsCount: String(e.wins ?? 0), winsRank: i, winsRate: l, totalDraws: String(r), totalPoints: String(e.totalPoints ?? 0) };
+    const o = this.calculateRank(e, n, s), l = r > 0 ? ((e.wins || 0) / r * 100).toFixed(1) : "0.0";
+    return { announceMessage: c ? `${e.name}さんは上限を超えているから、参考記録だよ。` : `${e.name}さんの順位は、${o}位だよ。`, winsCount: String(e.wins ?? 0), winsRank: o, winsRate: l, totalDraws: String(r), totalPoints: String(e.totalPoints ?? 0) };
   }
   calculateRank(e, n, s) {
     if (this.settings.rankMode === "point") {
-      const a = e.points ?? 0, o = n.filter((r) => (r.points ?? 0) > a).length;
-      return String(o + 1);
+      const a = e.points ?? 0, i = n.filter((r) => (r.points ?? 0) > a).length;
+      return String(i + 1);
     }
     const t = n.findIndex((a) => a.userId === s);
     return t >= 0 ? String(t + 1) : "不明";
@@ -95,8 +95,8 @@ const V = new class {
     this.settings = { ...this.settings, ...e }, this.LogRank.setup({ rankMode: "point" });
   }
   run(e, n) {
-    const { isParty: s, enableCount: t } = this.settings, a = (e == null ? void 0 : e.data.displayName) ?? "Unknown", o = this.playSlot(a), r = this.LogRank.run(e, { enableCount: t, isWin: !1, getPoint: o.payout });
-    return this.gameState = this.LogRank.getGameState(), { postActions: s ? [{ delaySeconds: 0, wordParty: "!bombBack" }, { delaySeconds: 0, wordParty: o.party }, { delaySeconds: 1.8, wordParty: "!bombFire" }] : [], placeholders: { ...r.placeholders, message: o.message, symbol: o.symbol, payout: String(o.payout) } };
+    const { isParty: s, enableCount: t } = this.settings, a = (e == null ? void 0 : e.data.displayName) ?? "Unknown", i = this.playSlot(a), r = this.LogRank.run(e, { enableCount: t, isWin: !1, getPoint: i.payout });
+    return this.gameState = this.LogRank.getGameState(), { postActions: s ? [{ delaySeconds: 0, wordParty: "!bombBack" }, { delaySeconds: 0, wordParty: i.party }, { delaySeconds: 1.8, wordParty: "!bombFire" }] : [], placeholders: { ...r.placeholders, message: i.message, symbol: i.symbol, payout: String(i.payout) } };
   }
   getGameState() {
     return this.gameState;
@@ -104,14 +104,14 @@ const V = new class {
   playSlot(e) {
     const n = this.randomSpins(), s = this.randomSymbol();
     let t = 7 - Math.floor(3 * Math.random()), a = this.calculatePayout(s.payouts, t);
-    const o = [a];
+    const i = [a];
     for (let r = n; r > 0; r--) {
-      const m = this.getHitRate(s, r);
-      t -= this.countHits(t, m);
-      const i = this.calculatePayout(s.payouts, t);
-      o.push(i), a += i;
+      const c = this.getHitRate(s, r);
+      t -= this.countHits(t, c);
+      const o = this.calculatePayout(s.payouts, t);
+      i.push(o), a += o;
     }
-    return { symbol: s.name, party: s.party, payout: a, message: this.createMessage(e, s.name, o, a) };
+    return { symbol: s.name, party: s.party, payout: a, message: this.createMessage(e, s.name, i, a) };
   }
   randomSpins() {
     const e = this.weightedSelect(y.spinWeights) + 1;
@@ -136,7 +136,7 @@ const V = new class {
   }
   createMessage(e, n, s, t) {
     var a;
-    return `${e}の${n}スピン!${s.map((o, r) => r === s.length - 1 ? `${o}!` : `${o}/`).join("")}${((a = y.winMessages.find(([o]) => t >= o)) == null ? void 0 : a[1]) || ""}合計${t}枚獲得!`;
+    return `${e}の${n}スピン!${s.map((i, r) => r === s.length - 1 ? `${i}!` : `${i}/`).join("")}${((a = y.winMessages.find(([i]) => t >= i)) == null ? void 0 : a[1]) || ""}合計${t}枚獲得!`;
   }
   weightedSelect(e) {
     const n = e.reduce((t, a) => t + a, 0);
@@ -148,51 +148,51 @@ const V = new class {
   for (const [t, a] of n) s[t] = a;
   return s;
 })(A({ __name: "component", props: { settings: {}, userRankings: {}, displaySize: {} }, setup(e) {
-  const n = e, s = function(i, l) {
-    const { delayMs: u, displayMs: d, immediate: g = !1, deep: h = !0 } = l, p = T(!1);
+  const n = e, s = function(o, l) {
+    const { delayMs: u, displayMs: d, immediate: m = !1, deep: h = !0 } = l, p = T(!1);
     let f = null, v = null;
     const k = () => {
       f && (clearTimeout(f), f = null), v && (clearTimeout(v), v = null);
-    }, $ = () => {
+    }, C = () => {
       k(), p.value = !1, f = setTimeout(() => {
         p.value = !0, v = setTimeout(() => {
           p.value = !1;
         }, d);
       }, u);
     };
-    return N(i, (P) => {
-      (Array.isArray(P) ? P.length > 0 : P) && $();
-    }, { immediate: g, deep: h }), W(() => {
+    return N(o, (P) => {
+      (Array.isArray(P) ? P.length > 0 : P) && C();
+    }, { immediate: m, deep: h }), W(() => {
       k();
     }), { isVisible: p, manualStart: () => {
-      $();
+      C();
     }, manualHide: () => {
       k(), p.value = !1;
     }, clearTimers: k };
-  }(() => n.userRankings, { delayMs: 4500, displayMs: 5e3 }), t = M(() => F[n.displaySize]), a = M(() => {
-    const i = n.userRankings[0] || null, l = [...n.userRankings].sort((u, d) => (d == null ? void 0 : d.points) ?? 0 - ((u == null ? void 0 : u.points) ?? 0));
-    return { showResult: !!i, result: { score: (i == null ? void 0 : i.points) || 0, name: (i == null ? void 0 : i.name) || "プレイヤー" }, rankPlayers: l.slice(0, n.settings.rankingLimit), totalCount: n.userRankings.length, totalPoint: n.userRankings.reduce((u, d) => u + ((d == null ? void 0 : d.points) ?? 0), 0) };
-  }), o = M(() => {
-    const i = a.value;
-    return i.totalCount > 0 ? Math.round(i.totalPoint / i.totalCount) : 0;
-  }), r = (i) => {
-    const l = "inline-block font-bold text-center rounded-full border mr-1", u = t.value.rankingNumber;
-    switch (i) {
+  }(() => n.userRankings, { delayMs: 3500, displayMs: 5e3 }), t = M(() => F[n.displaySize]), a = M(() => {
+    const o = n.userRankings[0] || null, l = n.userRankings.slice(1).sort((d, m) => ((m == null ? void 0 : m.points) ?? 0) - ((d == null ? void 0 : d.points) ?? 0)), u = o ? [o, ...l] : l;
+    return { showResult: !!o, result: { score: (o == null ? void 0 : o.points) || 0, name: (o == null ? void 0 : o.name) || "プレイヤー" }, rankPlayers: u.slice(0, n.settings.rankingLimit), totalCount: n.userRankings.length, totalPoint: n.userRankings.reduce((d, m) => d + ((m == null ? void 0 : m.points) ?? 0), 0) };
+  }), i = M(() => {
+    const o = a.value;
+    return o.totalCount > 0 ? Math.round(o.totalPoint / o.totalCount) : 0;
+  }), r = (o) => {
+    const l = `inline-block font-bold text-center rounded-full border mr-1 ${t.value.rankingNumber}`;
+    switch (o) {
       case 0:
-        return `${l} ${u} bg-gradient-to-r from-amber-300 to-orange-400 text-stone-800 border-amber-300`;
+        return `${l}  bg-gradient-to-r from-amber-300 to-orange-400 text-stone-800 border-amber-300`;
       case 1:
-        return `${l} ${u} bg-gradient-to-r from-gray-300 to-gray-500 text-gray-800 border-gray-400`;
+        return `${l}  bg-gradient-to-r from-gray-300 to-gray-500 text-gray-800 border-gray-400`;
       case 2:
-        return `${l} ${u} bg-gradient-to-r from-orange-400 to-red-600 text-stone-800 border-orange-400`;
+        return `${l}  bg-gradient-to-r from-orange-400 to-red-600 text-stone-800 border-orange-400`;
       default:
-        return `${l} ${u} bg-stone-800 text-amber-300 border-amber-300`;
+        return `${l}  bg-stone-800 text-amber-300 border-amber-300`;
     }
-  }, m = (i) => {
+  }, c = (o) => {
     const l = "flex items-center font-bold rounded-lg shadow-sm  p-1";
-    return i % 2 == 0 ? `${l} text-amber-300 bg-red-800 bg-opacity-70 border-amber-300` : `${l} text-amber-300 bg-stone-800 bg-opacity-70 border-orange-400`;
+    return o % 2 == 0 ? `${l} text-amber-300 bg-red-800 bg-opacity-70 border-amber-300` : `${l} text-amber-300 bg-stone-800 bg-opacity-70 border-orange-400`;
   };
-  return (i, l) => (R(), S(C, null, [E(s).isVisible.value ? (R(), S("div", H, [c("div", { class: x(["absolute inset-0 explosion-container flex items-center justify-center", t.value.explosionText]) }, " 💥 ", 2), c("div", U, [c("div", { class: x(["font-bold text-yellow-400 font-rocknroll drop-shadow-lg", t.value.text.large]) }, "スコア", 2), c("div", { class: x(["font-bold font-rocknroll text-yellow-400 drop-shadow-2xl", t.value.text.xlarge]) }, b(a.value.result.score), 3), c("div", { class: x(["mt-2 font-bold text-yellow-400 font-rocknroll drop-shadow-lg", t.value.text.large]) }, b(a.value.result.name), 3)])])) : B("", !0), c("div", _, [c("div", { class: x(["text-center mb-2 text-amber-300 font-bold drop-shadow-lg", t.value.text.large]) }, " 💣 Bomber Slot Rankings 💥 ", 2), c("div", z, [c("ul", G, [(R(!0), S(C, null, L(a.value.rankPlayers, (u, d) => (R(), S("li", { key: d, class: x(m(d)) }, [c("span", { class: x(r(d)) }, b(d + 1), 3), c("span", J, [c("span", { class: x(["font-bold mr-2 text-white", t.value.text.medium]) }, b(u.points), 3), c("span", { class: x(["text-amber-300", t.value.text.medium]) }, " (" + b(u.name) + ") ", 3)])], 2))), 128))])]), c("div", { class: x(["p-0 m-0 flex justify-center items-center w-full text-amber-300 mt-2", t.value.text.small]) }, " 平均: " + b(o.value) + "pt (" + b(a.value.totalCount) + "回 / 総計" + b(a.value.totalPoint) + "pt) ", 3)])], 64));
-} }), [["__scopeId", "data-v-0e01ea18"]]) };
+  return (o, l) => (R(), S($, null, [E(s).isVisible.value ? (R(), S("div", H, [g("div", { class: x(["absolute inset-0 explosion-container flex items-center justify-center", t.value.explosionText]) }, " 💥 ", 2), g("div", U, [g("div", { class: x(["font-bold text-yellow-400 font-rocknroll drop-shadow-lg", t.value.text.large]) }, "スコア", 2), g("div", { class: x(["font-bold font-rocknroll text-yellow-400 drop-shadow-2xl", t.value.text.xlarge]) }, b(a.value.result.score), 3), g("div", { class: x(["mt-2 font-bold text-yellow-400 font-rocknroll drop-shadow-lg", t.value.text.large]) }, b(a.value.result.name), 3)])])) : B("", !0), g("div", _, [g("div", { class: x(["text-center mb-2 text-amber-300 font-bold drop-shadow-lg", t.value.text.large]) }, " 💣 Bomber Slot Rankings 💥 ", 2), g("div", z, [g("ul", G, [(R(!0), S($, null, L(a.value.rankPlayers, (u, d) => (R(), S("li", { key: d, class: x(c(d)) }, [g("span", { class: x(r((u.rank ?? 0) - 1)) }, b(u.rank ?? 1), 3), g("span", J, [g("span", { class: x(["font-bold mr-2 text-white", t.value.text.medium]) }, b(u.points), 3), g("span", { class: x(["text-amber-300", t.value.text.medium]) }, " (" + b(u.name) + ") ", 3)])], 2))), 128))])]), g("div", { class: x(["p-0 m-0 flex justify-center items-center w-full text-amber-300 mt-2", t.value.text.small]) }, " 平均: " + b(i.value) + "pt (" + b(a.value.totalCount) + "回 / 総計" + b(a.value.totalPoint) + "pt) ", 3)])], 64));
+} }), [["__scopeId", "data-v-2280487a"]]) };
 export {
   q as default
 };

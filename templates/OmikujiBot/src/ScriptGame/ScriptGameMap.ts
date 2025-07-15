@@ -5,13 +5,14 @@ import './BomberSpin.css';
 import GouseiSuika from './GouseiSuika.js';
 import './GouseiSuika.css';
 import DwarfBomb from './DwarfBomb.js';
+import './DwarfBomb.css';
 import GachaOmikuji from './GachaOmikuji.js';
 import StealEmAll from './StealEmAll.js';
 
 export const scriptGameMap: Record<string, ScriptPreset> = {
  BomberSpin,
- GouseiSuika
- // DwarfBomb,
+ GouseiSuika,
+ DwarfBomb
  // GachaOmikuji,
  // StealEmAll
 };
