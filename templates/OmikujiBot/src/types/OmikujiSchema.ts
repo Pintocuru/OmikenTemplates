@@ -1,10 +1,11 @@
 // src/types/OmikujiSchema.ts
-// 250716_1　displaySettings wordPartySettings の追加
+// 250716_2 DisplaySettingsSchema.ts の分離
 import { z } from 'zod';
 import { BaseSchema } from './commonSchema';
 import { CommentThresholdSchema } from './ThresholdSchema';
 import { CharacterEmotionSchema, CharacterSchema } from './CharacterSchema';
 import { SETTINGS } from '@public/common/settings';
+import { DisplaySettingsSchema } from './DisplaySettingsSchema';
 
 // データ検証とデフォルト値適用のユーティリティ関数
 export function validateOmikujiData(input: unknown): OmikujiDataType {
@@ -95,34 +96,6 @@ export const TimerRuleSchema = z.object({
  isBaseZero: z.boolean().default(false).catch(false)
 });
 
-// 追加: DisplaySettingsSchema
-// BOTの表示部分に関わる設定
-const DisplaySettingsSchema = z.object({
- // 文字・画像の大きさ指定
- displaySize: z.enum(['xs', 'sm', 'md', 'lg', 'xl']).default('md').catch('md'),
- // 起動時表示するモード
- defaultMode: z
-  .object({
-   type: z.enum(['messages', 'userVisits', 'scriptGame']),
-   scriptKey: z.string().optional()
-  })
-  .optional(),
- // 切り替えモードでの表示ON/OFF
- enabledModes: z
-  .object({
-   messages: z.boolean().default(true),
-   userVisits: z.boolean().default(true),
-   scriptGames: z.record(z.string(), z.boolean()).default({})
-  })
-  .default({}),
- // キャラクターコントロールパネルを表示しないか
- hideModeSwitch: z.boolean().default(false).catch(false),
- // トーストを表示するか
- toastEnabled: z.boolean().default(true).catch(true),
- // モードの自動切り替えをする秒数
- autoSwitchInterval: z.number().min(0).default(0).catch(0)
-});
-
 // WordParty設定
 export const WordPartySettingsSchema = z.object({
  name: z.string().default('').catch(''),
@@ -136,7 +109,7 @@ export const OmikujiDataSchema = z.object({
  placeholders: z.record(z.string(), PlaceholderSchema).default({}).catch({}),
  scriptSettings: z.record(z.string(), z.record(z.string(), z.any())).default({}).catch({}),
  characters: z.record(z.string(), CharacterSchema).default({}).catch({}),
- displaySettings: DisplaySettingsSchema.default({}),
+ displaySettings: DisplaySettingsSchema.catch(DisplaySettingsSchema.parse({})),
  wordPartySettings: z.array(WordPartySettingsSchema).default([]).catch([])
 });
 

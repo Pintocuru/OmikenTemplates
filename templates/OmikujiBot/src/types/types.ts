@@ -17,8 +17,6 @@ export type BotMessage = {
  delaySeconds: number; // 投稿までの遅延時間（秒）
 };
 
-export type DisplaySize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-
 // ---
 
 // グローバル変数の型定義
@@ -34,3 +32,4 @@ export * from './CharacterSchema';
 export * from './OmikujiSchema';
 export * from './ScriptTypes';
 export * from './ThresholdSchema';
+export * from './DisplaySettingsSchema';

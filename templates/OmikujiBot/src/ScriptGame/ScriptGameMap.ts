@@ -15,4 +15,8 @@ export const scriptGameMap: Record<string, ScriptPreset> = {
  DwarfBomb
  // GachaOmikuji,
  // StealEmAll
-};
+} as const;
+
+// 自動的にキー一覧と型を抽出（TypeScriptのみ）
+export const scriptGameKeys = Object.keys(scriptGameMap);
+export type ScriptGameKey = keyof typeof scriptGameMap;

@@ -32,7 +32,7 @@
 
   <!-- キャラクターコントロールパネル（設定で非表示でない場合のみ） -->
   <CharacterControlPanel
-   v-if="!omikujiData.displaySettings.hideModeSwitch"
+   v-if="!omikujiData.displaySettings.modeSwitchEnabled"
    :characters="characterCollector.getUsedCharacterPresets()"
    :displaySize="displaySize"
    :switchToNextMode="switchToNextMode"

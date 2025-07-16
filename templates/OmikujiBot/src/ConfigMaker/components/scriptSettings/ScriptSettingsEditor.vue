@@ -67,11 +67,11 @@
 
 <script setup lang="ts">
 import { computed, h } from 'vue';
+import { ParameterInputType, ScriptPreset } from '@type/';
 import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
 import { useScriptSettingsStore } from '@/ConfigMaker/script/useScriptSettingsStore';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 import { Settings, RotateCcw } from 'lucide-vue-next';
-import { ParameterInputType, ScriptPreset } from '@type/';
 
 // Store
 const scriptSettingsStore = useScriptSettingsStore();

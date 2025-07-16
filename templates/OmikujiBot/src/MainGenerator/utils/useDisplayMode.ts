@@ -1,10 +1,8 @@
 // src/composables/useDisplayMode.ts
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { DisplaySize, OmikujiDataType, ScriptComponentPropsType } from '@type/';
+import { DisplayMode, DisplaySize, OmikujiDataType, ScriptComponentPropsType } from '@type/';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 import { ScriptManager } from './ScriptManager';
-
-export type DisplayMode = 'messages' | 'userVisits' | 'scriptGame';
 
 interface ModeItem {
  type: DisplayMode;

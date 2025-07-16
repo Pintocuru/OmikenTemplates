@@ -9,10 +9,10 @@
     <div class="flex items-center gap-2 mb-1">
      <span class="w-4 text-center text-sm text-gray-500 font-medium">{{ index + 1 }}</span>
      <div class="flex flex-wrap gap-1 text-xs">
-      <span v-if="action.characterKey" class="badge badge-sm"
+      <span v-if="action.messageContent !== '' || action.messageToast !== ''" class="badge badge-sm"
        >👤 {{ getCharacterLabel(action.characterKey) }}</span
       >
-      <span v-if="action.iconKey" class="badge badge-sm"
+      <span v-if="action.messageContent !== '' || action.messageToast !== ''" class="badge badge-sm"
        >🎨 {{ getIconLabel(action.iconKey) }}</span
       >
       <span class="badge badge-sm badge-secondary"> ⏱️ {{ action.delaySeconds }}s </span>
