@@ -30,7 +30,7 @@ import { computed, ref, type Ref } from 'vue';
 import { type PostActionType } from '@type/';
 import PostActionsPreview from './PostActionsPreview.vue';
 import PostActionsEditDialog from './PostActionsEditDialog.vue';
-import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
+import { useCharacterStore } from '@ConfigScript/useCharacterStore';
 
 // ストアを使用
 const characterStore = useCharacterStore();

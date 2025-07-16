@@ -63,7 +63,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { OmikujiSetType } from '@type/';
-import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
+import { useCharacterStore } from '@ConfigScript/useCharacterStore';
 import ModalFooterActions from '@ConfigComponents/parts/ModalFooterActions.vue';
 import { Users, AlertTriangle } from 'lucide-vue-next';
 

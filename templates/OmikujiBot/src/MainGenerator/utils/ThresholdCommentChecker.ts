@@ -111,7 +111,6 @@ function checkCount(
  if (unitValue === undefined || (unitValue === 0 && count.comparison === 'loop')) {
   return false;
  }
-
  return compareValue(unitValue, count);
 }
 
@@ -141,8 +140,8 @@ export const compareValue = (
 ): boolean => {
  const strategies = {
   loop: () => target !== 0 && value % target === 0,
-  min: () => value >= target,
-  max: () => value <= target,
+  min: () => value <= target,
+  max: () => value >= target,
   equal: () => value === target
  } as const;
 

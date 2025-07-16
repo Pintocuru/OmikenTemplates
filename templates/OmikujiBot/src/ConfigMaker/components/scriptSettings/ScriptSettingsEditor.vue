@@ -1,6 +1,5 @@
 <!-- src/configMaker/components/scriptSettings/ScriptSettingsEditor.vue -->
 <template>
- <!-- スクリプト設定リスト -->
  <div v-if="hasScripts">
   <div
    v-for="(scriptPreset, scriptId) in scriptGameMap"
@@ -15,42 +14,25 @@
    <div class="card-body">
     <div class="flex justify-between items-start">
      <div class="flex-1">
-      <!-- 設定項目がない場合 -->
       <div v-if="!hasSettings(scriptPreset)" class="text-gray-500 italic">
        このスクリプトには設定可能な項目がありません
       </div>
 
-      <!-- 設定項目 -->
       <div v-else class="space-y-3">
-       <div
+       <SettingItem
         v-for="settingDef in scriptPreset.settings"
         :key="settingDef.id"
-        class="flex items-center gap-3"
+        :label="settingDef.name"
+        :description="settingDef.description"
+        @reset="resetScriptSetting(scriptId as string, settingDef.id as string)"
        >
-        <div class="flex flex-col min-w-32">
-         <label class="label-text font-medium">{{ settingDef.name }}</label>
-         <span v-if="settingDef.description" class="text-xs text-gray-500">
-          {{ settingDef.description }}
-         </span>
-        </div>
-
-        <!-- 動的入力コンポーネント -->
         <component
          :is="getInputComponent(settingDef.inputType)"
-         v-bind="getInputProps(scriptId, settingDef)"
-         @input="handleInput(scriptId, settingDef.id, $event)"
-         @change="handleChange(scriptId, settingDef.id, $event)"
+         v-bind="getInputProps(scriptId as string, settingDef)"
+         @input="handleInput(scriptId as string, settingDef.id as string, $event)"
+         @change="handleChange(scriptId as string, settingDef.id as string, $event)"
         />
-
-        <!-- リセットボタン -->
-        <button
-         class="btn btn-ghost btn-xs"
-         @click="resetScriptSetting(scriptId, settingDef.id)"
-         title="デフォルト値に戻す"
-        >
-         <RotateCcw class="w-3 h-3" />
-        </button>
-       </div>
+       </SettingItem>
       </div>
      </div>
     </div>
@@ -58,7 +40,6 @@
   </div>
  </div>
 
- <!-- スクリプト設定がない場合 -->
  <div v-else class="text-center py-8 text-gray-500">
   <Settings class="w-12 h-12 mx-auto mb-2 opacity-50" />
   <p>利用可能なスクリプトがありません</p>
@@ -66,36 +47,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h } from 'vue';
+import { computed, onMounted } from 'vue';
 import { ParameterInputType, ScriptPreset } from '@type/';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
-import { useScriptSettingsStore } from '@/ConfigMaker/script/useScriptSettingsStore';
+import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
+import { useScriptSettingsStore } from '@ConfigScript/useScriptSettingsStore';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
-import { Settings, RotateCcw } from 'lucide-vue-next';
+import { Settings } from 'lucide-vue-next';
 
-// Store
 const scriptSettingsStore = useScriptSettingsStore();
 const omikujiStore = useOmikujiStore();
 
 const scriptSettings = computed(() => omikujiStore.data.scriptSettings);
 const hasScripts = computed(() => Object.keys(scriptGameMap).length !== 0);
 
-// ヘルパー関数
 const hasSettings = (scriptPreset: ScriptPreset) => {
  return scriptPreset.settings && scriptPreset.settings.length > 0;
 };
 
-const getCurrentSettingValue = (scriptId: string, settingId: string, defaultValue: any) => {
+const getCurrentSettingValue = (scriptId: string, settingId: string) => {
  const currentSettings = scriptSettings.value[scriptId];
- return currentSettings && settingId in currentSettings ? currentSettings[settingId] : defaultValue;
+ return currentSettings ? currentSettings[settingId] : undefined;
 };
 
-const getSettingPlaceholder = (defaultValue: any) => {
- if (defaultValue == null) return '';
- return String(defaultValue);
-};
-
-// 入力コンポーネントの動的選択
 const getInputComponent = (inputType: ParameterInputType) => {
  const components = {
   string: 'input',
@@ -106,13 +80,12 @@ const getInputComponent = (inputType: ParameterInputType) => {
  return components[inputType] || 'input';
 };
 
-// 入力プロパティの生成
 const getInputProps = (scriptId: string, settingDef: any) => {
  const baseProps = {
-  value: getCurrentSettingValue(scriptId, settingDef.id, settingDef.defaultValue),
-  class: getInputClass(settingDef.inputType),
-  placeholder: getSettingPlaceholder(settingDef.defaultValue)
+  value: getCurrentSettingValue(scriptId, settingDef.id),
+  class: getInputClass(settingDef.inputType)
  };
+
  switch (settingDef.inputType) {
   case 'string':
    return { ...baseProps, type: 'text' };
@@ -126,11 +99,10 @@ const getInputProps = (scriptId: string, settingDef: any) => {
    };
 
   case 'boolean':
-   console.log(settingDef.defaultValue);
    return {
     type: 'checkbox',
     class: 'checkbox',
-    checked: getCurrentSettingValue(scriptId, settingDef.id, settingDef.defaultValue)
+    checked: getCurrentSettingValue(scriptId, settingDef.id)
    };
 
   case 'select':
@@ -148,7 +120,6 @@ const getInputClass = (inputType: string) => {
  return inputType === 'boolean' ? 'checkbox' : 'input input-bordered input-sm flex-1';
 };
 
-// イベントハンドラー
 const handleInput = (scriptId: string, settingId: string, event: Event) => {
  const target = event.target as HTMLInputElement;
  let value;
@@ -177,19 +148,12 @@ const handleChange = (scriptId: string, settingId: string, event: Event) => {
  updateScriptSetting(scriptId, settingId, value);
 };
 
-const handleBooleanChange = (scriptId: string, settingId: string, event: Event) => {
- const target = event.target as HTMLInputElement;
- updateScriptSetting(scriptId, settingId, target.checked);
-};
-
-// 設定値の更新
 const updateScriptSetting = (scriptId: string, settingId: string, value: any) => {
  const currentSettings = { ...(scriptSettings.value[scriptId] || {}) };
  currentSettings[settingId] = value;
  scriptSettingsStore.updateItemInCategory('scriptSettings', scriptId, currentSettings);
 };
 
-// 設定値をデフォルトに戻す（ダイアログ不要に変更）
 const resetScriptSetting = (scriptId: string, settingId: string) => {
  const scriptPreset = scriptGameMap[scriptId];
  if (!scriptPreset || !scriptPreset.settings) return;
@@ -206,7 +170,6 @@ const resetScriptSetting = (scriptId: string, settingId: string) => {
  scriptSettingsStore.updateItemInCategory('scriptSettings', scriptId, currentSettings);
 };
 
-// scriptSettingsから不要な項目を削除
 const cleanupScriptSettings = () => {
  const currentScriptSettings = { ...scriptSettings.value };
  let hasChanges = false;
@@ -219,7 +182,13 @@ const cleanupScriptSettings = () => {
   }
 
   const scriptPreset = scriptGameMap[scriptId];
-  const validSettingIds = new Set(scriptPreset.settings?.map((s) => s.id) || []);
+  const actualSettings = scriptPreset?.settings;
+
+  if (!Array.isArray(actualSettings) || actualSettings.length === 0) {
+   continue;
+  }
+
+  const validSettingIds = new Set(actualSettings.map((s) => s.id));
 
   for (const settingId in currentScriptSettings[scriptId]) {
    if (!validSettingIds.has(settingId)) {
@@ -234,6 +203,11 @@ const cleanupScriptSettings = () => {
  }
 };
 
-// 初期化時にクリーンアップを実行
-cleanupScriptSettings();
+onMounted(() => {
+ cleanupScriptSettings();
+});
 </script>
+
+<style scoped>
+/* スタイルはそのまま */
+</style>

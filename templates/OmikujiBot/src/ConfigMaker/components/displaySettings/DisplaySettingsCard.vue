@@ -53,9 +53,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 import { storeToRefs } from 'pinia';
-import SettingItem from './SettingItem.vue';
+import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
 import {
  displaySize,
  displaySizeLabels,

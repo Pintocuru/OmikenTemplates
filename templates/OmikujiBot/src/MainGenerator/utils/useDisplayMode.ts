@@ -40,7 +40,7 @@ export function useDisplayMode(
   // アクティブなスクリプトゲームを追加
   const activeScripts = scriptManager.getActiveScripts();
   activeScripts.forEach((scriptKey) => {
-   // スクリプトゲームが有効かチェック
+   // スクリプトゲームが有効かチェック（デフォルトはtrue）
    if (enabledModes.scriptGames[scriptKey] !== false) {
     items.push({ type: 'scriptGame', scriptKey });
    }
@@ -101,12 +101,7 @@ export function useDisplayMode(
   const interval = displaySettings.autoSwitchInterval;
   if (interval > 0) {
    autoSwitchTimer.value = setInterval(() => {
-    // messagesモードは自動切り替えしない（通常何も映らないため）
-    if (currentDisplayMode.value === 'messages') {
-     switchToNextMode();
-    } else {
-     switchToNextMode();
-    }
+    switchToNextMode();
    }, interval * 1000);
   }
  };
@@ -115,6 +110,14 @@ export function useDisplayMode(
   if (autoSwitchTimer.value) {
    clearInterval(autoSwitchTimer.value);
    autoSwitchTimer.value = null;
+  }
+ };
+
+ // 自動切り替え間隔を動的に更新
+ const updateAutoSwitchInterval = (newInterval: number) => {
+  stopAutoSwitch();
+  if (newInterval > 0) {
+   startAutoSwitch();
   }
  };
 
@@ -201,6 +204,9 @@ export function useDisplayMode(
 
  // 初期化処理
  const initialize = () => {
+  // displaySizeをsettingsから初期化
+  displaySize.value = displaySettings.displaySize;
+
   // デフォルトモード設定
   if (displaySettings.defaultMode) {
    switchToMode(displaySettings.defaultMode.type, displaySettings.defaultMode.scriptKey);
@@ -257,6 +263,11 @@ export function useDisplayMode(
   decreaseDisplaySize,
   forceUpdate,
   startAutoSwitch,
-  stopAutoSwitch
+  stopAutoSwitch,
+  updateAutoSwitchInterval,
+
+  // 設定取得
+  getDisplaySettings,
+  getCurrentModeInfo
  };
 }

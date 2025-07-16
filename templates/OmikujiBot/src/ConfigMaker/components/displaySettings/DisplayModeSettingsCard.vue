@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 import { scriptGameMap, scriptGameKeys } from '@/ScriptGame/ScriptGameMap';
 import { storeToRefs } from 'pinia';
 import { RotateCcw } from 'lucide-vue-next';

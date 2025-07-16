@@ -81,7 +81,7 @@
 <script setup lang="ts">
 import { ref, computed, Ref } from 'vue';
 import { emotionLabels, characterEmotions, CharacterEmotionType } from '@type/';
-import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
+import { useCharacterStore } from '@ConfigScript/useCharacterStore';
 import { Eye } from 'lucide-vue-next'; // lucide-vue-next から Eye コンポーネントをインポート
 
 // Props

@@ -83,7 +83,7 @@
 import { ref, computed, watch } from 'vue';
 import { PlaceholderValueSchema } from '@type/';
 import ModalFooterActions from '@ConfigComponents/parts/ModalFooterActions.vue';
-import { usePlaceholderStore } from '@/ConfigMaker/script/usePlaceholderStore';
+import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
 
 const props = defineProps<{
  placeholderId: string;

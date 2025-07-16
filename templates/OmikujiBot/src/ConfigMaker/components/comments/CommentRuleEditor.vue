@@ -27,8 +27,8 @@ import CommentThresholdEditor from './CommentThresholdEditor.vue';
 import ExternalScriptEditor from './ExternalScriptEditor.vue';
 import OmikujiSetEditor from './OmikujiSetEditor.vue';
 import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
-import { useCommentRulesStore } from '@/ConfigMaker/script/useCommentRulesStore';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import { useCommentRulesStore } from '@ConfigScript/useCommentRulesStore';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 
 // ストアを使用
 const commentRulesStore = useCommentRulesStore();

@@ -42,8 +42,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { displayMode, displayModeLabels, DisplaySettingsSchema, DisplayMode } from '@type/';
-import SettingItem from './SettingItem.vue';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 import { storeToRefs } from 'pinia';
 

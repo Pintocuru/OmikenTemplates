@@ -30,9 +30,9 @@
    :displaySize="displaySize"
   />
 
-  <!-- キャラクターコントロールパネル（設定で非表示でない場合のみ） -->
+  <!-- キャラクターコントロールパネル -->
   <CharacterControlPanel
-   v-if="!omikujiData.displaySettings.modeSwitchEnabled"
+   v-if="omikujiData.displaySettings.modeSwitchEnabled"
    :characters="characterCollector.getUsedCharacterPresets()"
    :displaySize="displaySize"
    :switchToNextMode="switchToNextMode"

@@ -34,11 +34,6 @@ export function useMessageHandler(omikujiData: OmikujiDataType) {
   );
  };
 
- // テストコメント表示
- const testComments = (postAction: PostActionType) => {
-  const processedMessages = characterCollector.generateTestMessage(postAction);
- };
-
  // コメント処理
  const processComments = (comments: Comment[]) => {
   if (!comments.length) {

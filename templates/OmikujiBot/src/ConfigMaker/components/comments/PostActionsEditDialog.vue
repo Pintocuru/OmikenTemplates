@@ -166,7 +166,7 @@
 <script setup lang="ts">
 import { ref, computed, Ref, reactive } from 'vue';
 import { CharacterType, PostActionSchema, PostActionType } from '@type/';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 import ModalFooterActions from '@ConfigComponents/parts/ModalFooterActions.vue';
 import PlaceholderList from '@ConfigComponents/placeholders/PlaceholderList.vue';
 import IconSelector from '@ConfigComponents/comments/IconSelector.vue';

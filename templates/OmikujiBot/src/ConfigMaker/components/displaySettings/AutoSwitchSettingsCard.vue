@@ -21,12 +21,6 @@
      <option :value="300">5分</option>
     </select>
    </SettingItem>
-
-   <div class="alert alert-info mt-3">
-    <span class="text-sm">
-     注意: BOTちゃんモードは通常何も表示されないため、自動切り替えでは表示されません。
-    </span>
-   </div>
   </div>
  </div>
 </template>
@@ -34,8 +28,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { DisplaySettingsSchema } from '@type/';
-import SettingItem from './SettingItem.vue';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 import { storeToRefs } from 'pinia';
 
 // Store

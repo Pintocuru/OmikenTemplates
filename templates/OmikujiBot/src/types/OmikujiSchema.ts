@@ -4,16 +4,35 @@ import { z } from 'zod';
 import { BaseSchema } from './commonSchema';
 import { CommentThresholdSchema } from './ThresholdSchema';
 import { CharacterEmotionSchema, CharacterSchema } from './CharacterSchema';
-import { SETTINGS } from '@public/common/settings';
+import { ScriptSettingsSchema } from './ScriptSettingsSchema';
 import { DisplaySettingsSchema } from './DisplaySettingsSchema';
+import { SETTINGS } from '@public/common/settings';
+import { MessageCircle, Timer, Hash, Settings, Users, Monitor, ListChecks } from 'lucide-vue-next';
 
 // データ検証とデフォルト値適用のユーティリティ関数
 export function validateOmikujiData(input: unknown): OmikujiDataType {
  return OmikujiDataSchema.parse(input);
 }
 
-// Post Action関連のスキーマ
+// Placeholder
+export const PlaceholderValueSchema = z.object({
+ weight: z.number().min(0).default(1).catch(1),
+ content: z.string().default('').catch('')
+});
 
+export const PlaceholderSchema = z.object({
+ id: z.string().default('').catch(''),
+ name: z.string().default('').catch(''),
+ order: z.number().min(0).default(9999).catch(9999),
+ editorColor: z
+  .string()
+  .regex(/^#[0-9A-Fa-f]{6}$/)
+  .default('#3B82F6')
+  .catch('#3B82F6'),
+ values: z.array(PlaceholderValueSchema).default([]).catch([])
+});
+
+// PostAction
 export const PostActionSchema = z.object({
  characterKey: z.string().default('').catch(''),
  iconKey: CharacterEmotionSchema.default('default').catch('default'),
@@ -32,27 +51,7 @@ export const PostActionWordPartySchema = z.object({
  wordParty: z.string().default('').catch('')
 });
 
-// Placeholder関連のスキーマ
-
-export const PlaceholderValueSchema = z.object({
- weight: z.number().min(0).default(1).catch(1),
- content: z.string().default('').catch('')
-});
-
-export const PlaceholderSchema = z.object({
- id: z.string().default('').catch(''),
- name: z.string().default('').catch(''),
- order: z.number().min(0).default(9999).catch(9999),
- editorColor: z
-  .string()
-  .regex(/^#[0-9A-Fa-f]{6}$/)
-  .default('#3B82F6')
-  .catch('#3B82F6'),
- values: z.array(PlaceholderValueSchema).default([]).catch([])
-});
-
-// Omikuji関連のスキーマ
-
+// Omikuji
 export const OmikujiSetSchema = z.object({
  name: z.string().default('').catch(''),
  description: z.string().default('').catch(''),
@@ -60,7 +59,7 @@ export const OmikujiSetSchema = z.object({
  postActions: z.array(PostActionSchema).default([]).catch([])
 });
 
-// Rule関連のスキーマ
+// Rule
 const BaseRuleCommonSchema = z.object({
  ...BaseSchema.shape,
  description: z.string().default('').catch(''),
@@ -73,17 +72,16 @@ const BaseRuleCommonSchema = z.object({
  omikuji: z.array(OmikujiSetSchema).default([]).catch([])
 });
 
+// CommentRule
 export const CommentRuleSchema = z.object({
  ...BaseRuleCommonSchema.shape,
  ruleType: z.literal('comments').default('comments').catch('comments'),
  threshold: CommentThresholdSchema.default({}),
  scriptId: z.union([z.string(), z.null()]).default(null).catch(null),
- scriptParams: z
-  .union([z.record(z.any()), z.null()])
-  .default(null)
-  .catch(null)
+ scriptParams: z.record(z.any()).nullable().default(null).catch(null)
 });
 
+// TimerRule
 export const TimerRuleSchema = z.object({
  ...BaseRuleCommonSchema.shape,
  ruleType: z.literal('timers').default('timers').catch('timers'),
@@ -102,27 +100,40 @@ export const WordPartySettingsSchema = z.object({
  pattern: z.string().default('').catch('')
 });
 
+// CategoryType categoryLabels
+export const categoryType = [
+ 'comments',
+ 'timers',
+ 'placeholders',
+ 'scriptSettings',
+ 'characters',
+ 'displaySettings',
+ 'wordPartySettings'
+] as const;
+export type CategoryType = (typeof categoryType)[number];
+
+export const categoryLabels: Record<CategoryType, { label: string; icon: any }> = {
+ comments: { label: 'コメントルール', icon: MessageCircle },
+ timers: { label: 'タイマールール', icon: Timer },
+ placeholders: { label: 'プレースホルダー', icon: Hash },
+ scriptSettings: { label: 'スクリプト設定', icon: Settings },
+ characters: { label: 'キャラクター', icon: Users },
+ displaySettings: { label: '表示設定', icon: Monitor },
+ wordPartySettings: { label: 'WordPartyリスト設定', icon: ListChecks }
+};
+
 // メインデータ構造のスキーマ
 export const OmikujiDataSchema = z.object({
  comments: z.record(z.string(), CommentRuleSchema).default({}).catch({}),
  timers: z.record(z.string(), TimerRuleSchema).default({}).catch({}),
  placeholders: z.record(z.string(), PlaceholderSchema).default({}).catch({}),
- scriptSettings: z.record(z.string(), z.record(z.string(), z.any())).default({}).catch({}),
+ scriptSettings: ScriptSettingsSchema.default({}).catch({}),
  characters: z.record(z.string(), CharacterSchema).default({}).catch({}),
  displaySettings: DisplaySettingsSchema.catch(DisplaySettingsSchema.parse({})),
  wordPartySettings: z.array(WordPartySettingsSchema).default([]).catch([])
 });
 
 // 型エクスポート
-
-export type CategoryType =
- | 'comments'
- | 'timers'
- | 'placeholders'
- | 'scriptSettings'
- | 'characters'
- | 'displaySettings'
- | 'wordPartySettings';
 export type OmikujiDataType = z.infer<typeof OmikujiDataSchema>;
 export type CommentRuleType = z.infer<typeof CommentRuleSchema>;
 export type TimerRuleType = z.infer<typeof TimerRuleSchema>;

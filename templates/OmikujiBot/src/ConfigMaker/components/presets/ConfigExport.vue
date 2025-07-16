@@ -53,8 +53,8 @@
 
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
-import { useConfigExport } from '@/ConfigMaker/script/useConfigExport';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
+import { useConfigExport } from '@ConfigScript/useConfigExport';
 
 // Store
 const omikujiStore = useOmikujiStore();

@@ -66,8 +66,8 @@
 import { computed, ref } from 'vue';
 import { PlaceholderSchema, PlaceholderType, PostActionType, ScriptPreset } from '@type/';
 import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
-import { usePlaceholderStore } from '@/ConfigMaker/script/usePlaceholderStore';
-import { useCommentRulesStore } from '@/ConfigMaker/script/useCommentRulesStore';
+import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
+import { useCommentRulesStore } from '@ConfigScript/useCommentRulesStore';
 import CopyButton from '@ConfigComponents/parts/CopyButton.vue';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 

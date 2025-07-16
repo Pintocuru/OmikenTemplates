@@ -14,7 +14,7 @@
   <!-- ナビゲーションタブ -->
   <div class="tabs tabs-boxed mb-6 bg-base-300">
    <button
-    v-for="(tab, key) in navigationTabs"
+    v-for="(tab, key) in categoryLabels"
     :key="key"
     :class="['tab', selectedCategory === key ? 'tab-active' : '', 'flex items-center gap-2']"
     @click="omikujiStore.selectCategory(key)"
@@ -30,8 +30,8 @@
   <!-- 動的コンテンツエリア -->
   <div class="card bg-base-200">
    <div class="card-title bg-primary text-lg p-2 pl-4 rounded-t flex items-center gap-2">
-    <component :is="navigationTabs[selectedCategory].icon" class="w-5 h-5" />
-    {{ navigationTabs[selectedCategory].label }}
+    <component :is="categoryLabels[selectedCategory].icon" class="w-5 h-5" />
+    {{ categoryLabels[selectedCategory].label }}
    </div>
    <div class="card-body">
     <!-- コメントルール -->
@@ -78,8 +78,8 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { CategoryType } from '@type/';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
+import { CategoryType, categoryLabels } from '@type/';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 import ConfigImport from '@ConfigComponents/presets/ConfigImport.vue';
 import ConfigExport from '@ConfigComponents/presets/ConfigExport.vue';
 import CommentRuleEditor from '@ConfigComponents/comments/CommentRuleEditor.vue';
@@ -89,21 +89,16 @@ import ScriptSettingsEditor from '@ConfigComponents/scriptSettings/ScriptSetting
 import WordPartySettingsEditor from '@ConfigComponents/wordPartySettings/WordPartySettingsEditor.vue';
 import CharacterEditor from '@ConfigComponents/characters/CharacterEditor.vue';
 import DisplaySettingsEditor from '@ConfigComponents/displaySettings/DisplaySettingsEditor.vue';
+import { scriptGameKeys } from '@/ScriptGame/ScriptGameMap';
 import { storeToRefs } from 'pinia';
 import { Toaster } from 'vue-sonner';
-import {
- MessageCircle,
- Timer,
- Hash,
- Settings,
- Users,
- ArrowUp,
- Monitor,
- ListChecks
-} from 'lucide-vue-next';
+import { ArrowUp } from 'lucide-vue-next';
 
+// store
 const omikujiStore = useOmikujiStore();
+const { selectedCategory, data } = storeToRefs(omikujiStore);
 
+// ref
 const showScrollTopButton = ref(false);
 
 // スクロールイベントでボタンの表示制御
@@ -116,27 +111,10 @@ const scrollToTop = () => {
  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// storeToRefsを使って反応性を保持
-const { selectedCategory, data } = storeToRefs(omikujiStore);
-
-// ナビゲーションタブの設定
-const navigationTabs = {
- comments: { label: 'コメントルール', icon: MessageCircle },
- timers: { label: 'タイマールール', icon: Timer },
- placeholders: { label: 'プレースホルダー', icon: Hash },
- scriptSettings: { label: 'スクリプト設定', icon: Settings },
- characters: { label: 'キャラクター', icon: Users },
- displaySettings: { label: '表示設定', icon: Monitor },
- // TODO:アイコンの設定
- wordPartySettings: { label: 'WordPartyリスト設定', icon: ListChecks }
-} as const;
-
 // カテゴリごとのアイテム数を取得
 const getCategoryItemCount = (category: CategoryType): number => {
- // displaySettingsの場合は設定が存在するかで判定
- if (category === 'displaySettings') {
-  return data.value.displaySettings ? 1 : 0;
- }
+ if (category === 'scriptSettings') return scriptGameKeys.length;
+ if (category === 'displaySettings') return 0;
 
  const items = data.value[category];
  return items ? Object.keys(items).length : 0;
