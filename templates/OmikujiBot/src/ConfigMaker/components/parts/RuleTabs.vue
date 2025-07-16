@@ -19,9 +19,17 @@
     :index="index"
     :selected="selectedRule?.id === rule.id"
     :getRuleEnabledState="getRuleEnabledState"
+    :draggable="!searchQuery"
+    :is-dragging="dragState.draggedRuleId === rule.id"
+    :is-drag-over="dragState.dragOverIndex === index"
     @select="handleSelectRule"
     @context-menu="showContextMenu"
     @update="handleUpdateRule"
+    @dragstart="handleDragStart($event, rule, index)"
+    @dragend="handleDragEnd"
+    @dragover="handleDragOver($event, index)"
+    @dragleave="handleDragLeave"
+    @drop="handleDrop($event, index)"
    />
 
    <!-- 新規追加タブ -->
@@ -43,6 +51,11 @@
     <p class="text-lg mb-2">「{{ searchQuery }}」に一致するルールが見つかりませんでした</p>
     <p class="text-sm">検索条件を変更するか、新しいルールを追加してください</p>
    </div>
+  </div>
+
+  <!-- ドラッグ中のヘルプテキスト -->
+  <div v-if="dragState.isDragging" class="text-center py-2 text-sm text-base-content/60">
+   ドラッグして並び替えできます
   </div>
 
   <!-- 右クリックコンテキストメニュー -->
@@ -123,6 +136,14 @@ const contextMenu = reactive({
  index: -1
 });
 
+// ドラッグ状態の管理
+const dragState = reactive({
+ isDragging: false,
+ draggedRuleId: null as string | null,
+ draggedIndex: -1,
+ dragOverIndex: -1
+});
+
 // 計算プロパティ
 const sortedRules = computed(() => {
  return Array.isArray(props.rules) ? props.rules.slice().sort((a, b) => a.order - b.order) : [];
@@ -175,6 +196,68 @@ const getRuleEnabledState = (rule: BaseRule): boolean => {
 // フィルター処理
 const handleFilterChange = (filters: FilterOptions) => {
  filterOptions.value = { ...filters };
+};
+
+// ドラッグアンドドロップ処理
+const handleDragStart = (event: DragEvent, rule: BaseRule, index: number) => {
+ if (searchQuery.value) {
+  // フィルタリング中はドラッグを無効化
+  event.preventDefault();
+  return;
+ }
+
+ dragState.isDragging = true;
+ dragState.draggedRuleId = rule.id;
+ dragState.draggedIndex = getOriginalIndex(rule.id);
+
+ // ドラッグするデータを設定
+ if (event.dataTransfer) {
+  event.dataTransfer.effectAllowed = 'move';
+  event.dataTransfer.setData('text/plain', rule.id);
+ }
+};
+
+const handleDragEnd = () => {
+ dragState.isDragging = false;
+ dragState.draggedRuleId = null;
+ dragState.draggedIndex = -1;
+ dragState.dragOverIndex = -1;
+};
+
+const handleDragOver = (event: DragEvent, index: number) => {
+ event.preventDefault();
+ if (event.dataTransfer) {
+  event.dataTransfer.dropEffect = 'move';
+ }
+ dragState.dragOverIndex = index;
+};
+
+const handleDragLeave = () => {
+ dragState.dragOverIndex = -1;
+};
+
+const handleDrop = (event: DragEvent, dropIndex: number) => {
+ event.preventDefault();
+
+ const draggedRuleId = event.dataTransfer?.getData('text/plain');
+ if (!draggedRuleId || draggedRuleId !== dragState.draggedRuleId) {
+  return;
+ }
+
+ const draggedOriginalIndex = getOriginalIndex(draggedRuleId);
+ const droppedRule = filteredSortedRules.value[dropIndex];
+ const droppedOriginalIndex = getOriginalIndex(droppedRule.id);
+
+ // 同じ位置にドロップした場合は何もしない
+ if (draggedOriginalIndex === droppedOriginalIndex) {
+  return;
+ }
+
+ // 並び替えを実行
+ injectedStore?.reorder?.(draggedOriginalIndex, droppedOriginalIndex);
+
+ // ドラッグ状態をリセット
+ handleDragEnd();
 };
 
 // ストア操作
