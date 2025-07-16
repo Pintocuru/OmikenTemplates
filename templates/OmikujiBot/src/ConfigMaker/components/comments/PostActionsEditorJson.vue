@@ -156,12 +156,15 @@ const applyJson = () => {
  const validatedActions = validateAndApplyJson();
  if (validatedActions) {
   emit('update:modelValue', validatedActions);
+  toast.success('Json形式で保存しました');
+  isJsonMode.value = false; // 閉じる
  }
 };
 
 const resetJson = () => {
  updateJsonText();
  jsonError.value = '';
+ isJsonMode.value = false; // 閉じる
 };
 
 const prettifyJson = () => {

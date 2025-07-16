@@ -1,4 +1,4 @@
-<!-- src/configMaker/components/ScriptSettingsEditor.vue -->
+<!-- src/configMaker/components/scriptSettings/ScriptSettingsEditor.vue -->
 <template>
  <!-- スクリプト設定リスト -->
  <div v-if="hasScripts">

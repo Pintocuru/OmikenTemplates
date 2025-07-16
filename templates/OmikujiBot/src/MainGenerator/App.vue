@@ -23,11 +23,16 @@
    ref="scriptGameRef"
   />
 
-  <!-- トースト表示 -->
-  <ViewBotToast :botMessages="botMessages" :displaySize="displaySize" />
+  <!-- トースト表示（設定で有効な場合のみ） -->
+  <ViewBotToast
+   v-if="omikujiData.displaySettings.toastEnabled"
+   :botMessages="botMessages"
+   :displaySize="displaySize"
+  />
 
-  <!-- キャラクターコントロールパネル -->
+  <!-- キャラクターコントロールパネル（設定で非表示でない場合のみ） -->
   <CharacterControlPanel
+   v-if="!omikujiData.displaySettings.hideModeSwitch"
    :characters="characterCollector.getUsedCharacterPresets()"
    :displaySize="displaySize"
    :switchToNextMode="switchToNextMode"

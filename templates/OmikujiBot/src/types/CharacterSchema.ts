@@ -11,16 +11,16 @@ import { BaseSchema } from './commonSchema';
 export const characterEmotions = [
  'default', // 基本
  'happy', // 喜び
- 'excited', // ワクワク、盛り上がり
- 'laughing', // 爆笑している
- 'blushing', // 照れてる・嬉しい
+ 'excited', // ワクワク
+ 'laughing', // 笑い
+ 'blushing', // 照れ
  'surprised', // 驚き
  'sad', // 悲しみ
  'angry', // 怒り
- 'thinking', // 考え中・困惑
- 'wink', // 茶目っ気・軽い冗談
- 'singing', // 歌ってる
- 'sleepy' // 眠い・休憩中
+ 'thinking', // 考え中
+ 'wink', // 茶目っ気
+ 'singing', // 歌
+ 'sleepy' // 眠い
 ] as const;
 export type CharacterEmotionType = (typeof characterEmotions)[number];
 export const CharacterEmotionSchema = z.enum(characterEmotions);

@@ -1,15 +1,14 @@
 // src/composables/useDisplayMode.ts
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { DisplaySize, OmikujiDataType, ScriptComponentPropsType } from '@type/';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
 import { ScriptManager } from './ScriptManager';
 
 export type DisplayMode = 'messages' | 'userVisits' | 'scriptGame';
 
-// 全てのモードを統合した管理システム
 interface ModeItem {
  type: DisplayMode;
- scriptKey?: string; // scriptGameの場合のみ使用
+ scriptKey?: string;
 }
 
 export function useDisplayMode(
@@ -17,18 +16,36 @@ export function useDisplayMode(
  scriptManager: ScriptManager,
  clearMessages?: () => void
 ) {
- const displaySize = ref<DisplaySize>('md');
- const forceRender = ref(0); // リアクティブ更新用
+ const displaySettings = omikujiData.displaySettings;
+ const displaySize = ref<DisplaySize>(displaySettings.displaySize);
+ const forceRender = ref(0);
  const currentModeIndex = ref(0);
 
- // 全てのモードアイテムを動的に構築
+ // 自動切り替えタイマー
+ const autoSwitchTimer = ref<number | null>(null);
+
+ // 有効なモードアイテムを動的に構築（displaySettingsを考慮）
  const allModeItems = computed((): ModeItem[] => {
-  const items: ModeItem[] = [{ type: 'messages' }, { type: 'userVisits' }];
+  const items: ModeItem[] = [];
+  const enabledModes = displaySettings.enabledModes;
+
+  // messagesモード
+  if (enabledModes.messages) {
+   items.push({ type: 'messages' });
+  }
+
+  // userVisitsモード
+  if (enabledModes.userVisits) {
+   items.push({ type: 'userVisits' });
+  }
 
   // アクティブなスクリプトゲームを追加
   const activeScripts = scriptManager.getActiveScripts();
   activeScripts.forEach((scriptKey) => {
-   items.push({ type: 'scriptGame', scriptKey });
+   // スクリプトゲームが有効かチェック
+   if (enabledModes.scriptGames[scriptKey] !== false) {
+    items.push({ type: 'scriptGame', scriptKey });
+   }
   });
 
   return items;
@@ -39,7 +56,6 @@ export function useDisplayMode(
   const items = allModeItems.value;
   if (items.length === 0) return { type: 'messages' as DisplayMode };
 
-  // インデックスが範囲外の場合は最初に戻る
   if (currentModeIndex.value >= items.length) {
    currentModeIndex.value = 0;
   }
@@ -47,28 +63,20 @@ export function useDisplayMode(
   return items[currentModeIndex.value];
  });
 
- // 現在の表示モード
  const currentDisplayMode = computed(() => currentModeItem.value.type);
-
- // 現在のスクリプトゲームキー
  const currentScriptGameKey = computed(() => currentModeItem.value.scriptKey || '');
-
- // ScriptManagerから直接アクティブなスクリプトIDを取得
  const availableScriptIds = computed(() => scriptManager.getActiveScripts());
 
- // 現在のスクリプトゲームコンポーネント
  const currentScriptGameComponent = computed(() => {
   const scriptKey = currentScriptGameKey.value;
   if (!scriptKey || !scriptGameMap[scriptKey]) return null;
   return scriptGameMap[scriptKey].component;
  });
 
- // 現在のスクリプトゲームのprops（リアクティブに更新される）
  const currentScriptGameProps = computed((): ScriptComponentPropsType => {
   forceRender.value;
   const scriptKey = currentScriptGameKey.value;
 
-  // デフォルト値を設定
   if (!scriptKey || !scriptGameMap[scriptKey]) {
    return {
     settings: {},
@@ -77,7 +85,6 @@ export function useDisplayMode(
    };
   }
 
-  // ScriptManagerから最新のランキングデータを取得
   const rankingData = scriptManager.getRankingData(scriptKey);
 
   return {
@@ -87,6 +94,32 @@ export function useDisplayMode(
   };
  });
 
+ // 自動切り替え機能
+ const startAutoSwitch = () => {
+  if (autoSwitchTimer.value) {
+   clearInterval(autoSwitchTimer.value);
+  }
+
+  const interval = displaySettings.autoSwitchInterval;
+  if (interval > 0) {
+   autoSwitchTimer.value = setInterval(() => {
+    // messagesモードは自動切り替えしない（通常何も映らないため）
+    if (currentDisplayMode.value === 'messages') {
+     switchToNextMode();
+    } else {
+     switchToNextMode();
+    }
+   }, interval * 1000);
+  }
+ };
+
+ const stopAutoSwitch = () => {
+  if (autoSwitchTimer.value) {
+   clearInterval(autoSwitchTimer.value);
+   autoSwitchTimer.value = null;
+  }
+ };
+
  // 次のモードに切り替え
  const switchToNextMode = () => {
   clearMessages?.();
@@ -94,6 +127,12 @@ export function useDisplayMode(
   if (items.length === 0) return;
 
   currentModeIndex.value = (currentModeIndex.value + 1) % items.length;
+
+  // 手動切り替え時は自動切り替えを一時停止してから再開
+  if (displaySettings.autoSwitchInterval > 0) {
+   stopAutoSwitch();
+   startAutoSwitch();
+  }
  };
 
  // 前のモードに切り替え
@@ -103,6 +142,12 @@ export function useDisplayMode(
   if (items.length === 0) return;
 
   currentModeIndex.value = (currentModeIndex.value - 1 + items.length) % items.length;
+
+  // 手動切り替え時は自動切り替えを一時停止してから再開
+  if (displaySettings.autoSwitchInterval > 0) {
+   stopAutoSwitch();
+   startAutoSwitch();
+  }
  };
 
  // 特定のモードに直接切り替え
@@ -120,10 +165,15 @@ export function useDisplayMode(
 
   if (targetIndex !== -1) {
    currentModeIndex.value = targetIndex;
+
+   // 手動切り替え時は自動切り替えを一時停止してから再開
+   if (displaySettings.autoSwitchInterval > 0) {
+    stopAutoSwitch();
+    startAutoSwitch();
+   }
   }
  };
 
- // 特定のスクリプトゲームに切り替え
  const setScriptGameKey = (key: string) => {
   switchToMode('scriptGame', key);
  };
@@ -151,7 +201,25 @@ export function useDisplayMode(
   forceRender.value++;
  };
 
- // 現在のモード情報を取得（デバッグ用）
+ // 初期化処理
+ const initialize = () => {
+  // デフォルトモード設定
+  if (displaySettings.defaultMode) {
+   switchToMode(displaySettings.defaultMode.type, displaySettings.defaultMode.scriptKey);
+  }
+
+  // 自動切り替え開始
+  startAutoSwitch();
+ };
+
+ // 設定情報を取得
+ const getDisplaySettings = () => {
+  return {
+   ...displaySettings,
+   currentDisplaySize: displaySize.value
+  };
+ };
+
  const getCurrentModeInfo = () => {
   const items = allModeItems.value;
   return {
@@ -161,6 +229,15 @@ export function useDisplayMode(
    allModes: items
   };
  };
+
+ // ライフサイクル
+ onMounted(() => {
+  initialize();
+ });
+
+ onUnmounted(() => {
+  stopAutoSwitch();
+ });
 
  return {
   // 状態
@@ -181,6 +258,7 @@ export function useDisplayMode(
   increaseDisplaySize,
   decreaseDisplaySize,
   forceUpdate,
-  getCurrentModeInfo // デバッグ用
+  startAutoSwitch,
+  stopAutoSwitch
  };
 }

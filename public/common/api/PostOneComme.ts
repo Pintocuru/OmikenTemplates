@@ -1,6 +1,7 @@
 // src/Modules/api/PostOneComme.ts
 import { SendCommentType, SendTestCommentType } from '../../type';
 import { SETTINGS } from '../settings';
+import OneSDK from '@onecomme.com/onesdk';
 
 /**
  * わんコメAPIへの各種投稿機能を提供するモジュール
@@ -108,19 +109,6 @@ export async function postSpeech(content: string, delaySeconds: number = 0): Pro
 
 /**
  * 遅延実行付きのHTTP POST リクエストを実行
- *
- * 機能：
- * - 指定された秒数だけ遅延してからリクエスト実行
- * - 基本遅延時間（SETTINGS.basicDelaySeconds）を自動で加算
- * - HTTPステータスコードによるエラーハンドリング
- *
- * @param {string} endpoint - APIエンドポイント（/から始まるパス）
- * @param {any} data - 送信するデータ
- * @param {number} delaySeconds - 遅延秒数
- * @param {string} errorMessage - エラー時のメッセージ
- * @returns {Promise<void>} リクエスト完了のPromise
- *
- * @private
  */
 function delayFetchPost(
  endpoint: string,
@@ -130,8 +118,6 @@ function delayFetchPost(
 ): Promise<void> {
  // test
  /**
-  *
-  * 
   * TODO:fetch ではなく、OneSDK.post を使ってラクをしたい
   * OneSDK.post　に　headers　は不要
   await OneSDK.post('http://localhost:11180/api/comments', {

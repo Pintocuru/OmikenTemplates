@@ -161,7 +161,7 @@
 import { ref, computed } from 'vue';
 import type { CategoryType } from '@type/';
 import type { ImportMode } from '@/ConfigMaker/script/useImportPreviewManager';
-import ModalFooterActions from '@/ConfigMaker/components/parts/ModalFooterActions.vue';
+import ModalFooterActions from '@ConfigComponents/parts/ModalFooterActions.vue';
 import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
 import { useJsonImportOrchestrator } from '@/ConfigMaker/script/useJsonImportOrchestrator';
 

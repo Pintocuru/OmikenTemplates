@@ -1,5 +1,5 @@
 // src/types/OmikujiSchema.ts
-// 250714_1　全編改変
+// 250716_1　displaySettings wordPartySettings の追加
 import { z } from 'zod';
 import { BaseSchema } from './commonSchema';
 import { CommentThresholdSchema } from './ThresholdSchema';
@@ -60,7 +60,6 @@ export const OmikujiSetSchema = z.object({
 });
 
 // Rule関連のスキーマ
-
 const BaseRuleCommonSchema = z.object({
  ...BaseSchema.shape,
  description: z.string().default('').catch(''),
@@ -96,24 +95,68 @@ export const TimerRuleSchema = z.object({
  isBaseZero: z.boolean().default(false).catch(false)
 });
 
-// メインデータ構造のスキーマ
+// 追加: DisplaySettingsSchema
+// BOTの表示部分に関わる設定
+const DisplaySettingsSchema = z.object({
+ // 文字・画像の大きさ指定
+ displaySize: z.enum(['xs', 'sm', 'md', 'lg', 'xl']).default('md').catch('md'),
+ // 起動時表示するモード
+ defaultMode: z
+  .object({
+   type: z.enum(['messages', 'userVisits', 'scriptGame']),
+   scriptKey: z.string().optional()
+  })
+  .optional(),
+ // 切り替えモードでの表示ON/OFF
+ enabledModes: z
+  .object({
+   messages: z.boolean().default(true),
+   userVisits: z.boolean().default(true),
+   scriptGames: z.record(z.string(), z.boolean()).default({})
+  })
+  .default({}),
+ // キャラクターコントロールパネルを表示しないか
+ hideModeSwitch: z.boolean().default(false).catch(false),
+ // トーストを表示するか
+ toastEnabled: z.boolean().default(true).catch(true),
+ // モードの自動切り替えをする秒数
+ autoSwitchInterval: z.number().min(0).default(0).catch(0)
+});
 
+// WordParty設定
+export const WordPartySettingsSchema = z.object({
+ name: z.string().default('').catch(''),
+ pattern: z.string().default('').catch('')
+});
+
+// メインデータ構造のスキーマ
 export const OmikujiDataSchema = z.object({
  comments: z.record(z.string(), CommentRuleSchema).default({}).catch({}),
  timers: z.record(z.string(), TimerRuleSchema).default({}).catch({}),
  placeholders: z.record(z.string(), PlaceholderSchema).default({}).catch({}),
  scriptSettings: z.record(z.string(), z.record(z.string(), z.any())).default({}).catch({}),
- characters: z.record(z.string(), CharacterSchema).default({}).catch({})
+ characters: z.record(z.string(), CharacterSchema).default({}).catch({}),
+ displaySettings: DisplaySettingsSchema.default({}),
+ wordPartySettings: z.array(WordPartySettingsSchema).default([]).catch([])
 });
 
 // 型エクスポート
 
-export type CategoryType = 'comments' | 'timers' | 'placeholders' | 'scriptSettings' | 'characters';
+export type CategoryType =
+ | 'comments'
+ | 'timers'
+ | 'placeholders'
+ | 'scriptSettings'
+ | 'characters'
+ | 'displaySettings'
+ | 'wordPartySettings';
 export type OmikujiDataType = z.infer<typeof OmikujiDataSchema>;
 export type CommentRuleType = z.infer<typeof CommentRuleSchema>;
 export type TimerRuleType = z.infer<typeof TimerRuleSchema>;
 export type RuleType = CommentRuleType | TimerRuleType;
-export type PlaceholderValueType = z.infer<typeof PlaceholderValueSchema>;
-export type PlaceholderType = z.infer<typeof PlaceholderSchema>;
 export type OmikujiSetType = z.infer<typeof OmikujiSetSchema>;
 export type PostActionType = z.infer<typeof PostActionSchema>;
+export type PlaceholderType = z.infer<typeof PlaceholderSchema>;
+export type PlaceholderValueType = z.infer<typeof PlaceholderValueSchema>;
+export type DisplaySettingsType = z.infer<typeof DisplaySettingsSchema>;
+export type WordPartySettings = z.infer<typeof WordPartySettingsSchema>;

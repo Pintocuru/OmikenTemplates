@@ -1,7 +1,11 @@
 <!-- src/configMaker/components/characters/CharacterBasicInfo.vue -->
 <template>
  <div class="card bg-base-300 mt-4">
-  <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">基本情報</div>
+  <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">
+   <!-- カラーピッカー -->
+   <ColorPicker v-model="localCharacter.editorColor" />
+   基本設定
+  </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
    <!-- ID表示 -->
@@ -39,7 +43,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { CharacterType } from '@type/';
-import PlaceholderIdEditor from '@/ConfigMaker/components/placeholders/PlaceholderIdEditor.vue';
+import PlaceholderIdEditor from '@ConfigComponents/placeholders/PlaceholderIdEditor.vue';
+import ColorPicker from '@ConfigComponents/parts/ColorPicker.vue';
 
 const props = defineProps<{
  modelValue: CharacterType;

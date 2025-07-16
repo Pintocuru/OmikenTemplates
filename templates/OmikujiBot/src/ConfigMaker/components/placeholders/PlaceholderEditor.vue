@@ -7,8 +7,9 @@
  <div v-if="selectedPlaceholder">
   <div class="card bg-base-300 mt-4">
    <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">
+    <!-- カラーピッカー -->
+    <ColorPicker v-model="selectedPlaceholder.editorColor" />
     基本設定
-    <span class="ml-2 cursor-help" title="説明"> ℹ️ </span>
    </div>
    <div class="card-body space-y-3">
     <!-- ID表示とコピー -->
@@ -117,8 +118,9 @@ import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
 import PlaceholderPreview from './PlaceholderPreview.vue';
 import { usePlaceholderStore } from '@/ConfigMaker/script/usePlaceholderStore';
 import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
-import RuleTabs from '@/ConfigMaker/components/parts/RuleTabs.vue';
-import CopyButton from '@/ConfigMaker/components/parts/CopyButton.vue';
+import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
+import CopyButton from '@ConfigComponents/parts/CopyButton.vue';
+import ColorPicker from '@ConfigComponents/parts/ColorPicker.vue';
 
 // ストアを使用
 const placeholderStore = usePlaceholderStore();

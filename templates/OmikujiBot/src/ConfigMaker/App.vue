@@ -49,6 +49,12 @@
     <!-- キャラクター設定 -->
     <CharacterEditor v-else-if="selectedCategory === 'characters'" />
 
+    <!-- 表示設定 -->
+    <DisplaySettingsEditor v-else-if="selectedCategory === 'displaySettings'" />
+
+    <!-- WordParty設定 -->
+    <WordPartySettingsEditor v-else-if="selectedCategory === 'wordPartySettings'" />
+
     <!-- フォールバック -->
     <div v-else>
      <p class="text-gray-600">不明なカテゴリ: {{ selectedCategory }}</p>
@@ -74,16 +80,27 @@
 import { onMounted, ref } from 'vue';
 import { CategoryType } from '@type/';
 import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
-import ConfigImport from '@/ConfigMaker/components/presets/ConfigImport.vue';
-import ConfigExport from '@/ConfigMaker/components/presets/ConfigExport.vue';
-import CommentRuleEditor from '@/ConfigMaker/components/comments/CommentRuleEditor.vue';
-import TimerRuleEditor from '@/ConfigMaker/components/timers/TimerRuleEditor.vue';
-import PlaceholderEditor from '@/ConfigMaker/components/placeholders/PlaceholderEditor.vue';
-import ScriptSettingsEditor from '@/ConfigMaker/components/scripts/ScriptSettingsEditor.vue';
-import CharacterEditor from '@/ConfigMaker/components/characters/CharacterEditor.vue';
+import ConfigImport from '@ConfigComponents/presets/ConfigImport.vue';
+import ConfigExport from '@ConfigComponents/presets/ConfigExport.vue';
+import CommentRuleEditor from '@ConfigComponents/comments/CommentRuleEditor.vue';
+import TimerRuleEditor from '@ConfigComponents/timers/TimerRuleEditor.vue';
+import PlaceholderEditor from '@ConfigComponents/placeholders/PlaceholderEditor.vue';
+import ScriptSettingsEditor from '@ConfigComponents/scriptSettings/ScriptSettingsEditor.vue';
+import WordPartySettingsEditor from '@ConfigComponents/wordPartySettings/WordPartySettingsEditor.vue';
+import CharacterEditor from '@ConfigComponents/characters/CharacterEditor.vue';
+import DisplaySettingsEditor from '@ConfigComponents/displaySettings/DisplaySettingsEditor.vue';
 import { storeToRefs } from 'pinia';
 import { Toaster } from 'vue-sonner';
-import { MessageCircle, Timer, Hash, Settings, Users, ArrowUp } from 'lucide-vue-next';
+import {
+ MessageCircle,
+ Timer,
+ Hash,
+ Settings,
+ Users,
+ ArrowUp,
+ Monitor,
+ ListChecks
+} from 'lucide-vue-next';
 
 const omikujiStore = useOmikujiStore();
 
@@ -108,11 +125,19 @@ const navigationTabs = {
  timers: { label: 'タイマールール', icon: Timer },
  placeholders: { label: 'プレースホルダー', icon: Hash },
  scriptSettings: { label: 'スクリプト設定', icon: Settings },
- characters: { label: 'キャラクター', icon: Users }
+ characters: { label: 'キャラクター', icon: Users },
+ displaySettings: { label: '表示設定', icon: Monitor },
+ // TODO:アイコンの設定
+ wordPartySettings: { label: 'WordPartyリスト設定', icon: ListChecks }
 } as const;
 
 // カテゴリごとのアイテム数を取得
 const getCategoryItemCount = (category: CategoryType): number => {
+ // displaySettingsの場合は設定が存在するかで判定
+ if (category === 'displaySettings') {
+  return data.value.displaySettings ? 1 : 0;
+ }
+
  const items = data.value[category];
  return items ? Object.keys(items).length : 0;
 };

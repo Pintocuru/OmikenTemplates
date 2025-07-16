@@ -20,9 +20,9 @@
 import { computed, provide } from 'vue';
 import { RuleType, TimerRuleType } from '@type/';
 import TimerIntervalEditor from './TimerIntervalEditor.vue';
-import OmikujiSetEditor from '@/ConfigMaker/components/comments/OmikujiSetEditor.vue';
-import RuleTabs from '@/ConfigMaker/components/parts/RuleTabs.vue';
-import BaseSettingsEditor from '@/ConfigMaker/components/comments/BaseSettingsEditor.vue';
+import OmikujiSetEditor from '@ConfigComponents/comments/OmikujiSetEditor.vue';
+import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
+import BaseSettingsEditor from '@ConfigComponents/comments/BaseSettingsEditor.vue';
 import { useTimerRulesStore } from '@/ConfigMaker/script/useTimerRulesStore';
 import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
 

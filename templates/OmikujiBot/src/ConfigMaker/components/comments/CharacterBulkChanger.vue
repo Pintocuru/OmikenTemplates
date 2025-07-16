@@ -64,7 +64,7 @@
 import { ref, computed } from 'vue';
 import type { OmikujiSetType } from '@type/';
 import { useCharacterStore } from '@/ConfigMaker/script/useCharacterStore';
-import ModalFooterActions from '@/ConfigMaker/components/parts/ModalFooterActions.vue';
+import ModalFooterActions from '@ConfigComponents/parts/ModalFooterActions.vue';
 import { Users, AlertTriangle } from 'lucide-vue-next';
 
 const props = defineProps<{
