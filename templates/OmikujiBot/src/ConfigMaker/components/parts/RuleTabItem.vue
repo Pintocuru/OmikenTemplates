@@ -24,6 +24,7 @@
     class="drag-handle text-gray-400 hover:text-gray-600 transition-colors mr-1"
     :class="{ 'cursor-grabbing': isDragging }"
    >
+    <!-- TODO:lucide-vue-next のアイコンを使って -->
     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 16 16">
      <path
       d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM8 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM8 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM8 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
