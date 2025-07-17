@@ -1,4 +1,5 @@
 <!-- src/configMaker/components/placeholders/PlaceholderTextEdit.vue -->
+<!-- TODO:PlaceholderModal ができたので、廃止予定 -->
 <template>
  <div>
   <!-- テキストエディットボタン -->

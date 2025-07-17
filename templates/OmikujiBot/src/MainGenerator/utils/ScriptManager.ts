@@ -18,7 +18,7 @@ export class ScriptManager {
  }
 
  /**
-  * 外部スクリプトの初期化
+  * スクリプトゲームの初期化
   */
  private initializeScripts(): void {
   try {

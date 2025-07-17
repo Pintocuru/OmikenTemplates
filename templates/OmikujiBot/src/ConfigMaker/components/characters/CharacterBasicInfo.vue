@@ -9,10 +9,12 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
    <!-- ID表示 -->
-   <div class="form-control">
-    <label class="label">
-     <span class="label-text font-medium">ID</span>
-    </label>
+   <SettingItem
+    label="ID"
+    description="キャラクターの一意識別子"
+    :showReset="false"
+    containerClass="form-control"
+   >
     <div class="flex gap-2 items-center">
      <div class="w-full px-4 py-2 rounded bg-base-200 text-gray-600 break-all">
       {{ localCharacter.id }}
@@ -20,31 +22,48 @@
      <!-- 編集ボタン -->
      <PlaceholderIdEditor :currentId="localCharacter.id" mode="character" />
     </div>
-   </div>
+   </SettingItem>
 
    <!-- id以外のテキストフィールドループ -->
-   <div v-for="field in fields" :key="field.key" class="form-control">
-    <label class="label-text">{{ field.label }}</label>
+   <SettingItem
+    v-for="field in fields"
+    :key="field.key"
+    :label="field.label"
+    :description="field.description"
+    :showReset="false"
+    containerClass="form-control"
+   >
     <input type="text" class="input input-bordered w-full" v-model="localCharacter[field.key]" />
-   </div>
+   </SettingItem>
   </div>
+
   <div class="grid grid-cols-1 gap-4 p-4">
    <!-- チェックボックス -->
-   <div class="form-control flex-row items-center gap-2 mt-2">
-    <input type="checkbox" class="checkbox" v-model="localCharacter.isIconDisplay" />
-    <label class="label-text text-base pl-3"
-     >アイコン表示を表示する(OFFの場合、アイコンの画像設定ができません)</label
-    >
-   </div>
+   <SettingItem
+    label="アイコン表示"
+    description="ONで画像とフキダシを表示、OFFでフキダシのみ表示"
+    :showReset="false"
+    containerClass="form-control flex-row items-center gap-2 mt-2"
+   >
+    <label class="label cursor-pointer justify-start gap-3">
+     <input
+      type="checkbox"
+      class="checkbox checkbox-primary"
+      v-model="localCharacter.isIconDisplay"
+     />
+     <span class="label-text font-medium">有効にするとアイコン画像の設定が可能になります</span>
+    </label>
+   </SettingItem>
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { CharacterType } from '@type/';
+import { CharacterType } from '@type/';
 import PlaceholderIdEditor from '@ConfigComponents/placeholders/PlaceholderIdEditor.vue';
 import ColorPicker from '@ConfigComponents/parts/ColorPicker.vue';
+import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
 
 const props = defineProps<{
  modelValue: CharacterType;
@@ -56,11 +75,15 @@ const emit = defineEmits<{
 
 // 共通フィールド定義
 const fields = [
- { key: 'name', label: '設定名' },
- { key: 'description', label: '説明' },
- { key: 'displayName', label: 'ジェネレーターでの表示名' },
- { key: 'author', label: '作者' },
- { key: 'url', label: 'Webサイト' }
+ { key: 'name', label: '設定名', description: '識別しやすい名前' },
+ { key: 'description', label: '説明', description: 'キャラクターの紹介文' },
+ {
+  key: 'displayName',
+  label: 'ジェネレーターでの表示名',
+  description: 'BOTちゃんで表示される名前'
+ },
+ { key: 'author', label: '作者', description: 'キャラクターの設定者名' },
+ { key: 'url', label: 'Webサイト', description: 'キャラクターに関連するURL' }
 ] as const;
 
 // v-modelを使用したlocalCharacterの実装

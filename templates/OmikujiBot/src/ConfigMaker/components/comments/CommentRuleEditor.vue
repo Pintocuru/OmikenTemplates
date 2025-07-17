@@ -8,8 +8,8 @@
   <!-- 基本設定セクション -->
   <BaseSettingsEditor v-model="selectedRule" />
 
-  <!-- 外部スクリプト設定セクション -->
-  <ExternalScriptEditor v-model="selectedRule" />
+  <!-- スクリプトゲーム設定セクション -->
+  <ScriptGameEditor v-model="selectedRule" />
 
   <!-- 条件設定セクション -->
   <CommentThresholdEditor v-model="selectedRule.threshold" />
@@ -23,8 +23,8 @@
 import { computed, provide } from 'vue';
 import { CommentRuleType, RuleType } from '@type/';
 import BaseSettingsEditor from './BaseSettingsEditor.vue';
-import CommentThresholdEditor from './CommentThresholdEditor.vue';
-import ExternalScriptEditor from './ExternalScriptEditor.vue';
+import CommentThresholdEditor from './ThresholdEditor.vue';
+import ScriptGameEditor from './ExternalScriptEditor.vue';
 import OmikujiSetEditor from './OmikujiSetEditor.vue';
 import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
 import { useCommentRulesStore } from '@ConfigScript/useCommentRulesStore';

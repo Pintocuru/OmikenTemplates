@@ -1,20 +1,27 @@
 <!-- src/configMaker/components/comments/ExternalScriptEditor.vue -->
 <template>
  <div class="card bg-base-300 mt-4">
-  <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">外部スクリプト設定</div>
+  <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t">スクリプトゲーム設定</div>
   <div class="card-body">
    <!-- スクリプト有効化チェックボックス -->
-   <div class="form-control">
+
+   <SettingItem label="スクリプトゲームを使用" :showReset="false">
     <label class="label cursor-pointer justify-start gap-3">
      <input type="checkbox" v-model="isScriptEnabled" class="checkbox checkbox-primary" />
-     <span class="label-text font-medium">外部スクリプトを使用する</span>
+     <span class="label-text font-medium"
+      >スクリプトゲームを選択することで、使用できるプレースホルダーが増えます</span
+     >
     </label>
-   </div>
+   </SettingItem>
 
    <!-- スクリプト選択とパラメータ設定 -->
    <div v-if="isScriptEnabled" class="space-y-4 mt-6">
     <!-- スクリプト選択 -->
-    <SettingItem label="スクリプトID" :showReset="false">
+    <SettingItem
+     label="スクリプトゲーム"
+     :description="'ゲーム結果は、おみくじ設定＞プレースホルダー一覧で出力'"
+     :showReset="false"
+    >
      <select v-model="scriptId" class="select select-bordered w-full">
       <option value="">スクリプトを選択してください</option>
       <option v-for="(script, scriptId) in scriptGameMap" :key="scriptId" :value="scriptId">
@@ -89,10 +96,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { CommentRuleType } from '@type/';
-import type { ScriptPreset } from '@type/';
+import { CommentRuleType, ScriptPreset, createScriptParamsSchema } from '@type/';
 import { scriptGameMap } from '@/ScriptGame/ScriptGameMap';
-import { createScriptParamsSchema } from '@/types/ScriptSettingsSchema';
 import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
 
 const props = defineProps<{

@@ -11,41 +11,37 @@
    </span>
   </div>
 
-  <div class="card-body space-y-3">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4">
    <!-- プリセット選択 -->
-   <div class="form-control">
-    <label class="label">
-     <span class="label-text font-medium">実行間隔</span>
-     <span class="label-text-alt text-sm text-gray-500">
-      {{ formatInterval(modelValue.intervalSeconds) }}
-     </span>
-    </label>
+   <SettingItem
+    label="実行間隔(30秒～1時間)"
+    description="設定した間隔で自動的におみくじが実行されます"
+    :showReset="false"
+    containerClass="form-control"
+   >
     <select v-model="intervalSeconds" class="select select-bordered w-full">
      <option v-for="preset in intervalPresets" :key="preset.value" :value="preset.value">
       {{ preset.label }}
      </option>
     </select>
-   </div>
+   </SettingItem>
 
    <!-- isBaseZero トグル -->
-   <div class="form-control">
-    <label class="label cursor-pointer justify-start gap-2">
-     <input type="checkbox" class="toggle toggle-primary" v-model="isBaseZero" />
-     <span class="label-text font-medium">基準時刻を0秒に固定</span>
-     <span
-      class="label-text-alt cursor-help"
-      title="有効にすると、タイマーは分や時間の切り替わりタイミング（0分0秒を基準）で実行されます。無効の場合は設定した間隔で実行されます。"
-     >
-      ℹ️
-     </span>
-    </label>
-   </div>
+   <SettingItem
+    label="基準時刻を0分0秒に固定"
+    description="時報などで使います"
+    :showReset="false"
+    containerClass="form-control"
+   >
+    <input type="checkbox" class="toggle toggle-primary" v-model="isBaseZero" />
+   </SettingItem>
   </div>
  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
 
 const props = defineProps<{
  modelValue: {

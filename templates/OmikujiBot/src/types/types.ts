@@ -33,3 +33,4 @@ export * from './OmikujiSchema';
 export * from './ScriptTypes';
 export * from './ThresholdSchema';
 export * from './DisplaySettingsSchema';
+export * from './ScriptSettingsSchema';

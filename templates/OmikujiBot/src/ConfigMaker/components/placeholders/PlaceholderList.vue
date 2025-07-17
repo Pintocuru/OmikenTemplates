@@ -44,7 +44,10 @@
 
       <div class="flex items-center gap-1">
        <CopyButton :value="`<<${placeholder.id}>>`" title="IDをコピー" class="btn-xs" />
-       <PlaceholderTextEdit :placeholderId="placeholder.id" />
+       <PlaceholderModal
+        v-if="!isDefaultPlaceholder(placeholder.id)"
+        :placeholderId="placeholder.id"
+       />
       </div>
      </div>
     </div>
@@ -64,8 +67,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { PlaceholderSchema, PlaceholderType, PostActionType, ScriptPreset } from '@type/';
-import PlaceholderTextEdit from './PlaceholderTextEdit.vue';
+import { PlaceholderSchema, PlaceholderType, PostActionType } from '@type/';
+import PlaceholderModal from './PlaceholderModal.vue';
 import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
 import { useCommentRulesStore } from '@ConfigScript/useCommentRulesStore';
 import CopyButton from '@ConfigComponents/parts/CopyButton.vue';
@@ -114,8 +117,15 @@ const defaultPlaceholders: PlaceholderType[] = [
   values: [{ content: '(高評価数)' }]
  })
 ];
+// デフォルトプレースホルダーのIDを配列で取得
+const defaultPlaceholderIds = defaultPlaceholders.map((p) => p.id);
 
-// 現在選択されているおみくじに外部スクリプトが使われているなら、そのプレースホルダーを取得する
+// 指定したIDがデフォルトプレースホルダーかどうかを判定
+const isDefaultPlaceholder = (id: string) => {
+ return defaultPlaceholderIds.includes(id);
+};
+
+// 現在選択されているおみくじにスクリプトゲームが使われているなら、そのプレースホルダーを取得する
 const scriptPlaceholder = computed((): PlaceholderType[] => {
  if (!selectedRule.value?.scriptId) return [];
 

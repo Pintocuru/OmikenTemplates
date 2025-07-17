@@ -15,30 +15,24 @@
   </div>
 
   <!-- ボディ -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4">
-   <div class="form-control">
-    <label class="label">
-     <span class="label-text font-medium">ルール名</span>
-    </label>
-    <input
-     type="text"
-     v-model="name"
-     placeholder="ルール名を入力"
-     class="input input-bordered w-full"
-    />
-   </div>
+  <div class="grid grid-cols-1 sm:grid-cols-1 gap-4 p-4">
+   <SettingItem
+    label="ルール名"
+    description="識別しやすい名前"
+    :showReset="false"
+    containerClass="form-control"
+   >
+    <input type="text" v-model="name" class="input input-bordered w-full" />
+   </SettingItem>
 
-   <div class="form-control">
-    <label class="label">
-     <span class="label-text font-medium">説明</span>
-    </label>
-    <input
-     type="text"
-     v-model="description"
-     placeholder="ルールの説明を入力"
-     class="input input-bordered w-full"
-    />
-   </div>
+   <SettingItem
+    label="説明"
+    description="ルールの紹介文"
+    :showReset="false"
+    containerClass="form-control"
+   >
+    <input type="text" v-model="description" class="input input-bordered w-full" />
+   </SettingItem>
   </div>
  </div>
 </template>
@@ -47,6 +41,7 @@
 import { computed } from 'vue';
 import { RuleType } from '@type/';
 import ColorPicker from '@ConfigComponents/parts/ColorPicker.vue';
+import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
 
 const props = defineProps<{
  modelValue: RuleType;

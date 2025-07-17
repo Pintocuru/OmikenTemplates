@@ -9,9 +9,7 @@ import { drawOmikuji } from './PlayOmikuji';
 export class PlaceProcess {
  private resolvedValues: Record<string, string | number> = {};
  private readonly placeholderSources: Record<string, PlaceholderType>;
-
- // 正規表現をクラスレベルで定義して再利用
- private static readonly PLACEHOLDER_PATTERN = /<<([^>]+)>>/g;
+ private static readonly PLACEHOLDER_PATTERN = /<<([^>]+)>>/g; // 正規表現パターン
 
  constructor(placeholderSources: Record<string, PlaceholderType>) {
   this.placeholderSources = placeholderSources;

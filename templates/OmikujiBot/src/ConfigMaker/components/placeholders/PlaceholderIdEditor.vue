@@ -10,19 +10,13 @@
     <h3 class="font-bold text-lg">{{ dialogTitle }}ID編集</h3>
 
     <div class="py-4">
-     <div class="form-control">
-      <label class="label">
-       <span class="label-text">現在のID</span>
-      </label>
+     <SettingItem label="現在のID" :showReset="false">
       <div class="input input-bordered bg-base-200 text-gray-600">
        {{ currentId }}
       </div>
-     </div>
+     </SettingItem>
 
-     <div class="form-control mt-4">
-      <label class="label">
-       <span class="label-text">新しいID</span>
-      </label>
+     <SettingItem label="新しいID" :showReset="false" class="form-control mt-4">
       <input
        type="text"
        v-model="newId"
@@ -34,7 +28,7 @@
       <label class="label" v-if="hasError">
        <span class="label-text-alt text-error">{{ errorMessage }}</span>
       </label>
-     </div>
+     </SettingItem>
 
      <!-- キャラクターモードの場合、使用箇所を表示 -->
      <div v-if="mode === 'character' && characterUsage" class="mt-4">
@@ -84,6 +78,7 @@ import { ref, computed, watch } from 'vue';
 import ModalFooterActions from '@ConfigComponents/parts/ModalFooterActions.vue';
 import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
 import { useCharacterStore } from '@ConfigScript/useCharacterStore';
+import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
 
 // Props
 const props = defineProps<{
