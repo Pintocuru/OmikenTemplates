@@ -4,7 +4,7 @@
   <!-- トリガーボタン -->
   <div class="tooltip tooltip-bottom" data-tip="このおみくじのキャラクターを変更する">
    <button @click="openModal" class="btn btn-ghost btn-sm">
-    <Users class="w-4 h-4" />
+    <Users class="w-4 h-4" />キャラ変更
    </button>
   </div>
 

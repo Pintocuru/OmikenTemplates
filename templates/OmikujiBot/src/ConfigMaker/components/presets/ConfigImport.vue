@@ -9,9 +9,14 @@
    @change="handleFileSelection"
    class="hidden"
   />
-  <button @click="openFileDialog" class="btn btn-sm btn-secondary" :disabled="isFileLoading">
+  <button
+   @click="openFileDialog"
+   class="btn btn-secondary tooltip tooltip-top"
+   data-tip="ダウンロード、またはテンプレート出力したjsonファイルを読み込みます"
+   :disabled="isFileLoading"
+  >
    <span v-if="isFileLoading" class="loading loading-spinner loading-sm mr-2"></span>
-   jsonファイル読み込み
+   テンプレート読み込み(JSON)
   </button>
  </div>
 
@@ -92,17 +97,6 @@
           />
           <span class="text-sm">追加のみ</span>
          </label>
-         <label class="flex items-center gap-1">
-          <input
-           type="radio"
-           :name="`mode-${category}`"
-           value="skip"
-           :checked="config.mode === 'skip'"
-           @change="handleCategoryModeChange(category, 'skip')"
-           class="radio radio-sm"
-          />
-          <span class="text-sm">スキップ</span>
-         </label>
         </div>
        </div>
 
@@ -131,7 +125,6 @@
       <li><strong>置き換え:</strong> カテゴリ全体を新しい設定で置き換え</li>
       <li><strong>マージ:</strong> 既存設定に新しい設定を追加・上書き</li>
       <li><strong>追加のみ:</strong> 重複しない項目のみ追加</li>
-      <li><strong>スキップ:</strong> このカテゴリは読み込まない</li>
      </ul>
     </div>
    </div>
@@ -159,7 +152,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import type { CategoryType } from '@type/';
+import { categoryLabels, type CategoryType } from '@type/';
 import type { ImportMode } from '@ConfigScript/useImportPreviewManager';
 import ModalFooterActions from '@ConfigComponents/parts/ModalFooterActions.vue';
 import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
@@ -176,21 +169,12 @@ const showPreviewModal = ref(false);
 const showErrorModal = ref(false);
 const errorMessage = ref('');
 
-// カテゴリ表示名のマッピング
-const categoryDisplayNames: Record<CategoryType, string> = {
- comments: 'コメント',
- timers: 'タイマー',
- placeholders: 'プレースホルダー',
- scriptSettings: 'スクリプト設定',
- characters: 'キャラクター'
-};
-
 // Computed
 const hasEnabledCategories = computed(() => importOrchestrator.enabledCategories.value.length > 0);
 
 // カテゴリ表示名を取得
 const getCategoryDisplayName = (category: CategoryType): string => {
- return categoryDisplayNames[category] || category;
+ return categoryLabels[category].label || category;
 };
 
 // ファイル選択処理

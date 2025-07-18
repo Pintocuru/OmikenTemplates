@@ -133,14 +133,45 @@ export const categoryType = [
 ] as const;
 export type CategoryType = (typeof categoryType)[number];
 
-export const categoryLabels: Record<CategoryType, { label: string; icon: any }> = {
- comments: { label: 'コメントルール', icon: MessageCircle },
- timers: { label: 'タイマールール', icon: Timer },
- placeholders: { label: 'プレースホルダー', icon: Hash },
- scriptSettings: { label: 'スクリプト設定', icon: Settings },
- characters: { label: 'キャラクター', icon: Users },
- displaySettings: { label: '表示設定', icon: Monitor },
- wordPartySettings: { label: 'WordPartyリスト設定', icon: ListChecks }
+export const categoryLabels: Record<
+ CategoryType,
+ { label: string; description: string; icon: any }
+> = {
+ comments: {
+  label: 'コメントルール',
+  description: 'チャットの内容やユーザー情報でおみくじを発火します',
+  icon: MessageCircle
+ },
+ timers: {
+  label: 'タイマールール',
+  description: '時間経過で自動的におみくじを発火します',
+  icon: Timer
+ },
+ placeholders: {
+  label: 'プレースホルダー',
+  description: 'コメント・タイマーで補助的に使用する、高性能なプレースホルダー。',
+  icon: Hash
+ },
+ scriptSettings: {
+  label: 'スクリプトゲーム設定',
+  description: 'スクリプトゲームを動かし、特殊なプレースホルダーを生成するための初期設定',
+  icon: Settings
+ },
+ characters: {
+  label: 'キャラクター',
+  description: 'BOTメッセージで使用するキャラクターアイコンや、カラーを設定します',
+  icon: Users
+ },
+ displaySettings: {
+  label: '表示設定',
+  description: 'BOTメッセージやランキングの表示・非表示を設定します',
+  icon: Monitor
+ },
+ wordPartySettings: {
+  label: 'WordPartyリスト設定',
+  description: 'コメント・タイマーの設定時に補助的に使える、WordPartyリスト。',
+  icon: ListChecks
+ }
 };
 
 // メインデータ構造のスキーマ

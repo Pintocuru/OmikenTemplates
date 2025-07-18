@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 import { validateOmikujiData, type OmikujiDataType, type CategoryType } from '@type/';
 
-export type ImportMode = 'replace' | 'merge' | 'add-only' | 'skip';
+export type ImportMode = 'replace' | 'merge' | 'add-only';
 
 // 競合情報を表すインターフェース
 export interface ConflictInfo {
@@ -58,7 +58,9 @@ export const useImportPreviewManager = () => {
    timers: createDefaultConfig(),
    placeholders: createDefaultConfig(),
    scriptSettings: createDefaultConfig(),
-   characters: createDefaultConfig()
+   characters: createDefaultConfig(),
+   displaySettings: createDefaultConfig(),
+   wordPartySettings: createDefaultConfig()
   };
 
   let totalItems = 0;

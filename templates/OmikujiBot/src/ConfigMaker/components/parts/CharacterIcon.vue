@@ -1,7 +1,12 @@
 <!-- src/configMaker/components/parts/CharacterIcon.vue -->
 <template>
- <img v-if="iconSrc" :src="iconSrc" :alt="altText" :class="imgClass" />
- <div v-else :class="fallbackClass">画像なし</div>
+ <div
+  class="tooltip tooltip-top"
+  :data-tip="`${charactersMap[props.characterKey]?.name} (${altText})`"
+ >
+  <img v-if="iconSrc" :src="iconSrc" :alt="altText" :class="imgClass" />
+  <div v-else :class="fallbackClass">画像なし</div>
+ </div>
 </template>
 
 <script setup lang="ts">

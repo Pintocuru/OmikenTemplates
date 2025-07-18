@@ -3,11 +3,25 @@
  <div class="card bg-base-300 mt-4">
   <div class="card-title bg-secondary text-lg p-2 pl-4 rounded-t flex justify-between items-center">
    <span>おみくじ設定 ({{ modelValue.length }}種/ 重さ: {{ totalWeight }})</span>
-   <!-- キャラクター一括変更ボタン -->
-   <CharacterBulkChanger
-    :model-value="modelValue"
-    @update:model-value="$emit('update:modelValue', $event)"
-   />
+
+   <div class="flex items-center gap-2">
+    <!-- キャラクター一括変更ボタン -->
+    <CharacterBulkChanger
+     :model-value="modelValue"
+     @update:model-value="$emit('update:modelValue', $event)"
+    />
+    <!-- おみくじテストボタン -->
+    <div class="tooltip tooltip-bottom" data-tip="わんコメを起動すると、投稿の確認ができます">
+     <button
+      @click="postTestOmikuji(modelValue)"
+      class="btn btn-ghost btn-sm"
+      :disabled="modelValue.length === 0"
+     >
+      <Dices class="w-4 h-4" />
+      抽選テスト
+     </button>
+    </div>
+   </div>
   </div>
   <div class="card-body p-3">
    <!-- おみくじセットコンポーネント -->
@@ -23,57 +37,20 @@
     @dragover.prevent
     @drop="onDrop(index, $event)"
    >
-    <div class="flex items-center gap-4">
-     <!-- ドラッグハンドル -->
-     <div
-      class="cursor-move text-base-content/50 hover:text-base-content"
-      draggable="true"
-      @dragstart="onDragStart(index, $event)"
-      @dragend="onDragEnd"
-     >
-      <GripVertical class="w-5 h-5" />
-     </div>
-
-     <!-- 名前 -->
-     <div class="form-control flex-1">
-      <SettingItem label="おみくじ名" description="識別しやすい名前を入力" :show-reset="false">
-       <input
-        type="text"
-        :value="omikuji.name"
-        @input="updateOmikuji(index, 'name', ($event.target as HTMLInputElement).value)"
-        placeholder="おみくじ名"
-        class="input input-bordered input-sm w-full"
-       />
-      </SettingItem>
-     </div>
-
-     <!-- 重み -->
-     <div class="form-control flex-1">
-      <SettingItem label="重み" description="数値が高いほど出やすくなります" :show-reset="false">
-       <input
-        type="number"
-        :value="omikuji.weight"
-        @input="
-         updateOmikuji(index, 'weight', parseFloat(($event.target as HTMLInputElement).value))
-        "
-        min="0"
-        class="input input-bordered input-sm w-full"
-       />
-      </SettingItem>
-     </div>
-
-     <!-- メニュー -->
-     <div class="ml-auto">
-      <MenuDropdown
-       :disable-delete="modelValue.length <= 1"
-       @duplicate="duplicateOmikuji(index)"
-       @delete="removeOmikuji(index)"
-      />
-     </div>
-    </div>
+    <!-- OmikujiItem コンポーネント -->
+    <OmikujiItem
+     :omikuji="omikuji"
+     :disable-delete="modelValue.length <= 1"
+     @dragstart="onDragStart(index, $event)"
+     @dragend="onDragEnd"
+     @update:name="updateOmikuji(index, 'name', $event)"
+     @update:weight="updateOmikuji(index, 'weight', $event)"
+     @duplicate="duplicateOmikuji(index)"
+     @delete="removeOmikuji(index)"
+    />
 
     <!-- Post Actions Editor コンポーネント JSON編集機能付き -->
-    <PostActionsEditorJson v-model="omikuji.postActions" />
+    <PostActionsEditor v-model="omikuji.postActions" />
    </div>
 
    <button @click="addOmikuji" class="btn btn-primary btn-sm w-full">
@@ -88,10 +65,10 @@
 import { computed, ref } from 'vue';
 import { OmikujiSetSchema, OmikujiSetType } from '@type/';
 import CharacterBulkChanger from './CharacterBulkChanger.vue';
-import PostActionsEditorJson from '@ConfigComponents/postAction/PostActionsEditorJson.vue';
-import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
-import MenuDropdown from '@ConfigComponents/parts/MenuDropdown.vue';
-import { GripVertical, Plus } from 'lucide-vue-next';
+import OmikujiItem from './OmikujiSetBasic.vue';
+import PostActionsEditor from '@ConfigComponents/postAction/PostActionsEditor.vue';
+import { useTestPost } from '@ConfigScript/useTestPost';
+import { Dices, Plus } from 'lucide-vue-next';
 
 const props = defineProps<{
  modelValue: OmikujiSetType[];
@@ -99,6 +76,8 @@ const props = defineProps<{
 const emit = defineEmits<{
  'update:modelValue': [value: OmikujiSetType[]];
 }>();
+
+const { postTestOmikuji } = useTestPost();
 
 // 合計重みの計算
 const totalWeight = computed(() => {

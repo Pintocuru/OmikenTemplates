@@ -102,7 +102,7 @@ export class UserCommentProcessor {
  /**
   * おみくじプロセスの実行
   */
- private executeOmikujiProcess(
+ executeOmikujiProcess(
   comment: Comment,
   rule: CommentRuleType,
   omikujiItem: OmikujiSetType,

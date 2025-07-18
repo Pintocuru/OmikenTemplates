@@ -6,14 +6,28 @@
     <span class="label-text text-sm font-medium">わんコメへの投稿</span>
     <span class="badge badge-sm badge-outline ml-2">{{ modelValue.length }}</span>
    </label>
-   <button @click="openDialog" class="btn btn-sm btn-primary" type="button">
-    <span class="text-sm">⚙️</span>
-    編集
-   </button>
+   <div class="flex gap-2">
+    <button @click="toggleEditMode" class="btn btn-sm btn-secondary" type="button">
+     <span class="text-sm">{{ isJsonMode ? '📝' : '💾' }}</span>
+     {{ isJsonMode ? 'GUI編集' : 'JSON編集' }}
+    </button>
+    <button @click="openDialog" class="btn btn-sm btn-primary" type="button">
+     <span class="text-sm">⚙️</span>
+     詳細編集
+    </button>
+   </div>
   </div>
 
-  <!-- プレビュー表示 -->
-  <PostActionsPreview :actions="modelValue" :charactersArray="charactersArray" />
+  <!-- JSON編集モード -->
+  <PostActionsEditorJson
+   v-if="isJsonMode"
+   :modelValue="modelValue"
+   @update:modelValue="handleUpdate"
+   @close="isJsonMode = false"
+  />
+
+  <!-- 通常のプレビュー表示 -->
+  <PostActionsPreview v-else :actions="modelValue" />
 
   <!-- 編集ダイアログ -->
   <PostActionsEditDialog
@@ -26,10 +40,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, type Ref } from 'vue';
-import { type PostActionType } from '@type/';
+import { computed, ref, Ref } from 'vue';
+import { PostActionType } from '@type/';
 import PostActionsPreview from './PostActionsPreview.vue';
 import PostActionsEditDialog from './PostActionsEditDialog.vue';
+import PostActionsEditorJson from './PostActionsEditorJson.vue';
 import { useCharacterStore } from '@ConfigScript/useCharacterStore';
 
 // ストアを使用
@@ -48,6 +63,7 @@ const emit = defineEmits<{
 
 // Refs
 const dialog: Ref<InstanceType<typeof PostActionsEditDialog> | null> = ref(null);
+const isJsonMode = ref(false);
 
 // Methods
 const openDialog = () => {
@@ -56,5 +72,9 @@ const openDialog = () => {
 
 const handleUpdate = (actions: PostActionType[]) => {
  emit('update:modelValue', actions);
+};
+
+const toggleEditMode = () => {
+ isJsonMode.value = !isJsonMode.value;
 };
 </script>

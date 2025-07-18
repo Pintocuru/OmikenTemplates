@@ -16,7 +16,12 @@
    <button
     v-for="(tab, key) in categoryLabels"
     :key="key"
-    :class="['tab', selectedCategory === key ? 'tab-active' : '', 'flex items-center gap-2']"
+    :class="[
+     'tab',
+     selectedCategory === key ? 'tab-active' : '',
+     'flex items-center gap-2 tooltip tooltip-top'
+    ]"
+    :data-tip="tab.description"
     @click="omikujiStore.selectCategory(key)"
    >
     <component :is="tab.icon" class="w-4 h-4" />

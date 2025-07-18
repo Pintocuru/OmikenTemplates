@@ -1,12 +1,22 @@
 <!-- src/configMaker/components/presets/ConfigExport.vue -->
 <template>
  <div class="flex flex-wrap gap-2">
-  <button @click="exportConfig" class="btn btn-primary" :disabled="isExporting">
+  <button
+   @click="exportConfig"
+   class="btn btn-primary tooltip tooltip-top"
+   data-tip="設定ファイルを出力します。保存する場合は必ずこのボタンを押してください。"
+   :disabled="isExporting"
+  >
    <span v-if="isExporting" class="loading loading-spinner loading-sm mr-2"></span>
    設定を出力(js)
   </button>
 
-  <button @click="exportTemplate" class="btn btn-secondary" :disabled="isExporting">
+  <button
+   @click="exportTemplate"
+   class="btn btn-secondary tooltip tooltip-top"
+   data-tip="テンプレート(JSONファイル)を出力します"
+   :disabled="isExporting"
+  >
    <span v-if="isExporting" class="loading loading-spinner loading-sm mr-2"></span>
    テンプレート出力(json)
   </button>

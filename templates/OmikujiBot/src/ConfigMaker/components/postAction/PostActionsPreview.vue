@@ -9,9 +9,12 @@
    >
     <div class="flex items-center gap-2 flex-shrink-0">
      <span class="badge badge-primary badge-sm">{{ index + 1 }}</span>
-     <span class="bg-accent text-accent-content text-xs px-1 rounded"
-      >{{ action.delaySeconds }}s</span
+     <span
+      class="bg-accent text-accent-content text-xs px-1 rounded tooltip tooltip-top"
+      data-tip="チャットを受け取ってから発動するまでの遅延時間(秒)"
      >
+      {{ action.delaySeconds }}s
+     </span>
     </div>
 
     <div
@@ -24,14 +27,15 @@
       img-class="w-6 h-6 rounded-full"
       fallback-class="w-6 h-6 rounded-full bg-base-300 flex items-center justify-center text-xs"
      />
-     <span class="text-xs text-base-content/70">{{ charactersMap[action.characterKey].name }}</span>
     </div>
 
     <div class="flex-1 min-w-0">
      <div class="flex flex-wrap gap-1 items-center">
-      <span v-if="action.messageContent" class="text-info">💬</span>
-      <span v-if="action.messageToast" class="text-warning">🍞</span>
-      <span v-if="action.wordParty" class="text-accent">🎉</span>
+      <span v-if="action.messageContent" class="tooltip tooltip-top" data-tip="BOTコメント">
+       💬
+      </span>
+      <span v-if="action.messageToast" class="tooltip tooltip-top" data-tip="トースト"> 🍞 </span>
+      <span v-if="action.wordParty" class="tooltip tooltip-top" data-tip="WordParty"> 🎉 </span>
       <span class="text-base-content truncate">
        {{ action.messageContent || action.messageToast || action.wordParty }}
       </span>
@@ -42,8 +46,9 @@
   <div v-else class="text-base-content/70 italic">Post Actions が設定されていません</div>
 
   <button
-   @click="postTestOmeComme"
-   class="btn btn-sm btn-info absolute right-3 bottom-3 z-10"
+   @click="() => postTestOmikujiItem(actions)"
+   class="btn btn-sm btn-info absolute right-3 bottom-3 z-10 tooltip tooltip-top"
+   data-tip="わんコメを起動すると、投稿の確認ができます"
    :disabled="actions.length === 0"
   >
    テスト投稿
@@ -52,65 +57,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { DefaultPlaceholders, PostActionSchema, PostActionType } from '@type/';
-import { useOmikujiStore } from '@/ConfigMaker/script/useOmikujiStore';
-import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
-import { useCharacterStore } from '@ConfigScript/useCharacterStore';
+import { PostActionType } from '@type/';
 import CharacterIcon from '@ConfigComponents/parts/CharacterIcon.vue';
-import { PostMessage } from '@/MainGenerator/utils/PostMessage2';
-import { PlaceProcess } from '@/MainGenerator/utils/PlaceProcess2';
-import { toast } from 'vue-sonner';
-import { ScriptManager } from '@/MainGenerator/utils/ScriptManager';
-import { UserCommentProcessor } from '@/MainGenerator/utils/UserCommentProcessor';
+import { useTestPost } from '@ConfigScript/useTestPost';
 
 // Props
 const props = defineProps<{
  actions: PostActionType[];
 }>();
 
-// Store
-const omikujiStore = useOmikujiStore();
-const characterStore = useCharacterStore();
-const charactersMap = computed(() => characterStore.rulesMap);
-const placeholderStore = usePlaceholderStore();
-const placeholdersMap = computed(() => placeholderStore.rulesMap);
-
-//
-
-// プレビュー投稿
-const postTestOmeComme = () => {
- const scriptManager = new ScriptManager(omikujiStore.data);
- const userCommentProcessor = new UserCommentProcessor(omikujiStore.data, scriptManager);
- const placeProcess = new PlaceProcess(placeholdersMap.value);
- const postMessage = new PostMessage(charactersMap.value);
-
- // TODO:userなどのプレースホルダーも処理が必要です
- const defaultPlaceholders: Record<DefaultPlaceholders, string | number> = {
-  user: 'テストユーザー',
-  lc: 0,
-  tc: 0,
-  viewer: 0,
-  upVote: 0
- };
- placeProcess.updateResolvedValues(defaultPlaceholders);
- const processedActions = placeProcess.processPostActions(props.actions);
- postMessage.post(processedActions);
- toastTestPost(processedActions);
-};
-
-// toast用
-const toastTestPost = async (posts: PostActionType[]): Promise<void> => {
- try {
-  await Promise.all(
-   posts.map(async (post) => {
-    if (post.messageToast !== '') toast.success(post.messageToast);
-   })
-  );
- } catch (error) {
-  console.error('メッセージ投稿処理のトースト表示中にエラーが発生しました:', error);
-  // エラーが発生した場合にもユーザーにフィードバック
-  toast.error('テスト投稿の表示中にエラーが発生しました。');
- }
-};
+const { postTestOmikujiItem } = useTestPost();
 </script>
