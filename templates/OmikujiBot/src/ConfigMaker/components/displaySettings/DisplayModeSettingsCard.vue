@@ -14,40 +14,43 @@
   </div>
 
   <!-- モード設定項目 -->
-  <div class="flex flex-wrap gap-4 m-4">
-   <!-- メッセージモード -->
-   <label class="flex items-center gap-2 p-2 rounded">
-    <input
-     v-model="displaySettings.enabledModes.messages"
-     type="checkbox"
-     class="checkbox checkbox-primary"
-    />
-    <span class="label-text">BOTメッセージ</span>
-   </label>
+  <div class="card-body p-4">
+   <div>OFFにすると、該当するモードが表示されなくなりますが、BOTやおみくじ自体は反応します。</div>
+   <div class="flex flex-wrap gap-4">
+    <!-- メッセージモード -->
+    <label class="flex items-center gap-2 p-2 rounded">
+     <input
+      v-model="displaySettings.enabledModes.messages"
+      type="checkbox"
+      class="checkbox checkbox-primary"
+     />
+     <span class="label-text">BOTメッセージ</span>
+    </label>
 
-   <!-- ユーザー訪問履歴モード -->
-   <label class="flex items-center gap-2 p-2 rounded">
-    <input
-     v-model="displaySettings.enabledModes.userVisits"
-     type="checkbox"
-     class="checkbox checkbox-primary"
-    />
-    <span class="label-text">訪問履歴</span>
-   </label>
+    <!-- ユーザー訪問履歴モード -->
+    <label class="flex items-center gap-2 p-2 rounded">
+     <input
+      v-model="displaySettings.enabledModes.userVisits"
+      type="checkbox"
+      class="checkbox checkbox-primary"
+     />
+     <span class="label-text">訪問履歴</span>
+    </label>
 
-   <!-- スクリプトゲーム -->
-   <label
-    v-for="(value, index) in scriptGameMap"
-    :key="index"
-    class="flex items-center gap-2 p-2 rounded"
-   >
-    <input
-     v-model="displaySettings.enabledModes.scriptGames[index]"
-     type="checkbox"
-     class="checkbox checkbox-primary"
-    />
-    <span class="label-text">{{ value.name }}</span>
-   </label>
+    <!-- スクリプトゲーム -->
+    <label
+     v-for="(value, index) in scriptGameMap"
+     :key="index"
+     class="flex items-center gap-2 p-2 rounded"
+    >
+     <input
+      v-model="displaySettings.enabledModes.scriptGames[index]"
+      type="checkbox"
+      class="checkbox checkbox-primary"
+     />
+     <span class="label-text">{{ value.name }}</span>
+    </label>
+   </div>
   </div>
  </div>
 </template>

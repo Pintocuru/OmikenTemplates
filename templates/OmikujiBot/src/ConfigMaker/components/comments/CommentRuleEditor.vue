@@ -23,9 +23,9 @@
 import { computed, provide } from 'vue';
 import { CommentRuleType, RuleType } from '@type/';
 import BaseSettingsEditor from './BaseSettingsEditor.vue';
-import CommentThresholdEditor from './ThresholdEditor.vue';
-import ScriptGameEditor from './ExternalScriptEditor.vue';
+import ScriptGameEditor from './ScriptGameEditor.vue';
 import OmikujiSetEditor from './OmikujiSetEditor.vue';
+import CommentThresholdEditor from '@ConfigComponents/threshold/ThresholdEditor.vue';
 import RuleTabs from '@ConfigComponents/parts/RuleTabs.vue';
 import { useCommentRulesStore } from '@ConfigScript/useCommentRulesStore';
 import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';

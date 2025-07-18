@@ -1,18 +1,23 @@
 // src/Modules/tasks/PlaceProcess2.ts
-import { OmikujiSetType, PlaceholderType, PlaceholderValueType, PostActionType } from '@type/';
+import { PlaceholderType, PlaceholderValueType, PostActionType } from '@type/';
 import { drawOmikuji } from './PlayOmikuji';
 
 /**
  * プレースホルダー置換処理を行うクラス
- * おみくじデータ内の<<key>>形式のプレースホルダーを実際の値に置換する
+ * PostAction配列内の<<key>>形式のプレースホルダーを実際の値に置換する
  */
 export class PlaceProcess {
  private resolvedValues: Record<string, string | number> = {};
- private readonly placeholderSources: Record<string, PlaceholderType>;
+ private readonly placeholderIdMap: Map<string, PlaceholderType>; // 効率的な検索のためのマップ
  private static readonly PLACEHOLDER_PATTERN = /<<([^>]+)>>/g; // 正規表現パターン
+ private static readonly MAX_REPLACEMENTS = 5; // 無限ループ防止
 
  constructor(placeholderSources: Record<string, PlaceholderType>) {
-  this.placeholderSources = placeholderSources;
+  // プレースホルダーIDマップを事前に構築
+  this.placeholderIdMap = new Map();
+  for (const placeholder of Object.values(placeholderSources)) {
+   this.placeholderIdMap.set(placeholder.id, placeholder);
+  }
  }
 
  /**
@@ -23,18 +28,18 @@ export class PlaceProcess {
  }
 
  /**
-  * おみくじデータのプレースホルダーを置換して返す
+  * PostAction配列のプレースホルダーを置換して返す
   */
- processOmikuji(omikuji: OmikujiSetType): PostActionType[] {
+ processPostActions(postActions: PostActionType[]): PostActionType[] {
   // 使用されているプレースホルダーIDを収集
-  const usedPlaceholderIds = this.collectUsedPlaceholderIds(omikuji);
+  const usedPlaceholderIds = this.collectUsedPlaceholderIds(postActions);
 
   // 収集したプレースホルダーを解決
   if (usedPlaceholderIds.length > 0) {
    this.resolvePlaceholders(usedPlaceholderIds);
   }
 
-  return omikuji.postActions.map((action) => ({
+  return postActions.map((action) => ({
    ...action,
    messageContent: this.replacePlaceholders(action.messageContent),
    messageToast: this.replacePlaceholders(action.messageToast),
@@ -43,30 +48,30 @@ export class PlaceProcess {
  }
 
  /**
-  * おみくじデータから使用されているプレースホルダーIDを収集
+  * PostAction配列から使用されているプレースホルダーIDを収集
   */
- private collectUsedPlaceholderIds(omikuji: OmikujiSetType): string[] {
+ private collectUsedPlaceholderIds(postActions: PostActionType[]): string[] {
   const placeholderIds = new Set<string>();
 
   // postActionsから収集
-  omikuji.postActions.forEach((action) => {
+  postActions.forEach((action) => {
    this.extractPlaceholderIds(action.wordParty, placeholderIds);
    this.extractPlaceholderIds(action.messageContent, placeholderIds);
    this.extractPlaceholderIds(action.messageToast, placeholderIds);
   });
 
   // placeholderSourcesのcontentからも収集（再帰的に）
-  const allIds = Array.from(placeholderIds);
   const processedIds = new Set<string>();
+  const toProcess = Array.from(placeholderIds);
 
-  while (allIds.length > 0) {
-   const currentId = allIds.pop()!;
+  while (toProcess.length > 0) {
+   const currentId = toProcess.shift()!;
    if (processedIds.has(currentId)) continue;
 
    processedIds.add(currentId);
 
-   // 該当するプレースホルダーを探す
-   const placeholder = this.findPlaceholderById(currentId);
+   // 該当するプレースホルダーを探す（効率的な検索）
+   const placeholder = this.placeholderIdMap.get(currentId);
    if (placeholder) {
     // そのプレースホルダーのvalues内のcontentからも収集
     placeholder.values.forEach((value) => {
@@ -76,7 +81,7 @@ export class PlaceProcess {
     // 新しく見つかったIDを処理キューに追加
     placeholderIds.forEach((id) => {
      if (!processedIds.has(id)) {
-      allIds.push(id);
+      toProcess.push(id);
      }
     });
    }
@@ -98,19 +103,6 @@ export class PlaceProcess {
     placeholderIds.add(placeholderId);
    }
   }
- }
-
- /**
-  * IDに対応するプレースホルダーを検索
-  */
- private findPlaceholderById(id: string): PlaceholderType | null {
-  // placeholderSources内でidが一致するものを検索
-  for (const [key, placeholder] of Object.entries(this.placeholderSources)) {
-   if (placeholder.id === id) {
-    return placeholder;
-   }
-  }
-  return null;
  }
 
  /**
@@ -140,8 +132,8 @@ export class PlaceProcess {
    return;
   }
 
-  // 該当するプレースホルダーを検索
-  const source = this.findPlaceholderById(placeholderId);
+  // 該当するプレースホルダーを検索（効率的な検索）
+  const source = this.placeholderIdMap.get(placeholderId);
   if (!source) {
    console.warn(`プレースホルダーが見つかりません: ${placeholderId}`);
    return;
@@ -166,6 +158,9 @@ export class PlaceProcess {
     if (selectedValue?.content !== undefined) {
      // プレースホルダーIDをキーとして解決済み値を保存
      this.resolvedValues[placeholderId] = selectedValue.content;
+    } else {
+     // エラー時は最初の値を使用
+     this.resolvedValues[placeholderId] = source.values[0].content;
     }
    }
   } finally {
@@ -182,9 +177,8 @@ export class PlaceProcess {
 
   let result = text;
   let replacementCount = 0;
-  const maxReplacements = 10; // 無限ループ防止
 
-  while (replacementCount < maxReplacements) {
+  while (replacementCount < PlaceProcess.MAX_REPLACEMENTS) {
    const beforeReplacement = result;
 
    result = result.replace(PlaceProcess.PLACEHOLDER_PATTERN, (match, key) => {
@@ -201,7 +195,7 @@ export class PlaceProcess {
    replacementCount++;
   }
 
-  if (replacementCount >= maxReplacements) {
+  if (replacementCount >= PlaceProcess.MAX_REPLACEMENTS) {
    console.warn(`プレースホルダー置換の最大回数に達しました: ${text}`);
   }
 

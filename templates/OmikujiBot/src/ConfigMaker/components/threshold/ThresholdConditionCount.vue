@@ -39,14 +39,14 @@
 </template>
 
 <script setup lang="ts">
-import SettingItem from '@/ConfigMaker/components/parts/SettingItem.vue';
 import {
  countUnitConditionLabels,
  countComparisonConditionLabels,
- type CountConditionType,
- type CountUnitCondition,
- type CountComparisonCondition
+ CountConditionType,
+ CountUnitCondition,
+ CountComparisonCondition
 } from '@type/';
+import SettingItem from '@/ConfigMaker/components/parts/SettingItem.vue';
 
 const props = defineProps<{ modelValue: CountConditionType }>();
 const emit = defineEmits<{ 'update:modelValue': [value: CountConditionType] }>();

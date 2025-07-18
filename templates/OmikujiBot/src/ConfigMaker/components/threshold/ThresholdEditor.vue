@@ -66,12 +66,12 @@
 </template>
 
 <script setup lang="ts">
-import SettingItem from '@/ConfigMaker/components/parts/SettingItem.vue';
 import ThresholdConditionComment from './ThresholdConditionComment.vue';
 import ThresholdConditionSyoken from './ThresholdConditionSyoken.vue';
 import ThresholdConditionAccess from './ThresholdConditionAccess.vue';
 import ThresholdConditionGift from './ThresholdConditionGift.vue';
 import ThresholdConditionCount from './ThresholdConditionCount.vue';
+import SettingItem from '@/ConfigMaker/components/parts/SettingItem.vue';
 
 import {
  commentThresholdConditionLabels,

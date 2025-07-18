@@ -29,10 +29,10 @@
      <div class="text-center">
       <p class="text-sm text-gray-600 mb-2">{{ characterName }}</p>
       <p class="text-xs text-gray-500 mb-2">{{ emotionLabels[localIconKey] }}</p>
-      <img
-       :src="imageBaseUrl + getCharacterIconPath(characterKey, localIconKey)"
-       :alt="emotionLabels[localIconKey]"
-       class="max-w-16 max-h-16 object-contain rounded"
+      <CharacterIcon
+       :characterKey="characterKey"
+       :iconKey="localIconKey"
+       imgClass="max-w-16 max-h-16 object-contain rounded-full"
       />
      </div>
     </div>
@@ -40,49 +40,21 @@
   </div>
  </div>
 
- <dialog ref="iconPreviewRef" class="modal">
-  <div class="modal-box max-w-4xl">
-   <h3 class="font-bold text-lg mb-4 text-base-content">{{ characterName }} - アイコン選択</h3>
-
-   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-6">
-    <div
-     v-for="emotion in characterEmotions"
-     :key="emotion"
-     @click="selectEmotion(emotion)"
-     class="cursor-pointer p-3 rounded-lg border-2 transition-all hover:shadow-lg"
-     :class="[
-      localIconKey === emotion
-       ? 'border-primary bg-primary-focus/10'
-       : 'border-base-200 hover:border-base-300'
-     ]"
-    >
-     <div class="text-center">
-      <div class="w-16 h-16 mx-auto mb-2 rounded-full flex items-center justify-center">
-       <img
-        v-if="getCharacterIconPath(characterKey, emotion)"
-        :src="imageBaseUrl + getCharacterIconPath(characterKey, emotion)"
-        :alt="emotionLabels[emotion]"
-        class="max-w-full max-h-full object-contain rounded-full"
-       />
-       <div v-else class="text-gray-400">画像なし</div>
-      </div>
-      <p class="text-base-content">{{ emotionLabels[emotion] }}</p>
-     </div>
-    </div>
-   </div>
-
-   <div class="modal-action">
-    <button @click="closeIconPreview" class="btn">キャンセル</button>
-   </div>
-  </div>
- </dialog>
+ <IconPreviewModal
+  ref="iconPreviewModalRef"
+  :characterKey="characterKey"
+  :currentIconKey="localIconKey"
+  @select:icon="handleIconSelect"
+ />
 </template>
 
 <script setup lang="ts">
 import { ref, computed, Ref } from 'vue';
 import { emotionLabels, characterEmotions, CharacterEmotionType } from '@type/';
+import CharacterIcon from '@ConfigComponents/parts/CharacterIcon.vue';
+import IconPreviewModal from '@ConfigComponents/postAction/IconPreviewModal.vue';
 import { useCharacterStore } from '@ConfigScript/useCharacterStore';
-import { Eye } from 'lucide-vue-next'; // lucide-vue-next から Eye コンポーネントをインポート
+import { Eye } from 'lucide-vue-next';
 
 // Props
 const props = defineProps<{
@@ -102,7 +74,7 @@ const charactersMap = computed(() => characterStore.rulesMap);
 
 // Refs
 const showHoverPreview = ref(false);
-const iconPreviewRef: Ref<HTMLDialogElement | null> = ref(null);
+const iconPreviewModalRef: Ref<InstanceType<typeof IconPreviewModal> | null> = ref(null); // モーダルコンポーネントのref
 
 // Computed properties
 const localIconKey = computed({
@@ -117,12 +89,6 @@ const characterName = computed(() => {
  return character?.name || '';
 });
 
-// 画像ベースURL
-const imageBaseUrl =
- typeof import.meta !== 'undefined' && import.meta.env?.VITE_IMAGE_BASE_URL
-  ? import.meta.env.VITE_IMAGE_BASE_URL
-  : './Characters/';
-
 // Methods
 const getCharacterIconPath = (characterKey: string, iconKey: CharacterEmotionType): string => {
  const character = charactersMap.value[characterKey];
@@ -133,15 +99,10 @@ const getCharacterIconPath = (characterKey: string, iconKey: CharacterEmotionTyp
 };
 
 const showIconPreview = () => {
- iconPreviewRef.value?.showModal();
+ iconPreviewModalRef.value?.showModal();
 };
 
-const closeIconPreview = () => {
- iconPreviewRef.value?.close();
-};
-
-const selectEmotion = (emotion: CharacterEmotionType) => {
- localIconKey.value = emotion;
- closeIconPreview();
+const handleIconSelect = (selectedIcon: CharacterEmotionType) => {
+ localIconKey.value = selectedIcon;
 };
 </script>

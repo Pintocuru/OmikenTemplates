@@ -1,4 +1,4 @@
-<!-- src/components/ColorPicker.vue -->
+<!-- src/configMaker/components/parts/ColorPicker.vue -->
 <template>
  <div class="relative">
   <button

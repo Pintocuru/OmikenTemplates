@@ -20,9 +20,9 @@ export class PostMessage {
 
  /**
   * コンストラクタ
-  * @param Charas キャラクタープリセットのマップ（キーはcharacterKey）
+  * @param charactersMap キャラクタープリセットのマップ（キーはcharacterKey）
   */
- constructor(private readonly Charas: Record<string, CharacterType> = {}) {
+ constructor(private readonly charactersMap: Record<string, CharacterType> = {}) {
   this.serviceAPI = new ServiceAPI();
  }
 
@@ -68,7 +68,7 @@ export class PostMessage {
   }
 
   const { characterKey } = post;
-  return characterKey && characterKey !== '' ? this.Charas[characterKey] : undefined;
+  return characterKey && characterKey !== '' ? this.charactersMap[characterKey] : undefined;
  }
 
  /**

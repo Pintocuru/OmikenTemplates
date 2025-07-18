@@ -5,11 +5,11 @@
   <div class="flex justify-end">
    <button
     @click="toggleEditMode"
-    class="btn btn-sm btn-outline"
+    class="btn btn-sm bg-secondary"
     :class="{ 'btn-active': isTextMode }"
     title="編集モードを切り替え"
    >
-    {{ isTextMode ? '📝 テキストモード' : '🔧 入力モード' }}
+    {{ isTextMode ? '🔧 入力モード' : '📝 テキストモード' }}
    </button>
   </div>
 

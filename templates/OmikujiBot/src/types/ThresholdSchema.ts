@@ -151,6 +151,14 @@ export const countUnitConditionDescriptions: Record<CountUnitCondition, string> 
  tc: '全配信を通じたユーザーの総コメント数で判定します'
 };
 
+// ServiceMeta いつか使うかもしれないので
+export const serviceMetaCondition = ['viewer', 'upVote'] as const;
+export type ServiceMetaCondition = (typeof serviceMetaCondition)[number];
+export const serviceMetaConditionLabels: Record<ServiceMetaCondition, string> = {
+ viewer: '現在の枠の視聴ユーザー数',
+ upVote: '現在の枠の高評価数'
+};
+
 export const CountConditionSchema = z.object({
  comparison: z.enum(countComparisonCondition).default('min').catch('min'),
  unit: z.enum(countUnitCondition).default('lc').catch('lc'),

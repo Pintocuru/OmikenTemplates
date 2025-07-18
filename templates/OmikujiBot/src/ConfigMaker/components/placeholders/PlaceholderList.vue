@@ -67,7 +67,13 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { PlaceholderSchema, PlaceholderType, PostActionType } from '@type/';
+import {
+ DefaultPlaceholders,
+ defaultPlaceholdersLabels,
+ PlaceholderSchema,
+ PlaceholderType,
+ PostActionType
+} from '@type/';
 import PlaceholderModal from './PlaceholderModal.vue';
 import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
 import { useCommentRulesStore } from '@ConfigScript/useCommentRulesStore';
@@ -90,33 +96,27 @@ const selectedRule = computed(() => commentRulesStore.selectedRule);
 const searchQuery = ref('');
 
 // デフォルトで入るプレースホルダー：user, lc, tc
-const defaultPlaceholders: PlaceholderType[] = [
- PlaceholderSchema.parse({
-  id: 'user',
-  name: 'コメントしたユーザー',
-  values: [{ content: '(ユーザー名)' }]
- }),
- PlaceholderSchema.parse({
-  id: 'lc',
-  name: '配信でのコメント番号',
-  values: [{ content: '(コメント番号)' }]
- }),
- PlaceholderSchema.parse({
-  id: 'tc',
-  name: '個人の総コメント数',
-  values: [{ content: '(個人コメント数)' }]
- }),
- PlaceholderSchema.parse({
-  id: 'viewer',
-  name: '現在の枠の視聴ユーザー数',
-  values: [{ content: '(視聴ユーザー数)' }]
- }),
- PlaceholderSchema.parse({
-  id: 'upVote',
-  name: '現在の枠の高評価数',
-  values: [{ content: '(高評価数)' }]
- })
-];
+const placeholderContentMap = new Map<DefaultPlaceholders, string>([
+ ['user', '(ユーザー名)'],
+ ['lc', '(コメント番号)'],
+ ['tc', '(個人コメント数)'],
+ ['viewer', '(視聴ユーザー数)'],
+ ['upVote', '(高評価数)']
+]);
+
+// デフォルトで入るプレースホルダー：user, lc, tc
+const defaultPlaceholders: PlaceholderType[] = (
+ Object.keys(defaultPlaceholdersLabels) as DefaultPlaceholders[]
+).map((id) => {
+ // MapからcontentValueを取得。もし存在しない場合は空文字列をデフォルトとする
+ const contentValue = placeholderContentMap.get(id) ?? '';
+
+ return PlaceholderSchema.parse({
+  id: id,
+  name: defaultPlaceholdersLabels[id],
+  values: [{ content: contentValue }]
+ });
+});
 // デフォルトプレースホルダーのIDを配列で取得
 const defaultPlaceholderIds = defaultPlaceholders.map((p) => p.id);
 
@@ -173,13 +173,14 @@ const allPlaceholders = computed(() => {
  ];
 
  // 優先するIDとその順位
- const priorityOrder: Record<string, number> = {
-  user: 1,
-  lc: 2,
-  tc: 3,
-  viewer: 4,
-  upVote: 5
- };
+ const priorityOrder: Record<DefaultPlaceholders, number> & { [key: string]: number | undefined } =
+  {
+   user: 1,
+   lc: 2,
+   tc: 3,
+   viewer: 4,
+   upVote: 5
+  };
 
  // スクリプトプレースホルダーのIDセットを作成
  const scriptPlaceholderIds = new Set(scriptPlaceholders.map((p) => p.id));

@@ -1,5 +1,5 @@
 // src/MainGenerator/utils/timerProcessor.ts
-import { BotMessage } from '@type/';
+import { BotMessage, ServiceMetaCondition } from '@type/';
 import { OmikujiDataType, OmikujiSetType, TimerRuleType } from '@type/';
 import { BotMessageGenerator } from './CommentProcessorToast';
 import { drawOmikuji } from './PlayOmikuji';
@@ -19,7 +19,6 @@ export class TimerProcessor {
  private serviceMeta: ServiceMeta | null = null;
  private readonly timerRules: Record<string, TimerRuleType>;
  private readonly activeTimers = new Map<string, TimerState>();
- private readonly startTime = Date.now();
  private readonly messageHandler: PostMessage;
  private readonly placeholderProcessor: PlaceProcess;
  private readonly botMessageGenerator: BotMessageGenerator;
@@ -112,7 +111,7 @@ export class TimerProcessor {
   this.setupDefaultPlaceholders();
 
   try {
-   const postActions = this.placeholderProcessor.processOmikuji(omikujiItem);
+   const postActions = this.placeholderProcessor.processPostActions(omikujiItem.postActions);
    this.messageHandler.post(postActions);
    return this.botMessageGenerator.generateToasts(postActions);
   } finally {
@@ -124,10 +123,11 @@ export class TimerProcessor {
   * デフォルトのプレースホルダー情報を設定
   */
  private setupDefaultPlaceholders(): void {
-  this.placeholderProcessor.updateResolvedValues({
+  const defaultPlaceholders: Record<ServiceMetaCondition, string | number> = {
    viewer: this.serviceMeta?.viewer ?? 0,
    upVote: this.serviceMeta?.upVote ?? 0
-  });
+  };
+  this.placeholderProcessor.updateResolvedValues(defaultPlaceholders);
  }
 
  /**

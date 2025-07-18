@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { OmikujiSetSchema, OmikujiSetType, PlaceholderValueType, PostActionType } from '@type/';
+import { PlaceholderValueType, PostActionSchema, PostActionType } from '@type/';
 import { usePlaceholderStore } from '@ConfigScript/usePlaceholderStore';
 import { drawOmikuji } from '@/MainGenerator/utils/PlayOmikuji';
 import { PlaceProcess } from '@/MainGenerator/utils/PlaceProcess2';
@@ -75,11 +75,11 @@ const handleDraw = () => {
   const placeProcess = new PlaceProcess(placeholdersMap.value);
 
   // テスト用のダミーおみくじデータを作成
-  const testOmikuji: OmikujiSetType = OmikujiSetSchema.parse({
-   postActions: [{ messageContent: drawnValue.value.content }]
+  const testPost: PostActionType = PostActionSchema.parse({
+   messageContent: drawnValue.value.content
   });
   // プレースホルダー置換処理を実行
-  const processedActions = placeProcess.processOmikuji(testOmikuji);
+  const processedActions = placeProcess.processPostActions([testPost]);
 
   // 結果を取得
   processedContent.value = processedActions[0]?.messageContent || '';

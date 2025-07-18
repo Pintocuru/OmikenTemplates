@@ -2,7 +2,13 @@
 // 250716_2 DisplaySettingsSchema.ts の分離
 import { z } from 'zod';
 import { BaseSchema } from './commonSchema';
-import { CommentThresholdSchema } from './ThresholdSchema';
+import {
+ CommentThresholdSchema,
+ countUnitCondition,
+ countUnitConditionLabels,
+ serviceMetaCondition,
+ serviceMetaConditionLabels
+} from './ThresholdSchema';
 import { CharacterEmotionSchema, CharacterSchema } from './CharacterSchema';
 import { ScriptSettingsSchema } from './ScriptSettingsSchema';
 import { DisplaySettingsSchema } from './DisplaySettingsSchema';
@@ -15,6 +21,21 @@ export function validateOmikujiData(input: unknown): OmikujiDataType {
 }
 
 // Placeholder
+
+// defaultのプレースホルダー(user/Commentのmeta/ServiceMeta)
+export const defaultPlaceholders = [
+ 'user',
+ ...countUnitCondition,
+ ...serviceMetaCondition
+] as const;
+export type DefaultPlaceholders = (typeof defaultPlaceholders)[number];
+
+export const defaultPlaceholdersLabels: Record<DefaultPlaceholders, string> = {
+ user: 'コメントしたユーザー',
+ ...countUnitConditionLabels,
+ ...serviceMetaConditionLabels
+};
+
 export const PlaceholderValueSchema = z.object({
  weight: z.number().min(0).default(1).catch(1),
  content: z.string().default('').catch('')

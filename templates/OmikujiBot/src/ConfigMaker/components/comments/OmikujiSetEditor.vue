@@ -87,11 +87,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { OmikujiSetSchema, OmikujiSetType } from '@type/';
-import { GripVertical, Plus } from 'lucide-vue-next';
-import PostActionsEditorJson from './PostActionsEditorJson.vue';
 import CharacterBulkChanger from './CharacterBulkChanger.vue';
+import PostActionsEditorJson from '@ConfigComponents/postAction/PostActionsEditorJson.vue';
 import SettingItem from '@ConfigComponents/parts/SettingItem.vue';
 import MenuDropdown from '@ConfigComponents/parts/MenuDropdown.vue';
+import { GripVertical, Plus } from 'lucide-vue-next';
 
 const props = defineProps<{
  modelValue: OmikujiSetType[];

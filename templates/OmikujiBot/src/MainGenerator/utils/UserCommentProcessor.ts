@@ -1,5 +1,5 @@
 // src/MainGenerator/utils/UserCommentProcessor.ts
-import { BotMessage, ScriptResult } from '@type/'; // スクリプト結果型
+import { BotMessage, DefaultPlaceholders, ScriptResult } from '@type/'; // スクリプト結果型
 import { CommentRuleType, OmikujiDataType, OmikujiSetType } from '@type/';
 import { CommentProcessorCooldown } from './CommentProcessorCooldown'; // 既存のヘルパー関数
 import { PostMessage } from './PostMessage2'; // 依存オブジェクト
@@ -126,13 +126,14 @@ export class UserCommentProcessor {
   * デフォルトのプレースホルダー情報を設定
   */
  private setupDefaultPlaceholders(comment: Comment): void {
-  this.placeProcess.updateResolvedValues({
-   user: comment.data.displayName || comment.data.name,
+  const defaultPlaceholders: Record<DefaultPlaceholders, string | number> = {
+   user: comment.data.displayName || comment.data.name || 'テストユーザー',
    lc: comment.meta?.lc ?? 0,
    tc: comment.meta?.tc ?? 0,
    viewer: this.serviceMeta?.viewer ?? 0,
    upVote: this.serviceMeta?.upVote ?? 0
-  });
+  };
+  this.placeProcess.updateResolvedValues(defaultPlaceholders);
  }
 
  /**
@@ -145,7 +146,7 @@ export class UserCommentProcessor {
   try {
    this.placeProcess.updateResolvedValues(scriptResult.placeholders);
    this.PostMessage.post(scriptResult.postActions);
-   const postActions = this.placeProcess.processOmikuji(omikujiItem);
+   const postActions = this.placeProcess.processPostActions(omikujiItem.postActions);
    this.PostMessage.post(postActions);
    return this.BotMessageGenerator.generateToasts(postActions);
   } finally {
@@ -161,7 +162,7 @@ export class UserCommentProcessor {
   isDuplicateComment: boolean
  ): BotMessage[] {
   try {
-   const postActions = this.placeProcess.processOmikuji(omikujiItem);
+   const postActions = this.placeProcess.processPostActions(omikujiItem.postActions);
 
    if (isDuplicateComment) {
     const modifiedPostActions = sanitizePostActionsForDuplicate(postActions);

@@ -49,7 +49,7 @@
   </div>
 
   <!-- 通常のプレビュー表示 -->
-  <PostActionsPreview v-else :actions="modelValue" :charactersArray="charactersArray" />
+  <PostActionsPreview v-else :actions="modelValue" />
 
   <!-- 編集ダイアログ -->
   <PostActionsEditDialog

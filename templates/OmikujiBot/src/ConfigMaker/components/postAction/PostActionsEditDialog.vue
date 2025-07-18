@@ -62,7 +62,7 @@
          v-if="action.messageContent !== '' || action.messageToast !== ''"
          :character-key="action.characterKey"
          :icon-key="action.iconKey"
-         @update:icon-key="action.iconKey = $event"
+         @update:icon-key="action.iconKey = $event as CharacterEmotionType"
         />
 
         <!-- 遅延秒数 -->
@@ -165,11 +165,11 @@
 
 <script setup lang="ts">
 import { ref, computed, Ref, reactive } from 'vue';
-import { CharacterType, PostActionSchema, PostActionType } from '@type/';
-import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
+import { CharacterEmotionType, CharacterType, PostActionSchema, PostActionType } from '@type/';
 import ModalFooterActions from '@ConfigComponents/parts/ModalFooterActions.vue';
 import PlaceholderList from '@ConfigComponents/placeholders/PlaceholderList.vue';
 import IconSelector from '@ConfigComponents/comments/IconSelector.vue';
+import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 import { storeToRefs } from 'pinia';
 import { Copy, Trash2 } from 'lucide-vue-next';
 
