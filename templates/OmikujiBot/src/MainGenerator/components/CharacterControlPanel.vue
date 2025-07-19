@@ -93,7 +93,8 @@ import {
  CharacterImageType,
  CharacterEmotionType,
  PostActionType,
- PostActionSchema
+ PostActionSchema,
+ getImagePath
 } from '@type/';
 import { ZoomIn, Monitor } from 'lucide-vue-next';
 
@@ -146,10 +147,6 @@ const SIZE_CONFIG = {
   controlIcon: 'w-8 h-8'
  }
 } as const;
-
-// 画像パス取得関数
-const imageBaseUrl = import.meta.env?.VITE_IMAGE_BASE_URL || './Characters/';
-const getImagePath = (profileImage: string) => `${imageBaseUrl}${profileImage}`;
 
 // リアクティブ変数
 const sizeConfig = computed(() => SIZE_CONFIG[props.displaySize]);

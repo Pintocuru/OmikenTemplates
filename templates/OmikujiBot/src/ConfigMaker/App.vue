@@ -3,6 +3,9 @@
  <div class="p-4 max-w-6xl mx-auto">
   <h1 class="text-2xl font-bold mb-6 text-center text-primary">おみくじBot コンフィグエディター</h1>
 
+  <!-- 開発者用プリセット読み書きコンポーネント -->
+  <component :is="devToolsComponent" v-if="devToolsComponent" />
+
   <!-- アクションボタンとプリセット -->
   <div class="flex flex-wrap justify-between items-center mb-2 gap-4 min-w-0">
    <!-- インポート機能 -->
@@ -83,7 +86,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { CategoryType, categoryLabels } from '@type/';
+import { CategoryType, categoryLabels, isDev } from '@type/';
 import { useOmikujiStore } from '@ConfigScript/useOmikujiStore';
 import ConfigImport from '@ConfigComponents/presets/ConfigImport.vue';
 import ConfigExport from '@ConfigComponents/presets/ConfigExport.vue';
@@ -105,6 +108,14 @@ const { selectedCategory, data } = storeToRefs(omikujiStore);
 
 // ref
 const showScrollTopButton = ref(false);
+
+// 開発者モード
+const devToolsComponent = ref(null);
+if (isDev) {
+ import('@/ConfigMaker/dev/DevConfigs.vue').then((mod) => {
+  devToolsComponent.value = mod.default;
+ });
+}
 
 // スクロールイベントでボタンの表示制御
 const handleScroll = () => {

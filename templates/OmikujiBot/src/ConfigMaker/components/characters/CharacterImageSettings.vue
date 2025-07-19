@@ -17,7 +17,7 @@
     <!-- プレビュー表示 -->
     <img
      v-if="localImages[key]"
-     :src="imageBaseUrl + localImages[key]"
+     :src="getImagePath(localImages[key])"
      alt="画像プレビュー"
      class="mt-2 max-h-24 rounded border"
     />
@@ -28,8 +28,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { CharacterType } from '@type/';
-import { emotionLabels } from '@type/';
+import { CharacterType, emotionLabels, getImagePath } from '@type/';
 
 const props = defineProps<{
  modelValue: CharacterType['image'];
@@ -38,11 +37,6 @@ const props = defineProps<{
 const emit = defineEmits<{
  'update:modelValue': [value: CharacterType['image']];
 }>();
-
-const imageBaseUrl =
- typeof import.meta !== 'undefined' && import.meta.env?.VITE_IMAGE_BASE_URL
-  ? import.meta.env.VITE_IMAGE_BASE_URL
-  : './Characters/';
 
 // v-modelを使用したlocalImagesの実装
 const localImages = computed({

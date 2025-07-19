@@ -21,14 +21,16 @@ export default () => {
  const htmlPlugins = [
   // 本体:MainGenerator
   new HtmlWebpackPlugin({
-   template: path.resolve(dirname, `./src/MainGenerator/index.ejs`),
+   template: path.resolve(dirname, `./src/MainGenerator/index.pug`),
+   templateParameters: {},
    filename: `index.html`,
    chunks: ['MainGenerator'],
    inject: 'body'
   }),
   // ConfigMaker
   new HtmlWebpackPlugin({
-   template: path.resolve(dirname, `./src/ConfigMaker/index.ejs`),
+   template: path.resolve(dirname, `./src/ConfigMaker/index.pug`),
+   templateParameters: {},
    filename: `ConfigMaker.html`,
    chunks: ['ConfigMaker'],
    inject: 'body'

@@ -52,8 +52,10 @@ const props = defineProps<{
  displaySize: DisplaySize;
 }>();
 
-const { displayedComments, getImagePath, handleImageError, removeItem, start, stop } =
- useBotCommentDisplay(toRef(props, 'botMessages'), 'toast');
+const { displayedComments, removeItem, start, stop } = useBotCommentDisplay(
+ toRef(props, 'botMessages'),
+ 'toast'
+);
 
 // サイズ設定の取得
 const sizeConfig = computed(() => SIZE_CONFIG[props.displaySize]);

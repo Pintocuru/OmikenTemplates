@@ -89,7 +89,13 @@ export const useOmikujiStore = defineStore('omikuji', () => {
   selectedCategory.value = category;
 
   const items = getCategoryItems<any>(category);
-  const firstId = Object.keys(items)[0] ?? null;
+
+  const firstId =
+   Object.entries(items)
+    .filter(([_, item]) => typeof item.order === 'number') // order が number のものに限定
+    .sort((a, b) => a[1].order - b[1].order)[0]?.[0] ?? // 最小 order のキーを取得
+   Object.keys(items)[0] ?? // すべての item に order がない場合、最初のキーを fallback として使う
+   null;
 
   selectedRuleId.value = firstId;
  };

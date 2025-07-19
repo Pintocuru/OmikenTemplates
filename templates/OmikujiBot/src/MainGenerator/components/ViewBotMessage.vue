@@ -78,7 +78,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, toRef } from 'vue';
-import { BotMessage, DisplaySize } from '@type/';
+import { BotMessage, DisplaySize, getImagePath } from '@type/';
 import { useBotCommentDisplay } from './useBotMessage';
 
 // サイズ設定の定数
@@ -95,7 +95,7 @@ const props = defineProps<{
  displaySize: DisplaySize;
 }>();
 
-const { displayedComments, getImagePath, handleImageError, start, stop } = useBotCommentDisplay(
+const { displayedComments, handleImageError, start, stop } = useBotCommentDisplay(
  toRef(props, 'botMessages'),
  'comment'
 );

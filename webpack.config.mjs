@@ -58,6 +58,18 @@ export function createConfig(childDir, isOneSDK = true) {
      exclude: /node_modules/,
      options: { transpileOnly: true, appendTsSuffixTo: [/\.vue$/] }
     },
+    // pug ローダー
+    {
+     test: /\.pug$/,
+     use: [
+      {
+       loader: '@webdiscus/pug-loader',
+       options: {
+        pretty: true
+       }
+      }
+     ]
+    },
     // CSS(Tailwind CSS & DaisyUi)
     {
      test: /\.css$/,

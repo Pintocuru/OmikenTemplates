@@ -4,6 +4,8 @@
  "description": "様々な条件でおみくじを行う高機能BOTシステム",
  "scripts": {
   "dev:omikujiBot": "vite",
+  "devApi:omikujiBot": "tsx server/start-dev-server.ts",
+  "devFull:omikujiBot": "concurrently \"npm run devApi:omikujiBot\" \"npm run dev:omikujiBot\"",
   "build:omikujiBot": "webpack"
  },
  "author": "Pintocuru",

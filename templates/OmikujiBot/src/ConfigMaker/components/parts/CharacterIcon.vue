@@ -11,8 +11,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { emotionLabels, CharacterEmotionType, getImagePath } from '@type/';
 import { useCharacterStore } from '@ConfigScript/useCharacterStore';
-import { emotionLabels, CharacterEmotionType } from '@type/';
 
 const props = defineProps<{
  characterKey: string;
@@ -24,24 +24,6 @@ const props = defineProps<{
 const characterStore = useCharacterStore();
 const charactersMap = computed(() => characterStore.rulesMap);
 
-// 画像ベースURL
-const imageBaseUrl =
- typeof import.meta !== 'undefined' && import.meta.env?.VITE_IMAGE_BASE_URL
-  ? import.meta.env.VITE_IMAGE_BASE_URL
-  : './Characters/';
-
-const getCharacterIconPath = (characterKey: string, iconKey: CharacterEmotionType): string => {
- const character = charactersMap.value[characterKey];
- if (!character || !character.image || !character.image[iconKey]) {
-  return '';
- }
- return character.image[iconKey];
-};
-
-const iconSrc = computed(() => {
- const path = getCharacterIconPath(props.characterKey, props.iconKey);
- return path ? imageBaseUrl + path : '';
-});
-
-const altText = computed(() => emotionLabels[props.iconKey] || 'キャラクターアイコン');
+const iconSrc = computed(() => getImagePath(`${props.characterKey}/${props.iconKey}`));
+const altText = computed(() => emotionLabels[props.iconKey]);
 </script>

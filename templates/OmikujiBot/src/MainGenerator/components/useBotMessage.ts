@@ -1,6 +1,6 @@
 // composables/useBotMessage.ts
-import { ref, computed, type Ref } from 'vue';
-import { BotMessage } from '@type/';
+import { ref, computed, Ref } from 'vue';
+import { BotMessage, getImagePath } from '@type/';
 
 const DISPLAY_CONFIG = {
  INTERVAL: 250,
@@ -21,9 +21,6 @@ export const useBotCommentDisplay = (
  const comments = computed(() =>
   botMessages.value.filter((message) => (mode === 'comment' ? !message.isToast : message.isToast))
  );
-
- const imageBaseUrl = import.meta.env?.VITE_IMAGE_BASE_URL || './Characters/';
- const getImagePath = (profileImage: string) => `${imageBaseUrl}${profileImage}`;
 
  const handleImageError = (message: BotMessage) => {
   console.error(`画像が読み込めません: ${message.profileImage}`, {
@@ -105,7 +102,6 @@ export const useBotCommentDisplay = (
 
  return {
   displayedComments,
-  getImagePath,
   handleImageError,
   removeItem,
   start: displayControl.start,
